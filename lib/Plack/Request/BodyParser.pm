@@ -26,8 +26,6 @@ sub upload_tmp {
     $_[0]->{upload_tmp} = defined $_[1] ? $_[1] : $_[0]->{upload_tmp};
 }
 
-sub chunk_size { $_[0]->{chunk_size} }
-
 sub http_body {
     my ( $self, ) = @_;
 
@@ -42,13 +40,10 @@ sub raw_body {
     return $self->{_raw_body};
 }
 
-sub content_length { $_[0]->{content_length} }
-sub content_type   { $_[0]->{content_type} }
-
 sub _http_body {
     my($self, ) = @_;
     unless (defined $self->{_http_body}) {
-        my $body = HTTP::Body->new($self->content_type, $self->content_length);
+        my $body = HTTP::Body->new($self->{content_type}, $self->{content_length});
         $body->tmpdir( $self->upload_tmp ) if $self->upload_tmp;
         $self->{_http_body} = $body;
     }
@@ -62,7 +57,7 @@ sub input_handle { $_[0]->{input_handle} }
 sub _read_to_end {
     my ( $self, ) = @_;
 
-    my $content_length = $self->content_length;
+    my $content_length = $self->{content_length};
 
     if ($content_length > 0) {
         while (my $buffer = $self->_read() ) {
@@ -86,9 +81,9 @@ sub _read_to_end {
 sub _read {
     my ($self, ) = @_;
 
-    my $remaining = $self->content_length() - $self->_read_position();
+    my $remaining = $self->{content_length} - $self->_read_position();
 
-    my $maxlength = $self->chunk_size;
+    my $maxlength = $self->{chunk_size};
 
     # Are we done reading?
     if ($remaining <= 0) {
