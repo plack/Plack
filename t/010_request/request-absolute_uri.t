@@ -9,11 +9,11 @@ plan tests => 1*blocks;
 run {
     my $block = shift;
     my $req = req(
-        base            => URI->new( $block->base ),
         env => {
             SERVER_PORT => 80,
         },
     );
+    $req->base(URI->new( $block->base ));
     is $req->absolute_url( $block->location ), $block->expected;
 }
 
