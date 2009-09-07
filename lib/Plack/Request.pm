@@ -114,10 +114,8 @@ sub _body_parser {
 
 sub raw_body {
     my $self = shift;
-    if (defined $_[0]) {
-        $self->{raw_body} = $_[0];
-    } elsif (!defined $self->{raw_body}) {
-        $self->{raw_body} = $self->_body_parser->raw_body($self);
+    if (!defined($self->{raw_body})) {
+        $self->{raw_body} ||= $self->_body_parser->raw_body($self);
     }
     $self->{raw_body};
 }
