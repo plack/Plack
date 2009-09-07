@@ -22,7 +22,7 @@ run {
         }
     }
     my $req = req(
-        env => $env
+        %$env
     );
     if (defined $block->base) {
         $req->uri(

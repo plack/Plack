@@ -46,14 +46,12 @@ $content =~ s/\n/\r\n/g;
 do {
     open my $in, '<', \$content;
     my $req = req(
-        env => {
-            'psgi.input'   => $in,
-            CONTENT_LENGTH => length($content),
-            CONTENT_TYPE   => 'multipart/form-data; boundary=----BOUNDARY',
-            REQUEST_METHOD => 'POST',
-            SCRIPT_NAME    => '/',
-            SERVER_PORT    => 80,
-        }
+        'psgi.input'   => $in,
+        CONTENT_LENGTH => length($content),
+        CONTENT_TYPE   => 'multipart/form-data; boundary=----BOUNDARY',
+        REQUEST_METHOD => 'POST',
+        SCRIPT_NAME    => '/',
+        SERVER_PORT    => 80,
     );
     my $tempdir = tempdir( CLEANUP => 1 );
     $req->_body_parser->upload_tmp($tempdir);

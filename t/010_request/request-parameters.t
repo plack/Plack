@@ -5,7 +5,7 @@ use Test::More tests => 2;
 use t::Utils;
 
 do {
-    my $req = req(env => {CONTENT_LENGTH => 0, 'psgi.input' => *STDIN, CONTENT_TYPE => 'text/plain'});
+    my $req = req();
     $req->body_parameters(foo => 'bar');
     $req->body_parameters(hoge => 'one');
     $req->query_parameters({bar => 'baz', hoge => 'two'});
@@ -13,7 +13,7 @@ do {
 };
 
 do {
-    my $req = req(env => {CONTENT_LENGTH => 0, 'psgi.input' => *STDIN, CONTENT_TYPE => 'text/plain'});
+    my $req = req();
     $req->body_parameters(foo => 'bar');
     $req->body_parameters(hoge => 'one');
     $req->query_parameters({bar => ['baz', 'bar'], hoge => 'two'});

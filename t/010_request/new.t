@@ -2,7 +2,7 @@ use strict;
 use Test::More;
 use Plack::Request;
 
-my $env = {
+my $req = Plack::Request->new(+{
     REQUEST_METHOD    => 'GET',
     SERVER_PROTOCOL   => 'HTTP/1.1',
     SERVER_PORT       => 80,
@@ -13,9 +13,7 @@ my $env = {
     'psgi.input'      => undef,
     'psgi.errors'     => undef,
     'psgi.url_scheme' => 'http',
-};
-
-my $req = Plack::Request->new( $env );
+});
 
 isa_ok($req, 'Plack::Request');
 

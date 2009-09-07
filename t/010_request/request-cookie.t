@@ -10,11 +10,9 @@ do {
     # do test
     do {
         my $req = req(
-            env => {
-                HTTP_COOKIE    => 'Foo=Bar; Bar=Baz',
-                REQUEST_METHOD => 'GET',
-                SCRIPT_NAME    => '/',
-            },
+            HTTP_COOKIE    => 'Foo=Bar; Bar=Baz',
+            REQUEST_METHOD => 'GET',
+            SCRIPT_NAME    => '/',
         );
         is '2', $req->cookie;
         is $req->cookie('undef'), undef;
@@ -30,10 +28,8 @@ do {
     # do test
     do {
         my $req = req(
-            env => {
-                REQUEST_METHOD => 'GET',
-                SCRIPT_NAME    => '/',
-            },
+            REQUEST_METHOD => 'GET',
+            SCRIPT_NAME    => '/',
         );
         is_deeply $req->cookies, {};
     };

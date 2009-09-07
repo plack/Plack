@@ -9,11 +9,9 @@ do {
         my $data = 'a';
         open my $input, "<", \$data;
         my $req = req(
-            env => {
-                'psgi.input'   => $input,
-                CONTENT_LENGTH => 3,
-                CONTENT_TYPE   => 'application/octet-stream'
-            },
+            'psgi.input'   => $input,
+            CONTENT_LENGTH => 3,
+            CONTENT_TYPE   => 'application/octet-stream'
         );
         $req->_body_parser->http_body();
     } , qr/Wrong Content-Length value: 3/;

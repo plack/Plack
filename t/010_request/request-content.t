@@ -7,11 +7,9 @@ use t::Utils;
 my $body = 'body';
 open my $in, '<', \$body;
 my $req = req(
-    env => {
-        'psgi.input'   => $in,
-        CONTENT_LENGTH => 4,
-        CONTENT_TYPE   => 'application/octet-stream'
-    }
+    'psgi.input'   => $in,
+    CONTENT_LENGTH => 4,
+    CONTENT_TYPE   => 'application/octet-stream'
 );
 is $req->content, 'body';
 

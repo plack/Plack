@@ -14,7 +14,7 @@ run {
     $env->{HTTP_HOST} = 'example.org';
     $env->{SCRIPT_NAME} = '/';
 
-    my $req = req(env => $env);
+    my $req = req(%$env);
     is $req->uri, 'http://example.org/';
     is $req->proxy_request, $block->proxy_request;
 }

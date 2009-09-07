@@ -10,16 +10,14 @@ sub gen_request {
     my $body = 'foo=bar';
     open my $fh, '<', \$body;
     my $req = req(
-        env => {
-            REQUEST_METHOD => 'POST',
-            SERVER_NAME    => 'example.com',
-            SERVER_PORT    => 80,
-            PATH_INFO      => '/foo',
-            QUERY_STRING   => 'p=q',
-            CONTENT_LENGTH => 7,
-            CONTENT_TYPE   => 'application/octet-stream',
-            'psgi.input'   => $fh,
-        },
+        REQUEST_METHOD => 'POST',
+        SERVER_NAME    => 'example.com',
+        SERVER_PORT    => 80,
+        PATH_INFO      => '/foo',
+        QUERY_STRING   => 'p=q',
+        CONTENT_LENGTH => 7,
+        CONTENT_TYPE   => 'application/octet-stream',
+        'psgi.input'   => $fh,
     );
     $req;
 }

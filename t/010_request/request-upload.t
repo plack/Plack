@@ -5,7 +5,11 @@ use Test::More tests => 15;
 use Plack::Request::Upload;
 use t::Utils;
 
-my $req = req(env => {CONTENT_LENGTH => 0, 'psgi.input' => *STDIN, CONTENT_TYPE => 'text/plain'});
+my $req = req(
+    CONTENT_LENGTH => 0,
+    'psgi.input'   => *STDIN,
+    CONTENT_TYPE   => 'text/plain'
+);
 
 # file1
 $req->upload(foo => Plack::Request::Upload->new(filename => 'foo1.txt'));
