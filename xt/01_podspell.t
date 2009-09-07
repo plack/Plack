@@ -15,3 +15,16 @@ Tatsuhiko
 Miyagawa
 dankogai
 kogaidan
+API
+CGI
+Stringifies
+URI
+enviroments
+https
+param
+pm
+referer
+uri
+HTTP
+hostname
+IP
