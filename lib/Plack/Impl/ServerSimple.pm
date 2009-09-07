@@ -50,15 +50,9 @@ __END__
 
     use Plack::Impl::ServerSimple;
 
-    my $server = Plack::Impl::ServerSimple->new(8080);
-    $server->psgi_app(sub {
-        my $env = shift;
-        return [
-            200,
-            { 'Content-Type' => 'text/plain', 'Content-Length' => 13 },
-            'Hello, world!',
-        ];
-    });
+    my $server = Plack::Impl::ServerSimple->new($port);
+    $server->host("127.0.0.1");
+    $server->psgi_app($handler);
     $server->run;
 
 =head1 METHODS
