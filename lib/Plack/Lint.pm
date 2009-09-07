@@ -53,6 +53,9 @@ sub validate_res {
     unless (ref($res) && ref($res) eq 'ARRAY') {
         Carp::croak('response should be arrayref');
     }
+    if (scalar(@$res) == 3 && !ref($res)) {
+        Carp::croak('third elements in response arrayref should be reference');
+    }
 }
 
 1;
