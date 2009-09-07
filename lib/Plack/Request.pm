@@ -41,6 +41,7 @@ sub method      { $_[0]->env->{REQUEST_METHOD} }
 sub port        { $_[0]->env->{SERVER_PORT} }
 sub user        { $_[0]->env->{REMOTE_USER} }
 sub request_uri { $_[0]->env->{REQUEST_URI} }
+sub url_scheme  { $_[0]->env->{'psgi.url_scheme'} }
 
 sub cookies {
     my $self = shift;
@@ -71,21 +72,6 @@ sub query_parameters {
         $self->{query_parameters} = $self->uri->query_form_hash;
     }
     $self->{query_parameters};
-}
-
-# https or not?
-sub secure {
-    my $self = shift;
-    if (defined $_[0]) {
-        $self->{secure} = !!$_[0];
-    } elsif (!defined $self->{secure}) {
-        if ( $self->env->{'psgi.url_scheme'} eq 'https' || $self->port == 443) {
-            $self->{secure} = 1;
-        } else {
-            $self->{secure} = 0;
-        }
-    }
-    $self->{secure};
 }
 
 # proxy request?

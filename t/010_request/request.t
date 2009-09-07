@@ -7,7 +7,7 @@ BEGIN
 }
 
 can_ok( "Plack::Request",
-    qw(address cookies method protocol query_parameters secure uri user raw_body headers),
+    qw(address cookies method protocol query_parameters uri user raw_body headers),
     qw(body_params input params query_params path_info base body),
     qw(body_parameters cookies hostname param parameters path upload uploads),
     qw(uri_with as_http_request absolute_url),
