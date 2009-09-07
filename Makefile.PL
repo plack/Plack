@@ -4,7 +4,7 @@ all_from 'lib/Plack.pm';
 
 # requires '';
 
-tests 't/*.t', 't/*/*.t', 't/*/*/*.t', 't/*/*/*/*.t', 't/*/*/*/*/*.t';
+tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t t/*/*/*/*/*.t';
 author_tests 'xt';
 
 build_requires 'Test::More';
