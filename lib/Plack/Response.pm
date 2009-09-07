@@ -27,12 +27,12 @@ sub finalize {
 
     return [
         $self->status,
-        +{
+        +[
             map {
-                my @h = $self->headers->header($_);
-                $_ => (@h==1 ? $h[0] : \@h)
+                my $k = $_;
+                map { ( $k => $_ ) } $self->headers->header($_);
             } $self->headers->header_field_names
-        },
+        ],
         $self->body,
     ];
 }
