@@ -22,7 +22,6 @@ sub new {
 sub run {
     my $self = shift;
 
-    local $SIG{PIPE} = 'IGNORE';
     my $guard = tcp_server $self->{host}, $self->{port}, sub {
 
         my ( $sock, $peer_host, $peer_port ) = @_;
