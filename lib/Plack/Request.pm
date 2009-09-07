@@ -20,7 +20,7 @@ sub new {
 
     my $self = bless {
         env => $env,
-        %args, # FIXME delete
+#       %args, # FIXME delete
     }, $class;
 
     # set to URI::WithBase
@@ -414,11 +414,6 @@ sub as_http_request {
     my $self = shift;
     require 'HTTP/Request.pm'; ## no critic
     HTTP::Request->new( $self->method, $self->uri, $self->headers, $self->raw_body );
-}
-
-sub as_string {
-    my $self = shift;
-    $self->as_http_request->as_string; # FIXME not efficient
 }
 
 sub content {
