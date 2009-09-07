@@ -1,8 +1,9 @@
 use strict;
 use warnings;
+use Test::More;
+use Test::Requires qw( CGI::ExceptionManager );
 use Plack::Impl::CGI;
 use Plack::Middleware::DebugScreen;
-use Test::More;
 
 my $handler = Plack::Middleware::DebugScreen->new(
     code => sub {

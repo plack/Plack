@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Requires qw(AnyEvent);
+
 use Plack;
 use Plack::Impl::AnyEvent;
 use Test::TCP;

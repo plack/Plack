@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Requires qw(HTTP::Server::Simple);
+
 use Plack;
 use Plack::Impl::ServerSimple;
 use Test::TCP;
