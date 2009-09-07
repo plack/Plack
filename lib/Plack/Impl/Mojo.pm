@@ -77,7 +77,7 @@ Plack::Impl::Mojo - Mojo daemon based PSGI handler
       my $env = shift;
       return [
           200,
-          { 'Content-Type' => 'text/html' },
+          [ 'Content-Type' => 'text/html' ],
           [ 'Hello World' ],
       ];
   });
