@@ -5,6 +5,7 @@ use HTTP::Request;
 use HTTP::Request::Common;
 use HTTP::Headers::Fast;
 use Test::More;
+use Plack::Lint;
 
 # 0: test name
 # 1: request generator coderef.
@@ -283,6 +284,22 @@ my @TEST = (
         sub { }
     ],
 );
+for my $test (@TEST) {
+    my $orig = $test->[2];
+    $test->[2] = sub {
+        {
+            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+            Plack::Lint->validate_env( $_[0] );
+        }
+        my $res = $orig->(@_);
+        {
+            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+            Plack::Lint->validate_res($res);
+        }
+        return $res;
+    };
+}
+
 
 sub runtests {
     my($class, $runner) = @_;
