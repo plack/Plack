@@ -13,24 +13,13 @@ use URI::WithBase;
 our $VERSION = '0.01';
 
 sub new {
-    my($class, $env, %args) = @_;
-
-    Carp::confess q{Attribute (env) is required}
+    my($class, $env) = @_;
+    Carp::confess(q{$env is required})
         unless defined $env && ref($env) eq 'HASH';
 
-    my $self = bless {
+    bless {
         env => $env,
-#       %args, # FIXME delete
     }, $class;
-
-    # set to URI::WithBase
-    foreach my $field qw(base path) {
-        if ( my $val = $args{$field} ) {
-            $self->$field($val);
-        }
-    }
-
-    $self;
 }
 
 sub env { $_[0]->{env} }
