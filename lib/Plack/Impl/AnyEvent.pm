@@ -40,6 +40,7 @@ sub run {
             REMOTE_ADDR       => $peer_host,
         };
 
+        # Note: broken pipe in test is maked by Test::TCP.
         my $handle;
         $handle = AnyEvent::Handle->new(
             fh       => $sock,
