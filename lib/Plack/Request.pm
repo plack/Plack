@@ -191,6 +191,7 @@ BEGIN {
     }
 }
 
+# TODO: This attribute should be private. I will remove deps for HTTP::Body
 sub http_body {
     my $self = shift;
     if (defined $_[0]) {
