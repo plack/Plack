@@ -17,14 +17,16 @@ Plack -
 
 =head1 DESCRIPTION
 
-Plack is
+Plack is a set of PSGI reference server implementations and helper
+utilities for Web application frameworks, exactly like Ruby's Rack.
 
 =head1 AUTHOR
 
-Plack authors.
+See C<AUTHORS> file.
 
 =head1 SEE ALSO
 
+L<PSGI>
 
 =head1 LICENSE
 
