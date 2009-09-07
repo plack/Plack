@@ -6,6 +6,7 @@ requires 'Class::Accessor::Fast';
 requires 'LWP'; # HTTP::Status, HTTP::Headers and HTTP::Request
 requires 'HTTP::Body';
 requires 'URI';
+requires 'HTTP::Request::AsCGI';
 
 build_requires 'Test::More';
 build_requires 'Test::TCP';
