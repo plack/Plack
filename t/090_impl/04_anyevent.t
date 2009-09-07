@@ -25,8 +25,11 @@ sub run_one {
         server => sub {
             my $port = shift;
 
-            my $server = Plack::Impl::AnyEvent->new(port => $port);
-            $server->psgi_app($handler);
+            my $server = Plack::Impl::AnyEvent->new(
+                port => $port,
+                host => '127.0.0.1',
+                app  => $handler,
+            );
             $server->run;
             AnyEvent->condvar->recv;
         },

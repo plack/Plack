@@ -1,48 +1,28 @@
 package Plack::Impl::AnyEvent;
 use strict;
 use warnings;
-use Any::Moose;
 use AnyEvent;
 use AnyEvent::Handle;
 use AnyEvent::Socket;
 use Plack::Util;
 use HTTP::Status;
 
-has host => (
-    is      => 'ro',
-    isa     => 'Str',
-    default => '127.0.0.1',
-    trigger => sub {
-        my $self = shift;
-        utf8::downgrade( $self->{host} );
-    },
-);
+sub new {
+    my($class, %args) = @_;
 
-has port => (
-    is      => 'ro',
-    isa     => 'Int',
-    default => 1978,
-    trigger => sub {
-        my $self = shift;
-        utf8::downgrade( $self->{port} );
-    },
-);
+    my $self = bless {}, $class;
+    $self->{app}  = delete $args{app};
+    $self->{host} = delete $args{host} || undef;
+    $self->{port} = delete $args{port} || undef;
 
-has psgi_app => (
-    is => 'rw',
-    isa => 'CodeRef',
-);
-
-has listen_guard => (
-    is  => 'rw',
-    isa => 'Guard',
-);
+    $self;
+}
 
 sub run {
     my $self = shift;
 
     local $SIG{PIPE} = 'IGNORE';
-    my $guard = tcp_server $self->host, $self->port, sub {
+    my $guard = tcp_server $self->{host}, $self->{port}, sub {
 
         my ( $sock, $peer_host, $peer_port ) = @_;
 
@@ -51,8 +31,8 @@ sub run {
         }
 
         my $env = {
-            SERVER_PORT       => $self->port,
-            SERVER_NAME       => $self->host,
+            SERVER_PORT       => $self->{prepared_port},
+            SERVER_NAME       => $self->{prepared_host},
             SCRIPT_NAME       => '',
             'psgi.version'    => [ 1, 0 ],
             'psgi.errors'     => *STDERR,
@@ -96,7 +76,7 @@ sub run {
                     );
                 };
                 my $do_it = sub {
-                    my $res = $self->psgi_app->($env, $start_response);
+                    my $res = $self->{app}->($env, $start_response);
                     return if scalar(@$res) == 0;
 
                     $start_response->($res->[0], $res->[1]);
@@ -175,12 +155,26 @@ sub run {
         return;
       }, sub {
         my ( $fh, $host, $port ) = @_;
+        $self->{prepared_host} = $host;
+        $self->{prepared_port} = $port;
         return 0;
       };
-    $self->listen_guard($guard);
+    $self->{listen_guard} = $guard;
 }
 
 1;
 __END__
 
 # note: regexps taken from HSS
+
+=head1 NAME
+
+Plack::Impl::AnyEvent - AnyEvent based HTTP server
+
+=head1 SYNOPSIS
+
+  my $server = Plack::Impl::AnyEvent->new(
+      app  => $app,
+      port => $port,
+  );
+  $server->run;
