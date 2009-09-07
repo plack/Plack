@@ -287,11 +287,11 @@ sub _build_uploads {
 }
 
 # aliases
-*body_params  = \&body_parameters;
-*input        = \&body;
-*params       = \&parameters;
-*query_params = \&query_parameters;
-*path_info    = \&path;
+sub body_params  { shift->body_parameters(@_) }
+sub input        { shift->body(@_) }
+sub params       { shift->parameters(@_) }
+sub query_params { shift->query_parameters(@_) }
+sub path_info    { shift->path(@_) }
 
 sub cookie {
     my $self = shift;
