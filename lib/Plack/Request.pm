@@ -98,12 +98,7 @@ sub raw_body {
 
 sub headers {
     my $self = shift;
-    if (defined $_[0]) {
-        unless (eval { $_[0]->isa('HTTP::Headers') }) {
-            Carp::confess "Attribute (headers) does not pass the type constraint because: Validation failed for 'HTTP::Headers' failed with value $_[0]";
-        }
-        $self->{headers} = $_[0];
-    } elsif (!defined $self->{headers}) {
+    if (!defined $self->{headers}) {
         my $env = $self->env;
         $self->{headers} = HTTP::Headers->new(
             map {
