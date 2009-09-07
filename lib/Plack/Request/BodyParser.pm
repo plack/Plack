@@ -4,6 +4,8 @@ use warnings;
 BEGIN { require Carp }; # do not call Carp->import for performance
 use HTTP::Body;
 
+# ABOUT: This is internal class. Do not call directly.
+
 sub new {
     my($class, $env) = @_;
 
@@ -106,4 +108,3 @@ sub _read {
 }
 
 1;
-
