@@ -4,7 +4,6 @@ use warnings;
 use base qw/HTTP::Server::Simple::CGI/;
 use IO::Handle;
 use HTTP::Server::Simple;
-use Plack::Impl::CGI;
 use Plack::Util;
 use HTTP::Status;
 
