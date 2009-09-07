@@ -18,32 +18,60 @@ sub import {
 sub make_runtests {
     my $class = shift;
 
-    Class::MOP::load_class($class);
     return sub {
         my @tests = @_;
 
-        my $app = sub { $class->run(@_) };
-        test_tcp(
-            client => sub {
-                my $port = shift;
-                $ENV{CATALYST_SERVER} = "http://127.0.0.1:$port/";
+        my %apps2tests = analyze_tests($class, @tests);
+        while (my($app_class, $tests) = each %apps2tests) {
+            warn "Testing $app_class\n";
+            Class::MOP::load_class($app_class);
+            my $app = sub { $app_class->run(@_) };
+            test_tcp(
+                client => sub {
+                    my $port = shift;
+                    $ENV{CATALYST_SERVER} = "http://127.0.0.1:$port/";
 
-                my $prove = App::Prove->new;
-                $prove->process_args(@tests);
-                $prove->run;
-            },
-            server => sub {
-                my $port = shift;
+                    my $p = App::Prove->new;
+                    $p->process_args(@$tests);
+                    $p->run;
+                },
+                server => sub {
+                    my $port = shift;
 
-                # TODO: We need auto-selector
-                use Plack::Impl::ServerSimple;
-                my $server = Plack::Impl::ServerSimple->new($port);
-                $server->host("127.0.0.1");
-                $server->psgi_app($app);
-                $server->run;
-            },
-        );
+                    # TODO: We need auto-selector
+                    use Plack::Impl::ServerSimple;
+                    my $server = Plack::Impl::ServerSimple->new($port);
+                    $server->host("127.0.0.1");
+                    $server->psgi_app($app);
+                    $server->run;
+                },
+            );
+        }
     };
+}
+
+sub analyze_tests {
+    my($class, @tests) = @_;
+
+    my %map;
+    for my $test (@tests) {
+        my $cat_app_class = test_app_for($test) || $class;
+        push @{$map{$cat_app_class}}, $test;
+    }
+
+    return %map;
+}
+
+sub test_app_for {
+    my $test = shift;
+
+    open my $fh, "<", $test or return;
+    while (<$fh>) {
+        m@^\s*use Catalyst::Test (?:q[qw]?)?[/'"\(]?\s*([a-zA-Z0-9:]+)@
+            and return $1;
+    }
+
+    return;
 }
 
 1;
