@@ -283,6 +283,29 @@ my @TEST = (
         },
         sub { }
     ],
+    [
+        'status line',
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
+            );
+        },
+        sub {
+            my $env = shift;
+            my $err = $env->{'psgi.errors'};
+            ok $err;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', ],
+                [1]
+            ];
+        },
+        sub {
+            my $res = shift;
+            is($res->status_line, '200 OK');
+        }
+    ],
 );
 for my $test (@TEST) {
     my $orig = $test->[2];

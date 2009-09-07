@@ -6,6 +6,7 @@ use IO::Handle;
 use HTTP::Server::Simple;
 use Plack::Impl::CGI;
 use Plack::Util;
+use HTTP::Status;
 
 sub print_banner { }
 
@@ -25,7 +26,7 @@ sub handler {
     $env{'psgi.input'}  = $self->stdin_handle;
     $env{'psgi.errors'} = *STDERR;
     my $res = $self->{__psgi_app}->(\%env);
-    print "HTTP/1.0 $res->[0]\r\n";
+    print "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\r\n";
     my $headers = $res->[1];
     while (my ($k, $v) = splice(@$headers, 0, 2)) {
         print "$k: $v\r\n";

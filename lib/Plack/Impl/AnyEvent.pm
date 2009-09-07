@@ -6,6 +6,7 @@ use AnyEvent;
 use AnyEvent::Handle;
 use AnyEvent::Socket;
 use Plack::Util;
+use HTTP::Status;
 
 has host => (
     is      => 'ro',
@@ -84,7 +85,7 @@ sub run {
             if ( $chunk =~ /^$/ ) {
                 my $start_response = sub {
                     my ($status, $headers) = @_;
-                    $handle->push_write("HTTP/1.0 $status\r\n");
+                    $handle->push_write("HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\r\n");
                     while (my ($k, $v) = splice(@$headers, 0, 2)) {
                         $handle->push_write("$k: $v\r\n");
                     }
