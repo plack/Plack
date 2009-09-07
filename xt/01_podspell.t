@@ -32,3 +32,4 @@ PSGI
 ServerSimple
 app
 Mojo
+AnyEvent
