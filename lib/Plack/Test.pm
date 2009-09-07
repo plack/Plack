@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use HTTP::Request;
 use HTTP::Request::Common;
-use HTTP::Headers::Fast;
 use Test::More;
 use Plack::Lint;
 
