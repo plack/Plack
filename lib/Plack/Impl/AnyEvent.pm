@@ -6,6 +6,7 @@ use AnyEvent::Handle;
 use AnyEvent::Socket;
 use Plack::Util;
 use HTTP::Status;
+use IO::Handle;
 
 sub new {
     my($class, %args) = @_;
@@ -88,11 +89,11 @@ sub run {
                                 fh => $body,
                                 poll => 'r',
                                 cb => sub {
-                                    read($body, my $buf, 4096);
+                                    $body->read(my $buf, 4096);
                                     $handle->push_write($buf);
-                                    if (eof($body)) {
+                                    if ($body->eof) {
                                         undef $w;
-                                        $body->close if $body->can('close');
+                                        $body->close;
                                         $handle->push_shutdown;
                                     } else {
                                         $read->();
