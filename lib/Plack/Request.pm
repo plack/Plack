@@ -178,12 +178,7 @@ BEGIN {
 # TODO: This attribute should be private. I will remove deps for HTTP::Body
 sub http_body {
     my $self = shift;
-    if (defined $_[0]) {
-        unless (eval { $_[0]->isa('HTTP::Body') }) {
-            Carp::confess "Attribute (http_body) does not pass the type constraint because: Validation failed for 'HTTP::Body' failed with value $_[0]";
-        }
-        $self->{http_body} = $_[0];
-    } elsif (!defined $self->{http_body}) {
+    if (!defined $self->{http_body}) {
         $self->{http_body} = $self->_body_parser->http_body();
     }
     $self->{http_body};
