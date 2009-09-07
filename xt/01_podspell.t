@@ -8,3 +8,10 @@ __DATA__
 Kazuhiro Osawa
 yappo <at> shibuya <döt> pl
 Plack
+Matsuno
+Tokuhiro
+slkjfd
+Tatsuhiko
+Miyagawa
+dankogai
+kogaidan
