@@ -28,3 +28,7 @@ uri
 HTTP
 hostname
 IP
+PSGI
+ServerSimple
+app
+Mojo
