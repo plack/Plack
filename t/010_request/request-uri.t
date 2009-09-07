@@ -21,23 +21,24 @@ run {
             $env->{$key} = $val;
         }
     }
-    my %args = (env => $env);
-    if (defined $block->base) {
-        $args{uri} = do {
-            local $_ = $block->base;
-            my $uri  = URI->new($_);
-            my $base = $uri->path;
-            $base =~ s{^/+}{};
-            $uri->path($base);
-            $base .= '/' unless $base =~ /\/$/;
-            $uri->query(undef);
-            $uri->path($base);
-            URI::WithBase->new( $_, $uri );
-        };
-    }
     my $req = req(
-        %args
+        env => $env
     );
+    if (defined $block->base) {
+        $req->uri(
+            do {
+                local $_ = $block->base;
+                my $uri  = URI->new($_);
+                my $base = $uri->path;
+                $base =~ s{^/+}{};
+                $uri->path($base);
+                $base .= '/' unless $base =~ /\/$/;
+                $uri->query(undef);
+                $uri->path($base);
+                URI::WithBase->new( $_, $uri );
+            }
+        );
+    }
 
     if ($block->nullkey) {
         $block->args->{$block->nullkey} = undef;
