@@ -21,6 +21,7 @@ sub header { shift->headers->header(@_) } # shortcut
 
 sub finalize {
     my $self = shift;
+    die "missing status" unless $self->status();
 
     $self->_finalize_cookies();
 
