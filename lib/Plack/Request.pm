@@ -176,15 +176,15 @@ BEGIN {
 }
 
 # TODO: This attribute should be private. I will remove deps for HTTP::Body
-sub http_body {
+sub _http_body {
     my $self = shift;
-    if (!defined $self->{http_body}) {
-        $self->{http_body} = $self->_body_parser->http_body();
+    if (!defined $self->{_http_body}) {
+        $self->{_http_body} = $self->_body_parser->http_body();
     }
-    $self->{http_body};
+    $self->{_http_body};
 }
-sub body_parameters { shift->http_body->param(@_) }
-sub body            { shift->http_body->body(@_) }
+sub body_parameters { shift->_http_body->param(@_) }
+sub body            { shift->_http_body->body(@_) }
 
 # contains body_params and query_params
 sub parameters {
@@ -235,7 +235,7 @@ sub uploads {
 }
 sub _build_uploads {
     my $self = shift;
-    my $uploads = $self->http_body->upload;
+    my $uploads = $self->_http_body->upload;
     my %uploads;
     for my $name (keys %{ $uploads }) {
         my $files = $uploads->{$name};
@@ -531,10 +531,6 @@ Contains the URI base. This will always have a trailing slash.
 =item hostname
 
 Returns the hostname of the client.
-
-=item http_body
-
-Returns an L<HTTP::Body> object.
 
 =item parameters
 
