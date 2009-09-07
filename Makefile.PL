@@ -13,6 +13,7 @@ build_requires 'Test::TCP';
 test_requires 'Test::Requires';
 
 author_requires 'AnyEvent';
+author_requires 'Catalyst::Runtime';
 author_requires 'Mojo';
 author_requires 'HTTP::Server::Simple';
 
