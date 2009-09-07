@@ -33,23 +33,6 @@ sub new {
     $self;
 }
 
-sub _make_handles {
-    my($attribute, @names) = @_;
-    for my $name (@names) {
-        my($to, $from) = ref($name) eq 'ARRAY' ? @{ $name } : ($name, $name);
-        my $code = qq{sub $to { 
-    my \$self = shift;
-    unless (\$self->$attribute && \$self->$attribute->can('$from')) {
-        Carp::croak 'Cannot delegate type to $from because the value of $attribute is not defined';
-    }
-    \$self->$attribute->$from(\@_);
-}
-};
-        eval $code;## no critic
-    }
-}
-
-
 sub env { $_[0]->{env} }
 
 sub address     { $_[0]->env->{REMOTE_ADDR} }
@@ -159,10 +142,13 @@ sub headers {
     }
     $self->{headers};
 }
-# make handles
-BEGIN {
-    _make_handles headers => qw/content_encoding content_length content_type header referer user_agent/;
-}
+# shortcut
+sub content_encoding { shift->headers->content_encoding(@_) }
+sub content_length   { shift->headers->content_length(@_) }
+sub content_type     { shift->headers->content_type(@_) }
+sub header           { shift->headers->header(@_) }
+sub referer          { shift->headers->referer(@_) }
+sub user_agent       { shift->headers->user_agent(@_) }
 
 sub hostname {
     my $self = shift;
@@ -204,10 +190,8 @@ sub http_body {
     }
     $self->{http_body};
 }
-# make handles
-BEGIN {
-    _make_handles http_body => [ body_parameters => 'param' ], 'body';
-}
+sub body_parameters { shift->http_body->param(@_) }
+sub body            { shift->http_body->body(@_) }
 
 # contains body_params and query_params
 sub parameters {
@@ -412,10 +396,8 @@ sub _build_uri  {
 
     return URI::WithBase->new($uri, $base);
 }
-# make handles
-BEGIN {
-    _make_handles uri => qw(base path);
-}
+sub base { shift->uri->base(@_) }
+sub path { shift->uri->path(@_) }
 
 sub uri_with {
     my($self, $args) = @_;
