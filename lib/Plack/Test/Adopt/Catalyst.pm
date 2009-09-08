@@ -6,7 +6,7 @@ BEGIN { $ENV{CATALYST_ENGINE} = 'PSGI' };
 use Class::MOP;
 use Test::TCP;
 use App::Prove;
-use Plack::Impl;
+use Plack::Loader;
 
 sub import {
     my($self, $class) = @_;
@@ -38,7 +38,7 @@ sub make_runtests {
                 },
                 server => sub {
                     my $port = shift;
-                    Plack::Impl->auto(port => $port, host => "127.0.0.1")->run($app);
+                    Plack::Loader->auto(port => $port, host => "127.0.0.1")->run($app);
                 },
             );
         }

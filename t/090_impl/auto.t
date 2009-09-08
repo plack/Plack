@@ -1,6 +1,6 @@
 use strict;
 use Test::More;
-use Plack::Impl;
+use Plack::Loader;
 
 $ENV{PSGI_PLACK_IMPL} = "CGI";
 
@@ -14,7 +14,7 @@ my $app = sub {
 
 {
     my $c = HTTP::Request::AsCGI->new(GET "http://localhost/")->setup;
-    Plack::Impl->auto->run($app);
+    Plack::Loader->auto->run($app);
     like $c->response->content, qr/Hello/;
 }
 

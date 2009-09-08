@@ -1,45 +1,5 @@
 package Plack::Impl;
 use strict;
-use Carp ();
-
-sub auto {
-    my($class, %args) = @_;
-
-    my $impl = $class->guess
-        or Carp::croak("Couldn't auto-guess implementation. Set it with PSGI_PLACK_IMPL");
-    $class->create($impl, %args);
-}
-
-sub create {
-    my($class, $impl, @args) = @_;
-    $impl = "Plack::Impl::$impl";
-
-    my $file = $impl;
-    $file =~ s!::!/!g;
-    require "$file.pm";
-
-    return $impl->new(@args);
-}
-
-sub guess {
-    my $class = shift;
-
-    return $ENV{PSGI_PLACK_IMPL} if $ENV{PSGI_PLACK_IMPL};
-
-    if ($ENV{PHP_FCGI_CHILDREN}) {
-        return "FCGI";
-    } elsif ($ENV{MOD_PERL}) {
-        return "ModPerl";
-    } elsif ($ENV{GATEWAY_INTERFACE}) {
-        return "CGI";
-    } elsif (exists $INC{"Mojo.pm"}) {
-        return "Mojo";
-    } elsif (exists $INC{"AnyEvent.pm"}) {
-        return "AnyEvent";
-    } else {
-        return;
-    }
-}
 
 1;
 
@@ -54,13 +14,12 @@ Plack::Impl - Standard interface for Plack implementations
   my $impl = Plack::Impl::XXX->new(%args);
   $impl->run($app);
 
-  # auto-select implementations based on env vars
-  use Plack::Impl;
-  Plack::Impl->auto(%args)->run;
-
 =head1 DESCRIPTION
 
-Plack::Impl subclasses are supposed to implement a pretty simple unified interface to run the PSGI application.
+Plack::Impl is a base class of Plack PSGI implementations. Plack::Impl
+may inherit from this class, but as long as they implement the methods
+defined as an Impl unified interface, they do not need to inherit
+Plack::Impl.
 
 =head1 METHODS
 

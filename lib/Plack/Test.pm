@@ -6,7 +6,7 @@ use HTTP::Request::Common;
 use LWP::UserAgent;
 use Test::More;
 use Test::TCP;
-use Plack::Impl;
+use Plack::Loader;
 use Plack::Lint;
 
 # 0: test name
@@ -347,7 +347,7 @@ sub run_server_tests {
             },
             server => sub {
                 my $port = shift;
-                Plack::Impl->create($impl, port => $port, host => "127.0.0.1")->run($test->[2]);
+                Plack::Loader->load($impl, port => $port, host => "127.0.0.1")->run($test->[2]);
             },
         );
     }
