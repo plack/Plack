@@ -109,22 +109,8 @@ sub run {
                         $handle->push_shutdown();
                     }
                 };
-                if ($env->{CONTENT_LENGTH} && $env->{REQUEST_METHOD} =~ /^(?:POST|PUT)$/) {
-                    # XXX Oops
-                    $handle->push_read(
-                        chunk => $env->{CONTENT_LENGTH}, sub {
-                            my ($handle, $data) = @_;
-                            open my $input, "<", \$data;
-                            $env->{'psgi.input'}      = $input;
-                            $do_it->();
-                        }
-                    );
-                } else {
-                    my $data = '';
-                    open my $input, "<", \$data;
-                    $env->{'psgi.input'}      = $input;
-                    $do_it->();
-                }
+                $env->{'psgi.input'}      = $input;
+                $do_it->();
             }
             else {
                 $handle->push_read( line => $parse_header );
