@@ -1,47 +1,28 @@
 package Plack::Impl::AnyEvent;
 use strict;
 use warnings;
-use Any::Moose;
+
 use AnyEvent;
 use AnyEvent::Handle;
 use AnyEvent::Socket;
 use Plack::Util;
+use HTTP::Status;
+use IO::Handle;
 
-has host => (
-    is      => 'ro',
-    isa     => 'Str',
-    default => '127.0.0.1',
-    trigger => sub {
-        my $self = shift;
-        utf8::downgrade( $self->{host} );
-    },
-);
+sub new {
+    my($class, %args) = @_;
 
-has port => (
-    is      => 'ro',
-    isa     => 'Int',
-    default => 1978,
-    trigger => sub {
-        my $self = shift;
-        utf8::downgrade( $self->{port} );
-    },
-);
+    my $self = bless {}, $class;
+    $self->{host} = delete $args{host} || undef;
+    $self->{port} = delete $args{port} || undef;
 
-has psgi_app => (
-    is => 'rw',
-    isa => 'CodeRef',
-);
-
-has listen_guard => (
-    is  => 'rw',
-    isa => 'Guard',
-);
+    $self;
+}
 
 sub run {
-    my $self = shift;
+    my($self, $app) = @_;
 
-    local $SIG{PIPE} = 'IGNORE';
-    my $guard = tcp_server $self->host, $self->port, sub {
+    my $guard = tcp_server $self->{host}, $self->{port}, sub {
 
         my ( $sock, $peer_host, $peer_port ) = @_;
 
@@ -50,8 +31,8 @@ sub run {
         }
 
         my $env = {
-            SERVER_PORT       => $self->port,
-            SERVER_NAME       => $self->host,
+            SERVER_PORT       => $self->{prepared_port},
+            SERVER_NAME       => $self->{prepared_host},
             SCRIPT_NAME       => '',
             'psgi.version'    => [ 1, 0 ],
             'psgi.errors'     => *STDERR,
@@ -59,6 +40,7 @@ sub run {
             REMOTE_ADDR       => $peer_host,
         };
 
+        # Note: broken pipe in test is maked by Test::TCP.
         my $handle;
         $handle = AnyEvent::Handle->new(
             fh       => $sock,
@@ -84,7 +66,7 @@ sub run {
             if ( $chunk =~ /^$/ ) {
                 my $start_response = sub {
                     my ($status, $headers) = @_;
-                    $handle->push_write("HTTP/1.0 $status\r\n");
+                    $handle->push_write("HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\r\n");
                     while (my ($k, $v) = splice(@$headers, 0, 2)) {
                         $handle->push_write("$k: $v\r\n");
                     }
@@ -95,7 +77,7 @@ sub run {
                     );
                 };
                 my $do_it = sub {
-                    my $res = $self->psgi_app->($env, $start_response);
+                    my $res = $app->($env, $start_response);
                     return if scalar(@$res) == 0;
 
                     $start_response->($res->[0], $res->[1]);
@@ -107,11 +89,11 @@ sub run {
                                 fh => $body,
                                 poll => 'r',
                                 cb => sub {
-                                    read($body, my $buf, 4096);
+                                    $body->read(my $buf, 4096);
                                     $handle->push_write($buf);
-                                    if (eof($body)) {
+                                    if ($body->eof) {
                                         undef $w;
-                                        $body->close if $body->can('close');
+                                        $body->close;
                                         $handle->push_shutdown;
                                     } else {
                                         $read->();
@@ -174,12 +156,32 @@ sub run {
         return;
       }, sub {
         my ( $fh, $host, $port ) = @_;
+        $self->{prepared_host} = $host;
+        $self->{prepared_port} = $port;
         return 0;
       };
-    $self->listen_guard($guard);
+    $self->{listen_guard} = $guard;
+}
+
+sub run_loop {
+    AnyEvent->condvar->recv;
 }
 
 1;
 __END__
 
 # note: regexps taken from HSS
+
+=head1 NAME
+
+Plack::Impl::AnyEvent - AnyEvent based HTTP server
+
+=head1 SYNOPSIS
+
+  my $server = Plack::Impl::AnyEvent->new(
+      host => $host,
+      port => $port,
+  );
+  $server->run($app);
+
+=cut

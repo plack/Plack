@@ -4,13 +4,33 @@ use warnings;
 use base qw/HTTP::Server::Simple::CGI/;
 use IO::Handle;
 use HTTP::Server::Simple;
-use Plack::Impl::CGI;
 use Plack::Util;
+use HTTP::Status;
 
-sub print_banner { }
+sub new {
+    my($class, %args) = @_;
+
+    my $port = delete $args{port};
+    my $host = delete $args{host};
+
+    my $self = $class->SUPER::new($port);
+    $self->host($host) if defined $host;
+
+    $self;
+}
+
+#sub print_banner { }
+
+sub run {
+    my($self, $app) = @_;
+
+    $self->{psgi_app} = $app;
+    $self->SUPER::run();
+}
 
 sub handler {
-    my ($self) = @_;
+    my $self = shift;
+
     my %env;
     while (my ($k, $v) = each %ENV) {
         next unless $k =~ qr/^(?:REQUEST_METHOD|PATH_INFO|QUERY_STRING|SERVER_NAME|SERVER_PORT|SERVER_PROTOCOL|CONTENT_LENGTH|CONTENT_TYPE|REMOTE_ADDR)$|^HTTP_/;
@@ -24,8 +44,8 @@ sub handler {
     $env{'psgi.url_scheme'} = 'http';
     $env{'psgi.input'}  = $self->stdin_handle;
     $env{'psgi.errors'} = *STDERR;
-    my $res = $self->{__psgi_app}->(\%env);
-    print "HTTP/1.0 $res->[0]\r\n";
+    my $res = $self->{psgi_app}->(\%env);
+    print "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\r\n";
     my $headers = $res->[1];
     while (my ($k, $v) = splice(@$headers, 0, 2)) {
         print "$k: $v\r\n";
@@ -50,17 +70,10 @@ __END__
 
     use Plack::Impl::ServerSimple;
 
-    my $server = Plack::Impl::ServerSimple->new($port);
-    $server->host("127.0.0.1");
-    $server->psgi_app($handler);
-    $server->run;
+    my $server = Plack::Impl::ServerSimple->new(
+        host => $host,
+        port => $port,
+    );
+    $server->run($app);
 
-=head1 METHODS
-
-=over 4
-
-=item Plack::Impl::ServerSimple->run($code)
-
-Run the app on ServerSimple with PSGI spec.
-
-=back
+=cut

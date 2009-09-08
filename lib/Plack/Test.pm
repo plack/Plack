@@ -3,8 +3,11 @@ use strict;
 use warnings;
 use HTTP::Request;
 use HTTP::Request::Common;
-use HTTP::Headers::Fast;
+use LWP::UserAgent;
 use Test::More;
+use Test::TCP;
+use Plack::Loader;
+use Plack::Lint;
 
 # 0: test name
 # 1: request generator coderef.
@@ -282,12 +285,71 @@ my @TEST = (
         },
         sub { }
     ],
+    [
+        'status line',
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
+            );
+        },
+        sub {
+            my $env = shift;
+            my $err = $env->{'psgi.errors'};
+            ok $err;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', ],
+                [1]
+            ];
+        },
+        sub {
+            my $res = shift;
+            is($res->status_line, '200 OK');
+        }
+    ],
 );
+for my $test (@TEST) {
+    my $orig = $test->[2];
+    $test->[2] = sub {
+        {
+            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+            Plack::Lint->validate_env( $_[0] );
+        }
+        my $res = $orig->(@_);
+        {
+            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+            Plack::Lint->validate_res($res);
+        }
+        return $res;
+    };
+}
+
 
 sub runtests {
     my($class, $runner) = @_;
     for my $test (@TEST) {
         $runner->(@$test);
+    }
+}
+
+sub run_server_tests {
+    my($class, $impl) = @_;
+
+    for my $test (@TEST) {
+        test_tcp(
+            client => sub {
+                my $port = shift;
+                note $test->[0];
+                my $ua  = LWP::UserAgent->new;
+                my $res = $ua->request($test->[1]->($port));
+                $test->[3]->($res, $port);
+            },
+            server => sub {
+                my $port = shift;
+                Plack::Loader->load($impl, port => $port, host => "127.0.0.1")->run($test->[2]);
+            },
+        );
     }
 }
 

@@ -13,42 +13,14 @@ use URI::WithBase;
 our $VERSION = '0.01';
 
 sub new {
-    my($class, $env, %args) = @_;
-
-    Carp::confess q{Attribute (env) is required}
+    my($class, $env) = @_;
+    Carp::confess(q{$env is required})
         unless defined $env && ref($env) eq 'HASH';
 
-    my $self = bless {
+    bless {
         env => $env,
-        %args, # FIXME delete
     }, $class;
-
-    # set to URI::WithBase
-    foreach my $field qw(base path) {
-        if ( my $val = $args{$field} ) {
-            $self->$field($val);
-        }
-    }
-
-    $self;
 }
-
-sub _make_handles {
-    my($attribute, @names) = @_;
-    for my $name (@names) {
-        my($to, $from) = ref($name) eq 'ARRAY' ? @{ $name } : ($name, $name);
-        my $code = qq{sub $to { 
-    my \$self = shift;
-    unless (\$self->$attribute && \$self->$attribute->can('$from')) {
-        Carp::croak 'Cannot delegate type to $from because the value of $attribute is not defined';
-    }
-    \$self->$attribute->$from(\@_);
-}
-};
-        eval $code;## no critic
-    }
-}
-
 
 sub env { $_[0]->{env} }
 
@@ -58,7 +30,10 @@ sub method      { $_[0]->env->{REQUEST_METHOD} }
 sub port        { $_[0]->env->{SERVER_PORT} }
 sub user        { $_[0]->env->{REMOTE_USER} }
 sub request_uri { $_[0]->env->{REQUEST_URI} }
+sub url_scheme  { $_[0]->env->{'psgi.url_scheme'} }
 
+# we need better cookie lib?
+# http://mark.stosberg.com/blog/2008/12/cookie-handling-in-titanium-catalyst-and-mojo.html
 sub cookies {
     my $self = shift;
     if (defined $_[0]) {
@@ -90,21 +65,6 @@ sub query_parameters {
     $self->{query_parameters};
 }
 
-# https or not?
-sub secure {
-    my $self = shift;
-    if (defined $_[0]) {
-        $self->{secure} = !!$_[0];
-    } elsif (!defined $self->{secure}) {
-        if ( $self->env->{'psgi.url_scheme'} eq 'https' || $self->port == 443) {
-            $self->{secure} = 1;
-        } else {
-            $self->{secure} = 0;
-        }
-    }
-    $self->{secure};
-}
-
 # proxy request?
 sub proxy_request {
     my $self = shift;
@@ -131,10 +91,8 @@ sub _body_parser {
 
 sub raw_body {
     my $self = shift;
-    if (defined $_[0]) {
-        $self->{raw_body} = $_[0];
-    } elsif (!defined $self->{raw_body}) {
-        $self->{raw_body} = $self->_body_parser->raw_body($self);
+    if (!defined($self->{raw_body})) {
+        $self->{raw_body} ||= $self->_body_parser->raw_body($self);
     }
     $self->{raw_body};
 }
@@ -142,12 +100,7 @@ sub raw_body {
 
 sub headers {
     my $self = shift;
-    if (defined $_[0]) {
-        unless (eval { $_[0]->isa('HTTP::Headers') }) {
-            Carp::confess "Attribute (headers) does not pass the type constraint because: Validation failed for 'HTTP::Headers' failed with value $_[0]";
-        }
-        $self->{headers} = $_[0];
-    } elsif (!defined $self->{headers}) {
+    if (!defined $self->{headers}) {
         my $env = $self->env;
         $self->{headers} = HTTP::Headers->new(
             map {
@@ -159,10 +112,13 @@ sub headers {
     }
     $self->{headers};
 }
-# make handles
-BEGIN {
-    _make_handles headers => qw/content_encoding content_length content_type header referer user_agent/;
-}
+# shortcut
+sub content_encoding { shift->headers->content_encoding(@_) }
+sub content_length   { shift->headers->content_length(@_) }
+sub content_type     { shift->headers->content_type(@_) }
+sub header           { shift->headers->header(@_) }
+sub referer          { shift->headers->referer(@_) }
+sub user_agent       { shift->headers->user_agent(@_) }
 
 sub hostname {
     my $self = shift;
@@ -192,22 +148,15 @@ BEGIN {
 }
 
 # TODO: This attribute should be private. I will remove deps for HTTP::Body
-sub http_body {
+sub _http_body {
     my $self = shift;
-    if (defined $_[0]) {
-        unless (eval { $_[0]->isa('HTTP::Body') }) {
-            Carp::confess "Attribute (http_body) does not pass the type constraint because: Validation failed for 'HTTP::Body' failed with value $_[0]";
-        }
-        $self->{http_body} = $_[0];
-    } elsif (!defined $self->{http_body}) {
-        $self->{http_body} = $self->_body_parser->http_body();
+    if (!defined $self->{_http_body}) {
+        $self->{_http_body} = $self->_body_parser->http_body();
     }
-    $self->{http_body};
+    $self->{_http_body};
 }
-# make handles
-BEGIN {
-    _make_handles http_body => [ body_parameters => 'param' ], 'body';
-}
+sub body_parameters { shift->_http_body->param(@_) }
+sub body            { shift->_http_body->body(@_) }
 
 # contains body_params and query_params
 sub parameters {
@@ -258,7 +207,7 @@ sub uploads {
 }
 sub _build_uploads {
     my $self = shift;
-    my $uploads = $self->http_body->upload;
+    my $uploads = $self->_http_body->upload;
     my %uploads;
     for my $name (keys %{ $uploads }) {
         my $files = $uploads->{$name};
@@ -287,11 +236,11 @@ sub _build_uploads {
 }
 
 # aliases
-*body_params  = \&body_parameters;
-*input        = \&body;
-*params       = \&parameters;
-*query_params = \&query_parameters;
-*path_info    = \&path;
+sub body_params  { shift->body_parameters(@_) }
+sub input        { shift->body(@_) }
+sub params       { shift->parameters(@_) }
+sub query_params { shift->query_parameters(@_) }
+sub path_info    { shift->path(@_) }
 
 sub cookie {
     my $self = shift;
@@ -412,10 +361,8 @@ sub _build_uri  {
 
     return URI::WithBase->new($uri, $base);
 }
-# make handles
-BEGIN {
-    _make_handles uri => qw(base path);
-}
+sub base { shift->uri->base(@_) }
+sub path { shift->uri->path(@_) }
 
 sub uri_with {
     my($self, $args) = @_;
@@ -453,11 +400,6 @@ sub as_http_request {
     my $self = shift;
     require 'HTTP/Request.pm'; ## no critic
     HTTP::Request->new( $self->method, $self->uri, $self->headers, $self->raw_body );
-}
-
-sub as_string {
-    my $self = shift;
-    $self->as_http_request->as_string; # FIXME not efficient
 }
 
 sub content {
@@ -556,10 +498,6 @@ Contains the URI base. This will always have a trailing slash.
 =item hostname
 
 Returns the hostname of the client.
-
-=item http_body
-
-Returns an L<HTTP::Body> object.
 
 =item parameters
 

@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+use strict;
+use lib "lib";
+use Getopt::Std;
+use Plack::Adapter;
+use Plack::Loader;
+use Pod::Usage;
+
+getopts('a:i:', \my %opts);
+$ENV{PLACK_IMPL} ||= $opts{i};
+
+my $app = shift or pod2usage();
+my $adapter = Plack::Adapter->adapter_for($app, $opts{a});
+my $impl = Plack::Loader->auto(@ARGV);
+$impl->run($adapter->handler);
+$impl->run_loop if $impl->can('run_loop'); # run event loop
+
+__END__
+
+=head1 NAME
+
+plackup
+
+=head1 SYNOPSIS
+
+  # MyApp can be Catalyst, CGI::Application etc. We autoload adapters
+  plackup MyApp
+
+  # CGI should be passed a filename that ends with .cgi
+  plackup hello.cgi
+
+  # switch implementations
+  env PLACK_IMPL=Mojo plackup MyCatApp port 9999
+
+  # Or, -i
+  plackup -i AnyEvent CgiApp
+
+  # Specify framework adapter
+  plackup -a Catalyst MyCatApp
+
+=cut

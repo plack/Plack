@@ -17,9 +17,9 @@ sub req {
         'psgi.errors'     => *STDERR,
         'psgi.url_scheme' => 'http',
         SERVER_PORT       => 80,
-        %{ delete($args{env}) || +{} },
+        %args
     };
-    Plack::Request->new($env, %args);
+    Plack::Request->new($env);
 }
 
 1;

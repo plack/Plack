@@ -1,10 +1,23 @@
-use strict;
-
 package Plack::Util;
+use strict;
 
 # Is it safe to use Scalar::Util everywhere?
 sub _blessed {
     ref $_[0] && ref($_[0]) !~ /^(?:SCALAR|ARRAY|HASH|CODE|GLOB|Regexp)$/;
+}
+
+sub load_class {
+    my($class, $prefix) = @_;
+
+    if ($class !~ s/^\+// && $prefix) {
+        $class = "$prefix\::$class";
+    }
+
+    my $file = $class;
+    $file =~ s!::!/!g;
+    require "$file.pm";
+
+    return $class;
 }
 
 sub foreach {

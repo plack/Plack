@@ -21,17 +21,18 @@ sub header { shift->headers->header(@_) } # shortcut
 
 sub finalize {
     my $self = shift;
+    die "missing status" unless $self->status();
 
     $self->_finalize_cookies();
 
     return [
         $self->status,
-        +{
+        +[
             map {
-                my @h = $self->headers->header($_);
-                $_ => (@h==1 ? $h[0] : \@h)
+                my $k = $_;
+                map { ( $k => $_ ) } $self->headers->header($_);
             } $self->headers->header_field_names
-        },
+        ],
         $self->body,
     ];
 }
