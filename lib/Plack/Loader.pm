@@ -10,6 +10,11 @@ sub auto {
     Plack::Util::load_class("Plack::Impl::$impl")->new(%args);
 }
 
+sub load {
+    my($class, $impl, @args) = @_;
+    Plack::Util::load_class("Plack::Impl::$impl")->new(@args);
+}
+
 sub guess {
     my $class = shift;
 
