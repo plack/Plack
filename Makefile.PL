@@ -2,6 +2,17 @@ use inc::Module::Install;
 name 'Plack';
 all_from 'lib/Plack.pm';
 
+if ($Module::Install::AUTHOR) {
+    warn <<WARN;
+You need to install following modules to build this module if you're running from git:
+
+  Module::Install::AuthorRequires
+  Module::Install::AuthorTests
+  Test::Requires
+
+WARN
+}
+
 requires 'Class::Accessor::Fast';
 requires 'LWP'; # HTTP::Status, HTTP::Headers and HTTP::Request
 requires 'HTTP::Body';
