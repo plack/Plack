@@ -11,7 +11,7 @@ sub import {
     my($self, $class) = @_;
 
     my $caller = caller;
-    no strict;
+    no strict; ## no critic
     *{"$caller\::runtests"} = make_runtests($class);
 }
 
