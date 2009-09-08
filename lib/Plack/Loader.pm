@@ -7,12 +7,12 @@ sub auto {
 
     my $impl = $class->guess
         or Carp::croak("Couldn't auto-guess implementation. Set it with PLACK_IMPL");
-    Plack::Util::load_class("Plack::Impl::$impl")->new(%args);
+    Plack::Util::load_class($impl, "Plack::Impl")->new(%args);
 }
 
 sub load {
     my($class, $impl, @args) = @_;
-    Plack::Util::load_class("Plack::Impl::$impl")->new(@args);
+    Plack::Util::load_class($impl, "Plack::Impl")->new(@args);
 }
 
 sub guess {

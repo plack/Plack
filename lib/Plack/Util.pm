@@ -7,7 +7,11 @@ sub _blessed {
 }
 
 sub load_class {
-    my $class = shift;
+    my($class, $prefix) = @_;
+
+    if ($class !~ s/^\+// && $prefix) {
+        $class = "$prefix\::$class";
+    }
 
     my $file = $class;
     $file =~ s!::!/!g;

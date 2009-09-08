@@ -1,23 +1,19 @@
 package Plack::Adapter;
 use strict;
+use Carp ();
 use Plack::Util;
 
 sub adapter_for {
-    my($class, $app) = @_;
-    if ($app =~ /\.cgi$/) {
+    my($class, $app, $adapter) = @_;
+
+    if (!$adapter && $app =~ /\.cgi$/) {
         require Plack::Adapter::CGI;
         return Plack::Adapter::CGI->new(sub { do $app });
     } else {
         Plack::Util::load_class($app);
-        if ($app->isa('Catalyst')) {
-            require Plack::Adapter::Catalyst;
-            Plack::Adapter::Catalyst->new($app);
-        } elsif ($app->isa('CGI::Application')) {
-            require Plack::Adapter::CGIApplication;
-            Plack::Adapter::CGIApplication->new(sub { $app->new->run });
-        } elsif ($app->isa('Plack::Adapter::Callable')) {
-            $app;
-        }
+        $adapter ||= $app->plack_adapter if $app->can('plack_adapter');
+        Carp::croak("Can't get adapter for app $app: Specify with -a or plack_adapter() method") unless $adapter;
+        Plack::Util::load_class($adapter, "Plack::Adapter")->new($app);
     }
 }
 
