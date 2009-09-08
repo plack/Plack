@@ -6,6 +6,7 @@ BEGIN { $ENV{CATALYST_ENGINE} = 'PSGI' };
 use Class::MOP;
 use Test::TCP;
 use App::Prove;
+use Plack::Impl;
 
 sub import {
     my($self, $class) = @_;
@@ -37,13 +38,7 @@ sub make_runtests {
                 },
                 server => sub {
                     my $port = shift;
-
-                    # TODO: We need auto-selector
-                    use Plack::Impl::ServerSimple;
-                    my $server = Plack::Impl::ServerSimple->new($port);
-                    $server->host("127.0.0.1");
-                    $server->psgi_app($app);
-                    $server->run;
+                    Plack::Impl->auto(port => $port, host => "127.0.0.1")->run($app);
                 },
             );
         }
@@ -84,7 +79,8 @@ Plack::Test::Adopt::Catalyst - Run Catalyst::Test based tests against Plack impl
 
 =head1 SYNOPSIS
 
-  perl -MPlack::Test::Adopt::Catalyst=TestApp -e 'runtests @ARGV' *.t
+  env PSGI_PLACK_IMPL=Mojo \
+    perl -MPlack::Test::Adopt::Catalyst=TestApp -e 'runtests @ARGV' *.t
 
 =head1 AUTHOR
 

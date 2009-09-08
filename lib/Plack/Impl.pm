@@ -7,7 +7,7 @@ sub auto {
 
     my $impl = $class->guess
         or Carp::croak("Couldn't auto-guess implementation. Set it with PSGI_PLACK_IMPL");
-    $class->create($impl);
+    $class->create($impl, %args);
 }
 
 sub create {

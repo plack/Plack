@@ -2,6 +2,7 @@ package Plack::Impl::Mojo;
 use strict;
 use warnings;
 use base qw(Mojo::Base);
+use Mojo::Server::Daemon;
 use Plack::Util;
 
 __PACKAGE__->attr([ 'host', 'port' ]);
