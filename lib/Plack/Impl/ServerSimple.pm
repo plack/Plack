@@ -19,7 +19,7 @@ sub new {
     $self;
 }
 
-sub print_banner { }
+#sub print_banner { }
 
 sub run {
     my($self, $app) = @_;

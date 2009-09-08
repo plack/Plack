@@ -1,23 +1,13 @@
 package Plack::Loader;
 use Carp ();
+use Plack::Util;
 
 sub auto {
     my($class, %args) = @_;
 
     my $impl = $class->guess
         or Carp::croak("Couldn't auto-guess implementation. Set it with PLACK_IMPL");
-    $class->load($impl, %args);
-}
-
-sub load {
-    my($class, $impl, @args) = @_;
-    $impl = "Plack::Impl::$impl";
-
-    my $file = $impl;
-    $file =~ s!::!/!g;
-    require "$file.pm";
-
-    return $impl->new(@args);
+    Plack::Util::load_class("Plack::Impl::$impl")->new(%args);
 }
 
 sub guess {
@@ -36,7 +26,7 @@ sub guess {
     } elsif (exists $INC{"AnyEvent.pm"}) {
         return "AnyEvent";
     } else {
-        return;
+        return "ServerSimple";
     }
 }
 

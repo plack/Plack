@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+use strict;
+use Plack::Adapter;
+use Plack::Loader;
+
+my $app = shift;
+my $adapter = Plack::Adapter->adapter_for($app);
+Plack::Loader->auto(@ARGV)->run($adapter->handler);
+
+__END__
+
+=head1 NAME
+
+plackup
+
+=head1 SYNOPSIS
+
+  # MyApp can be Catalyst, CGI::Application etc. We autoload adapters
+  plackup MyApp
+
+  # CGI should be passed a filename that ends with .cgi
+  plackup hello.cgi
+
+  # switch implementations
+  env PLACK_IMPL=Mojo plackup MyCatApp port 9999
+
+=cut
