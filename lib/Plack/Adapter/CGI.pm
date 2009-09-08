@@ -30,24 +30,16 @@ sub handler {
             ( map { $_ => $env->{$_} } grep !/^psgi\./, keys %$env )
         };
 
-        my $restore = { env => {%ENV} };
-
-        open( $restore->{stdin}, '<&'. STDIN->fileno )
-            or Carp::croak("Can't dup stdin: $!");
-        *STDIN = $env->{'psgi.input'};
-
         my $stdout  = IO::File->new_tmpfile;;
-        open( $restore->{stdout}, '>&'. STDOUT->fileno )
-            or Carp::croak("Can't dup stdout: $!");
-        *STDOUT = $stdout;
 
-        open( $restore->{stderr}, '>&'. STDERR->fileno )
-            or Carp::croak("Can't dup stderr: $!");
-        *STDERR = $env->{'psgi.errors'};
+        {
+            local *STDIN  = $env->{'psgi.input'};
+            local *STDOUT = $stdout;
+            local *STDERR = $env->{'psgi.errors'};
+            local *ENV    = $environment;
 
-        local *ENV = $environment;
-
-        $self->{code}->();
+            $self->{code}->();
+        }
 
         seek( $stdout, 0, SEEK_SET )
             or croak("Can't seek stdout handle: $!");
@@ -91,15 +83,6 @@ sub handler {
                 $response->content_length($length);
             }
         }
-
-        open( STDIN, '<&' . fileno( $restore->{stdin} ) )
-            or Carp::croak("Can't restore stdin: $!");
-
-        open( STDOUT, '>&' . fileno( $restore->{stdout} ) )
-            or Carp::croak("Can't restore stdout: $!");
-
-        open( STDERR, '>&' . fileno( $restore->{stderr} ) )
-            or Carp::croak("Can't restore stderr: $!");
 
         return [
             $status,
