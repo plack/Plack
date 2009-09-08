@@ -51,17 +51,16 @@ between web application frameworks. One framework might use C<< MyApp->new->run(
 and others might be C<< MyApp->run_psgi($env) >>.
 
 Writing an adapter for your web application framework allows the end
-users of your framework to take the benefit of L<plackup>
-utilities. So, if you want to add PSGI support to your web
+users of your framework to take the benefit of Plack utilities such as
+L<plackup>. So, if you want to add PSGI support to your web
 application, write a plugin or a new method that takes PSGI's C<$env>
 hash ref and returns the response array ref, and name it such as
 L<AwesomeFramework::Run::PSGI>. Then write a few lines of adapter code
-that returns the PSGI application (code ref) and runs your framework's
-run method.
+L<Plack::Adapter::AwesomeFramework> that returns the PSGI application
+(code ref) that runs your framework's run method.
 
-B<DO NOT IMPLEMENT PSGI HANDLING CODE IN Plack::Adapter NAMESPACES>
-
-Take a look at L<Catalyst::Engine::PSGI> and
-L<Plack::Adapter::Catalyst> to see what I mean.
+B<DO NOT IMPLEMENT PSGI HANDLING CODE IN Plack::Adapter
+NAMESPACES>. That is wrong. Take a look at L<Catalyst::Engine::PSGI>
+and L<Plack::Adapter::Catalyst> to see what I mean.
 
 =cut
