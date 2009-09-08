@@ -2,19 +2,23 @@ package Plack::Impl::Mojo;
 use strict;
 use warnings;
 use base qw(Mojo::Base);
-use Mojo::Server::Daemon;
 use Plack::Util;
 
 __PACKAGE__->attr([ 'host', 'port' ]);
 
 my $mojo_daemon;
 
+sub mojo_daemon_class { 'Mojo::Server::Daemon' }
+
 sub run {
     my($self, $app) = @_;
 
     my $mojo_app = Plack::Impl::Mojo::App->new(psgi_app => $app);
 
-    $mojo_daemon = Mojo::Server::Daemon->new;
+    my $class = $self->mojo_daemon_class;
+    Plack::Util::load_class($class);
+
+    $mojo_daemon = $class->new;
     $mojo_daemon->port($self->port)    if $self->port;
     $mojo_daemon->address($self->host) if defined $self->host;
     $mojo_daemon->app($mojo_app);
