@@ -1,6 +1,7 @@
 package Plack::Impl::AnyEvent;
 use strict;
 use warnings;
+
 use AnyEvent;
 use AnyEvent::Handle;
 use AnyEvent::Socket;
@@ -12,7 +13,6 @@ sub new {
     my($class, %args) = @_;
 
     my $self = bless {}, $class;
-    $self->{app}  = delete $args{app};
     $self->{host} = delete $args{host} || undef;
     $self->{port} = delete $args{port} || undef;
 
@@ -20,7 +20,7 @@ sub new {
 }
 
 sub run {
-    my $self = shift;
+    my($self, $app) = @_;
 
     my $guard = tcp_server $self->{host}, $self->{port}, sub {
 
@@ -175,7 +175,9 @@ Plack::Impl::AnyEvent - AnyEvent based HTTP server
 =head1 SYNOPSIS
 
   my $server = Plack::Impl::AnyEvent->new(
-      app  => $app,
+      host => $host,
       port => $port,
   );
-  $server->run;
+  $server->run($app);
+
+=cut

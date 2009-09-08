@@ -30,9 +30,8 @@ sub run_one {
             my $server = Plack::Impl::AnyEvent->new(
                 port => $port,
                 host => '127.0.0.1',
-                app  => $handler,
             );
-            $server->run;
+            $server->run($handler);
             AnyEvent->condvar->recv;
         },
     );

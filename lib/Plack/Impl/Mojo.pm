@@ -1,20 +1,29 @@
 package Plack::Impl::Mojo;
 use strict;
 use warnings;
-use base qw(Mojo);
+use base qw(Mojo::Base);
 use Plack::Util;
 
-__PACKAGE__->attr([ 'psgi_app' ]);
+__PACKAGE__->attr([ 'host', 'port' ]);
 
 my $mojo_daemon;
 
-sub start {
-    my($class, $daemon, $app) = @_;
-    $mojo_daemon = $daemon; # xxx
-    $daemon->app($class->new);
-    $daemon->app->psgi_app($app);
-    $daemon->run;
+sub run {
+    my($self, $app) = @_;
+
+    my $mojo_app = Plack::Impl::Mojo::App->new(psgi_app => $app);
+
+    $mojo_daemon = Mojo::Server::Daemon->new;
+    $mojo_daemon->port($self->port)    if $self->port;
+    $mojo_daemon->address($self->host) if defined $self->host;
+    $mojo_daemon->app($mojo_app);
+    $mojo_daemon->run;
 }
+
+package Plack::Impl::Mojo::App;
+use base qw(Mojo);
+
+__PACKAGE__->attr([ 'psgi_app' ]);
 
 sub handler {
     my($self, $tx) = @_;
@@ -36,7 +45,7 @@ sub handler {
     $env{CONTENT_TYPE}   = $tx->req->headers->content_type;
     $env{CONTENT_LENGTH} = $tx->req->headers->content_length;
 
-    # XXX Oops
+    # FIXME: use IO::Handle-ish API
     my $content = $tx->req->content->asset->slurp;
     open my $input, "<", \$content;
 
@@ -54,7 +63,9 @@ sub handler {
     }
 
     my $body = $res->[2];
-    my $response_content; # Hmm
+
+    # FIXME Use psgi.async API
+    my $response_content;
     Plack::Util::foreach($body, sub { $response_content .= $_[0] });
     $tx->res->body($response_content);
 }
@@ -69,15 +80,12 @@ Plack::Impl::Mojo - Mojo daemon based PSGI handler
 
 =head1 SYNOPSIS
 
-  use Mojo::Server::Daemon;
   use Plack::Impl::Mojo;
 
-  my $daemon = Mojo::Server::Daemon->new;
-  Plack::Impl::Mojo->start($daemon, sub {
-      my $env = shift;
-      return [
-          200,
-          [ 'Content-Type' => 'text/html' ],
-          [ 'Hello World' ],
-      ];
-  });
+  my $server = Plack::Impl::Mojo->new(
+      host => $host,
+      port => $port,
+  );
+  $server->run($app);
+
+=cut

@@ -27,10 +27,8 @@ sub run_one {
         server => sub {
             my $port = shift;
 
-            my $server = Plack::Impl::ServerSimple->new($port);
-            $server->host("127.0.0.1");
-            $server->psgi_app($handler);
-            $server->run;
+            my $server = Plack::Impl::ServerSimple->new(port => $port, host => "127.0.0.1");
+            $server->run($handler);
         },
     );
 }

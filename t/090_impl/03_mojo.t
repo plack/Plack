@@ -27,10 +27,11 @@ sub run_one {
         },
         server => sub {
             my $port = shift;
-            my $daemon = Mojo::Server::Daemon->new;
-            $daemon->port($port);
-            $daemon->address("127.0.0.1");
-            Plack::Impl::Mojo->start($daemon, $handler);
+            my $server = Plack::Impl::Mojo->new(
+                host => "127.0.0.1",
+                port => $port,
+            );
+            $server->run($handler);
         },
     );
 }
