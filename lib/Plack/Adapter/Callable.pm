@@ -4,13 +4,13 @@ use warnings;
 use Carp ();
 
 sub new {
-    my($class, $app) = @_;
-    bless { app => $app }, $class;
+    my($class, ) = @_;
+    bless {}, $class;
 }
 
 sub handler {
     my $self = shift;
-    return sub { $self->{app}->call(@_) };
+    return sub { $self->call(@_) };
 }
 
 sub call { Carp::croak "NOT IMPLEMENTED 'call' METHOD" }

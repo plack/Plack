@@ -33,7 +33,7 @@ use Test::More;
 
 my $err;
 $ENV{REQUEST_METHOD} = 'GET';
-my $handler = Plack::Adapter::Callable->new('CallableTest')->handler;
+my $handler = CallableTest->handler;
 
 open my $in, '<', \do { my $body = "hello=world" };
 open my $errors, '>', \$err;
