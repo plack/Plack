@@ -70,6 +70,8 @@ sub handler {
     $tx->res->body($response_content);
 }
 
+package Plack::Impl::Mojo;
+
 1;
 
 __END__
