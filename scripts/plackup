@@ -5,7 +5,9 @@ use Plack::Loader;
 
 my $app = shift;
 my $adapter = Plack::Adapter->adapter_for($app);
-Plack::Loader->auto(@ARGV)->run($adapter->handler);
+my $impl = Plack::Loader->auto(@ARGV);
+$impl->run($adapter->handler);
+$impl->run_loop if $impl->can('run_loop'); # run event loop
 
 __END__
 

@@ -163,6 +163,10 @@ sub run {
     $self->{listen_guard} = $guard;
 }
 
+sub run_loop {
+    AnyEvent->condvar->recv;
+}
+
 1;
 __END__
 
