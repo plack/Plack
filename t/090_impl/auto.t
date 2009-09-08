@@ -2,7 +2,7 @@ use strict;
 use Test::More;
 use Plack::Loader;
 
-$ENV{PSGI_PLACK_IMPL} = "CGI";
+$ENV{PLACK_IMPL} = "CGI";
 
 use HTTP::Request::AsCGI;
 use HTTP::Request::Common;

@@ -5,7 +5,7 @@ sub auto {
     my($class, %args) = @_;
 
     my $impl = $class->guess
-        or Carp::croak("Couldn't auto-guess implementation. Set it with PSGI_PLACK_IMPL");
+        or Carp::croak("Couldn't auto-guess implementation. Set it with PLACK_IMPL");
     $class->load($impl, %args);
 }
 
@@ -23,7 +23,7 @@ sub load {
 sub guess {
     my $class = shift;
 
-    return $ENV{PSGI_PLACK_IMPL} if $ENV{PSGI_PLACK_IMPL};
+    return $ENV{PLACK_IMPL} if $ENV{PLACK_IMPL};
 
     if ($ENV{PHP_FCGI_CHILDREN}) {
         return "FCGI";
@@ -69,12 +69,12 @@ hashes.
 
 =over 4
 
-=item PSGI_PLACK_IMPL
+=item PLACK_IMPL
 
-  env PSGI_PLACK_IMPL=ServerSimple ...
+  env PLACK_IMPL=ServerSimple ...
 
 Plack users can specify the specific implementation they want to load
-using the C<PSGI_PLACK_IMPL> environment variable.
+using the C<PLACK_IMPL> environment variable.
 
 =item MOD_PERL, PHP_FCGI_CHILDREN, GATEWAY_INTERFACE
 
