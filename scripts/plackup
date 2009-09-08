@@ -2,8 +2,9 @@
 use strict;
 use Plack::Adapter;
 use Plack::Loader;
+use Pod::Usage;
 
-my $app = shift;
+my $app = shift or pod2usage();
 my $adapter = Plack::Adapter->adapter_for($app);
 Plack::Loader->auto(@ARGV)->run($adapter->handler);
 
