@@ -16,7 +16,7 @@ sub adapter_for {
             require Plack::Adapter::CGIApplication;
             Plack::Adapter::CGIApplication->new(sub { $app->new->run });
         } elsif ($app->isa('Plack::Adapter::Callable')) {
-            $app->new;
+            $app;
         }
     }
 }

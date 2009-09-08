@@ -3,11 +3,6 @@ use strict;
 use warnings;
 use Carp ();
 
-sub new {
-    my($class, ) = @_;
-    bless {}, $class;
-}
-
 sub handler {
     my $self = shift;
     return sub { $self->call(@_) };
