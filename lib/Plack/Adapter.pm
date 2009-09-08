@@ -15,6 +15,9 @@ sub adapter_for {
         } elsif ($app->isa('CGI::Application')) {
             require Plack::Adapter::CGIApplication;
             Plack::Adapter::CGIApplication->new(sub { $app->new->run });
+        } elsif ($app->isa('Plack::Adapter::Callable')) {
+            require Plack::Adapter::Callable;
+            Plack::Adapter::Callable->new($app);
         }
     }
 }
