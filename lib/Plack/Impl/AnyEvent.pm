@@ -77,7 +77,7 @@ sub run {
                     );
                 };
                 my $do_it = sub {
-                    my $res = $self->{app}->($env, $start_response);
+                    my $res = $app->($env, $start_response);
                     return if scalar(@$res) == 0;
 
                     $start_response->($res->[0], $res->[1]);
