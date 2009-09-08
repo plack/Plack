@@ -81,7 +81,7 @@ parameters per implementations but common parameters are:
 
 Port number the server listens to.
 
-=item port
+=item address
 
 Address the server listens to. Set to undef to listen any interface.
 
