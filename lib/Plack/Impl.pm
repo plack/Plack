@@ -5,22 +5,20 @@ use Carp ();
 sub auto {
     my($class, %args) = @_;
 
-    my $impl = $class->configure
+    my $impl = $class->guess
         or Carp::croak("Couldn't auto-guess implementation. Set it with PSGI_PLACK_IMPL");
-    $impl->new;
+    $class->create($impl);
 }
 
-sub configure {
-    my $class = shift;
-
-    my $impl = $class->guess();
+sub create {
+    my($class, $impl, @args) = @_;
     $impl = "Plack::Impl::$impl";
 
     my $file = $impl;
     $file =~ s!::!/!g;
     require "$file.pm";
 
-    return $impl;
+    return $impl->new(@args);
 }
 
 sub guess {

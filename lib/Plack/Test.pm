@@ -3,7 +3,10 @@ use strict;
 use warnings;
 use HTTP::Request;
 use HTTP::Request::Common;
+use LWP::UserAgent;
 use Test::More;
+use Test::TCP;
+use Plack::Impl;
 use Plack::Lint;
 
 # 0: test name
@@ -327,6 +330,26 @@ sub runtests {
     my($class, $runner) = @_;
     for my $test (@TEST) {
         $runner->(@$test);
+    }
+}
+
+sub run_server_tests {
+    my($class, $impl) = @_;
+
+    for my $test (@TEST) {
+        test_tcp(
+            client => sub {
+                my $port = shift;
+                note $test->[0];
+                my $ua  = LWP::UserAgent->new;
+                my $res = $ua->request($test->[1]->($port));
+                $test->[3]->($res, $port);
+            },
+            server => sub {
+                my $port = shift;
+                Plack::Impl->create($impl, port => $port, host => "127.0.0.1")->run($test->[2]);
+            },
+        );
     }
 }
 
