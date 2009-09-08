@@ -184,4 +184,8 @@ Plack::Impl::AnyEvent - AnyEvent based HTTP server
   );
   $server->run($app);
 
+=head1 DESCRIPTION
+
+This implementation is considered highly experimental.
+
 =cut

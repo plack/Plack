@@ -91,4 +91,8 @@ Plack::Impl::Mojo - Mojo daemon based PSGI handler
   );
   $server->run($app);
 
+=head1 DESCRIPTION
+
+This implementation is considered highly experimental.
+
 =cut
