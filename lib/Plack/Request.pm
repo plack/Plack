@@ -32,6 +32,8 @@ sub user        { $_[0]->env->{REMOTE_USER} }
 sub request_uri { $_[0]->env->{REQUEST_URI} }
 sub url_scheme  { $_[0]->env->{'psgi.url_scheme'} }
 
+# we need better cookie lib?
+# http://mark.stosberg.com/blog/2008/12/cookie-handling-in-titanium-catalyst-and-mojo.html
 sub cookies {
     my $self = shift;
     if (defined $_[0]) {
