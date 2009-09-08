@@ -44,8 +44,6 @@ Address the server listens to. Set to undef to listen any interface.
 
 =back
 
-=over 4
-
 =item run
 
   $impl->run($app)

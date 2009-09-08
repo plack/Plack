@@ -1,4 +1,5 @@
 package Plack::Loader;
+use strict;
 use Carp ();
 use Plack::Util;
 

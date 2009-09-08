@@ -15,7 +15,7 @@ sub load_class {
 
     my $file = $class;
     $file =~ s!::!/!g;
-    require "$file.pm";
+    require "$file.pm"; ## no critic
 
     return $class;
 }
