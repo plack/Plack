@@ -180,6 +180,9 @@ sub handle {
    $env->{'psgi.url_scheme'} = 'http';
    $env->{'psgi.errors'}  = *STDERR;
    $env->{'psgi.input'}   = $self->{fh};
+   $env->{'psgi.multithread'}  = Plack::Util::TRUE; # Yeah?
+   $env->{'psgi.multiprocess'} = Plack::Util::FALSE;
+   $env->{'psgi.run_once'}     = Plack::Util::FALSE;
 
    my $r = $app->($env);
 

@@ -30,6 +30,8 @@ use base qw(Mojo);
 
 __PACKAGE__->attr([ 'psgi_app' ]);
 
+sub is_multiprocess { Plack::Util::FALSE }
+
 sub handler {
     my($self, $tx) = @_;
 
@@ -58,6 +60,11 @@ sub handler {
     $env{'psgi.url_scheme'} = 'http';
     $env{'psgi.input'}      = $input;
     $env{'psgi.errors'}     = *STDERR;
+    # $env{'psgi.async'}      = 1;
+
+    $env{'psgi.multithread'}  = Plack::Util::FALSE;
+    $env{'psgi.multiprocess'} = $self->is_multiprocess;
+    $env{'psgi.run_once'}     = Plack::Util::FALSE;
 
     my $res = $self->psgi_app->(\%env);
 

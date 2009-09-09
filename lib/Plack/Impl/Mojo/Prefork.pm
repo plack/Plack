@@ -2,6 +2,7 @@ package Plack::Impl::Mojo::Prefork;
 use strict;
 use base qw(Plack::Impl::Mojo);
 sub mojo_daemon_class { 'Mojo::Server::Daemon::Prefork' }
+sub is_multiprocess { Plack::Util::TRUE }
 
 1;
 

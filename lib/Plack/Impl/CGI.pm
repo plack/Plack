@@ -18,7 +18,9 @@ sub run {
     $env{'psgi.url_scheme'} = ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http';
     $env{'psgi.input'}      = *STDIN;
     $env{'psgi.errors'}     = *STDERR;
-    $env{'psgi.run_once'}   = 1;
+    $env{'psgi.multithread'}  = Plack::Util::FALSE;
+    $env{'psgi.multiprocess'} = Plack::Util::TRUE;
+    $env{'psgi.run_once'}     = Plack::Util::TRUE;
     my $res = $app->(\%env);
     print "Status: $res->[0]\n";
     my $headers = $res->[1];

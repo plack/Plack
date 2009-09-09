@@ -37,6 +37,10 @@ sub run {
             'psgi.version'    => [ 1, 0 ],
             'psgi.errors'     => *STDERR,
             'psgi.url_scheme' => 'http',
+            'psgi.async'      => 1,
+            'psgi.run_once'     => Plack::Util::FALSE,
+            'psgi.multithread'  => Plack::Util::FALSE,
+            'psgi.multiprocess' => Plack::Util::FALSE,
             REMOTE_ADDR       => $peer_host,
         };
 

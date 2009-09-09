@@ -44,6 +44,10 @@ sub handler {
     $env{'psgi.url_scheme'} = 'http';
     $env{'psgi.input'}  = $self->stdin_handle;
     $env{'psgi.errors'} = *STDERR;
+    $env{'psgi.multithread'}  = Plack::Util::FALSE;
+    $env{'psgi.multiprocess'} = Plack::Util::FALSE;
+    $env{'psgi.run_once'}     = Plack::Util::FALSE;
+
     my $res = $self->{psgi_app}->(\%env);
     print "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\r\n";
     my $headers = $res->[1];

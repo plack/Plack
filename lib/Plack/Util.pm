@@ -1,6 +1,9 @@
 package Plack::Util;
 use strict;
 
+sub TRUE()  { 1==1 }
+sub FALSE() { !TRUE }
+
 # Is it safe to use Scalar::Util everywhere?
 sub _blessed {
     ref $_[0] && ref($_[0]) !~ /^(?:SCALAR|ARRAY|HASH|CODE|GLOB|Regexp)$/;
