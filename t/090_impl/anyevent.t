@@ -6,5 +6,5 @@ use Test::Requires qw(AnyEvent);
 use Plack;
 use Plack::Test;
 
-Plack::Test->run_server_tests('ServerSimple');
+Plack::Test->run_server_tests('AnyEvent');
 done_testing();
