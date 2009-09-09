@@ -55,12 +55,32 @@ users of your framework to take the benefit of Plack utilities such as
 L<plackup>. So, if you want to add PSGI support to your web
 application, write a plugin or a new method that takes PSGI's C<$env>
 hash ref and returns the response array ref, and name it such as
-L<AwesomeFramework::Run::PSGI>. Then write a few lines of adapter code
+L<AwesomeFramework::Run::PSGI>. Then your framework L<supports PSGI>.
+
+Then write a few lines of adapter code
 L<Plack::Adapter::AwesomeFramework> that returns the PSGI application
 (code ref) that runs your framework's run method.
 
+And optionally, consider implementing a class method C<plack_adapter>
+that returns the adapter name in your application class. For instance,
+if the application class of your framework will inherit from
+AwesomeFramework::App, consider adding:
+
+  package AwesomeFramework::App;
+  sub plack_adapter { 'AwesomeFramework' }
+
+Then an user of your application framework can just use L<plackup>
+without specifying the adapter themselves either by command line
+option or adding a method on their code.
+
+If your web application framework doesn't use subclassing, you can
+also do mixins by exporting C<plack_adapter> or using helpers like
+Catalyst::Helper.
+
 B<DO NOT IMPLEMENT PSGI HANDLING CODE IN Plack::Adapter
-NAMESPACES>. That is wrong. Take a look at L<Catalyst::Engine::PSGI>
-and L<Plack::Adapter::Catalyst> to see what I mean.
+NAMESPACES>. It is important to separate PSGI specific code in your
+framework and then adapter code in Plack::Adapter. Take a look at
+L<Catalyst::Engine::PSGI> and L<Plack::Adapter::Catalyst> to see what
+I mean.
 
 =cut
