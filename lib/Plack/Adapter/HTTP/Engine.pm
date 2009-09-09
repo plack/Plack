@@ -19,10 +19,7 @@ sub handler {
         }
     );
 
-    return sub {
-        my $env = shift;
-        $engine->run(@_);
-    };
+    return sub { $engine->run(@_) };
 }
 
 1;
