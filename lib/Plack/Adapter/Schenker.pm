@@ -22,3 +22,20 @@ sub handler {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Plack::Adapter::Schenker - Adapter to run Schenker apps in Plack
+
+=head1 DESCRIPTION
+
+Rename your C<foo.pl> to C<Foo.pm> and then your app is Schenker ready:
+
+  plackup -a Schenker Foo
+
+You can optionally implement C<plack_adapter> method to return the
+string C<Schenker> to avoid passing C<-a> option every time.
+
+=cut
