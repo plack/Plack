@@ -347,7 +347,9 @@ sub run_server_tests {
             },
             server => sub {
                 my $port = shift;
-                Plack::Loader->load($impl, port => $port, host => "127.0.0.1")->run($test->[2]);
+                my $impl = Plack::Loader->load($impl, port => $port, host => "127.0.0.1");
+                $impl->run($test->[2]);
+                $impl->run_loop if $impl->can('run_loop'); # run event loop
             },
         );
     }
