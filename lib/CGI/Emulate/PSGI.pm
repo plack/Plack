@@ -1,4 +1,4 @@
-package CGI::PSGIfy;
+package CGI::Emulate::PSGI;
 use strict;
 use warnings;
 use POSIX 'SEEK_SET';
@@ -93,7 +93,7 @@ __END__
 
 =head1 SYNOPSIS
 
-    CGI::PSGIfy->handler(sub {
+    CGI::Emulate::PSGIfy->handler(sub {
         # your handler
     });
 

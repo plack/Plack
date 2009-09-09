@@ -5,7 +5,7 @@ use IO::File;
 use HTTP::Status;
 use HTTP::Response;
 use Carp ();
-use CGI::PSGIfy;
+use CGI::Emulate::PSGI;
 
 sub new {
     my($class, $code) = @_;
@@ -14,7 +14,7 @@ sub new {
 
 sub handler {
     my $self = shift;
-    CGI::PSGIfy->handler($self->{code});
+    CGI::Emulate::PSGI->handler($self->{code});
 }
 
 1;
