@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Requires qw(FCGI::EV);
 use Plack;
 use Plack::Impl::FCGI::EV;
 use Test::TCP;
