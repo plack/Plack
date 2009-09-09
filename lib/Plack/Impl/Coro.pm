@@ -161,7 +161,7 @@ sub handle {
    $env->{PATH_INFO}      = $path;
    $env->{QUERY_STRING}   = $query_string || '';
    $env->{HTTP_HOST}      = $self->server_host;
-   $env->{SERVER_NAME}    = "thttpd-myhttpd"; # we are thttpd-alike
+   $env->{SERVER_NAME}    = ($self->server_address)[0];
    $env->{SERVER_PORT}    = $self->{server_port};
    $env->{SERVER_PROTOCOL} = "HTTP/$self->{protocol}";
    $env->{REMOTE_ADDR}    = $self->{remote_address};
