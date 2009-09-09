@@ -109,7 +109,7 @@ sub run {
                         $handle->push_shutdown();
                     }
                 };
-                $env->{'psgi.input'}      = $input;
+                $env->{'psgi.input'}      = $sock;
                 $do_it->();
             }
             else {
