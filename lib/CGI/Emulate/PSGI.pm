@@ -98,3 +98,11 @@ __END__
         # your handler
     });
 
+=head2 DESCRIPTION
+
+This module allows an application designed for the CGI environment to run in a PSGI environment,
+and thus on any of the backends that PSGI supports.
+
+It works by translating the environment provided by the PSGI specification to one expected by the CGI
+specification. Likewise, it captures output as it would be prepared for the CGI standard, and translates it
+to the format expected for the PSGI standard.
