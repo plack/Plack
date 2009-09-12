@@ -14,7 +14,7 @@ sub handler {
             GATEWAY_INTERFACE => 'CGI/1.1',
             # not in RFC 3875
             HTTPS => ( ( $env->{'psgi.url_scheme'} eq 'https' ) ? 'ON' : 'OFF' ),
-            SERVER_SOFTWARE => "Plack-Adapter-CGI",
+            SERVER_SOFTWARE => "CGI-Emulate-PSGI",
             REMOTE_ADDR     => '127.0.0.1',
             REMOTE_HOST     => 'localhost',
             REMOTE_PORT     => int( rand(64000) + 1000 ),    # not in RFC 3875
