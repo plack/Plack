@@ -1,19 +1,32 @@
 #!/usr/bin/perl
 use strict;
 use lib "lib";
+use Cwd;
 use Getopt::Std;
-use Plack::Adapter;
 use Plack::Loader;
 use Pod::Usage;
 
-getopts('a:i:', \my %opts);
+getopts('c:i:', \my %opts);
 $ENV{PLACK_IMPL} ||= $opts{i};
 
-my $app = shift or pod2usage();
-my $adapter = Plack::Adapter->adapter_for($app, $opts{a});
-my $impl = Plack::Loader->auto(@ARGV);
-$impl->run($adapter->handler);
+my $file = $opts{c} || "app.psgi";
+my $handler = load_handler($opts{c} || Cwd::cwd . "/app.psgi");
+
+unless ($handler) {
+    die $@ if $@;
+    die "$file not found.\n";
+}
+
+my @args = map { s/^--//; $_ } @ARGV;
+my $impl = Plack::Loader->auto(@args);
+$impl->run($handler);
 $impl->run_loop if $impl->can('run_loop'); # run event loop
+
+sub load_handler {
+    my $file = shift;
+    return unless -e $file;
+    return do $file;
+}
 
 __END__
 
@@ -23,19 +36,16 @@ plackup
 
 =head1 SYNOPSIS
 
-  # MyApp can be Catalyst, CGI::Application etc. We autoload adapters
-  plackup MyApp
+  # read your app from app.psgi file
+  plackup
 
-  # CGI should be passed a filename that ends with .cgi
-  plackup hello.cgi
+  # can be passed with -c option
+  plackup -c hello.psgi
 
   # switch implementations
-  env PLACK_IMPL=Mojo plackup MyCatApp port 9999
+  env PLACK_IMPL=Mojo plackup --port 9999
 
   # Or, -i
-  plackup -i AnyEvent CgiApp
-
-  # Specify framework adapter
-  plackup -a Catalyst MyCatApp
+  plackup -i AnyEvent
 
 =cut

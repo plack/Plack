@@ -2,6 +2,7 @@ package CGI::Emulate::PSGI;
 use strict;
 use warnings;
 use POSIX 'SEEK_SET';
+use HTTP::Response;
 
 sub handler {
     my ($class, $code, ) = @_;
@@ -93,7 +94,7 @@ __END__
 
 =head1 SYNOPSIS
 
-    CGI::Emulate::PSGIfy->handler(sub {
+    CGI::Emulate::PSGI->handler(sub {
         # your handler
     });
 
