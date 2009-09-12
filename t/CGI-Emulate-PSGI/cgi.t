@@ -1,12 +1,12 @@
 use strict;
 use warnings;
 use CGI;
-use Plack::Adapter::CGI;
+use CGI::Emulate::PSGI;
 use Test::More;
 
 my $err;
 $ENV{REQUEST_METHOD} = 'GET';
-my $handler = Plack::Adapter::CGI->new(
+my $handler = CGI::Emulate::PSGI->handler(
     sub {
         is $ENV{REMOTE_ADDR}, '192.168.1.1';
         is $ENV{REQUEST_METHOD}, 'POST';
@@ -19,7 +19,7 @@ my $handler = Plack::Adapter::CGI->new(
         print "KTKR";
         print STDERR "hello error\n";
     }
-)->handler;
+);
 
 open my $in, '<', \do { my $body = "hello=world" };
 open my $errors, '>', \$err;
