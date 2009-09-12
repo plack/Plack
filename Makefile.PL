@@ -6,9 +6,7 @@ if ($Module::Install::AUTHOR) {
     warn <<WARN;
 You need to install following modules to build this module if you're running from git:
 
-  Module::Install::AuthorRequires
   Module::Install::AuthorTests
-  Test::Requires
 
 WARN
 }
@@ -23,10 +21,10 @@ build_requires 'Test::More';
 build_requires 'Test::TCP';
 test_requires 'Test::Requires';
 
-author_requires 'AnyEvent';
-author_requires 'Catalyst::Runtime';
-author_requires 'Mojo';
-author_requires 'HTTP::Server::Simple';
+#author_requires 'AnyEvent';
+#author_requires 'Catalyst::Runtime';
+#author_requires 'Mojo';
+#author_requires 'HTTP::Server::Simple';
 
 tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t t/*/*/*/*/*.t';
 author_tests 'xt';
