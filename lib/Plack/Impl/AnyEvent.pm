@@ -65,7 +65,12 @@ sub run {
                 if ($k !~ /^(?:CONTENT_LENGTH|CONTENT_TYPE)$/i) {
                     $k = "HTTP_$k";
                 }
-                $env->{ $k } = $v;
+
+                if (exists $env->{ $k }) {
+                    $env->{ $k } .= ", $v";
+                } else {
+                    $env->{ $k } = $v;
+                }
             }
             if ( $chunk =~ /^$/ ) {
                 my $start_response = sub {
