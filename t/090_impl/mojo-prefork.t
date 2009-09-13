@@ -1,7 +1,10 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires qw(Mojo::Server::Daemon::Prefork);
+use Test::Requires {
+    Mojo => 0.991244, ## for Mojo::Server::Daemon->address
+    'Mojo::Server::Daemon::Prefork' => 0,
+};
 
 use Plack;
 use Plack::Test;
