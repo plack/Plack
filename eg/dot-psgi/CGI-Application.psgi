@@ -1,5 +1,10 @@
 use MyApp;
-use CGI::Emulate::PSGI;
-CGI::Emulate::PSGI->handler(
-    sub { MyApp->new->run },
-);
+use CGI::Application::PSGI;
+
+my $app = sub {
+    my $env = shift;
+    local *ENV = $env;
+
+    my $webapp = MyApp->new;
+    CGI::Application::PSGI->run($webapp);
+};
