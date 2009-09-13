@@ -16,7 +16,10 @@ my $handler = load_handler($opts{c} || Cwd::cwd . "/app.psgi");
 
 unless ($handler) {
     die $@ if $@;
-    die "$file not found.\n";
+    die "$file not found: $!\n" if $!;
+    unless ($handler && ref $handler eq 'CODE') {
+        die "$file does not return an application code reference.\n";
+    }
 }
 
 my @args = map { s/^--//; $_ } @ARGV;
