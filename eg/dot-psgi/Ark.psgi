@@ -10,4 +10,4 @@ my $engine = HTTP::Engine->new(
     },
 );
 
-sub { $engine->run(@_) };
+my $handler = sub { $engine->run(@_) };

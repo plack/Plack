@@ -8,4 +8,4 @@ my $engine = HTTP::Engine->new(
 );
 
 Schenker::init;
-sub { Schenker::Engine->run(@_) };
+my $handler = sub { Schenker::Engine->run(@_) };

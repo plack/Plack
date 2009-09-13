@@ -1,3 +1,3 @@
 use MyApp;
 my $app = MyApp->new;
-return sub { $app->run };
+my $handler = sub { $app->run };

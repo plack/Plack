@@ -1,2 +1,2 @@
 use CGI::Emulate::PSGI;
-CGI::Emulate::PSGI->handler(sub { do "hello.cgi" });
+my $handler = CGI::Emulate::PSGI->handler(sub { do "hello.cgi" });

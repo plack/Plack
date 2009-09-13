@@ -1,7 +1,7 @@
 use MyApp;
 use CGI::Application::PSGI;
 
-my $app = sub {
+my $handler = sub {
     my $env = shift;
     local *ENV = $env;
 

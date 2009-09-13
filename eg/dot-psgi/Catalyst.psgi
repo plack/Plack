@@ -1,4 +1,4 @@
 use Foo;
 Foo->setup_engine('PSGI');
-sub { Foo->new->run(@_) };
+my $handler = sub { Foo->new->run(@_) };
 
