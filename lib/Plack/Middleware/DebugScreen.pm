@@ -16,7 +16,7 @@ sub call {
         my ($err, %args) = @_;
         my $body = $err->as_html(%args);
         utf8::encode($body);
-        $err_res = [500, ['Content-Type' => 'text/html; charset=utf-8'], $body];
+        $err_res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ $body ]];
     };
     my %args = ();
     my $res = CGI::ExceptionManager->run(
