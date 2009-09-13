@@ -1,15 +1,8 @@
+sub author_tests { die "You need to install Module::Install::AuthorTests to build from git clone\n" }
+
 use inc::Module::Install;
 name 'Plack';
 all_from 'lib/Plack.pm';
-
-if ($Module::Install::AUTHOR) {
-    warn <<WARN;
-You need to install following modules to build this module if you're running from git:
-
-  Module::Install::AuthorTests
-
-WARN
-}
 
 requires 'Class::Accessor::Fast';
 requires 'LWP'; # HTTP::Status, HTTP::Headers and HTTP::Request
