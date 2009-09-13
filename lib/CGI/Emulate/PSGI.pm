@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use POSIX 'SEEK_SET';
 use HTTP::Response;
+use IO::File;
 
 sub handler {
     my ($class, $code, ) = @_;
@@ -22,7 +23,7 @@ sub handler {
             ( map { $_ => $env->{$_} } grep !/^psgi\./, keys %$env )
         };
 
-        my $stdout  = IO::File->new_tmpfile;;
+        my $stdout  = IO::File->new_tmpfile;
 
         {
             local *STDIN  = $env->{'psgi.input'};
