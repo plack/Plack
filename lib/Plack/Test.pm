@@ -308,6 +308,30 @@ my @TEST = (
             is($res->status_line, '200 OK');
         }
     ],
+    [
+        'multi headers',
+        sub {
+            my $port = $_[0] || 80;
+            my $req = HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/",
+            );
+            $req->push_header(Foo => "bar");
+            $req->push_header(Foo => "baz");
+            $req;
+        },
+        sub {
+            my $env = shift;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', ],
+                [ $env->{HTTP_FOO} ]
+            ];
+        },
+        sub {
+            my $res = shift;
+            is($res->content, "bar, baz");
+        }
+    ],
 );
 for my $test (@TEST) {
     my $orig = $test->[2];
