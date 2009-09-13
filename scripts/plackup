@@ -7,7 +7,9 @@ use Plack::Loader;
 use Pod::Usage;
 
 getopts('c:i:', \my %opts);
-$ENV{PLACK_IMPL} ||= $opts{i};
+
+# If there is an explicit implementation mentioned, use it, otherwise leave $ENV{PLACK_IMPL} alone.
+$ENV{PLACK_IMPL} = $opts{i} if $opts{i};
 
 my $file = $opts{c} || "app.psgi";
 my $handler = load_handler($opts{c} || Cwd::cwd . "/app.psgi");
