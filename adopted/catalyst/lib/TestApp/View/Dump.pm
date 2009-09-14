@@ -23,7 +23,7 @@ sub dump {
 }
 
 sub process {
-    my ( $self, $c, $reference ) = @_;
+    my ( $self, $c, $reference, $no_strict ) = @_;
 
     # Force processing of on-demand data
     $c->prepare_body;
@@ -39,6 +39,10 @@ sub process {
     if ( my $output =
         $self->dump( $reference ) )
     {
+
+        if ($no_strict) {
+            $output = "do { no strict 'refs'; $output }";
+        }
 
         $c->res->headers->content_type('text/plain');
         $c->res->output($output);

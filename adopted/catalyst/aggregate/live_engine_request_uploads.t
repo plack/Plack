@@ -38,7 +38,7 @@ use Path::Class::Dir;
     is( $response->content_type, 'text/plain', 'Response Content-Type' );
     like(
         $response->content,
-        qr/^bless\( .* 'Catalyst::Request' \)$/s,
+        qr/bless\( .* 'Catalyst::Request' \)/s,
         'Content is a serialized Catalyst::Request'
     );
 
@@ -101,7 +101,7 @@ use Path::Class::Dir;
     is( $response->content_type, 'text/plain', 'Response Content-Type' );
     like(
         $response->content,
-        qr/^bless\( .* 'Catalyst::Request' \)$/s,
+        qr/bless\( .* 'Catalyst::Request' \)/s,
         'Content is a serialized Catalyst::Request'
     );
 
@@ -238,7 +238,7 @@ use Path::Class::Dir;
     is( $response->content_type, 'text/plain', 'Response Content-Type' );
     like(
         $response->content,
-        qr/^bless\( .* 'Catalyst::Request' \)$/s,
+        qr/bless\( .* 'Catalyst::Request' \)/s,
         'Content is a serialized Catalyst::Request'
     );
 
@@ -356,7 +356,7 @@ SKIP:
     is( $response->content_type, 'text/plain', 'Response Content-Type' );
     like(
         $response->content,
-        qr/^bless\( .* 'Catalyst::Request' \)$/s,
+        qr/bless\( .* 'Catalyst::Request' \)/s,
         'Content is a serialized Catalyst::Request'
     );
 

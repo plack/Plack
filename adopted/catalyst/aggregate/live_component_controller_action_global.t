@@ -38,7 +38,7 @@ sub run_tests {
         );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }
@@ -57,7 +57,7 @@ sub run_tests {
         );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }
@@ -76,7 +76,7 @@ sub run_tests {
         );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }

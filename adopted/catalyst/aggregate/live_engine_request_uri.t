@@ -107,7 +107,7 @@ SKIP:
 {
     ok( my $response = request('http://localhost/engine/request/uri/uri_with_object'), 'Request' );
     ok( $response->is_success, 'Response Successful 2xx' );
-    like( $response->header( 'X-Catalyst-Param-a' ), qr(https?://localhost[^/]*/), 'param "a" ok' );
+    like( $response->header( 'X-Catalyst-Param-a' ), qr($ENV{CATALYST_SERVER}), 'param "a" ok' );
 }
 
 # test that uri_with is utf8 safe

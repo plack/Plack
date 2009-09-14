@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More skip_all => "no live tests"; # tests => 6;
 use strict;
 use warnings;
 use lib 't/lib';

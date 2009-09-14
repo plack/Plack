@@ -39,7 +39,7 @@ sub run_tests {
         is( $response->header('X-Action'), 'works' );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }
@@ -59,7 +59,7 @@ sub run_tests {
         is( $response->header('X-Action-After'), 'awesome' );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }
@@ -82,7 +82,7 @@ sub run_tests {
         is( $response->header('X-TestAppActionTestBefore'), 'one' );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }
@@ -102,7 +102,7 @@ sub run_tests {
         is( $response->header('X-TestAppActionTestMyAction'), 'MyAction works' );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }
@@ -122,7 +122,7 @@ sub run_tests {
         is( $response->header('X-Action'), 'works' );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }
@@ -142,7 +142,7 @@ sub run_tests {
         is( $response->header('X-TestAppActionTestMyAction'), 'MyAction works' );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }

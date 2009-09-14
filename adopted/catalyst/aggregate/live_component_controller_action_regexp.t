@@ -40,7 +40,7 @@ sub run_tests {
         );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }
@@ -59,7 +59,7 @@ sub run_tests {
         );
         like(
             $response->content,
-            qr/^bless\( .* 'Catalyst::Request' \)$/s,
+            qr/bless\( .* 'Catalyst::Request' \)/s,
             'Content is a serialized Catalyst::Request'
         );
     }
@@ -131,8 +131,10 @@ sub run_tests {
             'TestApp::Controller::Action::Regexp',
             'Test Class'
         );
+
+        my $host = $ENV{CATALYST_SERVER} ? URI->new($ENV{CATALYST_SERVER})->host : "localhost";
         my $location = $response->header('location');
-        $location =~ s/localhost(:\d+)?/localhost/;
+        $location =~ s/$host(:\d+)?/localhost/;
         is(
             $location,
             $url,
