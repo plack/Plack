@@ -21,7 +21,7 @@ sub guess {
 
     return $ENV{PLACK_IMPL} if $ENV{PLACK_IMPL};
 
-    if ($ENV{PHP_FCGI_CHILDREN}) {
+    if ($ENV{PHP_FCGI_CHILDREN} || $ENV{FCGI_ROLE} || $ENV{FCGI_SOCKET_PATH}) {
         return "FCGI";
     } elsif ($ENV{MOD_PERL}) {
         return "ModPerl";
