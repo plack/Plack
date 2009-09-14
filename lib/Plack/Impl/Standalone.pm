@@ -5,7 +5,9 @@ use warnings;
 use Plack::HTTPParser qw( parse_http_request );
 use IO::Socket::INET;
 use HTTP::Status;
+use List::Util qw(sum);
 use Plack::Util;
+use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
 our $HasSendFile = do {
     local $@;
@@ -37,6 +39,8 @@ sub run {
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $listen_sock->accept) {
+$conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1) or die $!;
+while (1) {
             my $env = {
                 SERVER_PORT => $self->{port},
                 SERVER_NAME => $self->{host},
@@ -50,7 +54,8 @@ sub run {
                 'psgi.multiprocess' => Plack::Util::FALSE,
             };
 
-            $self->handle_connection($env, $conn, $app);
+            $self->handle_connection($env, $conn, $app) or last;
+}
         }
     }
 }
@@ -92,18 +97,37 @@ sub handle_connection {
         }
     }
 
-    $conn->syswrite("HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\r\n");
+    my (@lines, $has_cl, $conn_value);
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
-        $conn->syswrite("$k: $v\r\n");
-    }
-    $conn->syswrite("\r\n");
-
-    if (defined(my $fileno = eval { fileno $res->[2] })) {
-        if ($fileno > 0 && $HasSendFile) {
-            Sys::Sendfile::sendfile($conn, $res->[2]);
-            return;
+        push @lines, "$k: $v\r\n";
+        if ($k =~ /^(?:(content-length)|(connection))$/i) {
+            if ($1) {
+                $has_cl = 1;
+            } else {
+                $conn_value = $v;
+            }
         }
     }
+    if (! $has_cl && ref $res->[2] eq 'ARRAY') {
+        unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\r\n";
+        $has_cl = 1;
+    }
+    if ($has_cl && ! defined($conn_value) && ($env->{HTTP_CONNECTION} || '') =~ /keep-alive/i) {
+        unshift @lines, "Connection: keep-alive\r\n";
+        $conn_value = "keep-alive";
+    }
+    unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\r\n";
+    push @lines, "\r\n";
 
-    Plack::Util::foreach( $res->[2], sub { $conn->syswrite(@_) } );
+    $conn->syswrite(join '', @lines);
+
+    if ($HasSendFile && do {
+        my $fileno = eval { fileno $res->[2] };
+        defined($fileno) && $fileno >= 0;
+     }) {
+        Sys::Sendfile::sendfile($conn, $res->[2]);
+    } else {
+        Plack::Util::foreach( $res->[2], sub { $conn->syswrite(@_) } );
+    }
+    defined($conn_value) && $conn_value =~  /keep-alive/i;
 }
