@@ -32,7 +32,7 @@ sub guess {
     } elsif (exists $INC{"AnyEvent.pm"}) {
         return "AnyEvent";
     } else {
-        return "ServerSimple";
+        return "Standalone";
     }
 }
 
