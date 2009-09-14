@@ -18,7 +18,7 @@ sub handler {
     my $app = $apps{$psgi} ||= do {
         my $app = do $psgi;
         unless (defined $app && ref $app eq 'CODE') {
-            die "Can't load psgi_app from $psgi";
+            die "Can't load psgi_app from $psgi: ", ($@ || $!);
         }
         $app;
     };
