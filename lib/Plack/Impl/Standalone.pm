@@ -2,7 +2,7 @@ package Plack::Impl::Standalone;
 use strict;
 use warnings;
 
-use HTTP::Parser::XS qw(parse_http_request);
+use Plack::HTTPParser qw( parse_http_request );
 use IO::Socket::INET;
 use HTTP::Status;
 use Plack::Util;

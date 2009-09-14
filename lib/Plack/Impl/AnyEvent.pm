@@ -7,7 +7,7 @@ use AnyEvent::Handle;
 use AnyEvent::Socket;
 use Plack::Util;
 use HTTP::Status;
-use HTTP::Parser::XS qw(parse_http_request);
+use Plack::HTTPParser qw(parse_http_request);
 use IO::Handle;
 
 sub new {
