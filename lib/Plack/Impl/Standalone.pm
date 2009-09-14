@@ -7,6 +7,11 @@ use IO::Socket::INET;
 use HTTP::Status;
 use Plack::Util;
 
+our $HasSendFile = do {
+    local $@;
+    eval { require Sys::Sendfile; 1 };
+};
+
 my $max_req_size = 131072;
 
 sub new {
@@ -66,7 +71,6 @@ sub handle_connection {
         if ($reqlen >= 0) {
             # handle request
             $buf = substr $buf, $reqlen;
-            warn "buflen: ", length($buf);
             if ($env->{CONTENT_LENGTH}) {
                 warn "content-length: ", $env->{CONTENT_LENGTH};
                 $conn->sysread($buf, $env->{CONTENT_LENGTH} - length($buf), length($buf));
@@ -90,6 +94,13 @@ sub handle_connection {
         $conn->syswrite("$k: $v\r\n");
     }
     $conn->syswrite("\r\n");
+
+    if (defined(my $fileno = eval { fileno $res->[2] })) {
+        if ($fileno > 0 && $HasSendFile) {
+            Sys::Sendfile::sendfile($conn, $res->[2]);
+            return;
+        }
+    }
 
     Plack::Util::foreach( $res->[2], sub { $conn->syswrite(@_) } );
 }
