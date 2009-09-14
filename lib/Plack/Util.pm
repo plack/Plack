@@ -31,6 +31,7 @@ sub foreach {
             $cb->($line);
         }
     } else {
+        local $/ = \4096;
         while (defined(my $line = $body->getline)) {
             $cb->($line);
         }
