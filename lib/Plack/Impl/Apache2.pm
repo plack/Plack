@@ -6,6 +6,7 @@ use Apache2::RequestIO;
 use Apache2::RequestUtil;
 use Apache2::Response;
 use Apache2::Const -compile => qw(OK);
+use APR::Table;
 use IO::Handle;
 use Plack::Util;
 
@@ -15,7 +16,9 @@ sub handler {
     my $r = shift;
 
     my $psgi = $r->dir_config('psgi_app');
+
     my $app = $apps{$psgi} ||= do {
+        local $ENV{MOD_PERL}; # trick Catalyst
         my $app = do $psgi;
         unless (defined $app && ref $app eq 'CODE') {
             die "Can't load psgi_app from $psgi: ", ($@ || $!);
