@@ -17,6 +17,7 @@ sub new {
     $self->{manager}     ||= 'FCGI::ProcManager';
     $self->{nproc}       ||= 1;
     $self->{pidfile}     ||= undef;
+    $self->{listen}      ||= ":$self->{port}" if $self->{port};
 
     $self;
 }
@@ -42,19 +43,6 @@ sub run {
     }
 
     my %env;
-    while (my ($k, $v) = each %ENV) {
-        next unless $k =~ qr/^(?:REQUEST_METHOD|SCRIPT_NAME|PATH_INFO|QUERY_STRING|SERVER_NAME|SERVER_PORT|SERVER_PROTOCOL|CONTENT_LENGTH|CONTENT_TYPE|REMOTE_ADDR)$|^HTTP_/;
-        $env{$k} = $v;
-    }
-    $env{'HTTP_COOKIE'} ||= $ENV{COOKIE};
-    $env{'psgi.version'} = [1,0];
-    $env{'psgi.url_scheme'} = ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http';
-    $env{'psgi.input'}  = *STDIN;
-    $env{'psgi.errors'} = $self->{keep_stderr} ? *STDOUT : *STDERR;
-    $env{'psgi.multithread'}  = Plack::Util::FALSE;
-    $env{'psgi.multiprocess'} = Plack::Util::TRUE;
-    $env{'psgi.run_once'}     = Plack::Util::FALSE;
-
     my $request = FCGI::Request(
         \*STDIN, \*STDOUT,
         ($self->{keep_stderr} ? \*STDOUT : \*STDERR), \%env, $sock,
@@ -86,7 +74,18 @@ sub run {
     while ($request->Accept >= 0) {
         $proc_manager && $proc_manager->pm_pre_dispatch;
 
-        my $res = $app->(\%env);
+        my $env = {
+            %env,
+            'psgi.version'      => [1,0],
+            'psgi.url_scheme'   => ($env{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
+            'psgi.input'        => *STDIN,
+            'psgi.errors'       => $self->{keep_stderr} ? *STDOUT : *STDERR,
+            'psgi.multithread'  => Plack::Util::FALSE,
+            'psgi.multiprocess' => Plack::Util::TRUE,
+            'psgi.run_once'     => Plack::Util::FALSE,
+        };
+
+        my $res = $app->($env);
         print "Status: $res->[0]\n";
         my $headers = $res->[1];
         while (my ($k, $v) = splice @$headers, 0, 2) {
