@@ -7,6 +7,7 @@ use AnyEvent::Handle;
 use AnyEvent::Socket;
 use Plack::Util;
 use HTTP::Status;
+use HTTP::Parser::XS qw(parse_http_request);
 use IO::Handle;
 
 sub new {
@@ -55,84 +56,33 @@ sub run {
         );
 
         my $parse_header;
+        my $buf = '';
         $parse_header = sub {
             my ( $handle, $chunk ) = @_;
-            $chunk =~ s/[\r\l\n\s]+$//;
-            if ( $chunk =~ /^([^()<>\@,;:\\"\/\[\]?={} \t]+):\s*(.*)/i ) {
-                my ($k, $v) = ($1,$2);
-                $k =~ s/-/_/;
-                $k = uc $k;
-                if ($k !~ /^(?:CONTENT_LENGTH|CONTENT_TYPE)$/i) {
-                    $k = "HTTP_$k";
-                }
-
-                if (exists $env->{ $k }) {
-                    $env->{ $k } .= ", $v";
-                } else {
-                    $env->{ $k } = $v;
-                }
-            }
-            if ( $chunk =~ /^$/ ) {
-                my $start_response = sub {
-                    my ($status, $headers) = @_;
-                    $handle->push_write("HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\r\n");
-                    while (my ($k, $v) = splice(@$headers, 0, 2)) {
-                        $handle->push_write("$k: $v\r\n");
-                    }
-                    $handle->push_write("\r\n");
-                    return Plack::Util::response_handle(
-                        write => sub { $handle->push_write($_[0]) },
-                        close => sub { $handle->push_shutdown },
-                    );
-                };
-                my $do_it = sub {
-                    my $res = $app->($env, $start_response);
-                    return if scalar(@$res) == 0;
-
-                    $start_response->($res->[0], $res->[1]);
-
-                    my $body = $res->[2];
-                    if ( ref $body eq 'GLOB') {
-                        my $read; $read = sub {
-                            my $w; $w = AnyEvent->io(
-                                fh => $body,
-                                poll => 'r',
-                                cb => sub {
-                                    $body->read(my $buf, 4096);
-                                    $handle->push_write($buf);
-                                    if ($body->eof) {
-                                        undef $w;
-                                        $body->close;
-                                        $handle->push_shutdown;
-                                    } else {
-                                        $read->();
-                                    }
-                                },
-                            );
-                        };
-                        $read->();
-                    }
-                    else {
-                        my $cb = sub { $handle->push_write($_[0]) };
-                        Plack::Util::foreach( $body, $cb );
-                        $handle->push_shutdown();
-                    }
-                };
+            $buf .= $chunk . "\r\n";
+            my $reqlen = parse_http_request($buf, $env);
+            if ($reqlen == -2) {
+                $handle->push_read( line => $parse_header );
+            } elsif ($reqlen == -1) {
+                $self->_start_response($handle)->(400, [ 'Content-Type' => 'text/plain' ]);
+                $handle->push_write("400 Bad Request");
+            } elsif ($reqlen > 0) {
+                my $response_handler = $self->_response_handler($handle);
                 if ($env->{CONTENT_LENGTH} && $env->{REQUEST_METHOD} =~ /^(?:POST|PUT)$/) {
-                    # XXX Oops
+                    # Slurp content
                     $handle->push_read(
                         chunk => $env->{CONTENT_LENGTH}, sub {
                             my ($handle, $data) = @_;
                             open my $input, "<", \$data;
-                            $env->{'psgi.input'}      = $input;
-                            $do_it->();
+                            $env->{'psgi.input'} = $input;
+                            $response_handler->($app, $env);
                         }
                     );
                 } else {
                     my $data = '';
                     open my $input, "<", \$data;
-                    $env->{'psgi.input'}      = $input;
-                    $do_it->();
+                    $env->{'psgi.input'} = $input;
+                    $response_handler->($app, $env);
                 }
             }
             else {
@@ -140,28 +90,7 @@ sub run {
             }
           };
 
-        $handle->push_read(
-            line => sub {
-                my $handle = shift;
-                local $_ = shift;
-                m/^(\w+)\s+(\S+)(?:\s+(\S+))?\r?$/;
-                $env->{REQUEST_METHOD}  = $1;
-                my $request_uri = $2;
-                $env->{SERVER_PROTOCOL} = $3 || 'HTTP/0.9';
-
-                my ( $file, $query_string )
-                            = ( $request_uri =~ /([^?]*)(?:\?(.*))?/s );    # split at ?
-                $env->{PATH_INFO} = $file;
-                $env->{QUERY_STRING} = $query_string || '';
-
-                # HTTP/0.9 didn't have any headers (H::S::S's author think)
-                if ( $env->{SERVER_PROTOCOL} =~ m{HTTP/(\d(\.\d)?)$} and $1 >= 1 ) {
-                    $handle->push_read(
-                        line => $parse_header,
-                    );
-                }
-            }
-        );
+        $handle->push_read( line => $parse_header );
         return;
       }, sub {
         my ( $fh, $host, $port ) = @_;
@@ -170,6 +99,63 @@ sub run {
         return 0;
       };
     $self->{listen_guard} = $guard;
+}
+
+sub _start_response {
+    my($self, $handle) = @_;
+
+    return sub {
+        my ($status, $headers) = @_;
+        $handle->push_write("HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\r\n");
+        while (my ($k, $v) = splice(@$headers, 0, 2)) {
+            $handle->push_write("$k: $v\r\n");
+        }
+        $handle->push_write("\r\n");
+        return Plack::Util::response_handle(
+            write => sub { $handle->push_write($_[0]) },
+            close => sub { $handle->push_shutdown },
+        );
+    };
+}
+
+sub _response_handler {
+    my($self, $handle) = @_;
+
+    my $start_response = $self->_start_response($handle);
+
+    return sub {
+        my($app, $env) = @_;
+        my $res = $app->($env, $start_response);
+        return if scalar(@$res) == 0;
+
+        $start_response->($res->[0], $res->[1]);
+
+        my $body = $res->[2];
+        if ( ref $body eq 'GLOB') {
+            my $read; $read = sub {
+                my $w; $w = AnyEvent->io(
+                    fh => $body,
+                    poll => 'r',
+                    cb => sub {
+                        $body->read(my $buf, 4096);
+                        $handle->push_write($buf);
+                        if ($body->eof) {
+                            undef $w;
+                            $body->close;
+                            $handle->push_shutdown;
+                        } else {
+                            $read->();
+                        }
+                    },
+                );
+            };
+            $read->();
+        } else {
+            my $cb = sub { $handle->push_write($_[0]) };
+            Plack::Util::foreach( $body, $cb );
+            $handle->push_shutdown();
+        }
+    };
 }
 
 sub run_loop {

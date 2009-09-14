@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires qw(AnyEvent);
+use Test::Requires qw(AnyEvent HTTP::Parser::XS);
 
 use Plack;
 use Plack::Test;
