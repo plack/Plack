@@ -35,6 +35,7 @@ sub run {
 
     warn "Accepting connections at http://$self->{host}:$self->{port}/\n";
     while (1) {
+        local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $listen_sock->accept) {
             my $env = {
                 SERVER_PORT => $self->{port},
