@@ -73,8 +73,10 @@ sub handle_connection {
             # handle request
             $buf = substr $buf, $reqlen;
             if ($env->{CONTENT_LENGTH}) {
-                warn "content-length: ", $env->{CONTENT_LENGTH};
-                $conn->sysread($buf, $env->{CONTENT_LENGTH} - length($buf), length($buf));
+                # TODO can $conn seek to the begining of body and then set to 'psgi.input'?
+                while (length $buf < $env->{CONTENT_LENGTH}) {
+                    $conn->sysread($buf, $env->{CONTENT_LENGTH} - length($buf), length($buf));
+                }
             }
 
             open my $input, "<", \$buf;
