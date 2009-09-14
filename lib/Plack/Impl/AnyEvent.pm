@@ -142,7 +142,9 @@ sub _response_handler {
                         if ($body->eof) {
                             undef $w;
                             $body->close;
-                            $handle->push_shutdown;
+                            $handle->on_drain(sub {
+                                $handle->destroy;
+                            });
                         } else {
                             $read->();
                         }
