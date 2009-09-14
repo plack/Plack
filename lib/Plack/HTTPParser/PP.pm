@@ -6,8 +6,6 @@ sub parse_http_request {
     my($chunk, $env) = @_;
     $env ||= {};
 
-    my $state = 'blank';
-
     # pre-header blank lines are allowed (RFC 2616 4.1)
     $chunk =~ s/^(\x0d?\x0a)+//;
     return -2 unless length $chunk;
