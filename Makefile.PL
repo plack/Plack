@@ -9,6 +9,7 @@ requires 'LWP'; # HTTP::Status, HTTP::Headers and HTTP::Request
 requires 'HTTP::Body';
 requires 'URI';
 requires 'HTTP::Request::AsCGI';
+requires 'HTTP::Parser::XS';
 
 build_requires 'Test::More';
 build_requires 'Test::TCP';
