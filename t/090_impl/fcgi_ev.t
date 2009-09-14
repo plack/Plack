@@ -6,9 +6,12 @@ use Plack;
 use Plack::Impl::FCGI::EV;
 use Test::TCP;
 use LWP::UserAgent;
+use FindBin;
 use Plack::Test;
 use t::FCGIUtils;
 # use AnyEvent;
+
+$Plack::Test::BaseDir = "$FindBin::Bin/..";
 
 use Data::Dumper;
 

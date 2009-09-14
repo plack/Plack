@@ -9,6 +9,8 @@ use Test::TCP;
 use Plack::Loader;
 use Plack::Lint;
 
+our $BaseDir = "t";
+
 # 0: test name
 # 1: request generator coderef.
 # 2: request handler
@@ -103,6 +105,31 @@ my @TEST = (
             like $res->content, qr/^package /;
             like $res->content, qr/END_MARK_FOR_TESTING$/;
         }
+    ],
+    [
+        'filehandle',
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/foo.jpg",
+            );
+        },
+        sub {
+            my $env = shift;
+            open my $fh, "$BaseDir/assets/face.jpg";
+            return [
+                200,
+                [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
+                $fh
+            ];
+        },
+        sub {
+            my $res = shift;
+            my $port = shift || 80;
+            is $res->code, 200;
+            is $res->header('content_type'), 'image/jpeg';
+            is length $res->content, 4745;
+        },
     ],
     [
         'handle HTTP-Header',
@@ -359,7 +386,6 @@ sub runtests {
 
 sub run_server_tests {
     my($class, $impl) = @_;
-
     for my $test (@TEST) {
         test_tcp(
             client => sub {

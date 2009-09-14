@@ -6,8 +6,10 @@ use Test::Requires {
     'Mojo::Server::Daemon::Prefork' => 0,
 };
 
+use FindBin;
 use Plack;
 use Plack::Test;
+$Plack::Test::BaseDir = "$FindBin::Bin/..";
 
 Plack::Test->run_server_tests('Mojo::Prefork');
 done_testing();
