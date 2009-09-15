@@ -10,6 +10,13 @@ use HTTP::Status;
 use Plack::HTTPParser qw(parse_http_request);
 use IO::Handle;
 use Errno ();
+use Scalar::Util ();
+
+our $HasAIO = eval {
+    require AnyEvent::AIO;
+    require IO::AIO;
+    1;
+};
 
 sub new {
     my($class, %args) = @_;
@@ -64,7 +71,7 @@ sub run {
                 $self->_start_response($handle)->(400, [ 'Content-Type' => 'text/plain' ]);
                 $handle->push_write("400 Bad Request");
             } else {
-                my $response_handler = $self->_response_handler($handle);
+                my $response_handler = $self->_response_handler($handle, $sock);
                 if ($env->{CONTENT_LENGTH} && $env->{REQUEST_METHOD} =~ /^(?:POST|PUT)$/) {
                     # Slurp content
                     $handle->push_read(
@@ -114,7 +121,9 @@ sub _start_response {
 }
 
 sub _response_handler {
-    my($self, $handle) = @_;
+    my($self, $handle, $sock) = @_;
+
+    Scalar::Util::weaken($sock);
 
     my $start_response = $self->_start_response($handle);
 
@@ -126,8 +135,11 @@ sub _response_handler {
         $start_response->($res->[0], $res->[1]);
 
         my $body = $res->[2];
-        if ( ref $body eq 'GLOB') {
-            # TODO use AnyEvent::AIO
+        my $disconnect_cb = sub { $handle->on_drain(sub { $handle->destroy }) };
+
+        if ( ref $body eq 'GLOB' && $HasAIO ) {
+            IO::AIO::aio_sendfile( $sock, $body, 0, -s $body, $disconnect_cb );
+        } elsif ( ref $body eq 'GLOB' ) {
             my $read; $read = sub {
                 my $w; $w = AnyEvent->io(
                     fh => $body,
@@ -138,9 +150,7 @@ sub _response_handler {
                         if ($body->eof) {
                             undef $w;
                             $body->close;
-                            $handle->on_drain(sub {
-                                $handle->destroy;
-                            });
+                            $disconnect_cb->();
                         } else {
                             $read->();
                         }
@@ -150,7 +160,7 @@ sub _response_handler {
             $read->();
         } else {
             Plack::Util::foreach( $body, sub { $handle->push_write($_[0]) } );
-            $handle->on_drain(sub { $handle->destroy });
+            $disconnect_cb->();
         }
     };
 }
