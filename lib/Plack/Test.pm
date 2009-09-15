@@ -1,6 +1,7 @@
 package Plack::Test;
 use strict;
 use warnings;
+use Digest::MD5;
 use HTTP::Request;
 use HTTP::Request::Common;
 use LWP::UserAgent;
@@ -154,6 +155,7 @@ my @TEST = (
             is $res->code, 200;
             is $res->header('content_type'), 'image/jpeg';
             is length $res->content, 2397701;
+            is Digest::MD5::md5_hex($res->content), '9c6d7249a77204a88be72e9b2fe279e8';
         },
     ],
     [
