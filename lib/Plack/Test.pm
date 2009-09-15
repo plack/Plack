@@ -132,6 +132,31 @@ my @TEST = (
         },
     ],
     [
+        'bigger file',
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/kyoto.jpg",
+            );
+        },
+        sub {
+            my $env = shift;
+            open my $fh, "$BaseDir/assets/kyoto.jpg";
+            return [
+                200,
+                [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
+                $fh
+            ];
+        },
+        sub {
+            my $res = shift;
+            my $port = shift || 80;
+            is $res->code, 200;
+            is $res->header('content_type'), 'image/jpeg';
+            is length $res->content, 2397701;
+        },
+    ],
+    [
         'handle HTTP-Header',
         sub {
             my $port = $_[0] || 80;
