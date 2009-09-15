@@ -14,10 +14,10 @@ sub new {
     $self->{keep_stderr} ||= 0;
     $self->{nointr}      ||= 0;
     $self->{detach}      ||= 0;
-    $self->{manager}     ||= 'FCGI::ProcManager';
     $self->{nproc}       ||= 1;
     $self->{pidfile}     ||= undef;
     $self->{listen}      ||= ":$self->{port}" if $self->{port};
+    $self->{manager}     = 'FCGI::ProcManager' unless exists $self->{manager};
 
     $self;
 }

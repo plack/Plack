@@ -40,7 +40,11 @@ sub run_one {
         },
         server => sub {
 warn            my $port = shift;
-            my $server = Plack::Impl::FCGI->new(host => '127.0.0.1', port => $port);
+            my $server = Plack::Impl::FCGI->new(
+                host    => '127.0.0.1',
+                port    => $port,
+                manager => '',
+            );
             $server->run($handler);
         },
         port => $fcgi_port
