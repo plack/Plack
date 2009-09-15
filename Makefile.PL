@@ -12,7 +12,7 @@ requires 'HTTP::Request::AsCGI';
 requires 'HTTP::Parser::XS';
 
 build_requires 'Test::More';
-build_requires 'Test::TCP';
+build_requires 'Test::TCP' => '0.09';
 test_requires 'Test::Requires';
 
 #author_requires 'AnyEvent';
