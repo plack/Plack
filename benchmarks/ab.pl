@@ -11,6 +11,22 @@ use Getopt::Long;
 my $app = 'eg/dot-psgi/Hello.psgi';
 my $ab  = 'ab -n 100 -c 10 -k';
 
+my %backends = (
+    AnyEvent        => 'AnyEvent',
+    Standalone      => 0,
+    ServerSimple    => 'HTTP::Server::Simple',
+    'Mojo::Prefork' => 'Mojo',
+    Coro            => 'Coro',
+);
+
+my @backends;
+for my $impl (sort keys %backends) {
+    my $req = $backends{$impl};
+    push @backends, $impl if !$req or eval "require $req; 1";
+}
+
+warn "Testing implementations: ", join(", ", @backends), "\n";
+
 GetOptions(
     'app=s'   => \$app,
     'bench=s' => \$ab,
@@ -21,7 +37,7 @@ GetOptions(
 sub main {
     print "app: $app\n";
     print "ab:  $ab\n";
-    for my $impl_class (qw/AnyEvent Standalone ServerSimple Mojo::Prefork/) {
+    for my $impl_class (@backends) {
         run_one($impl_class);
     }
 }
