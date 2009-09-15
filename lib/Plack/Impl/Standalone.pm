@@ -3,18 +3,24 @@ use strict;
 use warnings;
 
 use Plack::HTTPParser qw( parse_http_request );
+use Fcntl qw(F_SETFL FNDELAY);
 use IO::Socket::INET;
 use HTTP::Status;
-use List::Util qw(sum);
+use List::Util qw(max sum);
 use Plack::Util;
+use POSIX qw(EAGAIN);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
+use Time::HiRes qw(time);
+
+use constant MAX_REQUEST_SIZE   => 131072;
+use constant TIMEOUT            => 300;
+use constant MAX_KEEPALIVE_REQS => 100;
+use constant KEEPALIVE_TIMEOUT  => 5;
 
 our $HasSendFile = do {
     local $@;
     eval { require Sys::Sendfile; 1 };
 };
-
-my $max_req_size = 131072;
 
 sub new {
     my($class, %args) = @_;
@@ -39,8 +45,12 @@ sub run {
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $listen_sock->accept) {
-            $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1) or die $!;
-            while (1) {
+            $conn->fcntl(F_SETFL, FNDELAY)
+                or die "fcntl(FNDELAY) failed:$!";
+            $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
+                or die "setsockopt(TCP_NODELAY) failed:$!";
+            # we do not compare $req_count with MAX_KEEPALIVE_REQS here, since it is an advisory variable and can be overridden by applications
+            for (my $req_count = 1; ; ++$req_count) {
                 my $env = {
                     SERVER_PORT => $self->{port},
                     SERVER_NAME => $self->{host},
@@ -54,25 +64,24 @@ sub run {
                     'psgi.multiprocess' => Plack::Util::FALSE,
                 };
 
-                $self->handle_connection($env, $conn, $app) or last;
+                # no need to take care of pipelining since this module is a HTTP/1.0 server
+                $self->handle_connection($env, $conn, $app, $req_count)
+                    or last;
+                # TODO add special cases for clients with broken keep-alive support, as well as disabling keep-alive for HTTP/1.0 proxies
             }
         }
     }
 }
 
 sub handle_connection {
-    my($self, $env, $conn, $app) = @_;
+    my($self, $env, $conn, $app, $req_count) = @_;
 
     my $buf = '';
     my $res = [ 400, [ 'Content-Type' => 'text/plain' ], [ 'Bad Request' ] ];
 
     while (1) {
-        my $rlen = $conn->sysread(
-            $buf,
-            $max_req_size - length($buf),
-            length($buf),
-        );
-        last if ! defined($rlen) || $rlen <= 0;
+        my $rlen = $self->read_timeout($conn, \$buf, MAX_REQUEST_SIZE - length($buf), length($buf), $req_count == 1 || length($buf) != 0 ? TIMEOUT : KEEPALIVE_TIMEOUT)
+            or return;
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
             # handle request
@@ -80,7 +89,8 @@ sub handle_connection {
             if ($env->{CONTENT_LENGTH}) {
                 # TODO can $conn seek to the begining of body and then set to 'psgi.input'?
                 while (length $buf < $env->{CONTENT_LENGTH}) {
-                    $conn->sysread($buf, $env->{CONTENT_LENGTH} - length($buf), length($buf));
+                    $self->read_timeout($conn, \$buf, $env->{CONTENT_LENGTH} - length($buf), length($buf))
+                        or return;
                 }
             }
 
@@ -112,14 +122,15 @@ sub handle_connection {
         unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\r\n";
         $has_cl = 1;
     }
-    if ($has_cl && ! defined($conn_value) && ($env->{HTTP_CONNECTION} || '') =~ /keep-alive/i) {
+    if ($req_count < MAX_KEEPALIVE_REQS && $has_cl && ! defined($conn_value) && ($env->{HTTP_CONNECTION} || '') =~ /keep-alive/i) {
         unshift @lines, "Connection: keep-alive\r\n";
         $conn_value = "keep-alive";
     }
     unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\r\n";
     push @lines, "\r\n";
 
-    $conn->syswrite(join '', @lines);
+    $self->write_all($conn, join('', @lines), TIMEOUT)
+        or return;
 
     if ($HasSendFile && do {
         my $fileno = eval { fileno $res->[2] };
@@ -127,7 +138,63 @@ sub handle_connection {
      }) {
         Sys::Sendfile::sendfile($conn, $res->[2]);
     } else {
-        Plack::Util::foreach( $res->[2], sub { $conn->syswrite(@_) } );
+        Plack::Util::foreach( $res->[2], sub { $self->write_all($conn, $_[0], TIMEOUT) } );
     }
     defined($conn_value) && $conn_value =~  /keep-alive/i;
 }
+
+# returns 1 if socket is ready, undef on timeout
+sub wait_socket {
+    my ($self, $sock, $is_write, $wait_until) = @_;
+    do {
+        my $vec = '';
+        vec($vec, $sock->fileno, 1) = 1;
+        if (select($is_write ? undef : $vec, $is_write ? $vec : undef, undef,
+                   max($wait_until - time, 0)) > 0) {
+            return 1;
+        }
+    } while (time < $wait_until);
+    return;
+}
+
+# returns (positive) number of bytes read, or undef if the socket is to be closed
+sub read_timeout {
+    my ($self, $sock, $buf, $len, $off, $timeout) = @_;
+    my $wait_until = time + $timeout;
+    while ($self->wait_socket($sock, undef, $wait_until)) {
+        if (my $ret = $sock->sysread($$buf, $len, $off)) {
+            return $ret;
+        } elsif (! (! defined($ret) && $! == EAGAIN)) {
+            last;
+        }
+    }
+    return;
+}
+
+# returns (positive) number of bytes written, or undef if the socket is to be closed
+sub write_timeout {
+    my ($self, $sock, $buf, $len, $off, $timeout) = @_;
+    my $wait_until = time + $timeout;
+    while ($self->wait_socket($sock, 1, $wait_until)) {
+        if (my $ret = $sock->syswrite($buf, $len, $off)) {
+            return $ret;
+        } elsif (! (! defined($ret) && $! == EAGAIN)) {
+            last;
+        }
+    }
+    return;
+}
+
+# writes all data in buf and returns number of bytes written or undef if failed
+sub write_all {
+    my ($self, $sock, $buf, $timeout) = @_;
+    my $off = 0;
+    while (my $len = length($buf) - $off) {
+        my $ret = $self->write_timeout($sock, $buf, $len, $off, $timeout)
+            or return;
+        $off += $ret;
+    }
+    return length $buf;
+}
+
+1;
