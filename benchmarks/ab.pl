@@ -1,29 +1,43 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Plack::Loader;
 use FindBin;
-use Path::Class;
-use autodie;
+use lib "$FindBin::Bin/../lib";
+
+use Plack::Loader;
 use Test::TCP;
 use Getopt::Long;
-use Perl6::Say;
 
-my $dot_psgi = 'eg/dot-psgi/Hello.psgi';
-my $ab_opt = '-n 100 -c 10 -k';
+my $app = 'eg/dot-psgi/Hello.psgi';
+my $ab  = 'ab -n 100 -c 10 -k';
+
+my %backends = (
+    AnyEvent        => 'AnyEvent',
+    Standalone      => 0,
+    ServerSimple    => 'HTTP::Server::Simple',
+    'Mojo::Prefork' => 'Mojo',
+    Coro            => 'Coro',
+);
+
+my @backends;
+for my $impl (sort keys %backends) {
+    my $req = $backends{$impl};
+    push @backends, $impl if !$req or eval "require $req; 1";
+}
+
+warn "Testing implementations: ", join(", ", @backends), "\n";
 
 GetOptions(
-    'dot-psgi=s' => \$dot_psgi,
-    'ab-opt=s'   => \$ab_opt,
+    'app=s'   => \$app,
+    'bench=s' => \$ab,
 ) or die;
 
-
-&main;exit;
+&main;
 
 sub main {
-    say "dot_psgi: $dot_psgi";
-    say "ab_opt: $ab_opt";
-    for my $impl_class (qw/AnyEvent Standalone ServerSimple/) {
+    print "app: $app\n";
+    print "ab:  $ab\n";
+    for my $impl_class (@backends) {
         run_one($impl_class);
     }
 }
@@ -31,28 +45,24 @@ sub main {
 sub run_one {
     my $impl_class = shift;
     my $port = Test::TCP::empty_port();
-    say "-- impl_class: $impl_class";
+    print "-- impl_class: $impl_class\n";
 
     my $pid = fork();
     if ($pid > 0) { # parent
         Test::TCP::wait_port($port);
-        say `ab $ab_opt http://127.0.0.1:$port/ | grep 'Requests per '`;
+        print `$ab http://127.0.0.1:$port/ | grep 'Requests per '`;
         kill 'TERM' => $pid;
         wait();
     } else {
-        my $handler = load_handler(file(Cwd::cwd(), $dot_psgi));
+        my $handler = load_handler(Cwd::cwd() . "/". $app) or die ($! || $@);
         my $impl = Plack::Loader->load($impl_class, port => $port);
         $impl->run($handler);
         $impl->run_loop if $impl->can('run_loop'); # run event loop
     }
 }
 
-#   plackup -i $IMPL  port 8080
-#   して ab -n 100 -c 10 -k http://127.0.0.1:8080/
-
 sub load_handler {
     my $file = shift;
-    return unless -e $file;
     return do $file;
 }
 
