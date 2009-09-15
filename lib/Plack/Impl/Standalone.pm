@@ -136,7 +136,7 @@ sub handle_connection {
         my $fileno = eval { fileno $res->[2] };
         defined($fileno) && $fileno >= 0;
      }) {
-        Sys::Sendfile::sendfile($conn, $res->[2]);
+        $self->sendfile_all($conn, $res->[2], $self->{timeout});
     } else {
         my $err;
         my $done;
@@ -217,6 +217,25 @@ sub write_all {
         $off += $ret;
     }
     return length $buf;
+}
+
+sub sendfile_all {
+    my ($self, $sock, $fd, $timeout) = @_;
+    my $off = 0;
+    my $len = do {
+        my @s = stat($fd)
+            or die "stat failed:$!";
+        $s[7];
+    };
+    while ($off < $len) {
+        return
+            unless $self->wait_socket($sock, 1, time + $timeout);
+        my $r = Sys::Sendfile::sendfile($sock, $fd, $len - $off, $off);
+        return
+            unless defined $r;
+        $off += $r;
+    }
+    return $off;
 }
 
 1;
