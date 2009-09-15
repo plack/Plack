@@ -1,4 +1,4 @@
-package Plack::Impl::Prefork;
+package Plack::Impl::Standalone::Prefork;
 use strict;
 use warnings;
 

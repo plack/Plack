@@ -11,6 +11,6 @@ use Plack;
 use Plack::Test;
 $Plack::Test::BaseDir = "$FindBin::Bin/..";
 
-Plack::Test->run_server_tests('Prefork');
+Plack::Test->run_server_tests('Standalone::Prefork');
 done_testing();
 
