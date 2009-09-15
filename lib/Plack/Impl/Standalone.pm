@@ -39,23 +39,23 @@ sub run {
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $listen_sock->accept) {
-$conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1) or die $!;
-while (1) {
-            my $env = {
-                SERVER_PORT => $self->{port},
-                SERVER_NAME => $self->{host},
-                SCRIPT_NAME => '',
-                REMOTE_ADDR => $conn->peerhost,
-                'psgi.version' => [ 1, 0 ],
-                'psgi.errors'  => *STDERR,
-                'psgi.url_scheme' => 'http',
-                'psgi.run_once'     => Plack::Util::FALSE,
-                'psgi.multithread'  => Plack::Util::FALSE,
-                'psgi.multiprocess' => Plack::Util::FALSE,
-            };
+            $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1) or die $!;
+            while (1) {
+                my $env = {
+                    SERVER_PORT => $self->{port},
+                    SERVER_NAME => $self->{host},
+                    SCRIPT_NAME => '',
+                    REMOTE_ADDR => $conn->peerhost,
+                    'psgi.version' => [ 1, 0 ],
+                    'psgi.errors'  => *STDERR,
+                    'psgi.url_scheme' => 'http',
+                    'psgi.run_once'     => Plack::Util::FALSE,
+                    'psgi.multithread'  => Plack::Util::FALSE,
+                    'psgi.multiprocess' => Plack::Util::FALSE,
+                };
 
-            $self->handle_connection($env, $conn, $app) or last;
-}
+                $self->handle_connection($env, $conn, $app) or last;
+            }
         }
     }
 }
