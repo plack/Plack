@@ -201,7 +201,7 @@ sub handle {
        $self->{fh}->print(@{$r->[2]});
    } else {
        -r $r->[2]; # assume it's a real file
-       $self->handle_file;
+       $self->handle_file($r->[2]);
    }
 }
 
@@ -235,54 +235,13 @@ sub server_hostport {
 
 sub handle_file {
    my $self = shift;
-   my $length = -s _;
-   my $hdr = {
-      "Last-Modified"  => time2str ((stat _)[9]),
-   };
+   my($fh)  = @_;
 
-   my @code = (200, "ok");
-   my ($l, $h);
-
-   if ($self->{h}{range} =~ /^bytes=(.*)$/i) {
-      for (split /,/, $1) {
-         if (/^-(\d+)$/) {
-            ($l, $h) = ($length - $1, $length - 1);
-         } elsif (/^(\d+)-(\d*)$/) {
-            ($l, $h) = ($1, ($2 ne "" || $2 >= $length) ? $2 : $length - 1);
-         } else {
-            ($l, $h) = (0, $length - 1);
-            goto ignore;
-         }
-         goto satisfiable if $l >= 0 && $l < $length && $h >= 0 && $h >= $l;
-      }
-      $hdr->{"Content-Range"} = "bytes */$length";
-      $self->err(416, "not satisfiable", $hdr);
-
-satisfiable:
-      $hdr->{"Content-Range"} = "bytes $l-$h/$length";
-      @code = (206, "partial content");
-      $length = $h - $l + 1;
-
-ignore:
-   } else {
-      ($l, $h) = (0, $length - 1);
-   }
-
-   if ($self->{path} =~ /\.html$/) {
-      $hdr->{"Content-Type"} = "text/html";
-   } else {
-      $hdr->{"Content-Type"} = "application/octet-stream";
-   }
-
-   $hdr->{"Content-Length"} = $length;
-
-   $self->print_response(@code, $hdr, "");
+   my $length = -s $fh;
+   my($l, $h) = (0, $length - 1);
 
    if ($self->{method} eq "GET") {
-      my ($fh, $buf);
-      open $fh, "<", $self->{path}
-         or die "$self->{path}: late open failure ($!)";
-
+      my $buf;
       if ($l) {
          sysseek $fh, $l, 0
             or die "$self->{path}: cannot seek to $l ($!)";
@@ -295,9 +254,8 @@ ignore:
          print {$self->{fh}} $buf
             or last;
       }
-
-      close $fh;
-  }
+   }
+   close $fh;
 }
 
 __END__
