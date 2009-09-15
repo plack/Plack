@@ -85,6 +85,14 @@ sub run {
             'psgi.run_once'     => Plack::Util::FALSE,
         };
 
+        # If we're running under Lighttpd, swap PATH_INFO and SCRIPT_NAME
+        # http://lists.rawmode.org/pipermail/catalyst/2006-June/008361.html
+        # Thanks to Mark Blythe for this fix
+        if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ /lighttpd/) {
+            $env->{PATH_INFO} ||= delete $env->{SCRIPT_NAME};
+            $env->{SCRIPT_NAME} ||= '';
+        }
+
         my $res = $app->($env);
         print "Status: $res->[0]\n";
         my $headers = $res->[1];
