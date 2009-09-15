@@ -13,9 +13,6 @@ use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Time::HiRes qw(time);
 
 use constant MAX_REQUEST_SIZE   => 131072;
-use constant TIMEOUT            => 300;
-use constant MAX_KEEPALIVE_REQS => 100;
-use constant KEEPALIVE_TIMEOUT  => 5;
 
 our $HasSendFile = do {
     local $@;
@@ -25,8 +22,11 @@ our $HasSendFile = do {
 sub new {
     my($class, %args) = @_;
     bless {
-        host => $args{host} || 0,
-        port => $args{port} || 8080,
+        host               => $args{host} || 0,
+        port               => $args{port} || 8080,
+        timeout            => $args{timeout} || 300,
+        max_keepalive_reqs => $args{max_keepalive_reqs} || 100,
+        keepalive_timeout  => $args{keepalive_timeout} || 5,
     }, $class;
 }
 
@@ -49,7 +49,7 @@ sub run {
                 or die "fcntl(FNDELAY) failed:$!";
             $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                 or die "setsockopt(TCP_NODELAY) failed:$!";
-            # we do not compare $req_count with MAX_KEEPALIVE_REQS here, since it is an advisory variable and can be overridden by applications
+            # we do not compare $req_count with $self->{max_keepalive_reqs} here, since it is an advisory variable and can be overridden by applications
             for (my $req_count = 1; ; ++$req_count) {
                 my $env = {
                     SERVER_PORT => $self->{port},
@@ -80,7 +80,7 @@ sub handle_connection {
     my $res = [ 400, [ 'Content-Type' => 'text/plain' ], [ 'Bad Request' ] ];
 
     while (1) {
-        my $rlen = $self->read_timeout($conn, \$buf, MAX_REQUEST_SIZE - length($buf), length($buf), $req_count == 1 || length($buf) != 0 ? TIMEOUT : KEEPALIVE_TIMEOUT)
+        my $rlen = $self->read_timeout($conn, \$buf, MAX_REQUEST_SIZE - length($buf), length($buf), $req_count == 1 || length($buf) != 0 ? $self->{timeout} : $self->{keepalive_timeout})
             or return;
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
@@ -122,14 +122,14 @@ sub handle_connection {
         unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\r\n";
         $has_cl = 1;
     }
-    if ($req_count < MAX_KEEPALIVE_REQS && $has_cl && ! defined($conn_value) && ($env->{HTTP_CONNECTION} || '') =~ /keep-alive/i) {
+    if ($req_count < $self->{max_keepalive_reqs} && $has_cl && ! defined($conn_value) && ($env->{HTTP_CONNECTION} || '') =~ /keep-alive/i) {
         unshift @lines, "Connection: keep-alive\r\n";
         $conn_value = "keep-alive";
     }
     unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\r\n";
     push @lines, "\r\n";
 
-    $self->write_all($conn, join('', @lines), TIMEOUT)
+    $self->write_all($conn, join('', @lines), $self->{timeout})
         or return;
 
     if ($HasSendFile && do {
@@ -138,7 +138,7 @@ sub handle_connection {
      }) {
         Sys::Sendfile::sendfile($conn, $res->[2]);
     } else {
-        Plack::Util::foreach( $res->[2], sub { $self->write_all($conn, $_[0], TIMEOUT) } );
+        Plack::Util::foreach( $res->[2], sub { $self->write_all($conn, $_[0], $self->{timeout}) } );
     }
     defined($conn_value) && $conn_value =~  /keep-alive/i;
 }
