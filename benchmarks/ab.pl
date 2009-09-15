@@ -23,7 +23,7 @@ GetOptions(
 sub main {
     say "dot_psgi: $dot_psgi";
     say "ab_opt: $ab_opt";
-    for my $impl_class (qw/AnyEvent Standalone ServerSimple/) {
+    for my $impl_class (qw/AnyEvent Standalone ServerSimple Mojo::Prefork/) {
         run_one($impl_class);
     }
 }
