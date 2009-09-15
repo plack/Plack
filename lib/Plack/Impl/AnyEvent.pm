@@ -9,6 +9,7 @@ use Plack::Util;
 use HTTP::Status;
 use Plack::HTTPParser qw(parse_http_request);
 use IO::Handle;
+use Errno ();
 
 sub new {
     my($class, %args) = @_;
@@ -51,7 +52,7 @@ sub run {
             fh       => $sock,
             timeout  => 3,
             on_eof   => sub { undef $handle; undef $env; },
-            on_error => sub { undef $handle; undef $env; warn $! },
+            on_error => sub { undef $handle; undef $env; warn $! if $! != Errno::EPIPE },
             on_timeout => sub { undef $handle; undef $env; },
         );
 
