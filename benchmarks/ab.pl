@@ -14,6 +14,7 @@ my $ab  = 'ab -n 100 -c 10 -k';
 my %backends = (
     AnyEvent        => 'AnyEvent',
     Standalone      => 0,
+    Prefork         => 'Parallel::Prefork',
     ServerSimple    => 'HTTP::Server::Simple',
     'Mojo::Prefork' => 'Mojo',
     Coro            => 'Coro',

@@ -32,19 +32,29 @@ sub new {
 
 sub run {
     my($self, $app) = @_;
+    $self->setup_listener();
+    $self->accept_loop($app);
+}
 
-    my $listen_sock = IO::Socket::INET->new(
+sub setup_listener {
+    my $self = shift;
+    $self->{listen_sock} = IO::Socket::INET->new(
         Listen    => SOMAXCONN,
         LocalPort => $self->{port},
         LocalAddr => $self->{host},
         Proto     => 'tcp',
         ReuseAddr => 1,
     ) or die "failed to listen to port $self->{port}:$!";
-
     warn "Accepting connections at http://$self->{host}:$self->{port}/\n";
+}
+
+sub accept_loop {
+    # TODO handle $max_reqs_per_child
+    my($self, $app, $max_reqs_per_child) = @_;
+    
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
-        if (my $conn = $listen_sock->accept) {
+        if (my $conn = $self->{listen_sock}->accept) {
             $conn->fcntl(F_SETFL, FNDELAY)
                 or die "fcntl(FNDELAY) failed:$!";
             $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
