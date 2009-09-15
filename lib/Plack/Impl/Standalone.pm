@@ -220,13 +220,11 @@ sub write_all {
 }
 
 sub sendfile_all {
+    # TODO fallback to write_all
     my ($self, $sock, $fd, $timeout) = @_;
     my $off = 0;
-    my $len = do {
-        my @s = stat($fd)
-            or die "stat failed:$!";
-        $s[7];
-    };
+    my $len = -s $fd;
+    die "TODO" unless defined $len;
     while ($off < $len) {
         return
             unless $self->wait_socket($sock, 1, time + $timeout);
