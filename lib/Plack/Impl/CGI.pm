@@ -40,8 +40,11 @@ __END__
 
 =head1 SYNOPSIS
 
+    ## in your .cgi
+    #!/usr/bin/perl
     use Plack::Impl::CGI;
 
+    # or do() from .psgi file
     my $app = sub {
         my $env = shift;
         return [
@@ -51,8 +54,7 @@ __END__
         ];
     };
 
-    my $handler = Plack::Impl::CGI->new;
-    $handler->run($app);
+    Plack::Impl::CGI->new->run($app);
 
 =head1 SEE ALSO
 
