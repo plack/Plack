@@ -138,7 +138,21 @@ sub _response_handler {
         my $disconnect_cb = sub { $handle->on_drain(sub { $handle->destroy }) };
 
         if ( ref $body eq 'GLOB' && $HasAIO ) {
-            IO::AIO::aio_sendfile( $sock, $body, 0, -s $body, $disconnect_cb );
+            my $offset = 0;
+            my $length = -s $body;
+
+            my $sendfile; $sendfile = sub {
+                IO::AIO::aio_sendfile( $sock, $body, $offset, $length - $offset, sub {
+                    $offset += shift;
+                    if ($offset >= $length) {
+                        undef $sendfile;
+                        $disconnect_cb->();
+                    } else {
+                        $sendfile->();
+                    }
+                });
+            };
+            $sendfile->();
         } elsif ( ref $body eq 'GLOB' ) {
             my $read; $read = sub {
                 my $w; $w = AnyEvent->io(
