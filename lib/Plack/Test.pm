@@ -117,7 +117,7 @@ my @TEST = (
         },
         sub {
             my $env = shift;
-            open my $fh, "$BaseDir/assets/face.jpg";
+            open my $fh, '<', "$BaseDir/assets/face.jpg";
             return [
                 200,
                 [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
@@ -142,7 +142,7 @@ my @TEST = (
         },
         sub {
             my $env = shift;
-            open my $fh, "$BaseDir/assets/kyoto.jpg";
+            open my $fh, '<', "$BaseDir/assets/kyoto.jpg";
             return [
                 200,
                 [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
@@ -420,6 +420,7 @@ sub run_server_tests {
                 note $test->[0];
                 my $ua  = LWP::UserAgent->new;
                 my $res = $ua->request($test->[1]->($port));
+                local $Test::Builder::Level = $Test::Builder::Level + 3;
                 $test->[3]->($res, $port);
             },
             server => sub {
