@@ -57,17 +57,13 @@ sub run {
         );
 
         my $parse_header;
-        my $buf = '';
         $parse_header = sub {
             my ( $handle, $chunk ) = @_;
-            $buf .= $chunk . "\r\n";
-            my $reqlen = parse_http_request($buf, $env);
-            if ($reqlen == -2) {
-                $handle->push_read( line => $parse_header );
-            } elsif ($reqlen == -1) {
+            my $reqlen = parse_http_request($chunk . "\015\012", $env);
+            if ($reqlen < 0) {
                 $self->_start_response($handle)->(400, [ 'Content-Type' => 'text/plain' ]);
                 $handle->push_write("400 Bad Request");
-            } elsif ($reqlen > 0) {
+            } else {
                 my $response_handler = $self->_response_handler($handle);
                 if ($env->{CONTENT_LENGTH} && $env->{REQUEST_METHOD} =~ /^(?:POST|PUT)$/) {
                     # Slurp content
@@ -86,19 +82,16 @@ sub run {
                     $response_handler->($app, $env);
                 }
             }
-            else {
-                $handle->push_read( line => $parse_header );
-            }
           };
 
-        $handle->push_read( line => $parse_header );
+        $handle->unshift_read( line => qr{(?<![^\012])\015?\012}, $parse_header );
         return;
       }, sub {
-        my ( $fh, $host, $port ) = @_;
-        $self->{prepared_host} = $host;
-        $self->{prepared_port} = $port;
-        warn "Accepting requests at http://$host:$port/\n";
-        return 0;
+          my ( $fh, $host, $port ) = @_;
+          $self->{prepared_host} = $host;
+          $self->{prepared_port} = $port;
+          warn "Accepting requests at http://$host:$port/\n";
+          return 0;
       };
     $self->{listen_guard} = $guard;
 }
@@ -108,11 +101,11 @@ sub _start_response {
 
     return sub {
         my ($status, $headers) = @_;
-        $handle->push_write("HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\r\n");
+        $handle->push_write("HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\015\012");
         while (my ($k, $v) = splice(@$headers, 0, 2)) {
-            $handle->push_write("$k: $v\r\n");
+            $handle->push_write("$k: $v\015\012");
         }
-        $handle->push_write("\r\n");
+        $handle->push_write("\015\012");
         return Plack::Util::response_handle(
             write => sub { $handle->push_write($_[0]) },
             close => sub { $handle->push_shutdown },
@@ -134,6 +127,7 @@ sub _response_handler {
 
         my $body = $res->[2];
         if ( ref $body eq 'GLOB') {
+            # TODO use AnyEvent::AIO
             my $read; $read = sub {
                 my $w; $w = AnyEvent->io(
                     fh => $body,
@@ -155,9 +149,8 @@ sub _response_handler {
             };
             $read->();
         } else {
-            my $cb = sub { $handle->push_write($_[0]) };
-            Plack::Util::foreach( $body, $cb );
-            $handle->push_shutdown();
+            Plack::Util::foreach( $body, sub { $handle->push_write($_[0]) } );
+            $handle->on_drain(sub { $handle->destroy });
         }
     };
 }
