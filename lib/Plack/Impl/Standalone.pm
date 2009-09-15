@@ -138,23 +138,27 @@ sub handle_connection {
      }) {
         Sys::Sendfile::sendfile($conn, $res->[2]);
     } else {
-        local $@;
+        my $err;
         my $done;
-        eval {
-            Plack::Util::foreach(
-                $res->[2],
-                sub {
-                    $self->write_all($conn, $_[0], $self->{timeout})
-                        or die "failed to send all data\n";
-                },
-            );
-            $done = 1;
+        {
+            local $@;
+            eval {
+                Plack::Util::foreach(
+                    $res->[2],
+                    sub {
+                        $self->write_all($conn, $_[0], $self->{timeout})
+                            or die "failed to send all data\n";
+                    },
+                );
+                $done = 1;
+            };
+            $err = $@;
         };
         unless ($done) {
-            if ($@ =~ /^failed to send all data\n/) {
+            if ($err =~ /^failed to send all data\n/) {
                 return;
             } else {
-                die $@;
+                die $err;
             }
         }
     }
