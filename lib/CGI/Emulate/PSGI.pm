@@ -95,15 +95,53 @@ __END__
 
 =head1 SYNOPSIS
 
-    CGI::Emulate::PSGI->handler(sub {
-        # your handler
+    my $app = CGI::Emulate::PSGI->handler(sub {
+        # Existent CGI code, or just:
+        do "script.cgi";
     });
 
 =head2 DESCRIPTION
 
-This module allows an application designed for the CGI environment to run in a PSGI environment,
-and thus on any of the backends that PSGI supports.
+This module allows an application designed for the CGI environment to
+run in a PSGI environment, and thus on any of the backends that PSGI
+supports.
 
-It works by translating the environment provided by the PSGI specification to one expected by the CGI
-specification. Likewise, it captures output as it would be prepared for the CGI standard, and translates it
-to the format expected for the PSGI standard.
+It works by translating the environment provided by the PSGI
+specification to one expected by the CGI specification. Likewise, it
+captures output as it would be prepared for the CGI standard, and
+translates it to the format expected for the PSGI standard.
+
+=head1 CGI.pm
+
+If your application uses L<CGI>, be sure to cleanup the global
+variables in the handler loop yourself, so:
+
+    my $app = CGI::Emulate::PSGI->handler(sub {
+        do "script-that-uses-cgi-pm.cgi";
+        CGI::_reset_globals;
+    });
+
+Otherwise previous request variables will be reused in the new
+requests.
+
+Alternatively, you'd probably better upgrade the module to the version
+that supports PSGI input directly, and change your code that does:
+
+  my $q = CGI->new;
+  # ...
+  print $q->header, $output;
+
+into:
+
+  use CGI::PSGI; # necessary
+  sub {
+      my $env = shift;
+      local *ENV = $env;
+      my $q = CGI->new;
+      # ...
+      return [ $q->header, [ $output ] ];
+  };
+
+See L<CGI::PSGI> for details.
+
+=cut
