@@ -11,6 +11,7 @@ use Plack::HTTPParser qw(parse_http_request);
 use IO::Handle;
 use Errno ();
 use Scalar::Util ();
+use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
 our $HasAIO = eval {
     require AnyEvent::AIO;
@@ -38,6 +39,8 @@ sub run {
         if ( !$sock ) {
             return;
         }
+        setsockopt($sock, IPPROTO_TCP, TCP_NODELAY, 1)
+            or die "setsockopt(TCP_NODELAY) failed:$!";
 
         my $env = {
             SERVER_PORT       => $self->{prepared_port},
