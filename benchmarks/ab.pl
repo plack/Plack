@@ -13,6 +13,7 @@ my $ab  = 'ab -n 100 -c 10 -k';
 
 my %backends = (
     AnyEvent        => 'AnyEvent',
+    'AnyEvent::HTTPD' => 'AnyEvent::HTTPD',
     Standalone      => 0,
     ServerSimple    => 'HTTP::Server::Simple',
     'Mojo::Prefork' => 'Mojo',
