@@ -34,8 +34,8 @@ sub new {
     my ($class, %args) = @_;
 
     my $self = bless {}, $class;
-    $self->{host} = delete $args{host} || undef;
-    $self->{port} = delete $args{port} || undef;
+    $self->{host} = delete $args{host} || '0.0.0.0';
+    $self->{port} = delete $args{port} || 8080;
 
     $self;
 }
@@ -44,7 +44,7 @@ sub run {
     my ($self, $app) = @_;
 
     my $ssock = IO::Socket::INET->new(
-        LocalAddr => $self->{host} || '0.0.0.0',
+        LocalAddr => $self->{host},
         LocalPort => $self->{port},
         Proto     => 'tcp',
         Listen    => SOMAXCONN,
@@ -53,20 +53,28 @@ sub run {
     ) or die $!;
     IO::Handle::blocking($ssock, 0);
 
-    my ($prepared_port, $prepared_host) = unpack_sockaddr(getsockname $ssock);
-    $prepared_host = format_address($prepared_host);
-
     Danga::Socket->AddOtherFds(fileno($ssock) => sub {
         my $csock = $ssock->accept or return;
 
         IO::Handle::blocking($csock, 0);
         setsockopt($csock, IPPROTO_TCP, TCP_NODELAY, pack('l', 1)) or die $!;
 
-        my ($peer_port, $peer_host) = unpack_sockaddr(getsockname $csock);
+        my $socket = Danga::Socket::Callback->new(
+            handle        => $csock,
+            context       => {
+                state => STATE_HEADER,
+                rbuf  => '',
+                app   => $app,
+            },
+            on_read_ready => sub {
+                my ($socket) = @_;
+                $self->_next($socket);
+            },
+        );
 
         my $env = {
-            SERVER_PORT         => $prepared_port,
-            SERVER_NAME         => $prepared_host,
+            SERVER_PORT         => $self->{port},
+            SERVER_NAME         => $self->{host},
             SCRIPT_NAME         => '',
             'psgi.version'      => [ 1, 0 ],
             'psgi.errors'       => *STDERR,
@@ -75,22 +83,9 @@ sub run {
             'psgi.run_once'     => Plack::Util::FALSE,
             'psgi.multithread'  => Plack::Util::FALSE,
             'psgi.multiprocess' => Plack::Util::FALSE,
-            REMOTE_ADDR         => format_address($peer_host),
+            REMOTE_ADDR         => $socket->peer_ip_string,
         };
-
-        Danga::Socket::Callback->new(
-            handle        => $csock,
-            context       => {
-                state => STATE_HEADER,
-                rbuf  => '',
-                env   => $env,
-                app   => $app,
-            },
-            on_read_ready => sub {
-                my ($socket) = @_;
-                $self->_next($socket);
-            },
-        );
+        $socket->{context}{env} = $env;
     });
 }
 
@@ -239,90 +234,6 @@ sub _response_handler {
             $socket->close;
         }
     };
-}
-
-# All below codes are from AnyEvent::Socket
-BEGIN {
-   *sockaddr_family = $Socket::VERSION >= 1.75
-      ? \&Socket::sockaddr_family
-      : # for 5.6.x, we need to do something much more horrible
-        (Socket::pack_sockaddr_in 0x5555, "\x55\x55\x55\x55"
-           | eval { Socket::pack_sockaddr_un "U" }) =~ /^\x00/
-           ? sub { unpack "xC", $_[0] }
-           : sub { unpack "S" , $_[0] };
-}
-
-my $sa_un_zero = eval { Socket::pack_sockaddr_un "" }; $sa_un_zero ^= $sa_un_zero;
-
-sub unpack_sockaddr($) {
-   my $af = sockaddr_family $_[0];
-
-   if ($af == AF_INET) {
-      Socket::unpack_sockaddr_in $_[0]
-   } elsif ($af == AF_INET6) {
-      unpack "x2 n x4 a16", $_[0]
-   } elsif ($af == AF_UNIX) {
-      ((Socket::unpack_sockaddr_un $_[0] ^ $sa_un_zero), pack "S", AF_UNIX)
-   } else {
-      Carp::croak "unpack_sockaddr: unsupported protocol family $af";
-   }
-}
-
-sub format_ipv4($) {
-   join ".", unpack "C4", $_[0]
-}
-
-sub format_ipv6($) {
-   if (v0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0 eq $_[0]) {
-      return "::";
-   } elsif (v0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1 eq $_[0]) {
-      return "::1";
-   } elsif (v0.0.0.0.0.0.0.0.0.0.0.0 eq substr $_[0], 0, 12) {
-      # v4compatible
-      return "::" . format_ipv4 substr $_[0], 12;
-   } elsif (v0.0.0.0.0.0.0.0.0.0.255.255 eq substr $_[0], 0, 12) {
-      # v4mapped
-      return "::ffff:" . format_ipv4 substr $_[0], 12;
-   } elsif (v0.0.0.0.0.0.0.0.255.255.0.0 eq substr $_[0], 0, 12) {
-      # v4translated
-      return "::ffff:0:" . format_ipv4 substr $_[0], 12;
-   } else {
-      my $ip = sprintf "%x:%x:%x:%x:%x:%x:%x:%x", unpack "n8", $_[0];
-
-      # this is rather sucky, I admit
-      $ip =~ s/^0:(?:0:)*(0$)?/::/
-         or $ip =~ s/(:0){7}$/::/ or $ip =~ s/(:0){7}/:/
-         or $ip =~ s/(:0){6}$/::/ or $ip =~ s/(:0){6}/:/
-         or $ip =~ s/(:0){5}$/::/ or $ip =~ s/(:0){5}/:/
-         or $ip =~ s/(:0){4}$/::/ or $ip =~ s/(:0){4}/:/
-         or $ip =~ s/(:0){3}$/::/ or $ip =~ s/(:0){3}/:/
-         or $ip =~ s/(:0){2}$/::/ or $ip =~ s/(:0){2}/:/
-         or $ip =~ s/(:0){1}$/::/ or $ip =~ s/(:0){1}/:/;
-      return $ip
-   }
-}
-
-sub address_family($) {
-   4 == length $_[0]
-      ? AF_INET
-      : 16 == length $_[0]
-         ? AF_INET6
-         : unpack "S", $_[0]
-}
-
-sub format_address($) {
-   my $af = address_family $_[0];
-   if ($af == AF_INET) {
-      return &format_ipv4;
-   } elsif ($af == AF_INET6) {
-      return (v0.0.0.0.0.0.0.0.0.0.255.255 eq substr $_[0], 0, 12)
-         ? format_ipv4 substr $_[0], 12
-         : &format_ipv6;
-   } elsif ($af == AF_UNIX) {
-      return "unix/"
-   } else {
-      return undef
-   }
 }
 
 1;
