@@ -1,13 +1,9 @@
 package Plack::Util;
 use strict;
+use Scalar::Util;
 
 sub TRUE()  { 1==1 }
 sub FALSE() { !TRUE }
-
-# Is it safe to use Scalar::Util everywhere?
-sub _blessed {
-    ref $_[0] && ref($_[0]) !~ /^(?:SCALAR|ARRAY|HASH|CODE|GLOB|Regexp)$/;
-}
 
 sub load_class {
     my($class, $prefix) = @_;
@@ -21,6 +17,17 @@ sub load_class {
     require "$file.pm"; ## no critic
 
     return $class;
+}
+
+sub is_real_fh {
+    my $fh = shift;
+
+    if ( Scalar::Util::reftype($fh) eq 'GLOB' &&
+         do { my $fileno = fileno $fh; defined($fileno) && $fileno >= 0 } ) {
+        return TRUE
+    } else {
+        return FALSE;
+    }
 }
 
 sub foreach {
@@ -60,3 +67,72 @@ sub write { $_[0]->[0]->(@_[1..$#_]) }
 sub close { $_[0]->[1]->(@_[1..$#_]) }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Plack::Util - Utility subroutines for Plack server and framework developers
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item TRUE, FALSE
+
+  my $true  = Plack::Util::TRUE;
+  my $false = Plack::Util::FALSE;
+
+Utility constants to include when you specify boolean variables in C<$env> hash (e.g. C<psgi.multithread>).
+
+=item load_class
+
+  my $class = Plack::Util::load_class($class [, $prefix ]);
+
+Constructs a class name and C<require> the class. Throws an exception
+if the .pm file for the class is not found, just with the build-in
+C<require>.
+
+If C<$prefix> is set, the class name is prepended to the C<$class>
+unless C<$class> begins with C<+> sign, which means the class name is
+alrwady fully qualified.
+
+  my $class = Plack::Util::load_class("Foo");                   # Foo
+  my $class = Plack::Util::load_class("Baz", "Foo::Bar");       # Foo::Bar::Baz
+  my $class = Plack::Util::load_class("+XYZ::ZZZ", "Foo::Bar"); # XYZ::ZZZ
+
+=item is_real_fh
+
+  if ( Plack::Util::is_real_fh($fh) ) { }
+
+returns true if a given C<$fh> is a real file handle that has a file
+descriptor. It returns false if C<$fh> is PerlIO handle that is not
+really related to the underlying file etc.
+
+=item foreach
+
+  Plack::Util::foreach($body, $cb);
+
+Iterate through I<$body> which is an array reference or
+IO::Handle-like object and pass each line (which is NOT really
+guaranteed to be a I<line>) to the callback function.
+
+It internally sets the buffer length C<$/> to 4096 in case it reads
+the binary file (TODO: should this be configurable).
+
+=item response_handle
+
+  my $handle = Plack::Util::response_handle(
+      write => sub { },
+      close => sub { },
+  );
+
+Helper function to create a ResponseHandler object that is useful to
+return in C<$start_response> when C<psgi.async> is enabled.
+
+=back
+
+=cut
+
+
+

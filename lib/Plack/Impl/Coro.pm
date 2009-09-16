@@ -85,7 +85,7 @@ sub process_request {
 
     $fh->syswrite(join '', @lines);
 
-    if ($HasAIO && Scalar::Util::reftype $res->[2] eq 'GLOB' && fileno $res->[2] > 0) {
+    if ($HasAIO && Plack::Util::is_real_fh($res->[2])) {
         my $length = -s $res->[2];
         my $offset = 0;
         while (1) {

@@ -132,10 +132,7 @@ sub handle_connection {
     $self->write_all($conn, join('', @lines), $self->{timeout})
         or return;
 
-    if ($HasSendFile && do {
-        my $fileno = eval { fileno $res->[2] };
-        defined($fileno) && $fileno >= 0;
-     }) {
+    if ($HasSendFile && Plack::Util::is_real_fh($res->[2])) {
         $self->sendfile_all($conn, $res->[2], $self->{timeout});
     } else {
         my $err;
