@@ -3,14 +3,13 @@ use strict;
 use warnings;
 
 use Plack::HTTPParser qw( parse_http_request );
-use Fcntl qw(F_SETFL FNDELAY);
 use IO::Socket::INET;
 use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
-use POSIX qw(EAGAIN);
+use POSIX qw(EINTR);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
-use Time::HiRes qw(time);
+use Time::HiRes qw(alarm time);
 
 use constant MAX_REQUEST_SIZE   => 131072;
 
@@ -56,8 +55,6 @@ sub accept_loop {
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $self->{listen_sock}->accept) {
-            $conn->fcntl(F_SETFL, FNDELAY)
-                or die "fcntl(FNDELAY) failed:$!";
             $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                 or die "setsockopt(TCP_NODELAY) failed:$!";
             for (my $req_count = 1; ; ++$req_count, ++$proc_req_count) {
@@ -185,45 +182,38 @@ sub handle_connection {
 }
 
 # returns 1 if socket is ready, undef on timeout
-sub wait_socket {
-    my ($self, $sock, $is_write, $wait_until) = @_;
-    do {
-        my $vec = '';
-        vec($vec, $sock->fileno, 1) = 1;
-        if (select($is_write ? undef : $vec, $is_write ? $vec : undef, undef,
-                   max($wait_until - time, 0)) > 0) {
-            return 1;
+sub do_timeout {
+    my ($self, $cb, $timeout) = @_;
+    local $SIG{ALRM} = sub {};
+    my $wait_until = time + $timeout;
+    alarm($timeout);
+    my $ret;
+    while (1) {
+        if ($ret = $cb->()) {
+            last;
+        } elsif (! (! defined($ret) && $! == EINTR)) {
+            undef $ret;
+            last;
         }
-    } while (time < $wait_until);
-    return;
+        # got EINTR
+        my $left = $wait_until - time;
+        last if $left <= 0;
+        alarm($left + 0.1);
+    }
+    alarm(0);
+    $ret;
 }
 
 # returns (positive) number of bytes read, or undef if the socket is to be closed
 sub read_timeout {
     my ($self, $sock, $buf, $len, $off, $timeout) = @_;
-    my $wait_until = time + $timeout;
-    while ($self->wait_socket($sock, undef, $wait_until)) {
-        if (my $ret = $sock->sysread($$buf, $len, $off)) {
-            return $ret;
-        } elsif (! (! defined($ret) && $! == EAGAIN)) {
-            last;
-        }
-    }
-    return;
+    $self->do_timeout(sub { $sock->sysread($$buf, $len, $off) }, $timeout);
 }
 
 # returns (positive) number of bytes written, or undef if the socket is to be closed
 sub write_timeout {
     my ($self, $sock, $buf, $len, $off, $timeout) = @_;
-    my $wait_until = time + $timeout;
-    while ($self->wait_socket($sock, 1, $wait_until)) {
-        if (my $ret = $sock->syswrite($buf, $len, $off)) {
-            return $ret;
-        } elsif (! (! defined($ret) && $! == EAGAIN)) {
-            last;
-        }
-    }
-    return;
+    $self->do_timeout(sub { $sock->syswrite($buf, $len, $off) }, $timeout);
 }
 
 # writes all data in buf and returns number of bytes written or undef if failed
@@ -245,9 +235,10 @@ sub sendfile_all {
     my $len = -s $fd;
     die "TODO" unless defined $len;
     while ($off < $len) {
-        return
-            unless $self->wait_socket($sock, 1, time + $timeout);
-        my $r = Sys::Sendfile::sendfile($sock, $fd, $len - $off, $off);
+        my $r = $self->do_timeout(
+            sub { Sys::Sendfile::sendfile($sock, $fd, $len - $off, $off) },
+            $timeout,
+        );
         return
             unless defined $r;
         $off += $r;
