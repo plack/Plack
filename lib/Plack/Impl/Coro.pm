@@ -124,6 +124,10 @@ I/O wait as long as it yields when being blocked, to the other
 coroutine either explicitly with C<cede> or automatically (via Coro::*
 magic).
 
+  # your web application
+  use Coro::LWP;
+  my $content = LWP::Simple:;get($url); # this yields to other threads when IO blocks
+
 This server also uses L<Coro::AIO> (and L<IO::AIO>) if available, to
 send the static filehandle using sendfile(2).
 
