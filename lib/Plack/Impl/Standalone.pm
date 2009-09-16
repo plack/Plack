@@ -119,7 +119,7 @@ sub handle_connection {
 
     my (@lines, $has_cl, $conn_value);
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
-        push @lines, "$k: $v\r\n";
+        push @lines, "$k: $v\015\012";
         if ($k =~ /^(?:(content-length)|(connection))$/i) {
             if ($1) {
                 $has_cl = 1;
@@ -129,15 +129,15 @@ sub handle_connection {
         }
     }
     if (! $has_cl && ref $res->[2] eq 'ARRAY') {
-        unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\r\n";
+        unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\015\012";
         $has_cl = 1;
     }
     if ($req_count < $self->{max_keepalive_reqs} && $has_cl && ! defined($conn_value) && ($env->{HTTP_CONNECTION} || '') =~ /keep-alive/i) {
-        unshift @lines, "Connection: keep-alive\r\n";
+        unshift @lines, "Connection: keep-alive\015\012";
         $conn_value = "keep-alive";
     }
-    unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\r\n";
-    push @lines, "\r\n";
+    unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012";
+    push @lines, "\015\012";
 
     $self->write_all($conn, join('', @lines), $self->{timeout})
         or return;
