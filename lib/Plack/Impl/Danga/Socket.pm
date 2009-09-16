@@ -205,11 +205,16 @@ sub _response_handler {
 
         my $body = $res->[2];
         my $disconnect_cb = sub {
-            $socket->watch_write(1);
-            $socket->{on_write_ready} = sub {
-                my ($socket) = @_;
-                $socket->write && $socket->close;
-            };
+            if ($socket->write) {
+                $socket->close;
+            }
+            else {
+                $socket->watch_write(1);
+                $socket->{on_write_ready} = sub {
+                    my ($socket) = @_;
+                    $socket->write && $socket->close;
+                };
+            }
         };
 
         if ($HasAIO && Plack::Util::is_real_fh($body)) {
@@ -233,13 +238,7 @@ sub _response_handler {
         elsif (ref $body eq 'GLOB') {
             my $read = do { local $/; <$body> };
             $body->close;
-
-            if ($socket->write($read)) {
-                $socket->close;
-            }
-            else {
-                $disconnect_cb->();
-            }
+            $disconnect_cb->();
         }
         else {
             Plack::Util::foreach( $body, sub { $socket->write($_[0]) } );
