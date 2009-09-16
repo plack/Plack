@@ -51,6 +51,7 @@ sub setup_listener {
 sub accept_loop {
     # TODO handle $max_reqs_per_child
     my($self, $app, $max_reqs_per_child) = @_;
+    my $proc_req_count = 1;
     
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
@@ -59,8 +60,7 @@ sub accept_loop {
                 or die "fcntl(FNDELAY) failed:$!";
             $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                 or die "setsockopt(TCP_NODELAY) failed:$!";
-            # we do not compare $req_count with $self->{max_keepalive_reqs} here, since it is an advisory variable and can be overridden by applications
-            for (my $req_count = 1; ; ++$req_count) {
+            for (my $req_count = 1; ; ++$req_count, ++$proc_req_count) {
                 my $env = {
                     SERVER_PORT => $self->{port},
                     SERVER_NAME => $self->{host},
@@ -75,8 +75,13 @@ sub accept_loop {
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server
-                $self->handle_connection($env, $conn, $app, $req_count)
-                    or last;
+                $self->handle_connection(
+                    $env, $conn, $app,
+                    $req_count < $self->{max_keepalive_reqs}
+                        && (! $max_reqs_per_child
+                                || $proc_req_count < $max_reqs_per_child),
+                    $req_count != 0,
+                ) or last;
                 # TODO add special cases for clients with broken keep-alive support, as well as disabling keep-alive for HTTP/1.0 proxies
             }
         }
@@ -84,17 +89,23 @@ sub accept_loop {
 }
 
 sub handle_connection {
-    my($self, $env, $conn, $app, $req_count) = @_;
+    my($self, $env, $conn, $app, $may_keepalive, $is_keepalive) = @_;
 
     my $buf = '';
     my $res = [ 400, [ 'Content-Type' => 'text/plain' ], [ 'Bad Request' ] ];
 
     while (1) {
-        my $rlen = $self->read_timeout($conn, \$buf, MAX_REQUEST_SIZE - length($buf), length($buf), $req_count == 1 || length($buf) != 0 ? $self->{timeout} : $self->{keepalive_timeout})
-            or return;
+        my $rlen = $self->read_timeout(
+            $conn, \$buf, MAX_REQUEST_SIZE - length($buf), length($buf),
+            $is_keepalive || length($buf) != 0
+                ? $self->{timeout} : $self->{keepalive_timeout},
+        ) or return;
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
             # handle request
+            if ($may_keepalive && ! ($env->{HTTP_CONNECTION} || '') =~ /^\s*keep-alive\s*$/i) {
+                $may_keepalive = undef;
+            }
             $buf = substr $buf, $reqlen;
             if ($env->{CONTENT_LENGTH}) {
                 # TODO can $conn seek to the begining of body and then set to 'psgi.input'?
@@ -119,20 +130,21 @@ sub handle_connection {
 
     my (@lines, $has_cl, $conn_value);
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
-        push @lines, "$k: $v\015\012";
         if ($k =~ /^(?:(content-length)|(connection))$/i) {
             if ($1) {
                 $has_cl = 1;
             } else {
+                next unless $may_keepalive;
                 $conn_value = $v;
             }
         }
+        push @lines, "$k: $v\015\012";
     }
     if (! $has_cl && ref $res->[2] eq 'ARRAY') {
         unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\015\012";
         $has_cl = 1;
     }
-    if ($req_count < $self->{max_keepalive_reqs} && $has_cl && ! defined($conn_value) && ($env->{HTTP_CONNECTION} || '') =~ /keep-alive/i) {
+    if ($may_keepalive && $has_cl && ! defined($conn_value)) {
         unshift @lines, "Connection: keep-alive\015\012";
         $conn_value = "keep-alive";
     }
