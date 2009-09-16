@@ -118,7 +118,7 @@ variables in the handler loop yourself, so:
 
     my $app = CGI::Emulate::PSGI->handler(sub {
         do "script-that-uses-cgi-pm.cgi";
-        CGI::initialize_globals() if %CGI::;
+        CGI::initialize_globals() if defined &CGI::initialize_globals;
     });
 
 Otherwise previous request variables will be reused in the new
