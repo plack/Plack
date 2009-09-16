@@ -2,19 +2,17 @@
 use strict;
 use lib "lib";
 use Cwd;
-use Getopt::Long;
+use Getopt::Std;
 use Plack::Loader;
 use Pod::Usage;
 
-GetOptions(\my %opts, "app=s", "impl=s", "help");
-
-pod2usage(0) if $opts{help};
+getopts('c:i:', \my %opts);
 
 # If there is an explicit implementation mentioned, use it, otherwise leave $ENV{PLACK_IMPL} alone.
-$ENV{PLACK_IMPL} = $opts{impl} if $opts{impl};
+$ENV{PLACK_IMPL} = $opts{i} if $opts{i};
 
-my $file = $opts{app} || "app.psgi";
-my $handler = load_handler($opts{app} || Cwd::cwd . "/app.psgi");
+my $file = $opts{c} || "app.psgi";
+my $handler = load_handler($opts{c} || Cwd::cwd . "/app.psgi");
 
 unless ($handler) {
     die $@ if $@;
@@ -46,14 +44,14 @@ plackup -- a useful tool for running Plack applications
   # read your app from app.psgi file
   plackup
 
-  # can be passed with --app option (Or -a)
-  plackup --app hello.psgi
+  # can be passed with -c option
+  plackup -c hello.psgi
 
   # switch implementations
-  env PLACK_IMPL=Mojo plackup -- --port 9999
+  env PLACK_IMPL=Mojo plackup --port 9999
 
-  # Or, --impl (or -i)
-  plackup --impl AnyEvent
+  # Or, -i
+  plackup -i AnyEvent
 
 =head1 DESCRIPTION
 
@@ -63,14 +61,11 @@ Plackup automatically figures out the environment it is run in, and runs your
 application in that environment.  mod_perl, FastCGI, CGI, AnyEvent and Mojo and
 others can all be detected. See L<Plack::Loader> for the authorative list.
 
-C<plackup> assumes you have an C<app.psgi> script, but you can use the
-C<--app> option to use a C<.psgi> script with a different name in a
-different path. (Actually the path doesn't need to end in C<.psgi>:
-it's just there for convention)
+C<< plackup >> assumes you have an C<< app.psgi >> script, but you can use the "-c" option
+to use a C<< .psgi >> script with a different name.
 
-You may also select a specific implementation to run on using the
-C<PLACK_IMPL> environment variable or use the C<-i> or C<--impl> flag
-which will be prefered over the environment variable if present.
+You may also select a specific implementation to run on using the PLACK_IMPL environment variable
+or use the C<< -i >> flag which will be prefered over the environment variable if present.
 
 =head1 SEE ALSO
 
