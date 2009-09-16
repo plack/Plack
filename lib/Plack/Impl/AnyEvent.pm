@@ -83,8 +83,7 @@ sub run {
                         }
                     );
                 } else {
-                    my $data = '';
-                    open my $input, "<", \$data;
+                    open my $input, "<", \"";
                     $env->{'psgi.input'} = $input;
                     $response_handler->($app, $env);
                 }
@@ -108,11 +107,17 @@ sub _start_response {
 
     return sub {
         my ($status, $headers) = @_;
-        $handle->push_write("HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\015\012");
+
+        my $hdr;
+        $hdr .= "HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\015\012";
         while (my ($k, $v) = splice(@$headers, 0, 2)) {
-            $handle->push_write("$k: $v\015\012");
+            $hdr .= "$k: $v\015\012";
         }
-        $handle->push_write("\015\012");
+        $hdr .= "\015\012";
+
+        $handle->push_write($hdr);
+
+        return unless defined wantarray;
         return Plack::Util::response_handle(
             write => sub { $handle->push_write($_[0]) },
             close => sub { $handle->push_shutdown },
@@ -137,7 +142,7 @@ sub _response_handler {
         my $body = $res->[2];
         my $disconnect_cb = sub { $handle->on_drain(sub { $handle->destroy }) };
 
-        if ( ref $body eq 'GLOB' && $HasAIO ) {
+        if ( $HasAIO && Plack::Util::is_real_fh($body) ) {
             my $offset = 0;
             my $length = -s $body;
 
