@@ -9,7 +9,6 @@ sub new {
 sub run {
     my($self, $app) = @_;
 
-    warn $self->{host};
     my $server = Plack::Impl::Coro::Server->new(host => $self->{host} || '*');
     $server->{app} = $app;
     $server->run(port => $self->{port});
@@ -19,7 +18,10 @@ sub run {
 package Plack::Impl::Coro::Server;
 use base qw( Net::Server::Coro );
 
+our $HasAIO = eval "use Coro::AIO; 1";
+
 use HTTP::Status;
+use Scalar::Util;
 use List::Util qw(sum max);
 use Plack::HTTPParser qw( parse_http_request );
 use constant MAX_REQUEST_SIZE => 131072;
@@ -82,6 +84,18 @@ sub process_request {
     push @lines, "\015\012";
 
     $fh->syswrite(join '', @lines);
+
+    if ($HasAIO && Scalar::Util::reftype $res->[2] eq 'GLOB' && fileno $res->[2] > 0) {
+        my $length = -s $res->[2];
+        my $offset = 0;
+        while (1) {
+            my $sent = aio_sendfile( $fh->fh, $res->[2], $offset, $length - $offset );
+            $offset += $sent;
+            last if $offset >= $length;
+        }
+        return;
+    }
+
     Plack::Util::foreach($res->[2], sub { $fh->syswrite(@_) });
 }
 
