@@ -85,7 +85,7 @@ sub process_request {
 
     $fh->syswrite(join '', @lines);
 
-    if ($HasAIO && Scalar::Util::reftype $res->[2] eq 'GLOB' && fileno $res->[2] > 0) {
+    if ($HasAIO && Plack::Util::is_real_fh($res->[2])) {
         my $length = -s $res->[2];
         my $offset = 0;
         while (1) {
@@ -123,6 +123,10 @@ Because it's Coro based your web application can actually block with
 I/O wait as long as it yields when being blocked, to the other
 coroutine either explicitly with C<cede> or automatically (via Coro::*
 magic).
+
+  # your web application
+  use Coro::LWP;
+  my $content = LWP::Simple:;get($url); # this yields to other threads when IO blocks
 
 This server also uses L<Coro::AIO> (and L<IO::AIO>) if available, to
 send the static filehandle using sendfile(2).

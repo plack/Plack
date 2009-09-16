@@ -39,7 +39,7 @@ sub run_one {
             $test->($res, $port);
         },
         server => sub {
-warn            my $port = shift;
+            my $port = shift;
             my $server = Plack::Impl::FCGI->new(
                 host        => '127.0.0.1',
                 port        => $port,

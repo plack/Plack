@@ -142,7 +142,7 @@ sub _response_handler {
         my $body = $res->[2];
         my $disconnect_cb = sub { $handle->on_drain(sub { $handle->destroy }) };
 
-        if ( ref $body eq 'GLOB' && $HasAIO ) {
+        if ( $HasAIO && Plack::Util::is_real_fh($body) ) {
             my $offset = 0;
             my $length = -s $body;
 
