@@ -1,7 +1,8 @@
 use AnyEvent;
 my $app = sub {
     my($env, $start_response) = @_;
-    die "This app needs psgi.async backend" unless $env->{'psgi.async'};
+    die "This app needs psgi.async backend (AnyEvent or Danga::Socket + Danga::Socket::AnyEvent)"
+        unless $env->{'psgi.async'};
 
     my $writer = $start_response->(200, ['X-Foo' => 'bar']);
     my $streamer; $streamer = AnyEvent->timer(
