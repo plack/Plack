@@ -39,6 +39,12 @@ sub handler {
         'psgi.run_once'       => Plack::Util::FALSE,
     };
 
+    # http://gist.github.com/187070 and PSGI spec
+    if ($env->{SCRIPT_NAME} eq '/' and $env->{PATH_INFO} eq '') {
+        $env->{SCRIPT_NAME} = '';
+        $env->{PATH_INFO}   = '/';
+    }
+
     my $res = $app->($env);
 
     my $headers = ($res->[0] >= 200 && $res->[0] < 300)
