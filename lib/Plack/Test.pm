@@ -363,6 +363,23 @@ my @TEST = (
         }
     ],
     [
+        'Do not crash when the app dies',
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/",
+            );
+        },
+        sub {
+            my $env = shift;
+            die "Oops";
+        },
+        sub {
+            my $res = shift;
+            is $res->code, 500;
+        }
+    ],
+    [
         'multi headers',
         sub {
             my $port = $_[0] || 80;
