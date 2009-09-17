@@ -121,7 +121,7 @@ sub _start_response {
         $handle->push_write($hdr);
 
         return unless defined wantarray;
-        return Plack::Util::response_handle(
+        return Plack::Util::inline_object(
             write => sub { $handle->push_write($_[0]) },
             close => sub { $handle->push_shutdown },
         );
@@ -162,24 +162,16 @@ sub _response_handler {
             };
             $sendfile->();
         } elsif ( ref $body eq 'GLOB' ) {
-            my $read; $read = sub {
-                my $w; $w = AnyEvent->io(
-                    fh => $body,
-                    poll => 'r',
-                    cb => sub {
-                        $body->read(my $buf, 4096);
-                        $handle->push_write($buf);
-                        if ($body->eof) {
-                            undef $w;
-                            $body->close;
-                            $disconnect_cb->();
-                        } else {
-                            $read->();
-                        }
-                    },
-                );
-            };
-            $read->();
+            no warnings 'recursion';
+            $handle->on_drain(sub {
+                my $read = $body->read(my $buf, 4096);
+                $handle->push_write($buf);
+                if ($read == 0) {
+                    $body->close;
+                    $handle->on_drain;
+                    $handle->destroy;
+                }
+            });
         } else {
             Plack::Util::foreach( $body, sub { $handle->push_write($_[0]) } );
             $disconnect_cb->();

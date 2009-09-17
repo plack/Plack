@@ -1,5 +1,6 @@
 package Plack::Util;
 use strict;
+use Carp ();
 use Scalar::Util;
 
 sub TRUE()  { 1==1 }
@@ -46,25 +47,31 @@ sub foreach {
     }
 }
 
-sub response_handle {
-    my %methods = @_;
-    Plack::Util::ResponseHandle->new(%methods);
+sub inline_object {
+    my %args = @_;
+    bless {%args}, 'Plack::Util::Prototype';
 }
 
-package Plack::Util::ResponseHandle;
+package Plack::Util::Prototype;
 
-sub new {
-    my($class, %methods) = @_;
-
-    my $self = bless [ ], $class;
-    $self->[0] = $methods{write} or do { require Carp; Carp::croak("write() should be implemented.") };
-    $self->[1] = $methods{close} || sub {};
-
-    return $self;
+our $AUTOLOAD;
+sub can {
+    exists $_[0]->{$_[1]};
 }
 
-sub write { $_[0]->[0]->(@_[1..$#_]) }
-sub close { $_[0]->[1]->(@_[1..$#_]) }
+sub AUTOLOAD {
+    my ($self, @args) = @_;
+    my $attr = $AUTOLOAD;
+    $attr =~ s/.*://;
+    if (ref($self->{$attr}) eq 'CODE') {
+        $self->{$attr}->(@args)
+    }
+    Carp::croak(qq/Can't locate object method "$attr" via package "Plack::Util::Prototype"/);
+}
+
+sub DESTROY { }
+
+package Plack::Util;
 
 1;
 
@@ -119,16 +126,6 @@ guaranteed to be a I<line>) to the callback function.
 
 It internally sets the buffer length C<$/> to 4096 in case it reads
 the binary file, unless otherwise set in the caller's code.
-
-=item response_handle
-
-  my $handle = Plack::Util::response_handle(
-      write => sub { },
-      close => sub { },
-  );
-
-Helper function to create a ResponseHandler object that is useful to
-return in C<$start_response> when C<psgi.async> is enabled.
 
 =back
 
