@@ -77,9 +77,10 @@ sub AUTOLOAD {
     my $attr = $AUTOLOAD;
     $attr =~ s/.*://;
     if (ref($self->{$attr}) eq 'CODE') {
-        $self->{$attr}->(@args)
+        $self->{$attr}->(@args);
+    } else {
+        Carp::croak(qq/Can't locate object method "$attr" via package "Plack::Util::Prototype"/);
     }
-    Carp::croak(qq/Can't locate object method "$attr" via package "Plack::Util::Prototype"/);
 }
 
 sub DESTROY { }
