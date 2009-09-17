@@ -38,7 +38,7 @@ sub foreach {
             $cb->($line);
         }
     } else {
-        local $/ = \4096;
+        local $/ = \4096 unless ref $/;
         while (defined(my $line = $body->getline)) {
             $cb->($line);
         }
@@ -118,7 +118,7 @@ IO::Handle-like object and pass each line (which is NOT really
 guaranteed to be a I<line>) to the callback function.
 
 It internally sets the buffer length C<$/> to 4096 in case it reads
-the binary file (TODO: should this be configurable).
+the binary file, unless otherwise set in the caller's code.
 
 =item response_handle
 
