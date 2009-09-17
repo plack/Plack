@@ -12,11 +12,12 @@ my $app = 'eg/dot-psgi/Hello.psgi';
 my $ab  = 'ab -n 100 -c 10 -k';
 
 my %backends = (
-    AnyEvent        => 'AnyEvent',
-    Standalone      => 0,
-    ServerSimple    => 'HTTP::Server::Simple',
-    'Mojo::Prefork' => 'Mojo',
-    Coro            => 'Net::Server::Coro',
+    AnyEvent              => 'AnyEvent',
+    Standalone            => 0,
+    'Standalone::Prefork' => 0,
+    ServerSimple          => 'HTTP::Server::Simple',
+    'Mojo::Prefork'       => 'Mojo',
+    Coro                  => 'Net::Server::Coro',
 );
 
 my @backends;
