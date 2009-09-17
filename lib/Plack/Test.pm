@@ -404,6 +404,9 @@ my @TEST = (
         }
     ],
 );
+
+our @RAW_HANDLERS = map $_->[2], @TEST;
+
 for my $test (@TEST) {
     my $orig = $test->[2];
     $test->[2] = sub {
