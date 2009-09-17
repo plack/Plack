@@ -137,7 +137,7 @@ sub _response_handler {
 
     return sub {
         my($app, $env) = @_;
-        my $res = Plack::Util::wrap_error { $app->($env, $start_response) } $env;
+        my $res = Plack::Util::run_app $app, $env, $start_response;
         return if scalar(@$res) == 0;
 
         $start_response->($res->[0], $res->[1]);

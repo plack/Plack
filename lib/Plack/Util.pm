@@ -47,10 +47,10 @@ sub foreach {
     }
 }
 
-sub wrap_error(&$) {
-    my($code, $env) = @_;
+sub run_app($$;$) {
+    my($app, $env) = (shift, shift);
 
-    local $@; my $res = eval { $code->() };
+    local $@; my $res = eval { $app->($env, @_) };
     if ($@) {
         my $body = "Internal Server Error";
         $env->{'psgi.errors'}->print($@);
@@ -140,12 +140,13 @@ guaranteed to be a I<line>) to the callback function.
 It internally sets the buffer length C<$/> to 4096 in case it reads
 the binary file, unless otherwise set in the caller's code.
 
-=item wrap_error
+=item run_app
 
-  my $res = Plack::Util::wrap_error { $app->($env) } $env;
+  my $res = Plack::Util::run_app $app, $env [, $start_response ];
 
-Runs the code by wrapping erros and if an error is found, logs it to
-C<< $env->{'psgi.errors'} >> and returns the template 500 Error response.
+Runs the I<$app> by wrapping errors with I<eval> and if an error is
+found, logs it to C<< $env->{'psgi.errors'} >> and returns the
+template 500 Error response.
 
 =item inline_object
 
