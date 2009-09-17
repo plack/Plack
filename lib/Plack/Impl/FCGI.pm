@@ -94,7 +94,7 @@ sub run {
             $env->{SERVER_NAME} =~ s/:\d+$//; # cut off port number
         }
 
-        my $res = $app->($env);
+        my $res = Plack::Util::wrap_error { $app->($env) } $env;
         print "Status: $res->[0]\n";
         my $headers = $res->[1];
         while (my ($k, $v) = splice @$headers, 0, 2) {
