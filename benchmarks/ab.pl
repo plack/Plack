@@ -17,6 +17,7 @@ my %backends = (
     ServerSimple    => 'HTTP::Server::Simple',
     'Mojo::Prefork' => 'Mojo',
     Coro            => 'Net::Server::Coro',
+    'Danga::Socket' => 'Danga::Socket',
 );
 
 my @backends;
