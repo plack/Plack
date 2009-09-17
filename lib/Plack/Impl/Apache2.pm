@@ -18,7 +18,7 @@ sub handler {
     my $psgi = $r->dir_config('psgi_app');
 
     my $app = $apps{$psgi} ||= do {
-        local $ENV{MOD_PERL}; # trick Catalyst
+        delete $ENV{MOD_PERL}; # trick Catalyst/CGI.pm etc.
         my $app = do $psgi;
         unless (defined $app && ref $app eq 'CODE') {
             die "Can't load psgi_app from $psgi: ", ($@ || $!);
