@@ -183,7 +183,7 @@ sub _start_response {
         $socket->write($hdr);
 
         return unless defined wantarray;
-        return Plack::Util::response_handle(
+        return Plack::Util::inline_object(
             write => sub { $socket->write($_[0]) },
             close => sub { $socket->close },
         );

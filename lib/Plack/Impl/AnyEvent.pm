@@ -121,7 +121,7 @@ sub _start_response {
         $handle->push_write($hdr);
 
         return unless defined wantarray;
-        return Plack::Util::response_handle(
+        return Plack::Util::inline_object(
             write => sub { $handle->push_write($_[0]) },
             close => sub { $handle->push_shutdown },
         );
