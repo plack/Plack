@@ -18,7 +18,7 @@ sub handler {
     my $psgi = $r->dir_config('psgi_app');
 
     my $app = $apps{$psgi} ||= do {
-        local $ENV{MOD_PERL}; # trick Catalyst
+        delete $ENV{MOD_PERL}; # trick Catalyst/CGI.pm etc.
         my $app = do $psgi;
         unless (defined $app && ref $app eq 'CODE') {
             die "Can't load psgi_app from $psgi: ", ($@ || $!);
@@ -38,6 +38,12 @@ sub handler {
         'psgi.multiprocess'   => Plack::Util::TRUE,
         'psgi.run_once'       => Plack::Util::FALSE,
     };
+
+    # http://gist.github.com/187070 and PSGI spec
+    if ($env->{SCRIPT_NAME} eq '/' and $env->{PATH_INFO} eq '') {
+        $env->{SCRIPT_NAME} = '';
+        $env->{PATH_INFO}   = '/';
+    }
 
     my $res = $app->($env);
 
