@@ -96,7 +96,7 @@ sub handle_connection {
 
             open my $input, "<", \$buf;
             $env->{'psgi.input'} = $input;
-            $res = $app->($env);
+            $res = Plack::Util::wrap_error { $app->($env) } $env;
             last;
         }
         if ($reqlen == -2) {

@@ -54,7 +54,7 @@ sub process_request {
 
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
-            $res = $self->{app}->($env);
+            $res = Plack::Util::wrap_error { $self->{app}->($env) } $env;
             last;
         } elsif ($reqlen == -2) {
             # incomplete, continue

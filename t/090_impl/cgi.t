@@ -12,7 +12,7 @@ Plack::Test->runtests(sub {
     my ($name, $reqgen, $handler, $test) = @_;
     note $name;
     my $c = HTTP::Request::AsCGI->new($reqgen->())->setup;
-    Plack::Impl::CGI->new->run($handler);
+    eval { Plack::Impl::CGI->new->run($handler) };
     $test->($c->response);
 });
 

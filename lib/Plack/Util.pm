@@ -47,6 +47,19 @@ sub foreach {
     }
 }
 
+sub wrap_error(&$) {
+    my($code, $env) = @_;
+
+    local $@; my $res = eval { $code->() };
+    if ($@) {
+        my $body = "Internal Server Error";
+        $env->{'psgi.errors'}->print($@);
+        return [ 500, [ 'Content-Type' => 'text/plain', 'Content-Length' => length($body) ], [ $body ] ];
+    }
+
+    return $res;
+}
+
 sub inline_object {
     my %args = @_;
     bless {%args}, 'Plack::Util::Prototype';
@@ -126,6 +139,27 @@ guaranteed to be a I<line>) to the callback function.
 
 It internally sets the buffer length C<$/> to 4096 in case it reads
 the binary file, unless otherwise set in the caller's code.
+
+=item wrap_error
+
+  my $res = Plack::Util::wrap_error { $app->($env) } $env;
+
+Runs the code by wrapping erros and if an error is found, logs it to
+C<< $env->{'psgi.errors'} >> and returns the template 500 Error response.
+
+=item inline_object
+
+  my $o = Plack::Util::inline_object(
+      write => sub { $h->push_write(@_) },
+      close => sub { $h->push_shutdown },
+  );
+  $o->write(@stuff);
+  $o->close;
+
+Creates an instant object that can react to methods passed in the
+constructor. Handy to create when you need to create an IO stream
+object for input or errors, as well as respone writer object for
+L<PSGI::Async> extension.
 
 =back
 
