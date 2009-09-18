@@ -56,7 +56,7 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
   my $app = sub { ... }
 
   enable Plack::Middleware::Foo
-  enable Plack::Middleware::Bar %options, $foo;
+  enable Plack::Middleware::Bar %options, $app;
 
 =head1 DESCRIPTION
 
