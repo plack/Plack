@@ -7,15 +7,15 @@ our @EXPORT = qw( builder );
 sub builder(&) {
     my $block = shift;
 
-    my @builders;
+    my @wrappers;
     local *Plack::Middleware::enable = sub {
         my($class, @args) = @_;
-        push @builders, sub { $class->wrap(@args, $_[0]) };
+        push @wrappers, sub { $class->wrap(@args, $_[0]) };
     };
 
     my $app = $block->();
 
-    for my $mw (reverse @builders) {
+    for my $mw (reverse @wrappers) {
         $app = $mw->($app);
     }
 
@@ -50,6 +50,22 @@ Plack::Builder gives you a quick DSL to wrap your application with
 Plack::Middleware subclasses. The middleware you're trying to use
 should use L<Plack::Middleware> as a base class to use this DSL,
 inspired by Rack::Builder.
+
+Whenever you call C<enable> on any middleware, the middleware app is
+pushed to the stack inside the builder, and then reversed when it
+actually creates a wrapped application handler, so:
+
+  builder {
+     enable Plack::Middleware::Foo;
+     enable Plack::Middleware::Bar opt => "val";
+     $app;
+  };
+
+is syntactically equal to:
+
+  Plack::Middleware::Foo->wrap(
+      Plack::Middleware::Bar->wrap(opt => "val", $app)
+  );
 
 =head1 SEE ALSO
 

@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use Plack::Impl::CGI;
 use Plack::Middleware::XFramework;
 use Plack::Builder;
 use Test::More;
