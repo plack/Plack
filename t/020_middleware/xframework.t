@@ -4,12 +4,12 @@ use Plack::Impl::CGI;
 use Plack::Middleware::XFramework;
 use Test::More;
 
-my $handler = Plack::Middleware::XFramework->new(+{
+my $handler = enable Plack::Middleware::XFramework
     framework => 'Dog',
-    code => sub {
+    sub {
         [200, [], ['ok']]
-    }
-});
+    };
+
 my $res = $handler->(+{});
 is_deeply $res, [200, ['X-Framework' => 'Dog'], ['ok']];
 

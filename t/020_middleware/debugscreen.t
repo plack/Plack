@@ -5,11 +5,7 @@ use Test::Requires qw( CGI::ExceptionManager );
 use Plack::Impl::CGI;
 use Plack::Middleware::DebugScreen;
 
-my $handler = Plack::Middleware::DebugScreen->new(
-    code => sub {
-        die "orz";
-    }
-);
+my $handler = enable Plack::Middleware::DebugScreen sub { die "orz" };
 my $res = $handler->(+{});
 is scalar(@$res), 3;
 is $res->[0], 500;
