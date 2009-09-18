@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Requires qw( CGI::ExceptionManager );
-use Plack::Impl::CGI;
 use Plack::Middleware::DebugScreen;
 
 my $handler = Plack::Middleware::DebugScreen->wrap(sub { die "orz" });
