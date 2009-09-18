@@ -11,6 +11,7 @@ sub run {
 
     my $server = Plack::Impl::Coro::Server->new(host => $self->{host} || '*');
     $server->{app} = $app;
+    $server->{print_banner} = $self->{print_banner};
     $server->run(port => $self->{port});
 }
 
@@ -25,6 +26,13 @@ use Scalar::Util;
 use List::Util qw(sum max);
 use Plack::HTTPParser qw( parse_http_request );
 use constant MAX_REQUEST_SIZE => 131072;
+
+sub pre_loop_hook {
+    my $self = shift;
+    if (my $cb = $self->{print_banner}) {
+        $cb->($self->{server}->{host}->[0], $self->{server}->{port}->[0]);
+    }
+}
 
 sub process_request {
     my $self = shift;

@@ -12,14 +12,23 @@ sub new {
 
     my $port = delete $args{port};
     my $host = delete $args{host};
+    my $print_banner = delete $args{print_banner};
 
     my $self = $class->SUPER::new($port);
     $self->host($host) if defined $host;
+    $self->{print_banner} = $print_banner if defined $print_banner;
 
     $self;
 }
 
-#sub print_banner { }
+sub print_banner {
+    my ($self, ) = @_;
+    if (defined $self->{print_banner}) {
+        $self->{print_banner}->($self->host, $self->port);
+    } else {
+        $self->SUPER::print_banner();
+    }
+}
 
 sub run {
     my($self, $app) = @_;

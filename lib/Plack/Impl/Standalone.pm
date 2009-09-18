@@ -27,6 +27,7 @@ sub new {
         timeout            => $args{timeout} || 300,
         max_keepalive_reqs => $args{max_keepalive_reqs} || 100,
         keepalive_timeout  => $args{keepalive_timeout} || 5,
+        print_banner       => $args{print_banner} || sub { warn "Accepting requests at http://$_[0]:$_[1]/\n" },
     }, $class;
 }
 
@@ -41,7 +42,7 @@ sub run {
         ReuseAddr => 1,
     ) or die "failed to listen to port $self->{port}:$!";
 
-    warn "Accepting connections at http://$self->{host}:$self->{port}/\n";
+    $self->{print_banner}->($self->{host}, $self->{port});
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $listen_sock->accept) {

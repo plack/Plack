@@ -25,6 +25,7 @@ sub new {
     my $self = bless {}, $class;
     $self->{host} = delete $args{host} || undef;
     $self->{port} = delete $args{port} || undef;
+    $self->{print_banner} = delete $args{print_banner} || sub { warn "Accepting requests at http://$_[0]:$_[1]/\n" };
 
     $self;
 }
@@ -99,7 +100,7 @@ sub run {
           my ( $fh, $host, $port ) = @_;
           $self->{prepared_host} = $host;
           $self->{prepared_port} = $port;
-          warn "Accepting requests at http://$host:$port/\n";
+          $self->{print_banner}->($host, $port);
           return 0;
       };
     $self->{listen_guard} = $guard;
