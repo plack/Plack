@@ -4,7 +4,7 @@ use warnings;
 use base qw/Plack::Middleware/;
 __PACKAGE__->mk_accessors(qw/framework/);
 
-sub app_handler {
+sub to_app {
     my $self = shift;
 
     return sub {

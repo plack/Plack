@@ -8,7 +8,7 @@ use Encode;
 
 __PACKAGE__->mk_accessors(qw/powered_by renderer/);
 
-sub app_handler {
+sub to_app {
     my $self = shift;
 
     return sub {

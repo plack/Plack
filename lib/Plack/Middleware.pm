@@ -2,6 +2,7 @@ package Plack::Middleware;
 use strict;
 use warnings;
 use base qw/Class::Accessor::Fast/;
+use Carp ();
 
 __PACKAGE__->mk_accessors(qw/app/);
 
@@ -14,11 +15,14 @@ sub import {
     }
 }
 
-# DSL!
-sub enable {
+sub wrap {
     my($class, @args) = @_;
     my $app = pop @args;
-    $class->new({ @args, app => $app })->app_handler;
+    $class->new({ app => $app, @args })->to_app;
+}
+
+sub enable {
+    Carp::croak "enable Plack::Middleware should be called inside Plack::Builder's builder {} block";
 }
 
 1;
@@ -34,7 +38,7 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
   package Plack::Middleware::Foo;
   use base qw( Plack::Middleware );
 
-  sub app_handler {
+  sub to_app {
       my $self = shift;
 
       return sub {
@@ -52,18 +56,33 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
   }
 
   # then in app.psgi
+  use Plack::Builder;
+  use Plack::Middleware qw( Foo Bar );
 
-  my $app = sub { ... }
+  my $app = sub { ... } # as usual
 
-  enable Plack::Middleware::Foo
-  enable Plack::Middleware::Bar %options, $app;
+  builder {
+      enable Plack::Middleware::Foo;
+      enable Plack::Middleware::Bar %options;
+      $app;
+  };
 
 =head1 DESCRIPTION
 
-Plack::Middleware is an utility base class to write PSGI middleware.
+Plack::Middleware is an utility base class to write PSGI
+middleware. See L<Plack::Builder> how to actually enable them in your
+I<.psgi> application file using the DSL.
+
+If you do not like our DSL, you can also use C<wrap> method to wrap
+your application with a middleware:
+
+  use Plack::Middleware::Foo;
+
+  my $app = sub { ... };
+  Plack::Middleware::Foo->wrap(@options, $app);
 
 =head1 SEE ALSO
 
-L<Plack>
+L<Plack> L<Plack::Builder>
 
 =cut
