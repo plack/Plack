@@ -2,6 +2,7 @@ package Plack::Util;
 use strict;
 use Carp ();
 use Scalar::Util;
+use IO::Handle;
 
 sub TRUE()  { 1==1 }
 sub FALSE() { !TRUE }
