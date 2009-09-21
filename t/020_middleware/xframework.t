@@ -1,15 +1,17 @@
 use strict;
 use warnings;
-use Plack::Impl::CGI;
 use Plack::Middleware::XFramework;
+use Plack::Builder;
 use Test::More;
 
-my $handler = Plack::Middleware::XFramework->new(+{
-    framework => 'Dog',
-    code => sub {
+my $handler = builder {
+    enable Plack::Middleware::XFramework
+        framework => 'Dog';
+    sub {
         [200, [], ['ok']]
-    }
-});
+    };
+};
+
 my $res = $handler->(+{});
 is_deeply $res, [200, ['X-Framework' => 'Dog'], ['ok']];
 

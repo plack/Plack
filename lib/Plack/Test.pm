@@ -372,7 +372,7 @@ my @TEST = (
         },
         sub {
             my $env = shift;
-            die "Oops";
+            die "Throwing an exception from app handler. Server shouldn't crash.";
         },
         sub {
             my $res = shift;

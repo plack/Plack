@@ -10,6 +10,7 @@ requires 'HTTP::Body';
 requires 'URI';
 requires 'HTTP::Request::AsCGI';
 requires 'HTTP::Parser::XS';
+requires 'Pod::Usage';
 
 build_requires 'Test::More';
 build_requires 'Test::TCP' => '0.09';

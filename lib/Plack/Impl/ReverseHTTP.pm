@@ -3,7 +3,6 @@ use strict;
 use AnyEvent::ReverseHTTP;
 use AnyEvent::Handle;
 use AnyEvent::Socket;
-use HTTP::Parser;
 use HTTP::Response;
 use Plack::Util;
 

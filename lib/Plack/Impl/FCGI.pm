@@ -85,15 +85,16 @@ sub run {
             'psgi.run_once'     => Plack::Util::FALSE,
         };
 
-        # If we're running under Lighttpd, swap PATH_INFO and SCRIPT_NAME
+        # If we're running under Lighttpd, swap PATH_INFO and SCRIPT_NAME if PATH_INFO is empty
         # http://lists.rawmode.org/pipermail/catalyst/2006-June/008361.html
         # Thanks to Mark Blythe for this fix
         if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ /lighttpd/) {
-            $env->{PATH_INFO} ||= delete $env->{SCRIPT_NAME};
+            $env->{PATH_INFO}   ||= delete $env->{SCRIPT_NAME};
             $env->{SCRIPT_NAME} ||= '';
+            $env->{SERVER_NAME} =~ s/:\d+$//; # cut off port number
         }
 
-        my $res = $app->($env);
+        my $res = Plack::Util::run_app $app, $env;
         print "Status: $res->[0]\n";
         my $headers = $res->[1];
         while (my ($k, $v) = splice @$headers, 0, 2) {

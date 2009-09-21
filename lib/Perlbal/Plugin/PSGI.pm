@@ -60,7 +60,7 @@ sub handle_request {
         );
     };
 
-    my $res = $app->($env, $start_response);
+    my $res = Plack::Util::run_app $app, $env, $start_response;
     return 1 if @$res == 0;
 
     $start_response->($res);

@@ -27,8 +27,6 @@ sub guess {
         return "ModPerl";
     } elsif ($ENV{GATEWAY_INTERFACE}) {
         return "CGI";
-    } elsif (exists $INC{"Mojo.pm"}) {
-        return "Mojo";
     } elsif (exists $INC{"AnyEvent.pm"}) {
         return "AnyEvent";
     } else {

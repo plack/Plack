@@ -4,11 +4,14 @@ use warnings;
 use base qw/Plack::Middleware/;
 __PACKAGE__->mk_accessors(qw/framework/);
 
-sub call {
+sub to_app {
     my $self = shift;
-    my $res = $self->code->( @_ );
-    push @{$res->[1]}, 'X-Framework' => $self->framework;
-    $res;
+
+    return sub {
+        my $res = $self->app->( @_ );
+        push @{$res->[1]}, 'X-Framework' => $self->framework;
+        $res;
+    };
 }
 
 1;

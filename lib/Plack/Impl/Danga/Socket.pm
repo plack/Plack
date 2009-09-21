@@ -198,7 +198,7 @@ sub _response_handler {
     Scalar::Util::weaken($socket);
     return sub {
         my ($app, $env) = @_;
-        my $res = $app->($env, $state_response);
+        my $res = Plack::Util::run_app $app, $env, $state_response;
         return if scalar(@$res) == 0;
 
         $state_response->($res->[0], $res->[1]);

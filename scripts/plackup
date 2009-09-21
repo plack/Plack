@@ -2,17 +2,19 @@
 use strict;
 use lib "lib";
 use Cwd;
-use Getopt::Std;
+use Getopt::Long;
 use Plack::Loader;
 use Pod::Usage;
 
-getopts('c:i:', \my %opts);
+GetOptions(\my %opts, "app=s", "impl=s", "help");
+
+pod2usage(0) if $opts{help};
 
 # If there is an explicit implementation mentioned, use it, otherwise leave $ENV{PLACK_IMPL} alone.
-$ENV{PLACK_IMPL} = $opts{i} if $opts{i};
+$ENV{PLACK_IMPL} = $opts{impl} if $opts{impl};
 
-my $file = $opts{c} || "app.psgi";
-my $handler = load_handler($opts{c} || Cwd::cwd . "/app.psgi");
+my $file = $opts{app} || "app.psgi";
+my $handler = load_handler($opts{app} || Cwd::cwd . "/app.psgi");
 
 unless ($handler) {
     die $@ if $@;
@@ -44,28 +46,42 @@ plackup -- a useful tool for running Plack applications
   # read your app from app.psgi file
   plackup
 
-  # can be passed with -c option
-  plackup -c hello.psgi
+  # can be passed with --app option (Or -a)
+  plackup --app hello.psgi
 
   # switch implementations
-  env PLACK_IMPL=Mojo plackup --port 9999
+  env PLACK_IMPL=Standalone::Prefork plackup -- --port 9999
 
-  # Or, -i
-  plackup -i AnyEvent
+  # Or, --impl (or -i)
+  plackup --impl AnyEvent
 
 =head1 DESCRIPTION
 
-Plackup is a useful tool for running L<Plack> applications.
+plackup is a command line utility to run PSGI application from the command line.
 
-Plackup automatically figures out the environment it is run in, and runs your
-application in that environment.  mod_perl, FastCGI, CGI, AnyEvent and Mojo and
-others can all be detected. See L<Plack::Loader> for the authorative list.
+plackup automatically figures out the environment it is run in, and
+runs your application in that environment.  mod_perl, FastCGI, CGI,
+AnyEvent and others can all be detected. See L<Plack::Loader> for the
+authorative list.
 
-C<< plackup >> assumes you have an C<< app.psgi >> script, but you can use the "-c" option
-to use a C<< .psgi >> script with a different name.
+C<plackup> assumes you have an C<app.psgi> script in your current
+directory, that would looke like:
 
-You may also select a specific implementation to run on using the PLACK_IMPL environment variable
-or use the C<< -i >> flag which will be prefered over the environment variable if present.
+  #!/usr/bin/perl
+  use MyApp;
+  my $app = MyApp->new;
+  my $handler = sub { $app->run_psgi(@_) };
+
+The last statement of C<app.psgi> should be a code reference that is a
+PSGI application.
+
+You can also use the C<--app> option to locate a C<.psgi> script with a
+different name in a different path. (Actually the path doesn't need to
+end in C<.psgi>: it's just there for convention)
+
+You may also select a specific implementation to run on using the
+C<PLACK_IMPL> environment variable or use the C<-i> or C<--impl> flag
+which will be prefered over the environment variable if present.
 
 =head1 SEE ALSO
 
