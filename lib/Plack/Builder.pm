@@ -7,6 +7,7 @@ our @EXPORT = qw( builder );
 sub builder(&) {
     my $block = shift;
 
+    no warnings 'redefine';
     my @wrappers;
     local *Plack::Middleware::enable = sub {
         my($class, @args) = @_;
