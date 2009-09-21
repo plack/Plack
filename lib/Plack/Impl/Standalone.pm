@@ -124,8 +124,13 @@ sub handle_connection {
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
             # handle request
-            if ($may_keepalive && ! ($env->{HTTP_CONNECTION} || '') =~ /^\s*keep-alive\s*$/i) {
-                $may_keepalive = undef;
+            if ($may_keepalive) {
+                if (my $conn = $env->{HTTP_CONNECTION}) {
+                    $may_keepalive = undef
+                        unless $conn =~ /^\s*keep-alive\s*/i;
+                } else {
+                    $may_keepalive = undef;
+                }
             }
             $buf = substr $buf, $reqlen;
             if ($env->{CONTENT_LENGTH}) {
