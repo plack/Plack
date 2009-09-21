@@ -49,8 +49,9 @@ sub process_request {
 
     my $buf = '';
     while (1) {
-        $buf .= $fh->readline("\015\012\015\012")
+        my $read = $fh->readline("\015\012\015\012")
             or last;
+        $buf .= $read;
 
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
