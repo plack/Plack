@@ -66,13 +66,15 @@ sub main {
 
 sub psgi2hres {
     my $res = shift;
-    return HTTP::Response->new($res->[0], $res->[0], $res->[1], get_body($res));
-}
-
-sub get_body {
-    my $res = shift;
-    my $body = '';
-    Plack::Util::foreach($res->[2], sub { $body .= $_[0] });
-    $body;
+    return HTTP::Response->new(
+        $res->[0],
+        $res->[0],
+        $res->[1],
+        do {
+            my $body = '';
+            Plack::Util::foreach( $res->[2], sub { $body .= $_[0] } );
+            $body;
+          }
+    );
 }
 
