@@ -36,3 +36,33 @@ sub to_app {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Plack::Middleware::DebugScreen - Displays stack trace when your app dies
+
+=head1 SYNOPSIS
+
+  enable Plack::Middleware::DebugScreen;
+
+=head1 DESCRIPTION
+
+This middleware catches exceptions (run-time errors) happening in your
+application and displays nice stack trace screen.
+
+=head1 CONFIGURATION
+
+No configuration option is available.
+
+=head1 AUTHOR
+
+Tokuhiro Matsuno
+
+=head1 SEE ALSO
+
+L<CGI::ExceptionManager> L<Plack::Middleware>
+
+=cut
+
