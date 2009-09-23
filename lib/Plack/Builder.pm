@@ -33,7 +33,7 @@ Plack::Builder - DSL to enable Plack::Middleware in .psgi files
 
 =head1 SYNOPSIS
 
-  use Plack::Builder
+  use Plack::Builder;
   use Plack::Middleware qw( Foo Bar Baz );
 
   my $app = sub { ... };
