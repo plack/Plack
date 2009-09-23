@@ -9,7 +9,7 @@ use IO::Socket::INET;
 use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
-use POSIX qw(EAGAIN strftime);
+use POSIX qw(EAGAIN);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Time::HiRes qw(time);
 
@@ -110,7 +110,17 @@ sub handle_connection {
 
     my ($has_cl, $conn_value);
     my @lines = (
-        strftime("Date: %a %d %b %Y %T GMT\015\012", gmtime),
+        do {
+            my @g = gmtime;
+            sprintf(
+                "Date: %s %02d %s %d %02d:%02d:%02d GMT\015\012",
+                substr("SunMonTueWedThuFriSat", $g[6] * 3, 3),
+                $g[3],
+                substr("JanFebMarAprMayJunJulAugSepOctNovDec", $g[4] * 3, 3),
+                $g[5] + 1900,
+                $g[2], $g[1], $g[0],
+            );
+        },
         "Server: Plack-Impl-Standalone/$Plack::VERSION\015\012",
     );
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
