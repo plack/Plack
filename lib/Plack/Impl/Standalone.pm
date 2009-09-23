@@ -167,10 +167,13 @@ sub handle_connection {
         push @lines, "$k: $v\015\012";
     }
     if (! $has_cl && ref $res->[2] eq 'ARRAY') {
-        unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\015\012";
-        $has_cl = 1;
+        if ($res->[0] != 304) {
+            unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\015\012";
+        }
+    } else {
+        $may_keepalive &&= $has_cl;
     }
-    if ($may_keepalive && $has_cl && ! defined($conn_value)) {
+    if ($may_keepalive && ! defined($conn_value)) {
         unshift @lines, "Connection: keep-alive\015\012";
         $conn_value = "keep-alive";
     }
