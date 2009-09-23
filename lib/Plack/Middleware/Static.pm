@@ -4,7 +4,7 @@ use warnings;
 use base qw/Plack::Middleware/;
 use File::Spec;
 use File::Spec::Unix;
-use Path::Class;
+use Path::Class 'dir';
 use HTTP::Date;
 use Cwd ();
 
