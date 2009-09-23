@@ -21,6 +21,11 @@ sub wrap {
     $class->new({ app => $app, @args })->to_app;
 }
 
+sub to_app {
+    my $self = shift;
+    return sub { $self->call(@_) };
+}
+
 sub enable {
     Carp::croak "enable Plack::Middleware should be called inside Plack::Builder's builder {} block";
 }
@@ -38,21 +43,15 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
   package Plack::Middleware::Foo;
   use base qw( Plack::Middleware );
 
-  sub to_app {
-      my $self = shift;
+  sub call {
+      my($self, $env) = @_;
+      # Do something with $env
 
-      return sub {
-          my $env = shift;
+      # $self->app is the original app
+      my $res = $self->app->($env, @_);
 
-          # Do something with $env
-
-          # $self->app is the original app
-          my $res = $self->app->($env, @_);
-
-          # Do something with $res
-
-          return $res;
-      }
+      # Do something with $res
+      return $res;
   }
 
   # then in app.psgi
@@ -70,11 +69,15 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
 =head1 DESCRIPTION
 
 Plack::Middleware is an utility base class to write PSGI
-middleware. See L<Plack::Builder> how to actually enable them in your
-I<.psgi> application file using the DSL.
+middleware. All you have to do is to inherit from Plack::Middleware
+and then implement the callback C<call> method (or C<to_app> method
+that would return the PSGI code reference) to do the actual work. You
+can use C<< $self->app >> to call the original (wrapped) appilcation.
 
-If you do not like our DSL, you can also use C<wrap> method to wrap
-your application with a middleware:
+See L<Plack::Builder> how to actually enable them in your I<.psgi>
+application file using the DSL. If you do not like our builder DSL,
+you can also use C<wrap> method to wrap your application with a
+middleware:
 
   use Plack::Middleware::Foo;
 

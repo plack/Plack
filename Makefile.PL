@@ -10,6 +10,7 @@ requires 'HTTP::Body';
 requires 'URI';
 requires 'HTTP::Request::AsCGI';
 requires 'HTTP::Parser::XS';
+requires 'Path::Class'; # For Plack::Middleware::Static
 requires 'Pod::Usage';
 
 build_requires 'Test::More';

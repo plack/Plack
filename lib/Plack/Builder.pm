@@ -33,7 +33,7 @@ Plack::Builder - DSL to enable Plack::Middleware in .psgi files
 
 =head1 SYNOPSIS
 
-  use Plack::Builder
+  use Plack::Builder;
   use Plack::Middleware qw( Foo Bar Baz );
 
   my $app = sub { ... };
@@ -47,7 +47,7 @@ Plack::Builder - DSL to enable Plack::Middleware in .psgi files
 
 =head1 DESCRIPTION
 
-Plack::Builder gives you a quick DSL to wrap your application with
+Plack::Builder gives you a quick domain specific language (DSL) to wrap your application with
 Plack::Middleware subclasses. The middleware you're trying to use
 should use L<Plack::Middleware> as a base class to use this DSL,
 inspired by Rack::Builder.
