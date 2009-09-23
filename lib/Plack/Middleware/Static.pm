@@ -11,6 +11,7 @@ use Cwd ();
 sub new {
     my $class = shift;
     my %args = @_ == 1 ? %{$_[0]} : @_;
+    # TODO use MIME::Types?
     $args{mime_types} = {
         jpg   => 'image/jpeg',
         jpeg  => 'image/jpeg',
