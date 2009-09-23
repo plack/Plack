@@ -9,8 +9,7 @@ use Plack::Util;
 }
 
 do {
-    open my $fh, '>', \my $data;
-    for my $body ('error', \'error', qr//, +{}, sub {}, Foo->new(), $fh) {
+    for my $body ('error', \'error', qr//, +{}, sub {}, Foo->new()) {
         eval {
             Plack::Util::foreach($body, sub {});
         };

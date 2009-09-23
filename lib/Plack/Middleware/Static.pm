@@ -32,17 +32,17 @@ sub _handle_static {
 
     # Is the requested path within the root?
     if ($realpath && !$docroot->subsumes($realpath)) {
-        return [403, ['Content-Type' => 'text/plain'], ['forbidden']];
+        return $self->return_403;
     }
 
     # Does the file actually exist?
     if (!$realpath || !-f $file) {
-        return [404, ['Content-Type' => 'text/plain'], ['not found']];
+        return $self->return_404;
     }
 
     # If the requested file present but lacking the permission to read it?
     if (!-r $file) {
-        return [403, ['Content-Type' => 'text/plain'], ['forbidden']];
+        return $self->return_403;
     }
 
     my $content_type = do {
@@ -54,7 +54,7 @@ sub _handle_static {
     };
 
     my $fh = $file->openr
-        or return [403, ['Content-Type' => 'text/plain'], ['forbidden']];
+        or return $self->return_403;
     binmode $fh;
 
     my $stat = $file->stat;
@@ -68,6 +68,18 @@ sub _handle_static {
         $fh
     ];
 }
+
+sub return_403 {
+    my $self = shift;
+    return [403, ['Content-Type' => 'text/plain'], ['forbidden']];
+}
+
+# Hint: subclasses can override this to return undef to pass through 404
+sub return_404 {
+    my $self = shift;
+    return [404, ['Content-Type' => 'text/plain'], ['not found']];
+}
+
 
 1;
 __END__
@@ -83,7 +95,7 @@ Plack::Middleware::Static - serve static files with Plack
 
   builder {
       enable Plack::Middleware::Static
-          path => qr{^/static/},　root => './htdocs/';
+          path => qr{^/static/}, root => './htdocs/';
       $app;
   };
 
@@ -94,10 +106,9 @@ files. If a static file exists for the requested path, it will be served.
 Otherwise, the request will be passed on to the application for further
 processing.
 
-If the requested document is not within the C<root> or the file is
-there but not readable, this middleware will return a 403 status code
-with a plain "forbidden" message. Currently there is no way to
-customize the content for these responses.
+If the requested document is not within the C<root> (i.e. directory
+traversal) or the file is there but not readable, this middleware will
+return a 403 status code with a plain "forbidden" message.
 
 The content type returned will be determined from the file extension
 based on L<MIME::Types>.
@@ -108,8 +119,8 @@ based on L<MIME::Types>.
 
 =item path, root
 
-    enable Plack::Middleware::Static
-        path => qr{^/static/}, root => './htdocs/';
+  enable Plack::Middleware::Static
+      path => qr{^/static/}, root => './htdocs/';
 
 C<path> specifies the URL pattern to match with requests to serve
 static files for. C<root> specifies the root directory to serve those
