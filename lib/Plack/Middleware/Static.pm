@@ -109,14 +109,17 @@ Plack::Middleware::Static - serve static files with Plack
   use Plack::Builder;
   use Plack::Middleware qw(Static);
 
-  enable Plack::Middleware::Static
-      rules => [
-          {
-             path => qr{^/static/},
-             root => './htdocs/',
-          }
-      ],
-      enable_404_handler => 0;
+  builder {
+      enable Plack::Middleware::Static
+          rules => [
+              {
+                 path => qr{^/static/},
+                 root => './htdocs/',
+              }
+          ],
+          enable_404_handler => 0;
+      $app;
+  };
 
 =head1 DESCRIPTION
 
