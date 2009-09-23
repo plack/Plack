@@ -94,9 +94,9 @@ files. If a static file exists for the requested path, it will be served.
 Otherwise, the request will be passed on to the application for further
 processing.
 
-If the requested document is not within the C<root> or the file is
-there but not readable, this middleware will return a 403 status code
-with a plain "forbidden" message.
+If the requested document is not within the C<root> (i.e. directory
+traversal) or the file is there but not readable, this middleware will
+return a 403 status code with a plain "forbidden" message.
 
 The content type returned will be determined from the file extension
 based on L<MIME::Types>.
@@ -107,8 +107,8 @@ based on L<MIME::Types>.
 
 =item path, root
 
-    enable Plack::Middleware::Static
-        path => qr{^/static/}, root => './htdocs/';
+  enable Plack::Middleware::Static
+      path => qr{^/static/}, root => './htdocs/';
 
 C<path> specifies the URL pattern to match with requests to serve
 static files for. C<root> specifies the root directory to serve those
