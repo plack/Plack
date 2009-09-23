@@ -403,6 +403,27 @@ my @TEST = (
             is($res->content, "bar, baz");
         }
     ],
+    [
+        'no entity headers on 304',
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/",
+            );
+        },
+        sub {
+            my $env = shift;
+            return [ 304, [], [] ];
+        },
+        sub {
+            my $res = shift;
+            is $res->code, 304;
+            is $res->content, '';
+            ok ! defined $res->header('content_type');
+            ok ! defined $res->header('content_length');
+            ok ! defined $res->header('transfer_encoding');
+        },
+    ],
 );
 
 our @RAW_HANDLERS = map $_->[2], @TEST;

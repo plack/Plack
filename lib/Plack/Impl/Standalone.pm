@@ -118,7 +118,7 @@ sub handle_connection {
             }
         }
     }
-    if (! $has_cl && ref $res->[2] eq 'ARRAY') {
+    if (! $has_cl && $res->[0] != 304 && ref $res->[2] eq 'ARRAY') {
         unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\r\n";
         $has_cl = 1;
     }
