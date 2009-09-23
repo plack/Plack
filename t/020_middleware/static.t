@@ -12,14 +12,8 @@ chdir 't'; # XXX
 
 my $handler = builder {
     enable Plack::Middleware::Static
-        'rules' => [{
-            path => qr{\.(t|PL|jpg)$}i,
-            root => '.',
-        }],
-        mime_types => {
-            t => 'text/x-perl-test',
-        }
-    ;
+        path => qr{\.(t|PL|jpg)$}i,
+        root => '.';
     sub {
         [200, ['Content-Type' => 'text/plain', 'Content-Length' => 2], ['ok']]
     };
@@ -32,7 +26,7 @@ my $handler = builder {
 sub main {
     do {
         my $res = psgi2hres($handler->(+{PATH_INFO => '/01_response.t'}));
-        is $res->content_type, 'text/x-perl-test', 'ok case';
+        is $res->content_type, 'application/x-troff', 'ok case';
         like $res->content, qr/use Test::More/;
         is file('01_response.t')->stat->size, length($res->content);
         is file('01_response.t')->slurp,$res->content;
