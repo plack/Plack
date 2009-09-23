@@ -128,5 +128,6 @@ Tokurhiro Matsuno, Tatsuhiko Miyagawa
 
 L<Plack::Middleware> L<Plack::Builder>
 
-=back
+=cut
+
 
