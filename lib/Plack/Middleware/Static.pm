@@ -83,7 +83,7 @@ Plack::Middleware::Static - serve static files with Plack
 
   builder {
       enable Plack::Middleware::Static
-          path => qr{^/static/},　root => './htdocs/';
+          path => qr{^/static/}, root => './htdocs/';
       $app;
   };
 
@@ -96,8 +96,7 @@ processing.
 
 If the requested document is not within the C<root> or the file is
 there but not readable, this middleware will return a 403 status code
-with a plain "forbidden" message. Currently there is no way to
-customize the content for these responses.
+with a plain "forbidden" message.
 
 The content type returned will be determined from the file extension
 based on L<MIME::Types>.
