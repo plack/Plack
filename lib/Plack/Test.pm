@@ -419,9 +419,9 @@ my @TEST = (
             my $res = shift;
             is $res->code, 304;
             is $res->content, '';
-            ok ! defined $res->header('content_type');
-            ok ! defined $res->header('content_length');
-            ok ! defined $res->header('transfer_encoding');
+            ok ! defined $res->header('content_type'), "No Content-Type";
+            ok ! defined $res->header('content_length'), "No Content-Length";
+            ok ! defined $res->header('transfer_encoding'), "No Transfer-Encoding";
         },
     ],
 );
