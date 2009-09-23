@@ -4,16 +4,14 @@ use warnings;
 use base qw/Plack::Middleware/;
 __PACKAGE__->mk_accessors(qw/framework/);
 
-sub to_app {
+sub call {
     my $self = shift;
 
-    return sub {
-        my $res = $self->app->( @_ );
-        if ($self->framework) {
-            push @{$res->[1]}, 'X-Framework' => $self->framework;
-        }
-        $res;
-    };
+    my $res = $self->app->( @_ );
+    if ($self->framework) {
+        push @{$res->[1]}, 'X-Framework' => $self->framework;
+    }
+    $res;
 }
 
 1;
@@ -32,7 +30,7 @@ Plack::Middleware::XFramework - Sample middleware to add X-Framework
 
 This middleware adds C<X-Framework> header to the HTTP response.
 
-=head1 CONFIGURATIOn
+=head1 CONFIGURATION
 
 =over 4
 

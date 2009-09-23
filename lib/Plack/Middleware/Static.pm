@@ -34,17 +34,14 @@ sub new {
     return bless {enable_404_handler => 1, %args}, $class;
 }
 
-sub to_app {
+sub call {
     my $self = shift;
+    my $env  = shift;
 
-    return sub {
-        my ($env, @args) = @_;
+    my $res = $self->_handle_static($env);
+    return $res if $res;
 
-        my $res = $self->_handle_static($env);
-        return $res if $res;
-
-        return $self->app->($env, @args);
-    };
+    return $self->app->($env, @_);
 }
 
 # Using the rules attribute, return a static document if any matches, or undefined otherwise.
