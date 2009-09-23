@@ -5,10 +5,11 @@ use warnings;
 use Plack;
 use Plack::HTTPParser qw( parse_http_request );
 use IO::Socket::INET;
+use HTTP::Date;
 use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
-use POSIX qw(EINTR strftime);
+use POSIX qw(EINTR);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Time::HiRes qw(alarm time);
 
@@ -157,7 +158,7 @@ sub handle_connection {
 
     my ($has_cl, $conn_value);
     my @lines = (
-        strftime("Date: %a %d %b %Y %T GMT\015\012", gmtime),
+        "Date: @{[HTTP::Date::time2str()]}\015\012",
         "Server: Plack-Impl-Standalone/$Plack::VERSION\015\012",
     );
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
