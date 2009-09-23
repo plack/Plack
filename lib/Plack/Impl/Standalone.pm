@@ -6,6 +6,7 @@ use Plack;
 use Plack::HTTPParser qw( parse_http_request );
 use Fcntl qw(F_SETFL FNDELAY);
 use IO::Socket::INET;
+use HTTP::Date;
 use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
@@ -110,17 +111,7 @@ sub handle_connection {
 
     my ($has_cl, $conn_value);
     my @lines = (
-        do {
-            my @g = gmtime;
-            sprintf(
-                "Date: %s %02d %s %d %02d:%02d:%02d GMT\015\012",
-                substr("SunMonTueWedThuFriSat", $g[6] * 3, 3),
-                $g[3],
-                substr("JanFebMarAprMayJunJulAugSepOctNovDec", $g[4] * 3, 3),
-                $g[5] + 1900,
-                $g[2], $g[1], $g[0],
-            );
-        },
+        "Date: @{[HTTP::Date::time2str()]}\015\012",
         "Server: Plack-Impl-Standalone/$Plack::VERSION\015\012",
     );
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
