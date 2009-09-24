@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use Test::Requires qw(File::ChangeNotify);
 use Plack::Middleware::Restarter;
 use Plack::Builder;
 use Test::More;

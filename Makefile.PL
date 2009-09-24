@@ -1,4 +1,4 @@
-sub author_tests { die "You need to install Module::Install::AuthorTests to build from git clone\n" }
+sub author_tests { die "You need to install Module::Install::AuthorTests and Test::Base to build from git clone\n" }
 
 use inc::Module::Install;
 name 'Plack';
