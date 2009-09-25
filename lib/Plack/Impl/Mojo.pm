@@ -60,7 +60,6 @@ sub handler {
     $env{'psgi.url_scheme'} = 'http';
     $env{'psgi.input'}      = $input;
     $env{'psgi.errors'}     = *STDERR;
-    # $env{'psgi.async'}      = 1;
 
     $env{'psgi.multithread'}  = Plack::Util::FALSE;
     $env{'psgi.multiprocess'} = $self->is_multiprocess;
@@ -76,7 +75,6 @@ sub handler {
 
     my $body = $res->[2];
 
-    # FIXME Use psgi.async API
     my $response_content;
     Plack::Util::foreach($body, sub { $response_content .= $_[0] });
     $tx->res->body($response_content);

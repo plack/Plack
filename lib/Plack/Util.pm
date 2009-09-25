@@ -48,10 +48,10 @@ sub foreach {
     }
 }
 
-sub run_app($$;$) {
-    my($app, $env) = (shift, shift);
+sub run_app($$) {
+    my($app, $env) = @_;
 
-    local $@; my $res = eval { $app->($env, @_) };
+    local $@; my $res = eval { $app->($env) };
     if ($@) {
         my $body = "Internal Server Error";
         $env->{'psgi.errors'}->print($@);
@@ -144,7 +144,7 @@ the binary file, unless otherwise set in the caller's code.
 
 =item run_app
 
-  my $res = Plack::Util::run_app $app, $env [, $start_response ];
+  my $res = Plack::Util::run_app $app, $env;
 
 Runs the I<$app> by wrapping errors with I<eval> and if an error is
 found, logs it to C<< $env->{'psgi.errors'} >> and returns the
@@ -161,8 +161,7 @@ template 500 Error response.
 
 Creates an instant object that can react to methods passed in the
 constructor. Handy to create when you need to create an IO stream
-object for input or errors, as well as respone writer object for
-L<PSGI::Async> extension.
+object for input or errors.
 
 =back
 

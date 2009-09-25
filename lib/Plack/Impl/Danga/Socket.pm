@@ -79,7 +79,7 @@ sub run {
             'psgi.version'      => [ 1, 0 ],
             'psgi.errors'       => *STDERR,
             'psgi.url_scheme'   => 'http',
-            'psgi.async'        => 1,
+            'psgi.nonblocking'  => Plack::Util::TRUE,
             'psgi.run_once'     => Plack::Util::FALSE,
             'psgi.multithread'  => Plack::Util::FALSE,
             'psgi.multiprocess' => Plack::Util::FALSE,
@@ -129,7 +129,7 @@ sub _handle_header {
         return;
     }
     elsif ($reqlen == -1) {
-        $self->_start_response($socket)->(400, ['Content-Type' => 'text/plain' ]);
+        $self->_write_headers($socket, 400, ['Content-Type' => 'text/plain' ]);
         $socket->write('400 Bad Request');
     }
 }
@@ -167,41 +167,28 @@ sub _handle_response {
 
 }
 
-sub _start_response {
-    my($self, $socket) = @_;
+sub _write_headers {
+    my($self, $socket, $status, $headers) = @_;
 
-    return sub {
-        my ($status, $headers) = @_;
+    my $hdr;
+    $hdr .= "HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\015\012";
+    while (my ($k, $v) = splice(@$headers, 0, 2)) {
+        $hdr .= "$k: $v\015\012";
+    }
+    $hdr .= "\015\012";
 
-        my $hdr;
-        $hdr .= "HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\015\012";
-        while (my ($k, $v) = splice(@$headers, 0, 2)) {
-            $hdr .= "$k: $v\015\012";
-        }
-        $hdr .= "\015\012";
-
-        $socket->write($hdr);
-
-        return unless defined wantarray;
-        return Plack::Util::inline_object(
-            write => sub { $socket->write($_[0]) },
-            close => sub { $socket->close },
-        );
-    };
+    $socket->write($hdr);
 }
 
 sub _response_handler {
     my ($self, $socket) = @_;
 
-    my $state_response = $self->_start_response($socket);
-
     Scalar::Util::weaken($socket);
     return sub {
         my ($app, $env) = @_;
-        my $res = Plack::Util::run_app $app, $env, $state_response;
-        return if scalar(@$res) == 0;
+        my $res = Plack::Util::run_app $app, $env;
 
-        $state_response->($res->[0], $res->[1]);
+        $self->_write_headers($socket, $res->[0], $res->[1]);
 
         my $body = $res->[2];
         my $disconnect_cb = sub {

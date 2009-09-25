@@ -46,7 +46,7 @@ sub run {
         $env->{'psgi.input'}      = $input;
         $env->{'psgi.errors'}     = *STDERR;
 
-        $env->{'psgi.async'}      = 1;
+        $env->{'psgi.nonblocking'}  = Plack::Util::TRUE;
         $env->{'psgi.multithread'}  = Plack::Util::FALSE;
         $env->{'psgi.multiprocess'} = Plack::Util::FALSE;
         $env->{'psgi.run_once'}     = Plack::Util::FALSE;

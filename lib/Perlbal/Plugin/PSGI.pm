@@ -25,11 +25,10 @@ sub handle_request {
         'psgi.version'      => [ 1, 0 ],
         'psgi.errors'       => Plack::Util::inline_object(print => sub { Perlbal::log('error', @_) }),
         'psgi.url_scheme'   => 'http',
-        'psgi.async'        => 1,
+        'psgi.nonblocking'  => Plack::Util::TRUE,
         'psgi.run_once'     => Plack::Util::FALSE,
         'psgi.multithread'  => Plack::Util::FALSE,
         'psgi.multiprocess' => Plack::Util::FALSE,
-        'psgi.async'        => Plack::Util::TRUE,
         REMOTE_ADDR         => $pb->{peer_ip},
         SERVER_NAME         => (split /:/, $svc->{listen})[0],
         SERVER_PORT         => (split /:/, $svc->{listen})[1],
@@ -43,27 +42,13 @@ sub handle_request {
         $env->{'psgi.input'} = $input;
     }
 
-    my $start_response = sub {
-        my $res = shift;
+    my $res = Plack::Util::run_app $app, $env;
 
-        $pb->write("HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012");
-        while (my($k, $v) = splice @{$res->[1]}, 0, 2) {
-            $pb->write("$k: $v\015\012");
-        }
-        $pb->write("\015\012");
-
-        return unless defined wantarray;
-
-        Plack::Util::inline_object(
-            write => sub { $pb->write(@_) },
-            close => sub { $pb->write(sub { $pb->http_response_sent }) },
-        );
-    };
-
-    my $res = Plack::Util::run_app $app, $env, $start_response;
-    return 1 if @$res == 0;
-
-    $start_response->($res);
+    $pb->write("HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012");
+    while (my($k, $v) = splice @{$res->[1]}, 0, 2) {
+        $pb->write("$k: $v\015\012");
+    }
+    $pb->write("\015\012");
 
     if (Plack::Util::is_real_fh($res->[2])) {
         $pb->reproxy_fh($res->[2], -s $res->[2]);
@@ -129,10 +114,7 @@ Perlbal::Plugin::PSGI - PSGI web server on Perlbal
 =head1 DESCRIPTION
 
 This is a Perlbal plugin to asllow any PSGI application run natively
-inside Perlbal process. This PSGI server enables C<psgi.async> mode on
-so that you can use the second parameter C<$start_response> to do
-server push, or does callback style programming when doing I/O wait
-etc.
+inside Perlbal process.
 
 =head1 AUTHOR
 

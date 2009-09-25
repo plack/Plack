@@ -40,6 +40,7 @@ sub process_request {
         'psgi.errors'  => *STDERR,
         'psgi.input'   => $self->{server}{client},
         'psgi.url_scheme' => 'http', # SSL support?
+        'psgi.nonblocking'  => Plack::Util::TRUE,
         'psgi.run_once'     => Plack::Util::FALSE,
         'psgi.multithread'  => Plack::Util::TRUE,
         'psgi.multiprocess' => Plack::Util::FALSE,

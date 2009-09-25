@@ -49,7 +49,7 @@ sub run {
             'psgi.version'    => [ 1, 0 ],
             'psgi.errors'     => *STDERR,
             'psgi.url_scheme' => 'http',
-            'psgi.async'      => 1,
+            'psgi.nonblocking'  => Plack::Util::TRUE,
             'psgi.run_once'     => Plack::Util::FALSE,
             'psgi.multithread'  => Plack::Util::FALSE,
             'psgi.multiprocess' => Plack::Util::FALSE,
@@ -71,7 +71,7 @@ sub run {
             my ( $handle, $chunk ) = @_;
             my $reqlen = parse_http_request($chunk . "\015\012", $env);
             if ($reqlen < 0) {
-                $self->_start_response($handle)->(400, [ 'Content-Type' => 'text/plain' ]);
+                $self->_write_headers($handle, 400, [ 'Content-Type' => 'text/plain' ]);
                 $handle->push_write("400 Bad Request");
             } else {
                 my $response_handler = $self->_response_handler($handle, $sock);
@@ -105,27 +105,17 @@ sub run {
     $self->{listen_guard} = $guard;
 }
 
-sub _start_response {
-    my($self, $handle) = @_;
+sub _write_headers {
+    my($self, $handle, $status, $headers) = @_;
 
-    return sub {
-        my ($status, $headers) = @_;
+    my $hdr;
+    $hdr .= "HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\015\012";
+    while (my ($k, $v) = splice(@$headers, 0, 2)) {
+        $hdr .= "$k: $v\015\012";
+    }
+    $hdr .= "\015\012";
 
-        my $hdr;
-        $hdr .= "HTTP/1.0 $status @{[ HTTP::Status::status_message($status) ]}\015\012";
-        while (my ($k, $v) = splice(@$headers, 0, 2)) {
-            $hdr .= "$k: $v\015\012";
-        }
-        $hdr .= "\015\012";
-
-        $handle->push_write($hdr);
-
-        return unless defined wantarray;
-        return Plack::Util::inline_object(
-            write => sub { $handle->push_write($_[0]) },
-            close => sub { $handle->push_shutdown },
-        );
-    };
+    $handle->push_write($hdr);
 }
 
 sub _response_handler {
@@ -133,14 +123,12 @@ sub _response_handler {
 
     Scalar::Util::weaken($sock);
 
-    my $start_response = $self->_start_response($handle);
-
     return sub {
         my($app, $env) = @_;
-        my $res = Plack::Util::run_app $app, $env, $start_response;
+        my $res = Plack::Util::run_app $app, $env;
         return if scalar(@$res) == 0;
 
-        $start_response->($res->[0], $res->[1]);
+        $self->_write_headers($handle, $res->[0], $res->[1]);
 
         my $body = $res->[2];
         my $disconnect_cb = sub { $handle->on_drain(sub { $handle->destroy }) };
