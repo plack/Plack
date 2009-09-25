@@ -124,8 +124,8 @@ variables in the handler loop yourself, so:
 Otherwise previous request variables will be reused in the new
 requests.
 
-Alternatively, you'd probably better upgrade the module to the version
-that supports PSGI input directly, and change your code that does:
+Alternatively, you can install and use L<CGI::PSGI> from CPAN, but
+that would require you to slightly change your code from:
 
   my $q = CGI->new;
   # ...
@@ -133,13 +133,13 @@ that supports PSGI input directly, and change your code that does:
 
 into:
 
-  use CGI::PSGI; # necessary
-  sub {
+  use CGI::PSGI;
+
+  my $app = sub {
       my $env = shift;
-      local *ENV = $env;
-      my $q = CGI->new;
+      my $q = CGI::PSGI->new($env);
       # ...
-      return [ $q->header, [ $output ] ];
+      return [ $q->psgi_header, [ $output ] ];
   };
 
 See L<CGI::PSGI> for details.
