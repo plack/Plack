@@ -1,6 +1,8 @@
-use MyApp; # should inherit from CGI::Application::PSGI
+use CGI::Application::PSGI;
+use MyApp;
 
 my $handler = sub {
     my $env = shift;
-    my $webapp = MyApp->new($env)->run;
+    my $app = MyApp->new({ QUERY => CGI::PSGI->new($env) });
+    CGI::Application::PSGI->run($app);
 };
