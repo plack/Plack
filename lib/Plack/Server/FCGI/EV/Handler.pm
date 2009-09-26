@@ -1,4 +1,4 @@
-package Plack::Impl::FCGI::EV::Handler;
+package Plack::Server::FCGI::EV::Handler;
 
 use strict;
 use Plack::Util;

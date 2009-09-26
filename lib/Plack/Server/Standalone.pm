@@ -1,4 +1,4 @@
-package Plack::Impl::Standalone;
+package Plack::Server::Standalone;
 use strict;
 use warnings;
 
@@ -112,7 +112,7 @@ sub handle_connection {
     my ($has_cl, $conn_value);
     my @lines = (
         "Date: @{[HTTP::Date::time2str()]}\015\012",
-        "Server: Plack-Impl-Standalone/$Plack::VERSION\015\012",
+        "Server: Plack-Server-Standalone/$Plack::VERSION\015\012",
     );
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
         push @lines, "$k: $v\r\n";

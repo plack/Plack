@@ -1,6 +1,6 @@
-package Plack::Impl::Mojo::Prefork;
+package Plack::Server::Mojo::Prefork;
 use strict;
-use base qw(Plack::Impl::Mojo);
+use base qw(Plack::Server::Mojo);
 sub mojo_daemon_class { 'Mojo::Server::Daemon::Prefork' }
 sub is_multiprocess { Plack::Util::TRUE }
 
@@ -10,13 +10,13 @@ __END__
 
 =head1 NAME
 
-Plack::Impl::Mojo::Prefork - Use Mojo's prefork server
+Plack::Server::Mojo::Prefork - Use Mojo's prefork server
 
 =head1 SYNOPSIS
 
-  use Plack::Impl::Mojo::Prefork;
+  use Plack::Server::Mojo::Prefork;
 
-  my $server = Plack::Impl::Mojo::Prefork->new(
+  my $server = Plack::Server::Mojo::Prefork->new(
       host => $host,
       port => $port,
   );

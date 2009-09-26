@@ -1,4 +1,4 @@
-package Plack::Impl::ServerSimple;
+package Plack::Server::ServerSimple;
 use strict;
 use warnings;
 use base qw/HTTP::Server::Simple::CGI/;
@@ -72,9 +72,9 @@ __END__
 
 =head1 SYNOPSIS
 
-    use Plack::Impl::ServerSimple;
+    use Plack::Server::ServerSimple;
 
-    my $server = Plack::Impl::ServerSimple->new(
+    my $server = Plack::Server::ServerSimple->new(
         host => $host,
         port => $port,
     );

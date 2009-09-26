@@ -1,4 +1,4 @@
-package Plack::Impl::Apache2;
+package Plack::Server::Apache2;
 use strict;
 use warnings;
 use Apache2::RequestRec;
@@ -73,13 +73,13 @@ __END__
 
 =head1 NAME
 
-Plack::Impl::Apache2 - Apache 2.0 handlers to run PSGI application
+Plack::Server::Apache2 - Apache 2.0 handlers to run PSGI application
 
 =head1 SYNOPSIS
 
   <Locaion />
   SetHandler perl-script
-  PerlHandler Plack::Impl::Apache2
+  PerlHandler Plack::Server::Apache2
   PerlSetVar psgi_app /path/to/app.psgi
   </Location>
 

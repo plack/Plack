@@ -1,4 +1,4 @@
-package Plack::Impl::FCGI;
+package Plack::Server::FCGI;
 use strict;
 use warnings;
 use constant RUNNING_IN_HELL => $^O eq 'MSWin32';

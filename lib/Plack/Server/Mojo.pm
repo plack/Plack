@@ -1,4 +1,4 @@
-package Plack::Impl::Mojo;
+package Plack::Server::Mojo;
 use strict;
 use warnings;
 use base qw(Mojo::Base);
@@ -13,7 +13,7 @@ sub mojo_daemon_class { 'Mojo::Server::Daemon' }
 sub run {
     my($self, $app) = @_;
 
-    my $mojo_app = Plack::Impl::Mojo::App->new(psgi_app => $app);
+    my $mojo_app = Plack::Server::Mojo::App->new(psgi_app => $app);
 
     my $class = $self->mojo_daemon_class;
     Plack::Util::load_class($class);
@@ -25,7 +25,7 @@ sub run {
     $mojo_daemon->run;
 }
 
-package Plack::Impl::Mojo::App;
+package Plack::Server::Mojo::App;
 use base qw(Mojo);
 
 __PACKAGE__->attr([ 'psgi_app' ]);
@@ -80,7 +80,7 @@ sub handler {
     $tx->res->body($response_content);
 }
 
-package Plack::Impl::Mojo;
+package Plack::Server::Mojo;
 
 1;
 
@@ -88,13 +88,13 @@ __END__
 
 =head1 NAME
 
-Plack::Impl::Mojo - Mojo daemon based PSGI handler
+Plack::Server::Mojo - Mojo daemon based PSGI handler
 
 =head1 SYNOPSIS
 
-  use Plack::Impl::Mojo;
+  use Plack::Server::Mojo;
 
-  my $server = Plack::Impl::Mojo->new(
+  my $server = Plack::Server::Mojo->new(
       host => $host,
       port => $port,
   );

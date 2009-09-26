@@ -1,4 +1,4 @@
-package Plack::Impl::ReverseHTTP;
+package Plack::Server::ReverseHTTP;
 use strict;
 use AnyEvent::ReverseHTTP;
 use AnyEvent::Handle;
@@ -77,7 +77,7 @@ __END__
 
 =head1 NAME
 
-Plack::Impl::ReverseHTTP - reversehttp gateway for PSGI application
+Plack::Server::ReverseHTTP - reversehttp gateway for PSGI application
 
 =head1 SYNOPSIS
 
@@ -86,7 +86,7 @@ Plack::Impl::ReverseHTTP - reversehttp gateway for PSGI application
 
 =head1 DESCRIPTION
 
-Plack::Impl::ReverseHTTP is a PSGI implementation that uses
+Plack::Server::ReverseHTTP is a PSGI implementation that uses
 ReverseHTTP gateway to access your PSGI application on your desktop or
 behind the firewall from the internet. Just like Ruby's hookout does
 with Rack applications.

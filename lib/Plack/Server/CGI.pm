@@ -1,4 +1,4 @@
-package Plack::Impl::CGI;
+package Plack::Server::CGI;
 use strict;
 use warnings;
 use IO::Handle;
@@ -42,7 +42,7 @@ __END__
 
     ## in your .cgi
     #!/usr/bin/perl
-    use Plack::Impl::CGI;
+    use Plack::Server::CGI;
 
     # or do() from .psgi file
     my $app = sub {
@@ -54,11 +54,11 @@ __END__
         ];
     };
 
-    Plack::Impl::CGI->new->run($app);
+    Plack::Server::CGI->new->run($app);
 
 =head1 SEE ALSO
 
-L<Plack::Impl::Base>
+L<Plack::Server::Base>
 
 =cut
 

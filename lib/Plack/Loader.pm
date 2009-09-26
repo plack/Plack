@@ -8,12 +8,12 @@ sub auto {
 
     my $impl = $class->guess
         or Carp::croak("Couldn't auto-guess implementation. Set it with PLACK_IMPL");
-    Plack::Util::load_class($impl, "Plack::Impl")->new(%args);
+    Plack::Util::load_class($impl, "Plack::Server")->new(%args);
 }
 
 sub load {
     my($class, $impl, @args) = @_;
-    Plack::Util::load_class($impl, "Plack::Impl")->new(@args);
+    Plack::Util::load_class($impl, "Plack::Server")->new(@args);
 }
 
 sub guess {
@@ -53,7 +53,7 @@ Plack::Loader - (auto)load Plack implementation
 
 =head1 DESCRIPTION
 
-Plack::Loader is a factory class to load one of Plack::Impl subclasses based on the environment.
+Plack::Loader is a factory class to load one of Plack::Server subclasses based on the environment.
 
 =head1 AUTOLOADING
 

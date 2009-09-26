@@ -1,4 +1,4 @@
-package Plack::Impl::AnyEvent;
+package Plack::Server::AnyEvent;
 use strict;
 use warnings;
 
@@ -178,11 +178,11 @@ __END__
 
 =head1 NAME
 
-Plack::Impl::AnyEvent - AnyEvent based HTTP server
+Plack::Server::AnyEvent - AnyEvent based HTTP server
 
 =head1 SYNOPSIS
 
-  my $server = Plack::Impl::AnyEvent->new(
+  my $server = Plack::Server::AnyEvent->new(
       host => $host,
       port => $port,
   );

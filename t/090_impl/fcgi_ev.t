@@ -3,7 +3,7 @@ use warnings;
 use Test::More;
 use Test::Requires qw(FCGI::EV);
 use Plack;
-use Plack::Impl::FCGI::EV;
+use Plack::Server::FCGI::EV;
 use Test::TCP;
 use LWP::UserAgent;
 use FindBin;
@@ -40,7 +40,7 @@ sub run_one {
         },
         server => sub {
             my $port = shift;
-            my $server = Plack::Impl::FCGI::EV->new(host => '127.0.0.1', port => $port);
+            my $server = Plack::Server::FCGI::EV->new(host => '127.0.0.1', port => $port);
             $server->run($handler);
             $server->run_loop;
         },

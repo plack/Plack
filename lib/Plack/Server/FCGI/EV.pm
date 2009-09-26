@@ -1,4 +1,4 @@
-package Plack::Impl::FCGI::EV;
+package Plack::Server::FCGI::EV;
 
 use strict;
 use warnings;
@@ -6,7 +6,7 @@ use warnings;
 use Plack::Util;
 use EV;
 use FCGI::EV;
-use Plack::Impl::FCGI::EV::Handler;
+use Plack::Server::FCGI::EV::Handler;
 use Data::Dumper;
 
 sub new {
@@ -36,7 +36,7 @@ sub run {
 
     # warn $sock;
 
-    my $handler_class = 'Plack::Impl::FCGI::EV::Handler';
+    my $handler_class = 'Plack::Server::FCGI::EV::Handler';
     $handler_class->psgi_app($app);
     my $w = EV::io $sock, EV::READ, sub {
         my $client = $sock->accept;

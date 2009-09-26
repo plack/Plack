@@ -3,7 +3,7 @@ use warnings;
 use Test::More;
 use Test::Requires qw(FCGI);
 use Plack;
-use Plack::Impl::FCGI;
+use Plack::Server::FCGI;
 use Test::TCP;
 use LWP::UserAgent;
 use FindBin;
@@ -40,7 +40,7 @@ sub run_one {
         },
         server => sub {
             my $port = shift;
-            my $server = Plack::Impl::FCGI->new(
+            my $server = Plack::Server::FCGI->new(
                 host        => '127.0.0.1',
                 port        => $port,
                 manager     => '',

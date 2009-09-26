@@ -1,4 +1,4 @@
-package Plack::Impl::Danga::Socket;
+package Plack::Server::Danga::Socket;
 use strict;
 use warnings;
 

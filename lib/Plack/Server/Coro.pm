@@ -1,4 +1,4 @@
-package Plack::Impl::Coro;
+package Plack::Server::Coro;
 use strict;
 
 sub new {
@@ -9,13 +9,13 @@ sub new {
 sub run {
     my($self, $app) = @_;
 
-    my $server = Plack::Impl::Coro::Server->new(host => $self->{host} || '*');
+    my $server = Plack::Server::Coro::Server->new(host => $self->{host} || '*');
     $server->{app} = $app;
     $server->run(port => $self->{port});
 }
 
 
-package Plack::Impl::Coro::Server;
+package Plack::Server::Coro::Server;
 use base qw( Net::Server::Coro );
 
 our $HasAIO = eval "use Coro::AIO; 1";
@@ -101,7 +101,7 @@ sub process_request {
     Plack::Util::foreach($res->[2], sub { $fh->syswrite(@_) });
 }
 
-package Plack::Impl::Coro;
+package Plack::Server::Coro;
 
 1;
 
@@ -109,7 +109,7 @@ __END__
 
 =head1 NAME
 
-Plack::Impl::Coro - Coro cooperative multithread web server
+Plack::Server::Coro - Coro cooperative multithread web server
 
 =head1 SYNOPSIS
 
