@@ -11,20 +11,8 @@ use Getopt::Long;
 my $app = 'eg/dot-psgi/Hello.psgi';
 my $ab  = 'ab -n 100 -c 10 -k';
 
-my %backends = (
-    AnyEvent        => 'AnyEvent',
-    Standalone      => 0,
-    ServerSimple    => 'HTTP::Server::Simple',
-    'Mojo::Prefork' => 'Mojo',
-    Coro            => 'Net::Server::Coro',
-    'Danga::Socket' => 'Danga::Socket',
-);
-
-my @backends;
-for my $impl (sort keys %backends) {
-    my $req = $backends{$impl};
-    push @backends, $impl if !$req or eval "require $req; 1";
-}
+my @backends = qw( AnyEvent Standalone ServerSimple Mojo::Prefork Coro Danga::Socket );
+@backends = grep { eval "require Plack::Server::$_; 1" } @backends;
 
 warn "Testing implementations: ", join(", ", @backends), "\n";
 
