@@ -1,4 +1,3 @@
-use AnyEvent;
 my $app = sub {
     my $env = shift;
 
