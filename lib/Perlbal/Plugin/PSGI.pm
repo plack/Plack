@@ -63,11 +63,7 @@ sub handle_psgi_app_command {
     my $mc = shift->parse(qr/^psgi_app\s*=\s*(\S+)$/, "usage: PSGI_APP=<path>");
     my ($app_path) = $mc->args;
 
-    my $handler = do $app_path;
-    unless (defined $handler && ref $handler eq 'CODE') {
-        return $mc->err("Failed to load $app_path: " . ($! || $@))
-    }
-
+    my $handler = Plack::Util::load_psgi $app_path;
     my $svcname;
     unless ($svcname ||= $mc->{ctx}{last_created}) {
         return $mc->err("No service name in context from CREATE SERVICE <name> or USE <service_name>");

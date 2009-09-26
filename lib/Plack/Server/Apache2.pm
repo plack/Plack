@@ -19,11 +19,7 @@ sub handler {
 
     my $app = $apps{$psgi} ||= do {
         delete $ENV{MOD_PERL}; # trick Catalyst/CGI.pm etc.
-        my $app = do $psgi;
-        unless (defined $app && ref $app eq 'CODE') {
-            die "Can't load psgi_app from $psgi: ", ($@ || $!);
-        }
-        $app;
+        Plack::Util::load_psgi $psgi;
     };
 
     $r->subprocess_env; # let Apache create %ENV for us :)

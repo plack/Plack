@@ -48,6 +48,19 @@ sub foreach {
     }
 }
 
+sub load_psgi {
+    my $file = shift;
+
+    my $app = do $file;
+    return $app if $app and ref $app eq 'CODE';
+
+    if (my $e = $@ || $!) {
+        die "Can't load $file: $e";
+    } else {
+        Carp::croak("$file doesn't return PSGI app handler: " . ($app || undef));
+    }
+}
+
 sub run_app($$) {
     my($app, $env) = @_;
 
@@ -141,6 +154,14 @@ guaranteed to be a I<line>) to the callback function.
 
 It internally sets the buffer length C<$/> to 4096 in case it reads
 the binary file, unless otherwise set in the caller's code.
+
+=item load_psgi
+
+  my $app = Plack::Util::load_psgi $app_psgi;
+
+Load C<app.psgi> file and evaluate the code to get PSGI application
+handler. If the file can't be loaded (e.g. file doens't exist or has a
+perl syntax error), it will throw an exception.
 
 =item run_app
 

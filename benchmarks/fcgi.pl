@@ -10,7 +10,8 @@ use File::Temp ();
 use IO::Socket::UNIX;
 use Benchmark ':all';
 
-GetOptions(\my %opts, "app=s", "impl=s", "help");
+my %opts = (app => "eg/dot-psgi/Hello.psgi");
+GetOptions(\%opts, "app=s", "impl=s", "help");
 
 pod2usage(0) if $opts{help};
 
@@ -33,16 +34,9 @@ if ($pid > 0) {
     my $sock = IO::Socket::UNIX->new( Local => $fname, Listen => 10 )
       or die $!;
     open *STDIN, '>&', $sock;    # dup
-    my $handler = load_handler($opts{app} || Cwd::cwd . "/app.psgi");
+    my $handler = Plack::Util::load_psgi($opts{app});
     my $impl = Plack::Loader->load('FCGI');
     $impl->run($handler);
     $impl->run_loop if $impl->can('run_loop'); # run event loop
     die 'should not reach here';
 }
-
-sub load_handler {
-    my $file = shift;
-    return unless -e $file;
-    return do $file;
-}
-

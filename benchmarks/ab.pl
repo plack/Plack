@@ -43,15 +43,11 @@ sub run_one {
         kill 'TERM' => $pid;
         wait();
     } else {
-        my $handler = load_handler(Cwd::cwd() . "/". $app) or die ($! || $@);
+        my $handler = Plack::Util::load_psgi $app;
         my $impl = Plack::Loader->load($impl_class, port => $port);
         $impl->run($handler);
         $impl->run_loop if $impl->can('run_loop'); # run event loop
     }
 }
 
-sub load_handler {
-    my $file = shift;
-    return do $file;
-}
 

@@ -22,7 +22,7 @@ GetOptions(
 pod2usage(0) if $help;
 lib->import(@includes) if @includes;
 
-my $handler = load_handler($app);
+my $handler = Plack::Util::load_psgi($app);
 
 unless ($handler) {
     die $@ if $@;
@@ -36,12 +36,6 @@ my @args = map { s/^--//; $_ } @ARGV;
 my $server = Plack::Loader->auto(@args);
 $server->run($handler);
 $server->run_loop if $server->can('run_loop'); # run event loop
-
-sub load_handler {
-    my $file = shift;
-    return unless -e $file;
-    return do $file;
-}
 
 __END__
 
