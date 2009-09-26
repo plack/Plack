@@ -453,25 +453,28 @@ sub runtests {
 }
 
 sub run_server_tests {
-    my($class, $impl) = @_;
-    for my $test (@TEST) {
-        test_tcp(
-            client => sub {
-                my $port = shift;
+    my($class, $server) = @_;
+    test_tcp(
+        client => sub {
+            my $port = shift;
+            for my $test (@TEST) {
                 note $test->[0];
                 my $ua  = LWP::UserAgent->new;
                 my $res = $ua->request($test->[1]->($port));
                 local $Test::Builder::Level = $Test::Builder::Level + 3;
                 $test->[3]->($res, $port);
-            },
-            server => sub {
-                my $port = shift;
-                my $impl = Plack::Loader->load($impl, port => $port, host => "127.0.0.1");
-                $impl->run($test->[2]);
-                $impl->run_loop if $impl->can('run_loop'); # run event loop
-            },
-        );
-    }
+            }
+        },
+        server => sub {
+            my $port = shift;
+
+            my $i = 0;
+            my $app = sub { $RAW_HANDLERS[$i++]->(@_) };
+            my $server = Plack::Loader->load($server, port => $port, host => "127.0.0.1");
+            $server->run($app);
+            $server->run_loop if $server->can('run_loop');
+        },
+    );
 }
 
 1;
