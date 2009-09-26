@@ -48,7 +48,7 @@ sub handler {
     $env{'psgi.multiprocess'} = Plack::Util::FALSE;
     $env{'psgi.run_once'}     = Plack::Util::FALSE;
 
-    my $res = $self->{psgi_app}->(\%env);
+    my $res = Plack::Util::run_app $self->{psgi_app}, \%env;
     print "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\r\n";
     my $headers = $res->[1];
     while (my ($k, $v) = splice(@$headers, 0, 2)) {
