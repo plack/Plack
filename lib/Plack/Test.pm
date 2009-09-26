@@ -457,19 +457,23 @@ sub run_server_tests {
     test_tcp(
         client => sub {
             my $port = shift;
-            for my $test (@TEST) {
+            for my $i (0..$#TEST) {
+                my $test = $TEST[$i];
                 note $test->[0];
                 my $ua  = LWP::UserAgent->new;
-                my $res = $ua->request($test->[1]->($port));
+                my $req = $test->[1]->($port);
+                $req->header('X-Plack-Test' => $i);
+                my $res = $ua->request($req);
                 local $Test::Builder::Level = $Test::Builder::Level + 3;
                 $test->[3]->($res, $port);
             }
         },
         server => sub {
             my $port = shift;
-
-            my $i = 0;
-            my $app = sub { $RAW_HANDLERS[$i++]->(@_) };
+            my $app = sub {
+                my $env = shift;
+                $RAW_HANDLERS[$env->{HTTP_X_PLACK_TEST}]->($env);
+            };
             my $server = Plack::Loader->load($server, port => $port, host => "127.0.0.1");
             $server->run($app);
             $server->run_loop if $server->can('run_loop');

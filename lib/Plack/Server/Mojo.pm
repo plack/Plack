@@ -45,8 +45,8 @@ sub handler {
     $env{SERVER_PROTOCOL} = "HTTP/" . $tx->req->version;
 
     for my $name (@{ $tx->req->headers->names }) {
-        $name =~ tr/-/_/;
-        $env{"HTTP_" . uc($name)} = $tx->req->headers->header($name);
+        (my $header = $name) =~ tr/-/_/;
+        $env{"HTTP_" . uc($header)} = $tx->req->headers->header($name);
     }
 
     $env{CONTENT_TYPE}   = $tx->req->headers->content_type;
