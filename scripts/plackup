@@ -4,6 +4,7 @@ use lib "lib";
 use Cwd;
 use Getopt::Long;
 use Plack::Loader;
+use Plack::Util;
 use Pod::Usage;
 
 my $app    = "app.psgi";
@@ -25,7 +26,7 @@ GetOptions(
 pod2usage(0) if $help;
 lib->import(@includes) if @includes;
 
-my $handler = Plack::Util::load_psgi($app);
+my $handler = Plack::Util::load_psgi $app;
 
 unless ($handler) {
     die $@ if $@;
