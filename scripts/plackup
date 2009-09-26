@@ -10,6 +10,9 @@ my $app    = "app.psgi";
 my $help   = 0;
 my @includes;
 
+# From 'prove': Allow cuddling the paths with the -I
+@ARGV = map { /^(-I)(.+)/ ? ($1,$2) : $_ } @ARGV;
+
 Getopt::Long::Configure("no_ignore_case");
 GetOptions(
     "a|app=s"      => \$app,
