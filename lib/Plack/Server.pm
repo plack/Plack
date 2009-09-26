@@ -11,8 +11,8 @@ Plack::Server - Standard interface for Plack implementations
 
 =head1 SYNOPSIS
 
-  my $impl = Plack::Server::XXX->new(%args);
-  $impl->run($app);
+  my $server = Plack::Server::XXX->new(%args);
+  $server->run($app);
 
 =head1 DESCRIPTION
 
@@ -27,7 +27,7 @@ Plack::Server.
 
 =item new
 
-  $impl = Plack::Server::XXX->new(%args);
+  $server = Plack::Server::XXX->new(%args);
 
 Creates a new implementation object. I<%args> can take arbitrary
 parameters per implementations but common parameters are:
@@ -46,7 +46,7 @@ Address the server listens to. Set to undef to listen any interface.
 
 =item run
 
-  $impl->run($app)
+  $server->run($app)
 
 Starts the server process and when a request comes in, run the PSGI application passed in C<$app>.
 
