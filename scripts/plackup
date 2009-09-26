@@ -13,7 +13,7 @@ my @includes;
 # From 'prove': Allow cuddling the paths with the -I
 @ARGV = map { /^(-I)(.+)/ ? ($1,$2) : $_ } @ARGV;
 
-Getopt::Long::Configure("no_ignore_case");
+Getopt::Long::Configure("no_ignore_case", "pass_through");
 GetOptions(
     "a|app=s"      => \$app,
     "s|server=s"   => \$ENV{PLACK_SERVER},
@@ -54,11 +54,8 @@ plackup -- a useful tool for running Plack applications
   # can be passed with --app option (Or -a)
   plackup --app hello.psgi
 
-  # switch implementations
-  env PLACK_SERVER=Standalone::Prefork plackup -- --port 9999
-
-  # Or, --server (or -s)
-  plackup --server AnyEvent
+  # Switch server implementation with --server (or -s)
+  plackup --server Coro --port 9090
 
 =head1 DESCRIPTION
 
