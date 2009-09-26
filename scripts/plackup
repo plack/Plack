@@ -6,23 +6,29 @@ use Getopt::Long;
 use Plack::Loader;
 use Pod::Usage;
 
-GetOptions(\my %opts, "app=s", "server=s", "impl=s", "help");
+my $app    = "app.psgi";
+my $help   = 0;
+my @includes;
 
-pod2usage(0) if $opts{help};
+Getopt::Long::Configure("no_ignore_case");
+GetOptions(
+    "a|app=s"      => \$app,
+    "s|server=s"   => \$ENV{PLACK_SERVER},
+    "i|impl=s"     => \$ENV{PLACK_SERVER},
+    'I=s@'         => \@includes,
+    "h|help",      => \$help,
+);
 
+pod2usage(0) if $help;
+lib->import(@includes) if @includes;
 
-# If there is an explicit implementation mentioned, use it, otherwise leave $ENV{PLACK_SERVER} alone.
-$opts{server} ||= $opts{impl}; # backward compat
-$ENV{PLACK_SERVER} = $opts{impl} if $opts{impl};
-
-my $file = $opts{app} || "app.psgi";
-my $handler = load_handler($opts{app} || Cwd::cwd . "/app.psgi");
+my $handler = load_handler($app);
 
 unless ($handler) {
     die $@ if $@;
-    die "$file not found: $!\n" if $!;
+    die "$app not found: $!\n" if $!;
     unless ($handler && ref $handler eq 'CODE') {
-        die "$file does not return an application code reference.\n";
+        die "$app does not return an application code reference.\n";
     }
 }
 
