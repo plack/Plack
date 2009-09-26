@@ -16,7 +16,7 @@ our $BaseDir = "t";
 # 1: request generator coderef.
 # 2: request handler
 # 3: test case for response
-my @TEST = (
+our @TEST = (
     [
         'GET',
         sub {
@@ -293,7 +293,7 @@ my @TEST = (
         sub {
             my $port = $_[0] || 80;
             HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
+                GET => "http://127.0.0.1:$port/call_close",
             );
         },
         sub {
@@ -306,7 +306,7 @@ my @TEST = (
                     my $self = shift;
                     return $$self++ < 4 ? $$self : undef;
                 }
-                sub close     { ::ok(1, 'closed') }
+                sub close     { ::ok(1, 'closed') if defined &::ok }
             }
             return [
                 200,
@@ -324,7 +324,7 @@ my @TEST = (
         sub {
             my $port = $_[0] || 80;
             HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
+                GET => "http://127.0.0.1:$port/has_errors",
             );
         },
         sub {
@@ -426,8 +426,6 @@ my @TEST = (
     ],
 );
 
-our @RAW_HANDLERS = map $_->[2], @TEST;
-
 for my $test (@TEST) {
     my $orig = $test->[2];
     $test->[2] = sub {
@@ -472,7 +470,7 @@ sub run_server_tests {
             my $port = shift;
             my $app = sub {
                 my $env = shift;
-                $RAW_HANDLERS[$env->{HTTP_X_PLACK_TEST}]->($env);
+                $TEST[$env->{HTTP_X_PLACK_TEST}][2]->($env);
             };
             my $server = Plack::Loader->load($server, port => $port, host => "127.0.0.1");
             $server->run($app);

@@ -13,27 +13,26 @@ $Plack::Test::BaseDir = "$FindBin::Bin/..";
 
 use Data::Dumper;
 
-my $i = 0;
-Plack::Test->runtests(\&run_one);
+test_tcp(
+    client => sub {
+        my $port = shift;
+        for my $i (0..$#Plack::Test::TEST) {
+            my $test = $Plack::Test::TEST[$i];
+            note $test->[0];
+            my $ua  = LWP::UserAgent->new;
+            my $req = $test->[1]->($port);
+            $req->header('X-Plack-Test' => $i);
+            my $res = $ua->request($req);
+            local $Test::Builder::Level = $Test::Builder::Level + 3;
+            $test->[3]->($res, $port);
+        }
+    },
+    server => sub {
+        my $port = shift;
+        run_perlbal($port);
+    },
+);
+
 done_testing();
-
-sub run_one {
-    my ($name, $reqgen, $handler, $test) = @_;
-    note $name;
-    test_tcp(
-        client => sub {
-            my $port = shift;
-            my $ua = LWP::UserAgent->new();
-            my $res = $ua->request($reqgen->($port));
-            $test->($res, $port);
-        },
-        server => sub {
-            my $port = shift;
-            run_perlbal($port, $i);
-        },
-    );
-
-    $i++;
-}
 
 

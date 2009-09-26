@@ -10,7 +10,7 @@ use base qw/Exporter/;
 our @EXPORT = qw/ run_perlbal /;
 
 sub run_perlbal {
-    my($port, $num) = @_;
+    my $port = shift;
 
     chomp(my $perlbal_bin = `which perlbal`);
 
@@ -19,10 +19,10 @@ sub run_perlbal {
 
     my $tmpdir = File::Temp::tempdir( CLEANUP => 1 );
 
-    write_file("$tmpdir/app.psgi", _render_psgi($num));
+    write_file("$tmpdir/app.psgi", _render_psgi());
     write_file("$tmpdir/perlbal.conf", _render_conf($tmpdir, $port, "$tmpdir/app.psgi"));
 
-    my $pid = open my $perlbal, "$perlbal_bin -c $tmpdir/perlbal.conf 2>&1 |"
+    my $pid = open my $perlbal, "$perlbal_bin -c $tmpdir/perlbal.conf |"
         or die "Unable to spawn perlbal: $!";
 
     $SIG{TERM} = sub {
@@ -43,12 +43,14 @@ sub write_file {
 }
 
 sub _render_psgi {
-    my $num = shift;
-    return <<"EOF";
+    return <<'EOF';
 use lib "lib";
 use Plack::Test;
 
-my \$handler = \$Plack::Test::RAW_HANDLERS[$num];
+my $handler = sub {
+    my $env = shift;
+    $Plack::Test::TEST[$env->{HTTP_X_PLACK_TEST}][2]->($env);
+};
 EOF
 }
 

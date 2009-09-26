@@ -36,11 +36,12 @@ sub handle_request {
 
     parse_http_request($pb->{headers_string}, $env);
 
-    if ($env->{REQUEST_METHOD} eq 'POST') {
-        my $buf_ref = $pb->read($env->{CONTENT_LENGTH}) || \"";
-        open my $input, "<", $buf_ref;
-        $env->{'psgi.input'} = $input;
+    my $buf_ref = \"";
+    if ($env->{CONTENT_LENGTH}) {
+        $buf_ref = $pb->read($env->{CONTENT_LENGTH}) || \"";
     }
+    open my $input, "<", $buf_ref;
+    $env->{'psgi.input'} = $input;
 
     my $res = Plack::Util::run_app $app, $env;
 
