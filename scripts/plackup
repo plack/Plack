@@ -18,7 +18,7 @@ Getopt::Long::Configure("no_ignore_case", "pass_through");
 GetOptions(
     "a|app=s"      => \$app,
     "s|server=s"   => \$ENV{PLACK_SERVER},
-    "i|impl=s"     => \$ENV{PLACK_SERVER},
+    "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $ENV{PLACK_SERVER} = $_[1] },
     'I=s@'         => \@includes,
     "h|help",      => \$help,
 );
