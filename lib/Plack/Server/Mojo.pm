@@ -65,7 +65,7 @@ sub handler {
     $env{'psgi.multiprocess'} = $self->is_multiprocess;
     $env{'psgi.run_once'}     = Plack::Util::FALSE;
 
-    my $res = $self->psgi_app->(\%env);
+    my $res = Plack::Util::run_app $self->psgi_app, \%env;
 
     $tx->res->code($res->[0]);
     my $headers = $res->[1];
