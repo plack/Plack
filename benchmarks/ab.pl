@@ -11,8 +11,8 @@ use Getopt::Long;
 my $app = 'eg/dot-psgi/Hello.psgi';
 my $ab  = 'ab -n 100 -c 10 -k';
 
-my @backends = qw( AnyEvent Standalone ServerSimple Mojo::Prefork Coro Danga::Socket );
-@backends = grep { eval "require Plack::Server::$_; 1" } @backends;
+my @backends = grep eval "require Plack::Server::$_; 1",
+    qw( AnyEvent Standalone ServerSimple Mojo::Prefork Coro Danga::Socket );
 
 warn "Testing implementations: ", join(", ", @backends), "\n";
 
