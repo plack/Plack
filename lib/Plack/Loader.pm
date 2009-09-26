@@ -23,12 +23,14 @@ sub guess {
 
     if ($ENV{PHP_FCGI_CHILDREN} || $ENV{FCGI_ROLE} || $ENV{FCGI_SOCKET_PATH}) {
         return "FCGI";
-    } elsif ($ENV{MOD_PERL}) {
-        return "ModPerl";
     } elsif ($ENV{GATEWAY_INTERFACE}) {
         return "CGI";
     } elsif (exists $INC{"AnyEvent.pm"}) {
         return "AnyEvent";
+    } elsif (exists $INC{"Coro.pm"}) {
+        return "Coro";
+    } elsif (exists $INC{"Danga/Socket.pm"}) {
+        return "Danga::Socket";
     } else {
         return "Standalone";
     }
@@ -70,14 +72,15 @@ hashes.
 Plack users can specify the specific implementation they want to load
 using the C<PLACK_SERVER> environment variable.
 
-=item MOD_PERL, PHP_FCGI_CHILDREN, GATEWAY_INTERFACE
+=item PHP_FCGI_CHILDREN, GATEWAY_INTERFACE
 
-If there's one of mod_perl, FastCGI or CGI specific environment
-variables is set, use the corresponding server implementation.
+If there's one of FastCGI or CGI specific environment variables set,
+use the corresponding server implementation.
 
 =item %INC
 
-If C<AnyEvent.pm> is loaded, the implementation will be loaded.
+If one of L<AnyEvent>, L<Coro> or L<Danga::Socket> is loaded, the
+relevant implementation will be loaded.
 
 =back
 
