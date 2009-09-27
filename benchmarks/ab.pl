@@ -8,6 +8,7 @@ use Plack::Loader;
 use Test::TCP;
 use Getopt::Long;
 use URI;
+use String::ShellQuote;
 
 my $app = 'eg/dot-psgi/Hello.psgi';
 my $ab  = 'ab -n 100 -c 10 -k';
@@ -44,6 +45,7 @@ sub run_one {
         Test::TCP::wait_port($port);
         $url = URI->new($url);
         $url->port($port);
+        $url = shell_quote($url);
         print `$ab $url | grep 'Requests per '`;
         kill 'TERM' => $pid;
         wait();
