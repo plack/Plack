@@ -83,3 +83,20 @@ sub _parse_header {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Plack::HTTPParser::PP - Pure perl fallback of HTTP::Parser::XS
+
+=head1 DESCRIPTION
+
+Do not use this module directly. Use L<Plack::HTTPParser> instead.
+
+=head1 AUTHOR
+
+Tatsuhiko Miyagawa
+
+=cut
+

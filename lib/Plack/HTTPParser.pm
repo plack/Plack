@@ -22,6 +22,13 @@ __END__
 
 Plack::HTTPParser - Parse HTTP headers
 
+=head1 SYNOPSIS
+
+  use Plack::HTTPParser qw(parse_http_request);
+
+  my $ret = parse_http_request($header_str, \%env);
+  # see HTTP::Parser::XS docs
+
 =head1 DESCRIPTION
 
 Plack::HTTPParser is a wrapper class to dispatch C<parse_http_request>
