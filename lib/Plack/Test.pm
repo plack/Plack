@@ -241,28 +241,6 @@ our @TEST = (
         }
     ],
     [
-        '% encoding in PATH_INFO',
-        # Apache mod_cgi has a bug decoding all % encoded strings
-        sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/bar%2cbaz",
-            );
-        },
-        sub {
-            my $env = shift;
-            return [
-                200,
-                [ 'Content-Type' => 'text/plain', ],
-                [ $env->{PATH_INFO} ],
-            ];
-        },
-        sub {
-            my $res = shift;
-            is $res->content, "/foo/bar%2cbaz";
-        }
-    ],
-    [
         'SERVER_PROTOCOL is required',
         sub {
             my $port = $_[0] || 80;
