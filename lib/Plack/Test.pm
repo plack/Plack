@@ -451,10 +451,21 @@ sub runtests {
 }
 
 sub run_server_tests {
-    my($class, $server) = @_;
+    my($class, $server, $server_port, $http_port) = @_;
+
+    if (ref $server ne 'CODE') {
+        my $server_class = $server;
+        $server = sub {
+            my($port, $app) = @_;
+            my $server = Plack::Loader->load($server_class, port => $port, host => "127.0.0.1");
+            $server->run($app);
+            $server->run_loop if $server->can('run_loop');
+        }
+    }
+
     test_tcp(
         client => sub {
-            my $port = shift;
+            my $port = $http_port || shift;
             for my $i (0..$#TEST) {
                 my $test = $TEST[$i];
                 note $test->[0];
@@ -472,10 +483,9 @@ sub run_server_tests {
                 my $env = shift;
                 $TEST[$env->{HTTP_X_PLACK_TEST}][2]->($env);
             };
-            my $server = Plack::Loader->load($server, port => $port, host => "127.0.0.1");
-            $server->run($app);
-            $server->run_loop if $server->can('run_loop');
+            $server->($port, $app);
         },
+        port => $server_port,
     );
 }
 
