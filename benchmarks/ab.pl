@@ -7,9 +7,11 @@ use lib "$FindBin::Bin/../lib";
 use Plack::Loader;
 use Test::TCP;
 use Getopt::Long;
+use URI;
 
 my $app = 'eg/dot-psgi/Hello.psgi';
 my $ab  = 'ab -n 100 -c 10 -k';
+my $url = 'http://127.0.0.1/';
 
 my @backends = grep eval "require Plack::Server::$_; 1",
     qw( AnyEvent Standalone ServerSimple Mojo::Prefork Coro Danga::Socket );
@@ -19,6 +21,7 @@ warn "Testing implementations: ", join(", ", @backends), "\n";
 GetOptions(
     'app=s'   => \$app,
     'bench=s' => \$ab,
+    'url=s'   => \$url,
 ) or die;
 
 &main;
@@ -39,7 +42,9 @@ sub run_one {
     my $pid = fork();
     if ($pid > 0) { # parent
         Test::TCP::wait_port($port);
-        print `$ab http://127.0.0.1:$port/ | grep 'Requests per '`;
+        $url = URI->new($url);
+        $url->port($port);
+        print `$ab $url | grep 'Requests per '`;
         kill 'TERM' => $pid;
         wait();
     } else {
