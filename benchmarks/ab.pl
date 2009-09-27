@@ -30,15 +30,15 @@ GetOptions(
 sub main {
     print "app: $app\n";
     print "ab:  $ab\n";
-    for my $impl_class (@backends) {
-        run_one($impl_class);
+    for my $server_class (@backends) {
+        run_one($server_class);
     }
 }
 
 sub run_one {
-    my $impl_class = shift;
+    my $server_class = shift;
     my $port = Test::TCP::empty_port();
-    print "-- impl_class: $impl_class\n";
+    print "-- server: $server_class\n";
 
     my $pid = fork();
     if ($pid > 0) { # parent
@@ -51,9 +51,9 @@ sub run_one {
         wait();
     } else {
         my $handler = Plack::Util::load_psgi $app;
-        my $impl = Plack::Loader->load($impl_class, port => $port);
-        $impl->run($handler);
-        $impl->run_loop if $impl->can('run_loop'); # run event loop
+        my $server = Plack::Loader->load($server_class, port => $port);
+        $server->run($handler);
+        $server->run_loop if $server->can('run_loop'); # run event loop
     }
 }
 
