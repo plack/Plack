@@ -43,10 +43,10 @@ sub run_one {
     my $pid = fork();
     if ($pid > 0) { # parent
         Test::TCP::wait_port($port);
-        $url = URI->new($url);
-        $url->port($port);
-        $url = shell_quote($url);
-        print `$ab $url | grep 'Requests per '`;
+        my $uri = URI->new($url);
+        $uri->port($port);
+        $uri = shell_quote($uri);
+        print `$ab $uri | grep 'Requests per '`;
         kill 'TERM' => $pid;
         wait();
     } else {
