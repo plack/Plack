@@ -15,7 +15,7 @@ requires 'Pod::Usage';
 requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
 
-build_requires 'Test::More';
+build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP';
 test_requires 'Test::Requires';
 

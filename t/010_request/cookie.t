@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use Test::Requires qw( CGI::Simple::Cookie );
 use Test::More tests => 7;
 use t::Utils;
 use HTTP::Request;
