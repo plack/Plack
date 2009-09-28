@@ -69,6 +69,10 @@ using a callback.
 The server backend is chosen using with C<PLACK_SERVER> environment
 variables and alike. See L<Plack::Loader> for details.
 
+See also L<Plack::Test::MockHTTP> that gives you the same interface
+but runs the HTTP::Request natively in the PSGI app without an actual
+HTTP server.
+
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
