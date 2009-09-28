@@ -9,6 +9,5 @@ MANIFEST
 Makefile.old
 old/
 *.swp
-test.*
 nytprof/
 nytprof.out
