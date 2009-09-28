@@ -44,7 +44,7 @@ __END__
     #!/usr/bin/perl
     use Plack::Server::CGI;
 
-    # or do() from .psgi file
+    # or Plack::Util::load_psgi("/path/to/app.psgi");
     my $app = sub {
         my $env = shift;
         return [
