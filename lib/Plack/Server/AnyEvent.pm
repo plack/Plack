@@ -139,7 +139,8 @@ sub _response_handler {
             $sock->blocking(1);
             my $sendfile; $sendfile = sub {
                 IO::AIO::aio_sendfile( $sock, $body, $offset, $length - $offset, sub {
-                    $offset += shift if $offset > 0;
+                    my $ret = shift;
+                    $offset += $ret if $ret > 0;
                     if ($offset >= $length) {
                         undef $sendfile;
                         $disconnect_cb->();
