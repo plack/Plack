@@ -224,6 +224,7 @@ sub _response_handler {
         }
         elsif (ref $body eq 'GLOB') {
             my $read = do { local $/; <$body> };
+            $socket->write($read);
             $body->close;
             $disconnect_cb->();
         }
