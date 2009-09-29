@@ -45,11 +45,11 @@ sub write_file {
 sub _render_psgi {
     return <<'EOF';
 use lib "lib";
-use Plack::Test;
+use Plack::Test::Suite;
 
 my $handler = sub {
     my $env = shift;
-    $Plack::Test::TEST[$env->{HTTP_X_PLACK_TEST}][2]->($env);
+    $Plack::Test::Suite::TEST[$env->{HTTP_X_PLACK_TEST}][2]->($env);
 };
 EOF
 }

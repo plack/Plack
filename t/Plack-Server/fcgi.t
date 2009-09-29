@@ -7,11 +7,11 @@ use Plack::Server::FCGI;
 use Test::TCP;
 use LWP::UserAgent;
 use FindBin;
-use Plack::Test;
+use Plack::Test::Suite;
 use t::FCGIUtils;
 # use AnyEvent;
 
-$Plack::Test::BaseDir = "$FindBin::Bin/..";
+$Plack::Test::Suite::BaseDir = "$FindBin::Bin/..";
 
 use Data::Dumper;
 
@@ -21,7 +21,7 @@ my $fcgi_port;
 test_lighty_external(
    sub {
        ($lighty_port, $fcgi_port) = @_;
-       Plack::Test->run_server_tests(\&run_one, $fcgi_port, $lighty_port);
+       Plack::Test::Suite->run_server_tests(\&run_one, $fcgi_port, $lighty_port);
        done_testing();
     }
 );

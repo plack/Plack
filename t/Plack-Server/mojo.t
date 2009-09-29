@@ -8,8 +8,8 @@ use Test::Requires {
 
 use FindBin;
 use Plack;
-use Plack::Test;
-$Plack::Test::BaseDir = "$FindBin::Bin/..";
+use Plack::Test::Suite;
+$Plack::Test::Suite::BaseDir = "$FindBin::Bin/..";
 
-Plack::Test->run_server_tests('Mojo');
+Plack::Test::Suite->run_server_tests('Mojo');
 done_testing();

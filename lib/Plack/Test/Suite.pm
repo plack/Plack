@@ -1,4 +1,4 @@
-package Plack::Test;
+package Plack::Test::Suite;
 use strict;
 use warnings;
 use Digest::MD5;
