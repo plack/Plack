@@ -10,7 +10,8 @@ requires 'HTTP::Body';
 requires 'URI';
 requires 'HTTP::Request::AsCGI';
 requires 'HTTP::Parser::XS', 0.02;
-requires 'Pod::Usage';
+requires 'CGI::Simple::Cookie'; # Plack::Response
+requires 'Pod::Usage';  # plackup
 
 requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
