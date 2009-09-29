@@ -246,7 +246,7 @@ our @TEST = (
         sub {
             my $port = $_[0] || 80;
             HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/bar%2Fbaz",
+                GET => "http://127.0.0.1:$port/foo/bar%2cbaz",
             );
         },
         sub {
@@ -259,7 +259,7 @@ our @TEST = (
         },
         sub {
             my $res = shift;
-            is $res->content, "/foo/bar/baz", "PATH_INFO should be decoded per RFC 3875";
+            is $res->content, "/foo/bar,baz", "PATH_INFO should be decoded per RFC 3875";
         }
     ],
     [

@@ -9,6 +9,7 @@ use HTTP::Request::Common;
 use HTTP::Response;
 use Path::Class;
 use Plack::Test::MockHTTP;
+use Plack::Test::Server;
 
 chdir 't'; # XXX
 
@@ -21,7 +22,7 @@ my $handler = builder {
     };
 };
 
-test_mock_http
+my %test = (
     client => sub {
         my $cb  = shift;
 
@@ -58,6 +59,9 @@ test_mock_http
             is $res->content_type, 'image/jpeg';
         }
     },
-    app => $handler;
+    app => $handler,
+);
+
+test_mock_http %test;
 
 done_testing;
