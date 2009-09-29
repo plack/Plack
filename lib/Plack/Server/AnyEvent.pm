@@ -136,10 +136,10 @@ sub _response_handler {
         if ( $HasAIO && Plack::Util::is_real_fh($body) ) {
             my $offset = 0;
             my $length = -s $body;
-
+            $sock->blocking(1);
             my $sendfile; $sendfile = sub {
                 IO::AIO::aio_sendfile( $sock, $body, $offset, $length - $offset, sub {
-                    $offset += shift;
+                    $offset += shift if $offset > 0;
                     if ($offset >= $length) {
                         undef $sendfile;
                         $disconnect_cb->();
