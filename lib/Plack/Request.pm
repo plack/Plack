@@ -382,15 +382,16 @@ __END__
 
 =head1 NAME
 
-Plack::Request - Portable HTTP request object
+Plack::Request - Portable HTTP request object from PSGI env hash
 
 =head1 SYNOPSIS
 
-    # normally a request object is passed into your handler
-    sub handle_request {
-        my $req = shift;
+  use Plack::Request;
 
-   };
+  sub psgi_handler {
+      my $env = shift;
+      my $req = Plack::Request->new($env);
+  }
 
 =head1 DESCRIPTION
 
@@ -548,14 +549,13 @@ convert Plack::Request to HTTP::Request.
 
 =head1 AUTHORS
 
+Kazuhiro Osawa
 
-=head1 THANKS TO
-
-L<Catalyst::Request>
+Tokuhiro Matsuno
 
 =head1 SEE ALSO
 
-L<HTTP::Request>, L<Catalyst::Request>
+L<Plack::Response> L<HTTP::Request>, L<Catalyst::Request>
 
 =head1 LICENSE
 
