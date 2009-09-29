@@ -248,7 +248,7 @@ Runs the I<$app> by wrapping errors with I<eval> and if an error is
 found, logs it to C<< $env->{'psgi.errors'} >> and returns the
 template 500 Error response.
 
-=item header_get, header_set, header_push, header_exists, header_remove
+=item header_get, header_exists, header_set, header_push, header_remove
 
   my $hdrs = [ 'Content-Type' => 'text/plain' ];
 
@@ -271,7 +271,7 @@ name as case insensitive.
   my $headers = [ 'Content-Type' => 'text/plain' ];
 
   my $h = Plack::Util::headers($headers);
-  $h->get($key)
+  $h->get($key);
   if ($h->exists($key)) { ... }
   $h->set($key => $val);
   $h->push($key => $val);
