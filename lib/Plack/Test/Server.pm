@@ -9,7 +9,7 @@ use Plack::Loader;
 use base qw(Exporter);
 our @EXPORT = qw( test_server );
 
-sub test_server {
+sub test_psgi {
     my %args = @_;
 
     my $client = delete $args{client} or croak "client test code needed";
@@ -44,34 +44,11 @@ __END__
 
 Plack::Test::Server - Run HTTP tests through live Plack servers
 
-=head1 SYNOPSIS
-
-  use Plack::Test::Server;
-
-  test_server
-      client => sub {
-          my $cb = shift;
-          my $req = HTTP::Request->new(GET => "http://localhost/hello");
-          my $res = $cb->($req);
-          like $res->content, qr/Hello World/;
-      },
-      app => sub {
-          my $env = shift;
-          return [ 200, [ 'Content-Type' => 'text/plain' ], [ "Hello World" ] ];
-      };
-
 =head1 DESCRIPTION
 
 Plack::Test::Server is an utility to run PSGI application with Plack
 server implementations, and run the live HTTP tests with the server
-using a callback.
-
-The server backend is chosen using with C<PLACK_SERVER> environment
-variables and alike. See L<Plack::Loader> for details.
-
-See also L<Plack::Test::MockHTTP> that gives you the same interface
-but runs the HTTP::Request natively in the PSGI app without an actual
-HTTP server.
+using a callback. See L<Plack::Test> how to use this module.
 
 =head1 AUTHOR
 
@@ -81,7 +58,7 @@ Tokuhiro Matsuno
 
 =head1 SEE ALSO
 
-L<Plack::Loader> L<Test::TCP> L<Plack::Test::MockHTTP> L<Plack::Test::Server::Suite>
+L<Plack::Loader> L<Test::TCP> L<Plack::Test>
 
 =cut
 
