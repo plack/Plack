@@ -141,7 +141,7 @@ sub _response_handler {
                 IO::AIO::aio_sendfile( $sock, $body, $offset, $length - $offset, sub {
                     my $ret = shift;
                     $offset += $ret if $ret > 0;
-                    if ($offset >= $length) {
+                    if ($offset >= $length || ($ret == -1 && ! ($! == Errno::EAGAIN || $! == Errno::EINTR))) {
                         undef $sendfile;
                         $disconnect_cb->();
                     } else {
