@@ -160,7 +160,7 @@ the binary file, unless otherwise set in the caller's code.
   my $app = Plack::Util::load_psgi $app_psgi;
 
 Load C<app.psgi> file and evaluate the code to get PSGI application
-handler. If the file can't be loaded (e.g. file doens't exist or has a
+handler. If the file can't be loaded (e.g. file doesn't exist or has a
 perl syntax error), it will throw an exception.
 
 =item run_app

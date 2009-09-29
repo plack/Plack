@@ -57,7 +57,6 @@ standalone
 fallback
 MockHTTP
 backend
-doens't
 CPAN
 Perlbal
 Kazuho
