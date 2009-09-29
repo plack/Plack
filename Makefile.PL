@@ -1,4 +1,4 @@
-sub author_tests { die "You need to install Module::Install::AuthorTests to build from git clone\n" }
+sub author_tests { die "You need to install Module::Install::AuthorTests and Test::Base to build from git clone\n" }
 
 use inc::Module::Install;
 name 'Plack';
@@ -9,14 +9,14 @@ requires 'LWP'; # HTTP::Status, HTTP::Headers and HTTP::Request
 requires 'HTTP::Body';
 requires 'URI';
 requires 'HTTP::Request::AsCGI';
-requires 'HTTP::Parser::XS';
+requires 'HTTP::Parser::XS', 0.02;
 requires 'Pod::Usage';
 
 requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
 
-build_requires 'Test::More';
-build_requires 'Test::TCP' => '0.09';
+build_requires 'Test::More', 0.88;
+build_requires 'Test::TCP', 0.11;
 test_requires 'Test::Requires';
 
 #author_requires 'AnyEvent';

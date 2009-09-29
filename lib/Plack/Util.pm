@@ -48,10 +48,23 @@ sub foreach {
     }
 }
 
-sub run_app($$;$) {
-    my($app, $env) = (shift, shift);
+sub load_psgi {
+    my $file = shift;
 
-    local $@; my $res = eval { $app->($env, @_) };
+    my $app = do $file;
+    return $app if $app and ref $app eq 'CODE';
+
+    if (my $e = $@ || $!) {
+        die "Can't load $file: $e";
+    } else {
+        Carp::croak("$file doesn't return PSGI app handler: " . ($app || undef));
+    }
+}
+
+sub run_app($$) {
+    my($app, $env) = @_;
+
+    local $@; my $res = eval { $app->($env) };
     if ($@) {
         my $body = "Internal Server Error";
         $env->{'psgi.errors'}->print($@);
@@ -142,9 +155,17 @@ guaranteed to be a I<line>) to the callback function.
 It internally sets the buffer length C<$/> to 4096 in case it reads
 the binary file, unless otherwise set in the caller's code.
 
+=item load_psgi
+
+  my $app = Plack::Util::load_psgi $app_psgi;
+
+Load C<app.psgi> file and evaluate the code to get PSGI application
+handler. If the file can't be loaded (e.g. file doens't exist or has a
+perl syntax error), it will throw an exception.
+
 =item run_app
 
-  my $res = Plack::Util::run_app $app, $env [, $start_response ];
+  my $res = Plack::Util::run_app $app, $env;
 
 Runs the I<$app> by wrapping errors with I<eval> and if an error is
 found, logs it to C<< $env->{'psgi.errors'} >> and returns the
@@ -161,8 +182,7 @@ template 500 Error response.
 
 Creates an instant object that can react to methods passed in the
 constructor. Handy to create when you need to create an IO stream
-object for input or errors, as well as respone writer object for
-L<PSGI::Async> extension.
+object for input or errors.
 
 =back
 

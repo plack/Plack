@@ -6,29 +6,31 @@ use Plack::Util;
 sub auto {
     my($class, %args) = @_;
 
-    my $impl = $class->guess
-        or Carp::croak("Couldn't auto-guess implementation. Set it with PLACK_IMPL");
-    Plack::Util::load_class($impl, "Plack::Impl")->new(%args);
+    my $server = $class->guess
+        or Carp::croak("Couldn't auto-guess server serverementation. Set it with PLACK_SERVER");
+    Plack::Util::load_class($server, "Plack::Server")->new(%args);
 }
 
 sub load {
-    my($class, $impl, @args) = @_;
-    Plack::Util::load_class($impl, "Plack::Impl")->new(@args);
+    my($class, $server, @args) = @_;
+    Plack::Util::load_class($server, "Plack::Server")->new(@args);
 }
 
 sub guess {
     my $class = shift;
 
-    return $ENV{PLACK_IMPL} if $ENV{PLACK_IMPL};
+    return $ENV{PLACK_SERVER} if $ENV{PLACK_SERVER};
 
     if ($ENV{PHP_FCGI_CHILDREN} || $ENV{FCGI_ROLE} || $ENV{FCGI_SOCKET_PATH}) {
         return "FCGI";
-    } elsif ($ENV{MOD_PERL}) {
-        return "ModPerl";
     } elsif ($ENV{GATEWAY_INTERFACE}) {
         return "CGI";
     } elsif (exists $INC{"AnyEvent.pm"}) {
         return "AnyEvent";
+    } elsif (exists $INC{"Coro.pm"}) {
+        return "Coro";
+    } elsif (exists $INC{"Danga/Socket.pm"}) {
+        return "Danga::Socket";
     } else {
         return "Standalone";
     }
@@ -40,11 +42,11 @@ __END__
 
 =head1 NAME
 
-Plack::Loader - (auto)load Plack implementation
+Plack::Loader - (auto)load Plack Servers
 
 =head1 SYNOPSIS
 
-  # auto-select implementations based on env vars
+  # auto-select server backends based on env vars
   use Plack::Loader;
   Plack::Loader->auto(%args)->run($app);
 
@@ -53,31 +55,32 @@ Plack::Loader - (auto)load Plack implementation
 
 =head1 DESCRIPTION
 
-Plack::Loader is a factory class to load one of Plack::Impl subclasses based on the environment.
+Plack::Loader is a factory class to load one of Plack::Server subclasses based on the environment.
 
 =head1 AUTOLOADING
 
 C<< Plack::Loader->auto(%args) >> will autoload the most correct
-implementation by guessing from environment variables and Perl INC
+server implementation by guessing from environment variables and Perl INC
 hashes.
 
 =over 4
 
-=item PLACK_IMPL
+=item PLACK_SERVER
 
-  env PLACK_IMPL=ServerSimple ...
+  env PLACK_SERVER=ServerSimple ...
 
 Plack users can specify the specific implementation they want to load
-using the C<PLACK_IMPL> environment variable.
+using the C<PLACK_SERVER> environment variable.
 
-=item MOD_PERL, PHP_FCGI_CHILDREN, GATEWAY_INTERFACE
+=item PHP_FCGI_CHILDREN, GATEWAY_INTERFACE
 
-If there's one of mod_perl, FastCGI or CGI specific environment
-variables is set, use the corresponding implementation.
+If there's one of FastCGI or CGI specific environment variables set,
+use the corresponding server implementation.
 
 =item %INC
 
-If C<AnyEvent.pm> or C<Mojo.pm> is loaded, the implementation will be loaded.
+If one of L<AnyEvent>, L<Coro> or L<Danga::Socket> is loaded, the
+relevant implementation will be loaded.
 
 =back
 

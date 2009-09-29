@@ -17,7 +17,7 @@ sub call {
     my $res = $self->_handle_static($env);
     return $res if $res;
 
-    return $self->app->($env, @_);
+    return $self->app->($env);
 }
 
 sub _handle_static {

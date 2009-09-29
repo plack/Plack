@@ -16,7 +16,7 @@ our $BaseDir = "t";
 # 1: request generator coderef.
 # 2: request handler
 # 3: test case for response
-my @TEST = (
+our @TEST = (
     [
         'GET',
         sub {
@@ -241,6 +241,28 @@ my @TEST = (
         }
     ],
     [
+        '% encoding in PATH_INFO',
+        # Apache mod_cgi has a bug decoding all % encoded strings
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/foo/bar%2cbaz",
+            );
+        },
+        sub {
+            my $env = shift;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', ],
+                [ $env->{PATH_INFO} ],
+            ];
+        },
+        sub {
+            my $res = shift;
+            is $res->content, "/foo/bar,baz", "PATH_INFO should be decoded per RFC 3875";
+        }
+    ],
+    [
         'SERVER_PROTOCOL is required',
         sub {
             my $port = $_[0] || 80;
@@ -293,7 +315,7 @@ my @TEST = (
         sub {
             my $port = $_[0] || 80;
             HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
+                GET => "http://127.0.0.1:$port/call_close",
             );
         },
         sub {
@@ -306,7 +328,7 @@ my @TEST = (
                     my $self = shift;
                     return $$self++ < 4 ? $$self : undef;
                 }
-                sub close     { ::ok(1, 'closed') }
+                sub close     { ::ok(1, 'closed') if defined &::ok }
             }
             return [
                 200,
@@ -324,7 +346,7 @@ my @TEST = (
         sub {
             my $port = $_[0] || 80;
             HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
+                GET => "http://127.0.0.1:$port/has_errors",
             );
         },
         sub {
@@ -426,8 +448,6 @@ my @TEST = (
     ],
 );
 
-our @RAW_HANDLERS = map $_->[2], @TEST;
-
 for my $test (@TEST) {
     my $orig = $test->[2];
     $test->[2] = sub {
@@ -453,25 +473,42 @@ sub runtests {
 }
 
 sub run_server_tests {
-    my($class, $impl) = @_;
-    for my $test (@TEST) {
-        test_tcp(
-            client => sub {
-                my $port = shift;
+    my($class, $server, $server_port, $http_port) = @_;
+
+    if (ref $server ne 'CODE') {
+        my $server_class = $server;
+        $server = sub {
+            my($port, $app) = @_;
+            my $server = Plack::Loader->load($server_class, port => $port, host => "127.0.0.1");
+            $server->run($app);
+            $server->run_loop if $server->can('run_loop');
+        }
+    }
+
+    test_tcp(
+        client => sub {
+            my $port = $http_port || shift;
+            for my $i (0..$#TEST) {
+                my $test = $TEST[$i];
                 note $test->[0];
                 my $ua  = LWP::UserAgent->new;
-                my $res = $ua->request($test->[1]->($port));
+                my $req = $test->[1]->($port);
+                $req->header('X-Plack-Test' => $i);
+                my $res = $ua->request($req);
                 local $Test::Builder::Level = $Test::Builder::Level + 3;
                 $test->[3]->($res, $port);
-            },
-            server => sub {
-                my $port = shift;
-                my $impl = Plack::Loader->load($impl, port => $port, host => "127.0.0.1");
-                $impl->run($test->[2]);
-                $impl->run_loop if $impl->can('run_loop'); # run event loop
-            },
-        );
-    }
+            }
+        },
+        server => sub {
+            my $port = shift;
+            my $app = sub {
+                my $env = shift;
+                $TEST[$env->{HTTP_X_PLACK_TEST}][2]->($env);
+            };
+            $server->($port, $app);
+        },
+        port => $server_port,
+    );
 }
 
 1;

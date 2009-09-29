@@ -1,28 +1,17 @@
-use AnyEvent;
 my $app = sub {
-    my($env, $start_response) = @_;
-    die "This app needs psgi.async backend (AnyEvent or Danga::Socket + Danga::Socket::AnyEvent)"
-        unless $env->{'psgi.async'};
+    my $env = shift;
 
-    my $writer = $start_response->(200, ['X-Foo' => 'bar']);
-    my $streamer; $streamer = AnyEvent->timer(
-        after => 0,
-        interval => 1,
-        cb => sub {
-            scalar $streamer;
-            $writer->write(time() . "\n");
+    warn "This app would block currently when doing the timer sleep. Later will be updated using IO::Writer"
+        if $env->{'psgi.nonblocking'};
+
+    my $count;
+    my $body = Plack::Util::inline_object
+        getline => sub {
+            return if $count++ > 5;
+            sleep 1;
+            return time . "\n";
         },
-    );
+        close => sub {};
 
-    my $close_w; $close_w = AnyEvent->timer(
-        after => 5,
-        cb => sub {
-            scalar $close_w;
-            undef $streamer; # cancel
-            $writer->write("DONE\n");
-            $writer->close;
-        },
-    );
-
-    return [];
+    return [ 200, ['X-Foo' => 'bar'], $body ];
 };

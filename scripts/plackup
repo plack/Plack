@@ -4,42 +4,48 @@ use lib "lib";
 use Cwd;
 use Getopt::Long;
 use Plack::Loader;
+use Plack::Util;
 use Pod::Usage;
 
-GetOptions(\my %opts, "app=s", "impl=s", "help");
+my $app    = "app.psgi";
+my $help   = 0;
+my @includes;
 
-pod2usage(0) if $opts{help};
+# From 'prove': Allow cuddling the paths with the -I
+@ARGV = map { /^(-I)(.+)/ ? ($1,$2) : $_ } @ARGV;
 
-# If there is an explicit implementation mentioned, use it, otherwise leave $ENV{PLACK_IMPL} alone.
-$ENV{PLACK_IMPL} = $opts{impl} if $opts{impl};
+Getopt::Long::Configure("no_ignore_case", "pass_through");
+GetOptions(
+    "a|app=s"      => \$app,
+    "s|server=s"   => \$ENV{PLACK_SERVER},
+    "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $ENV{PLACK_SERVER} = $_[1] },
+    'I=s@'         => \@includes,
+    "h|help",      => \$help,
+);
 
-my $file = $opts{app} || "app.psgi";
-my $handler = load_handler($opts{app} || Cwd::cwd . "/app.psgi");
+pod2usage(0) if $help;
+lib->import(@includes) if @includes;
+
+my $handler = Plack::Util::load_psgi $app;
 
 unless ($handler) {
     die $@ if $@;
-    die "$file not found: $!\n" if $!;
+    die "$app not found: $!\n" if $!;
     unless ($handler && ref $handler eq 'CODE') {
-        die "$file does not return an application code reference.\n";
+        die "$app does not return an application code reference.\n";
     }
 }
 
 my @args = map { s/^--//; $_ } @ARGV;
-my $impl = Plack::Loader->auto(@args);
-$impl->run($handler);
-$impl->run_loop if $impl->can('run_loop'); # run event loop
-
-sub load_handler {
-    my $file = shift;
-    return unless -e $file;
-    return do $file;
-}
+my $server = Plack::Loader->auto(@args);
+$server->run($handler);
+$server->run_loop if $server->can('run_loop'); # run event loop
 
 __END__
 
 =head1 NAME
 
-plackup -- a useful tool for running Plack applications
+plackup - Run PSGI application with Plack servers
 
 =head1 SYNOPSIS
 
@@ -49,11 +55,8 @@ plackup -- a useful tool for running Plack applications
   # can be passed with --app option (Or -a)
   plackup --app hello.psgi
 
-  # switch implementations
-  env PLACK_IMPL=Standalone::Prefork plackup -- --port 9999
-
-  # Or, --impl (or -i)
-  plackup --impl AnyEvent
+  # Switch server implementation with --server (or -s)
+  plackup --server Coro --port 9090
 
 =head1 DESCRIPTION
 
@@ -80,7 +83,7 @@ different name in a different path. (Actually the path doesn't need to
 end in C<.psgi>: it's just there for convention)
 
 You may also select a specific implementation to run on using the
-C<PLACK_IMPL> environment variable or use the C<-i> or C<--impl> flag
+C<PLACK_SERVER> environment variable or use the C<-s> or C<--server> flag
 which will be prefered over the environment variable if present.
 
 =head1 SEE ALSO

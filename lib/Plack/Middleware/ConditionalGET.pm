@@ -7,7 +7,7 @@ sub call {
     my $self = shift;
     my $env  = shift;
 
-    my $res = $self->app->($env, @_);
+    my $res = $self->app->($env);
     return $res unless $env->{REQUEST_METHOD} =~ /^(GET|HEAD)$/;
 
     # TODO this should really be in Plack::Util

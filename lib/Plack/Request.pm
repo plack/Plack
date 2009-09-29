@@ -8,7 +8,6 @@ BEGIN { require Carp }; # do not call Carp->import for performance
 use Socket qw[AF_INET inet_aton]; # for _build_hostname
 use Plack::Request::Upload;
 use URI;
-use URI::WithBase;
 
 our $VERSION = '0.01';
 
@@ -63,21 +62,6 @@ sub query_parameters {
         $self->{query_parameters} = $self->uri->query_form_hash;
     }
     $self->{query_parameters};
-}
-
-# proxy request?
-sub proxy_request {
-    my $self = shift;
-    if (defined $_[0]) {
-        $self->{proxy_request} = $_[0];
-    } elsif (!defined $self->{proxy_request}) {
-        if ($self->request_uri && $self->request_uri =~ m!^https?://!i) {
-            $self->{proxy_request} = $self->request_uri;
-        } else {
-            $self->{proxy_request} = '';
-        }
-    }
-    $self->{proxy_request};
 }
 
 sub _body_parser {
@@ -155,7 +139,16 @@ sub _http_body {
     }
     $self->{_http_body};
 }
-sub body_parameters { shift->_http_body->param(@_) }
+sub body_parameters {
+    my $self = shift;
+
+    if (@_ || defined $self->{_http_body} || $self->method eq 'POST') {
+        return $self->_http_body->param(@_);
+    } else {
+        return {};
+    }
+}
+
 sub body            { shift->_http_body->body(@_) }
 
 # contains body_params and query_params
@@ -175,7 +168,7 @@ sub _build_parameters {
     my $self = shift;
 
     my $query = $self->query_parameters;
-    my $body = $self->body_parameters;
+    my $body  = $self->body_parameters;
 
     my %merged;
 
@@ -314,8 +307,8 @@ sub upload {
 sub uri {
     my $self = shift;
     if (defined $_[0]) {
-        unless (eval { $_[0]->isa('URI::WithBase') }) {
-            Carp::confess "Attribute (uri) does not pass the type constraint because: Validation failed for 'URI::WithBase' failed with value $_[0]";
+        unless (eval { $_[0]->isa('URI') }) {
+            Carp::confess "Attribute (uri) does not pass the type constraint because: Validation failed for 'URI' failed with value $_[0]";
         }
         $self->{uri} = $_[0];
     } elsif (!defined $self->{uri}) {
@@ -328,40 +321,22 @@ sub _build_uri  {
 
     my $env = $self->env;
 
-    my $base_path;
-    if (exists $env->{REDIRECT_URL}) {
-        $base_path = $env->{REDIRECT_URL};
-        $base_path =~ s/$env->{PATH_INFO}$// if exists $env->{PATH_INFO};
-    } else {
-        $base_path = $env->{SCRIPT_NAME} || '/';
-    }
+    my $base_path = $env->{SCRIPT_NAME} || '/';
 
     my $path = $base_path . ($env->{PATH_INFO} || '');
     $path =~ s{^/+}{};
 
-    # for proxy request
-    $path = $base_path = '/' if $self->proxy_request;
-
-    my $uri = URI->new;
-    $uri->scheme($env->{'psgi.url_scheme'});
-    $uri->host($env->{HTTP_HOST}   || $env->{SERVER_NAME});
-    $uri->port($env->{SERVER_PORT});
-    $uri->path($path || '/');
-    $uri->query($env->{QUERY_STRING}) if $env->{QUERY_STRING};
+    my $uri = ($env->{'psgi.url_scheme'} || "http") .
+        "://" .
+        ($env->{HTTP_HOST} || $env->{SERVER_NAME}) .
+        ":" . ($env->{SERVER_PORT} || 80) . "/" .
+        ($path || "") .
+        ($env->{QUERY_STRING} ? "?$env->{QUERY_STRING}" : "");
 
     # sanitize the URI
-    $uri = $uri->canonical;
-
-    # set the base URI
-    # base must end in a slash
-    $base_path =~ s{^/+}{};
-    $base_path .= '/' unless $base_path =~ /\/$/;
-    my $base = $uri->clone;
-    $base->path_query($base_path);
-
-    return URI::WithBase->new($uri, $base);
+    return URI->new($uri)->canonical;
 }
-sub base { shift->uri->base(@_) }
+
 sub path { shift->uri->path(@_) }
 
 sub uri_with {
@@ -384,16 +359,6 @@ sub uri_with {
         %{ $args },
     } );
     return $uri;
-}
-
-sub absolute_url {
-    my ($self, $location) = @_;
-
-    unless ($location =~ m!^https?://!) {
-        return URI->new( $location )->abs( $self->base );
-    } else {
-        return $location;
-    }
 }
 
 sub as_http_request {
@@ -471,10 +436,6 @@ be either a scalar or an arrayref containing scalars.
 
 Returns true or false, indicating whether the connection is secure (https).
 
-=item proxy_request
-
-Returns undef or uri, if it is proxy request, uri of a connection place is returned.
-
 =item uri
 
 Returns a URI object for the current request. Stringifies to the URI text.
@@ -490,10 +451,6 @@ Returns string containing body(POST).
 =item headers
 
 Returns an L<HTTP::Headers> object containing the headers for the current request.
-
-=item base
-
-Contains the URI base. This will always have a trailing slash.
 
 =item hostname
 
@@ -586,10 +543,6 @@ preserved.
 =item as_http_request
 
 convert Plack::Request to HTTP::Request.
-
-=item $req->absolute_url($location)
-
-convert $location to absolute uri.
 
 =back
 

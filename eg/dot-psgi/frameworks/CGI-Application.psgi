@@ -1,10 +1,8 @@
-use MyApp;
 use CGI::Application::PSGI;
+use MyApp;
 
 my $handler = sub {
     my $env = shift;
-    local *ENV = $env;
-
-    my $webapp = MyApp->new;
-    CGI::Application::PSGI->run($webapp);
+    my $app = MyApp->new({ QUERY => CGI::PSGI->new($env) });
+    CGI::Application::PSGI->run($app);
 };
