@@ -12,7 +12,8 @@ sub call {
 
     # TODO this should really be in Plack::Util
     my %headers;
-    while (my($key, $value) = splice @{$res->[1]}, 0, 2) {
+    my @headers = @{$res->[1]};
+    while (my($key, $value) = splice @headers, 0, 2) {
         push @{$headers{$key}}, $value;
     }
 
