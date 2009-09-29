@@ -28,7 +28,7 @@ Plack::Test - Test PSGI applications with various backends
   test_psgi
       app => sub {
           my $env = shift;
-          return [ 200, [ 'Content-Type' => 'text/plain' ], [ "Hello World" ],
+          return [ 200, [ 'Content-Type' => 'text/plain' ], [ "Hello World" ] ],
       },
       client => sub {
           my $cb = shift;
