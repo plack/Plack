@@ -17,7 +17,7 @@ requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
 
 build_requires 'Test::More', 0.88;
-build_requires 'Test::TCP';
+build_requires 'Test::TCP', 0.11;
 test_requires 'Test::Requires';
 
 #author_requires 'AnyEvent';

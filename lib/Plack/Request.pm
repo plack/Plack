@@ -395,7 +395,7 @@ Plack::Request - Portable HTTP request object
 =head1 DESCRIPTION
 
 L<Plack::Request> provides a consistent API for request objects across web
-server enviroments.
+server environments.
 
 =head1 METHODS
 
