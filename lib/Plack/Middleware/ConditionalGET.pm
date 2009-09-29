@@ -10,23 +10,10 @@ sub call {
     my $res = $self->app->($env);
     return $res unless $env->{REQUEST_METHOD} =~ /^(GET|HEAD)$/;
 
-    # TODO this should really be in Plack::Util
-    my %headers;
-    my @headers = @{$res->[1]};
-    while (my($key, $value) = splice @headers, 0, 2) {
-        push @{$headers{$key}}, $value;
-    }
-
-    if ( $self->etag_matches(\%headers, $env) || $self->not_modified_since(\%headers, $env) ) {
+    if ( $self->etag_matches($res->[1], $env) || $self->not_modified_since($res->[1], $env) ) {
         $res->[0] = 304;
-        delete $headers{'Content-Type'};
-        delete $headers{'Content-Length'};
-
-        my @headers;
-        while (my($key, $val_r) = each %headers) {
-            push @headers, $key, $_ for @$val_r;
-        }
-        $res->[1] = \@headers;
+        Plack::Util::header_remove($res->[1], $_)
+            for qw( Content-Type Content-Length Content-Disposition );
         $res->[2] = [];
     }
 
@@ -37,12 +24,14 @@ no warnings 'uninitialized';
 
 sub etag_matches {
     my($self, $headers, $env) = @_;
-    $headers->{ETag} && $headers->{ETag}[0] eq $env->{HTTP_IF_NONE_MATCH};
+    my $val = Plack::Util::header_get($headers, 'ETag');
+    defined $val && $val eq $env->{HTTP_IF_NONE_MATCH};
 }
 
 sub not_modified_since {
     my($self, $headers, $env) = @_;
-    $headers->{'Last-Modified'} && $headers->{'Last-Modified'}[0] eq $env->{HTTP_IF_MODIFIED_SINCE};
+    my $val = Plack::Util::header_get($headers, 'Last-Modified');
+    defined $val && $val eq $env->{HTTP_IF_MODIFIED_SINCE};
 }
 
 1;

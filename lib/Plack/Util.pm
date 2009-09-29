@@ -74,6 +74,83 @@ sub run_app($$) {
     return $res;
 }
 
+sub headers {
+    my $headers = shift;
+    inline_object(
+        iter   => sub { header_iter($headers, @_) },
+        get    => sub { header_get($headers, @_) },
+        set    => sub { header_set($headers, @_) },
+        push   => sub { header_push($headers, @_) },
+        exists => sub { header_exists($headers, @_) },
+        remove => sub { header_remove($headers, @_) },
+        headers => sub { $headers },
+    );
+}
+
+sub header_iter {
+    my($headers, $code) = @_;
+
+    my @headers = @$headers; # copy
+    while (my($key, $val) = splice @headers, 0, 2) {
+        $code->($key, $val);
+    }
+}
+
+sub header_get {
+    my($headers, $key) = (shift, lc shift);
+
+    my @val;
+    header_iter $headers, sub {
+        push @val, $_[1] if lc $_[0] eq $key;
+    };
+
+    return wantarray ? @val : $val[0];
+}
+
+sub header_set {
+    my($headers, $key, $val) = @_;
+
+    my($set, @new_headers);
+    header_iter $headers, sub {
+        if (lc $key eq lc $_[0]) {
+            $_[1] = $val;
+            $set++;
+        }
+        push @new_headers, $_[0], $_[1];
+    };
+
+    push @new_headers, $key, $val unless $set;
+    @$headers = @new_headers;
+}
+
+sub header_push {
+    my($headers, $key, $val) = @_;
+    push @$headers, $key, $val;
+}
+
+sub header_exists {
+    my($headers, $key) = (shift, lc shift);
+
+    my $exists;
+    header_iter $headers, sub {
+        $exists = 1 if lc $_[0] eq $key;
+    };
+
+    return $exists;
+}
+
+sub header_remove {
+    my($headers, $key) = (shift, lc shift);
+
+    my @new_headers;
+    header_iter $headers, sub {
+        push @new_headers, $_[0], $_[1]
+            unless lc $_[0] eq $key;
+    };
+
+    @$headers = @new_headers;
+}
+
 sub inline_object {
     my %args = @_;
     bless {%args}, 'Plack::Util::Prototype';
@@ -170,6 +247,43 @@ perl syntax error), it will throw an exception.
 Runs the I<$app> by wrapping errors with I<eval> and if an error is
 found, logs it to C<< $env->{'psgi.errors'} >> and returns the
 template 500 Error response.
+
+=item header_get, header_set, header_push, header_exists, header_remove
+
+  my $hdrs = [ 'Content-Type' => 'text/plain' ];
+
+  my $v = Plack::Util::header_get($hdrs, $key); # First found only
+  my @v = Plack::Util::header_get($hdrs, $key);
+  my $bool = Plack::Util::header_exists($hdrs, $key);
+  Plack::Util::header_set($hdrs, $key, $val);   # overwrites existent header
+  Plack::Util::header_push($hdrs, $key, $val);
+  Plack::Util::header_remove($hdrs, $key);
+
+Utility functions to manipulate PSGI response headers array
+reference. The methods that read existent header value handles header
+name as case insensitive.
+
+  my $hdrs = [ 'Content-Type' => 'text/plain' ];
+  my $v = Plack::Util::header_get('content-type'); # 'text/plain'
+
+=item headers
+
+  my $headers = [ 'Content-Type' => 'text/plain' ];
+
+  my $h = Plack::Util::headers($headers);
+  $h->get($key)
+  if ($h->exists($key)) { ... }
+  $h->set($key => $val);
+  $h->push($key => $val);
+  $h->remove($key);
+  $h->headers; # same reference as $headers
+
+Given a header array reference, returns a convenient object that has
+an instance methods to access C<header_*> functions with an OO
+interface. The object holds a reference to the original given
+C<$headers> argument and updates the reference accordingly when called
+write methds like C<set>, C<push> or C<remove>. It also has C<headers>
+method that would return the same reference.
 
 =item inline_object
 
