@@ -12,7 +12,7 @@ use IO::Socket::INET;
 use HTTP::Status;
 use Socket qw/IPPROTO_TCP TCP_NODELAY/;
 
-our $HasAIO = eval {
+our $HasAIO = !$ENV{PLACK_NO_SENDFILE} && eval {
     require IO::AIO; 1;
 };
 

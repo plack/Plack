@@ -18,7 +18,7 @@ sub run {
 package Plack::Server::Coro::Server;
 use base qw( Net::Server::Coro );
 
-our $HasAIO = eval "use Coro::AIO; 1";
+our $HasAIO = !$ENV{PLACK_NO_SENDFILE} && eval "use Coro::AIO; 1";
 
 use HTTP::Status;
 use Scalar::Util;
