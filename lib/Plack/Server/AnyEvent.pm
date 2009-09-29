@@ -13,7 +13,7 @@ use Errno ();
 use Scalar::Util ();
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
-our $HasAIO = eval {
+our $HasAIO = !$ENV{PLACK_NO_SENDFILE} && eval {
     require AnyEvent::AIO;
     require IO::AIO;
     1;

@@ -16,7 +16,7 @@ use Time::HiRes qw(time);
 
 use constant MAX_REQUEST_SIZE   => 131072;
 
-our $HasSendFile = do {
+our $HasSendFile = !$ENV{PLACK_NO_SENDFILE} && do {
     local $@;
     eval { require Sys::Sendfile; 1 };
 };
