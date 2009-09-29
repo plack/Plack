@@ -37,7 +37,11 @@ do {
 };
 do {
     write_file('reloaded');
-    sleep 1 while $cache; # waiting ChangeNotify
+    eval {
+        local $SIG{ALRM} = sub { fail 'Restart failed after 5 seconds'; die };
+        alarm 5;
+        sleep 1 while $cache; # waiting ChangeNotify
+    };
 
     my $res = $handler->(+{});
     is_deeply $res, [200, [], ['reloaded']];
