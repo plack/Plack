@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use base qw(Mojo::Base);
 use Plack::Util;
+use URI::Escape;
 
 __PACKAGE__->attr([ 'host', 'port' ]);
 
@@ -38,7 +39,7 @@ sub handler {
     my %env;
     $env{REQUEST_METHOD} = $tx->req->method;
     $env{SCRIPT_NAME}    = "";
-    $env{PATH_INFO}      = $tx->req->url->path;
+    $env{PATH_INFO}      = URI::Escape::uri_unescape($tx->req->url->path);
     $env{QUERY_STRING}   = $tx->req->url->query->to_string;
     $env{SERVER_NAME}    = $mojo_daemon->address;
     $env{SERVER_PORT}    = $mojo_daemon->port;

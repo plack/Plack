@@ -6,7 +6,7 @@ our @EXPORT = qw( parse_http_request );
 
 {
     local $@;
-    if (eval { require HTTP::Parser::XS; 1 }) {
+    if (!$ENV{PLACK_HTTP_PARSER_PP} && eval { require HTTP::Parser::XS; 1 }) {
         *parse_http_request = \&HTTP::Parser::XS::parse_http_request;
     } else {
         require Plack::HTTPParser::PP;

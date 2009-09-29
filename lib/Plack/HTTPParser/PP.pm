@@ -1,6 +1,7 @@
 package Plack::HTTPParser::PP;
 use strict;
 use warnings;
+use URI::Escape;
 
 sub parse_http_request {
     my($chunk, $env) = @_;
@@ -50,7 +51,7 @@ sub _parse_header {
     $env->{SERVER_PROTOCOL} = "HTTP/$major.$minor";
 
     my($path, $query) = ( $uri =~ /^([^?]*)(?:\?(.*))?$/s );
-    $env->{PATH_INFO}    = $path;
+    $env->{PATH_INFO}    = URI::Escape::uri_unescape($path);
     $env->{QUERY_STRING} = $query || '';
     $env->{SCRIPT_NAME}  = '';
 
