@@ -10,7 +10,8 @@ sub import {
     my($class, @subclasses) = @_;
 
     for my $sub (@subclasses) {
-        eval "use Plack::Middleware::$sub";
+        my $subclass = $sub =~ s/^\+// ? $sub : "Plack::Middleware::$sub";
+        eval "use $subclass";
         die $@ if $@;
     }
 }
