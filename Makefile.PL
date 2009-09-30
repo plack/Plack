@@ -3,6 +3,7 @@ sub author_tests { die "You need to install Module::Install::AuthorTests and Tes
 use inc::Module::Install;
 name 'Plack';
 all_from 'lib/Plack.pm';
+readme_from 'lib/Plack.pm';
 
 requires 'Class::Accessor::Fast';
 requires 'LWP'; # HTTP::Status, HTTP::Headers and HTTP::Request
