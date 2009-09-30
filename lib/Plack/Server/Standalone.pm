@@ -91,7 +91,7 @@ sub handle_connection {
             if ($env->{CONTENT_LENGTH}) {
                 # TODO can $conn seek to the begining of body and then set to 'psgi.input'?
                 while (length $buf < $env->{CONTENT_LENGTH}) {
-                    $self->read_timeout($conn, \$buf, $env->{CONTENT_LENGTH} - length($buf), length($buf))
+                    $self->read_timeout($conn, \$buf, $env->{CONTENT_LENGTH} - length($buf), length($buf), $self->{timeout})
                         or return;
                 }
             }
