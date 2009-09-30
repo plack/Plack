@@ -84,7 +84,7 @@ sub log_line {
         )
     }{ $1 ? $block_handler->($1, $2) : $char_handler->($3) }egx;
 
-    return $fmt;
+    return $fmt . "\n";
 }
 
 __END__
