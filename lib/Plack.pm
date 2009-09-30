@@ -10,14 +10,14 @@ __END__
 
 =head1 NAME
 
-Plack - PSGI reference implementation and utilties
+Plack - PSGI reference implementation and utilities
 
 =head1 DESCRIPTION
 
 Plack is a set of PSGI reference server implementations and helper
 utilities for Web application frameworks, exactly like Ruby's Rack.
 
-See L<PSGI> for the PSGI specification
+See L<PSGI> for the PSGI specification.
 
 =head1 MODULES AND UTILITIES
 

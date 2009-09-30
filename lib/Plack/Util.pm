@@ -32,6 +32,22 @@ sub is_real_fh {
     }
 }
 
+sub content_length {
+    my $body = shift;
+
+    if (ref $body eq 'ARRAY') {
+        my $cl = 0;
+        for my $chunk (@$body) {
+            $cl += length $chunk;
+        }
+        return $cl;
+    } elsif ( is_real_fh($body) ) {
+        return (-s $body) - tell($body);
+    }
+
+    return;
+}
+
 sub foreach {
     my($body, $cb) = @_;
 
@@ -151,6 +167,11 @@ sub header_remove {
     @$headers = @new_headers;
 }
 
+sub status_with_no_entity_body {
+    my $status = shift;
+    return $status < 200 || $status == 204 || $status == 304;
+}
+
 sub inline_object {
     my %args = @_;
     bless {%args}, 'Plack::Util::Prototype';
@@ -221,6 +242,15 @@ returns true if a given C<$fh> is a real file handle that has a file
 descriptor. It returns false if C<$fh> is PerlIO handle that is not
 really related to the underlying file etc.
 
+=item content_length
+
+  my $cl = Plack::Util::content_length($body);
+
+Returns the length of content from body if it can be calculated. If
+C<$body> is an array ref it's a sum of length of each chunk, if
+C<$body> is a real filehandle it's a remaining size of the filehandle,
+otherwise returns undef.
+
 =item foreach
 
   Plack::Util::foreach($body, $cb);
@@ -284,6 +314,13 @@ interface. The object holds a reference to the original given
 C<$headers> argument and updates the reference accordingly when called
 write methds like C<set>, C<push> or C<remove>. It also has C<headers>
 method that would return the same reference.
+
+=item status_with_no_entity_body
+
+  if (status_with_no_entity_body($res->[0])) { }
+
+Returns true if the given status code doesn't have any Entity body in
+HTTP response, i.e. it's 100, 101, 204 or 304.
 
 =item inline_object
 
