@@ -45,7 +45,7 @@ Plack::Middleware::ContentLength - Adds Content-Length header automatically
 
 Plack::Middleware::ContentLength is a middleware that automatically
 adds C<Content-Length> header when it's appropriate i.e. the response
-has a content body with calculatable size (array of chunks or a real
+has a content body with calculable size (array of chunks or a real
 filehandle).
 
 This middleware can also be used as a library from PSGI server

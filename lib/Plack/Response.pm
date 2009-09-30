@@ -91,7 +91,7 @@ Plack::Response allows you a way to create PSGI response array ref through a sim
 
 =head1 AUTHOR
 
-Tokuhiro Matsuno E<lt>tokuhirom  slkjfd gmail.comE<gt>
+Tokuhiro Matsuno
 
 =head1 SEE ALSO
 

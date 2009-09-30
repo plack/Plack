@@ -89,6 +89,9 @@ sub log_line {
 
 __END__
 
+=for stopwords
+LogFormat
+
 =head1 NAME
 
 Plack::Middleware::AccessLog - Logs requests like Apache's log format
@@ -111,7 +114,7 @@ logs request and response details to the logger callback. The format
 can be specified using Apache-like format strings (or C<combined> or
 C<common> for the default formats).
 
-This middleware uses calculatable content-length by cheking body type,
+This middleware uses calculable content-length by checking body type,
 and can not log the time taken to serve requests. It also logs the
 request B<before> the response is actually sent to the client. Use
 L<Plack::Middleware::AccessLog::Timed> if you want to log details

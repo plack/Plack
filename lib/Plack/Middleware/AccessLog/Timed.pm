@@ -44,7 +44,7 @@ __END__
 
 =head1 NAME
 
-Plack::Middleware::AccessLog::Timed - Logs requests with time and acurate body size
+Plack::Middleware::AccessLog::Timed - Logs requests with time and accurate body size
 
 =head1 SYNOPSIS
 

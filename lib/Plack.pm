@@ -37,7 +37,7 @@ run PSGI application code reference with it.
 =head2 Plack::Util
 
 L<Plack::Util> contains a lot of utility functions for server
-impementors as well as middleware authors.
+implementors as well as middleware authors.
 
 =head2 .psgi files
 
@@ -64,7 +64,7 @@ servers the wrapped code reference still looks like and behaves
 exactly the same as PSGI applications.
 
 L<Plack::Middleware> gives you an easy way to wrap PSGI applications
-with a clean API, and compatiblity with L<Plack::Builder> DSL.
+with a clean API, and compatibility with L<Plack::Builder> DSL.
 
 =head2 Plack::Builder
 

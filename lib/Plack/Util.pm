@@ -312,7 +312,7 @@ Given a header array reference, returns a convenient object that has
 an instance methods to access C<header_*> functions with an OO
 interface. The object holds a reference to the original given
 C<$headers> argument and updates the reference accordingly when called
-write methds like C<set>, C<push> or C<remove>. It also has C<headers>
+write methods like C<set>, C<push> or C<remove>. It also has C<headers>
 method that would return the same reference.
 
 =item status_with_no_entity_body

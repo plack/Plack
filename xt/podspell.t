@@ -1,23 +1,19 @@
 use Test::More;
 eval q{ use Test::Spelling };
 plan skip_all => "Test::Spelling is not installed." if $@;
-add_stopwords(map { split /[\s\:\-]/ } <DATA>);
+add_stopwords(map { split /[\s\:\-]+/ } <DATA>);
 $ENV{LANG} = 'C';
+set_spell_cmd("aspell -l en list") if `which aspell`;
 all_pod_files_spelling_ok('lib');
+
 __DATA__
-Kazuhiro Osawa
-yappo <at> shibuya <döt> pl
 Plack
-Matsuno
-Tokuhiro
-slkjfd
-Tatsuhiko
-Miyagawa
-dankogai
-kogaidan
+Kazuhiro Osawa
+Tokuhiro Matsuno
+Tatsuhiko Miyagawa
 API
 CGI
-Stringifies
+FCGI
 URI
 https
 param
@@ -32,22 +28,17 @@ ServerSimple
 app
 Mojo
 AnyEvent
-Coro's
-Lehmann
-myhttpd
+Coro
 FastCGI
 rackup
 Impl
-Mojo's
+Mojo
 prefork
 callback
 ReverseHTTP
 hookout
 internet
-ReverseHTTP
-reversehttp
 AIO
-Coro
 multithread
 var
 env
@@ -59,8 +50,18 @@ MockHTTP
 backend
 CPAN
 Perlbal
-Kazuho
-Oku's
+Kazuho Oku
 XS
 DSL
+coroutine
 psgi
+namespace
+filename
+OO
+natively
+reversehttp
+Mojo's
+stringifies
+plackup
+implementors
+Oku's
