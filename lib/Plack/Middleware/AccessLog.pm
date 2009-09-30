@@ -127,6 +127,9 @@ default C<development> environment.
 
 =item format
 
+  enable Plack::Middleware::AccessLog
+      format => "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"";
+
 =item logger
 
   my $logger = Log::Dispatch->new(...);
