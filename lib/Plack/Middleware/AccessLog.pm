@@ -130,17 +130,24 @@ default C<development> environment.
   enable Plack::Middleware::AccessLog
       format => "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"";
 
+Takes a format string (or a preset template C<combined> or C<custom>)
+to specify the log format. This middleware implements subset of
+Apache's LogFormat templates.
+
 =item logger
 
   my $logger = Log::Dispatch->new(...);
   enable Plack::Middleware::AccessLog
       logger => sub { $logger->log(debug => @_) };
 
+Sets a callback to print log message to. It prints to C<psgi.errors>
+output stream by default.
+
 =back
 
 =head1 SEE ALSO
 
-Rack::CustomLogger
+L<http://httpd.apache.org/docs/2.2/mod/mod_log_config.html> Rack::CustomLogger
 
 =cut
 
