@@ -1,0 +1,12 @@
+t/Plack-Middleware/restarter.t     (Wstat: 0 Tests: 4 Failed: 2)
+  #   Failed test 'Restart failed after 5 seconds'
+  This sometimes fails when HUP is sent in a weired order
+
+t/Plack-Server/cgi.t               (Wstat: 256 Tests: 48 Failed: 1)
+  #   Failed test 'PATH_INFO should be decoded per RFC 3875'
+  HTTP::Request::AsCGI bug
+  
+t/Plack-Server/mojo-prefork.t      (Wstat: 256 Tests: 48 Failed: 1)
+t/Plack-Server/mojo.t              (Wstat: 256 Tests: 48 Failed: 1)
+  #   Failed test 'No Content-Length'
+  Mojo bug
