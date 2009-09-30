@@ -10,6 +10,7 @@ use HTTP::Date;
 use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
+use Plack::Middleware::ContentLength;
 use POSIX qw(EAGAIN);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Time::HiRes qw(time);
@@ -34,6 +35,8 @@ sub new {
 
 sub run {
     my($self, $app) = @_;
+
+    $app = Plack::Middleware::ContentLength->wrap($app);
 
     my $listen_sock = IO::Socket::INET->new(
         Listen    => SOMAXCONN,
@@ -109,25 +112,20 @@ sub handle_connection {
         }
     }
 
-    my ($has_cl, $conn_value);
+    my $conn_value;
     my @lines = (
         "Date: @{[HTTP::Date::time2str()]}\015\012",
         "Server: Plack-Server-Standalone/$Plack::VERSION\015\012",
     );
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
         push @lines, "$k: $v\r\n";
-        if ($k =~ /^(?:(content-length)|(connection))$/i) {
-            if ($1) {
-                $has_cl = 1;
-            } else {
-                $conn_value = $v;
-            }
+        if (lc $k eq 'connection') {
+            $conn_value = $v;
         }
     }
-    if (! $has_cl && $res->[0] != 304 && ref $res->[2] eq 'ARRAY') {
-        unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\r\n";
-        $has_cl = 1;
-    }
+
+    my $has_cl = Plack::Util::header_exists($res->[1], 'Content-Length');
+
     if ($req_count < $self->{max_keepalive_reqs} && $has_cl && ! defined($conn_value) && ($env->{HTTP_CONNECTION} || '') =~ /keep-alive/i) {
         unshift @lines, "Connection: keep-alive\r\n";
         $conn_value = "keep-alive";

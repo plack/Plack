@@ -8,6 +8,7 @@ use AnyEvent::Socket;
 use Plack::Util;
 use HTTP::Status;
 use Plack::HTTPParser qw(parse_http_request);
+use Plack::Middleware::ContentLength;
 use IO::Handle;
 use Errno ();
 use Scalar::Util ();
@@ -125,6 +126,7 @@ sub _response_handler {
 
     return sub {
         my($app, $env) = @_;
+        $app = Plack::Middleware::ContentLength->wrap($app);
         my $res = Plack::Util::run_app $app, $env;
         return if scalar(@$res) == 0;
 
