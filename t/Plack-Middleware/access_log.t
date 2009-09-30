@@ -24,6 +24,7 @@ my $test_req = sub {
 
 {
     $test_req->(GET "http://localhost/");
+    chomp $log;
     is $log, 'localhost:80 text/plain';
 }
 
