@@ -16,14 +16,11 @@ sub call {
 
     my($status, $header, $body) = @{$self->app->($env)};
 
+    my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : { $body->getline };
+
     my $timer_body = Plack::Util::inline_object(
         getline => sub {
-            my $line;
-            if (ref $body eq 'ARRAY') {
-                $line = shift @$body;
-            } else {
-                $line = $body->getline;
-            }
+            my $line = $getline->();
             $length += length $line if defined $line;
             return $line;
         },
