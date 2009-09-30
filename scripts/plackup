@@ -31,11 +31,11 @@ lib->import(@includes) if @includes;
 my $handler = Plack::Util::load_psgi $app;
 
 if ($env eq 'development') {
-    require Plack::Middleware::AccessLog;
-    $handler = Plack::Middleware::AccessLog->wrap(logger => sub { print STDERR @_ }, $handler);
     if (eval "require Plack::Middleware::DebugScreen; 1") {
         $handler = Plack::Middleware::DebugScreen->wrap($handler);
     }
+    require Plack::Middleware::AccessLog;
+    $handler = Plack::Middleware::AccessLog->wrap(logger => sub { print STDERR @_ }, $handler);
 }
 
 my @args = map { s/^--//; $_ } @ARGV;
