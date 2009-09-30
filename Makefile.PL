@@ -13,6 +13,7 @@ requires 'HTTP::Parser::XS', 0.02;
 requires 'CGI::Simple::Cookie'; # Plack::Response
 requires 'Pod::Usage';  # plackup
 
+requires 'CGI::ExceptionManager'; # Middleware::DebugScreen
 requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
 
