@@ -15,7 +15,7 @@ is_deeply(
         status => 200,
         body   => 'hello',
     ),
-    [ 200, +[], 'hello' ]
+    [ 200, +[], [ 'hello' ] ]
 );
 is_deeply(
     res(
@@ -42,7 +42,7 @@ is_deeply(
             'Set-Cookie' => 'poo_sid=QWERTYUI; domain=example.com; path=/; expires=Thursday, 25-Apr-1999 00:40:33 GMT',
             'Set-Cookie' => 'foo_sid=ASDFJKL%3A; domain=example.com; path=/; expires=Thursday, 25-Apr-1999 00:40:33 GMT',
         ],
-        'hello'
+        [ 'hello' ],
     ]
 );
 

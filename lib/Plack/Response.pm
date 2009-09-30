@@ -33,8 +33,18 @@ sub finalize {
                 map { ( $k => $_ ) } $self->headers->header($_);
             } $self->headers->header_field_names
         ],
-        $self->body,
+        $self->_body,
     ];
+}
+
+sub _body {
+    my $self = shift;
+    my $body = $self->body;
+    if (!ref $self->body) {
+        return [ $body ];
+    } else {
+        return $body;
+    }
 }
 
 sub _finalize_cookies {
