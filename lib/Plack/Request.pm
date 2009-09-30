@@ -28,7 +28,6 @@ sub protocol    { $_[0]->env->{SERVER_PROTOCOL} }
 sub method      { $_[0]->env->{REQUEST_METHOD} }
 sub port        { $_[0]->env->{SERVER_PORT} }
 sub user        { $_[0]->env->{REMOTE_USER} }
-sub request_uri { $_[0]->env->{REQUEST_URI} }
 sub url_scheme  { $_[0]->env->{'psgi.url_scheme'} }
 
 # we need better cookie lib?
@@ -423,10 +422,6 @@ Contains the request method (C<GET>, C<POST>, C<HEAD>, etc).
 =item protocol
 
 Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
-
-=item request_uri
-
-Returns the request uri (like $ENV{REQUEST_URI})
 
 =item query_parameters
 
