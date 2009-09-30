@@ -14,17 +14,6 @@ my %formats = (
 
 use POSIX;
 
-sub new {
-    my $class = shift;
-    my $self = $class->SUPER::new(@_);
-
-    my $fmt = $self->format || "combined";
-    $fmt = $formats{$fmt} if exists $formats{$fmt};
-    $self->format($fmt);
-
-    return $self;
-}
-
 sub call {
     my $self = shift;
     my($env) = @_;
@@ -85,15 +74,17 @@ sub log_line {
         $cb->($char);
     };
 
-    my $format = $self->format;
-    $format =~ s{
+    my $fmt = $self->format || "combined";
+    $fmt = $formats{$fmt} if exists $formats{$fmt};
+
+    $fmt =~ s{
         (?:
          \%\{([\w\-]+)\}([a-z]) |
          \%(?:[<>])?([a-z\%])
         )
     }{ $1 ? $block_handler->($1, $2) : $char_handler->($3) }egx;
 
-    return $format;
+    return $fmt;
 }
 
 __END__
