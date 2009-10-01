@@ -1,7 +1,9 @@
 use Test::More;
-use Plack::Test::MockHTTP;
+use Plack::Test;
 
-test_mock_http
+$Plack::Test::Impl = "Server";
+
+test_psgi
     client => sub {
         my $cb = shift;
         my $req = HTTP::Request->new(GET => "http://localhost/hello");

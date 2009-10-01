@@ -8,6 +8,7 @@ use Plack::Util;
 use Pod::Usage;
 
 my $app    = "app.psgi";
+my $env    = "development";
 my $help   = 0;
 my @includes;
 
@@ -19,6 +20,7 @@ GetOptions(
     "a|app=s"      => \$app,
     "s|server=s"   => \$ENV{PLACK_SERVER},
     "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $ENV{PLACK_SERVER} = $_[1] },
+    "E|env"        => \$env,
     'I=s@'         => \@includes,
     "h|help",      => \$help,
 );
@@ -28,12 +30,12 @@ lib->import(@includes) if @includes;
 
 my $handler = Plack::Util::load_psgi $app;
 
-unless ($handler) {
-    die $@ if $@;
-    die "$app not found: $!\n" if $!;
-    unless ($handler && ref $handler eq 'CODE') {
-        die "$app does not return an application code reference.\n";
+if ($env eq 'development') {
+    if (eval "require Plack::Middleware::DebugScreen; 1") {
+        $handler = Plack::Middleware::DebugScreen->wrap($handler);
     }
+    require Plack::Middleware::AccessLog;
+    $handler = Plack::Middleware::AccessLog->wrap(logger => sub { print STDERR @_ }, $handler);
 }
 
 my @args = map { s/^--//; $_ } @ARGV;
@@ -68,7 +70,7 @@ AnyEvent and others can all be detected. See L<Plack::Loader> for the
 authorative list.
 
 C<plackup> assumes you have an C<app.psgi> script in your current
-directory, that would looke like:
+directory, that would look like:
 
   #!/usr/bin/perl
   use MyApp;
@@ -78,13 +80,33 @@ directory, that would looke like:
 The last statement of C<app.psgi> should be a code reference that is a
 PSGI application.
 
-You can also use the C<--app> option to locate a C<.psgi> script with a
-different name in a different path. (Actually the path doesn't need to
-end in C<.psgi>: it's just there for convention)
+=head1 OPTIONS
 
-You may also select a specific implementation to run on using the
-C<PLACK_SERVER> environment variable or use the C<-s> or C<--server> flag
-which will be prefered over the environment variable if present.
+=over 4
+
+=item -a, --app
+
+Use the C<--app> option to locate a C<.psgi> script with a different
+name in a different path. (Actually the path doesn't need to end in
+C<.psgi>: it's just there for convention)
+
+=item -s, --server
+
+Select a specific implementation to run on using the C<PLACK_SERVER>
+environment variable or use the C<-s> or C<--server> flag which will
+be prefered over the environment variable if present.
+
+=item -I
+
+Specify perl library include path, like C<perl>'s -I option.
+
+=item -E, --env
+
+Specify the environment option (default is C<development>). If it's
+set to C<development>, following middleware is enabled by default:
+L<CommonLogger>, L<DebugScreen>.
+
+=back
 
 =head1 SEE ALSO
 

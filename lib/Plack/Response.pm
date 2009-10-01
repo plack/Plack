@@ -33,8 +33,18 @@ sub finalize {
                 map { ( $k => $_ ) } $self->headers->header($_);
             } $self->headers->header_field_names
         ],
-        $self->body,
+        $self->_body,
     ];
+}
+
+sub _body {
+    my $self = shift;
+    my $body = $self->body;
+    if (!ref $self->body) {
+        return [ $body ];
+    } else {
+        return $body;
+    }
 }
 
 sub _finalize_cookies {
@@ -68,21 +78,34 @@ __END__
 
 =head1 NAME
 
-Plack::Response -
+Plack::Response - Portable HTTP Response object for PSGI response
 
 =head1 SYNOPSIS
 
   use Plack::Response;
 
+  sub psgi_handler {
+      my $env = shift;
+
+      my $res = Plack::Response->new;
+      $res->code(200);
+      $res->header('Content-Type' => 'text/html');
+      $res->body("Hello World");
+
+      return $res->finalize;
+  }
+
 =head1 DESCRIPTION
 
-Plack::Response is
+Plack::Response allows you a way to create PSGI response array ref through a simple API.
 
 =head1 AUTHOR
 
-Tokuhiro Matsuno E<lt>tokuhirom  slkjfd gmail.comE<gt>
+Tokuhiro Matsuno
 
 =head1 SEE ALSO
+
+L<Plack::Request>
 
 =head1 LICENSE
 

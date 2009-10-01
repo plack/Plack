@@ -4,12 +4,14 @@ use warnings;
 use base qw/Plack::Middleware/;
 __PACKAGE__->mk_accessors(qw/framework/);
 
+use Plack::Util;
+
 sub call {
     my $self = shift;
 
     my $res = $self->app->( @_ );
     if ($self->framework) {
-        push @{$res->[1]}, 'X-Framework' => $self->framework;
+        Plack::Util::header_set $res->[1], 'X-Framework' => $self->framework;
     }
     $res;
 }

@@ -3,6 +3,7 @@ sub author_tests { die "You need to install Module::Install::AuthorTests and Tes
 use inc::Module::Install;
 name 'Plack';
 all_from 'lib/Plack.pm';
+readme_from 'lib/Plack.pm';
 
 requires 'Class::Accessor::Fast';
 requires 'LWP'; # HTTP::Status, HTTP::Headers and HTTP::Request
@@ -10,8 +11,10 @@ requires 'HTTP::Body';
 requires 'URI';
 requires 'HTTP::Request::AsCGI';
 requires 'HTTP::Parser::XS', 0.02;
-requires 'Pod::Usage';
+requires 'CGI::Simple::Cookie'; # Plack::Response
+requires 'Pod::Usage';  # plackup
 
+requires 'CGI::ExceptionManager'; # Middleware::DebugScreen
 requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
 

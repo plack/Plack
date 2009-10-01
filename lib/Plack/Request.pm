@@ -28,7 +28,6 @@ sub protocol    { $_[0]->env->{SERVER_PROTOCOL} }
 sub method      { $_[0]->env->{REQUEST_METHOD} }
 sub port        { $_[0]->env->{SERVER_PORT} }
 sub user        { $_[0]->env->{REMOTE_USER} }
-sub request_uri { $_[0]->env->{REQUEST_URI} }
 sub url_scheme  { $_[0]->env->{'psgi.url_scheme'} }
 
 # we need better cookie lib?
@@ -328,7 +327,7 @@ sub _build_uri  {
 
     my $uri = ($env->{'psgi.url_scheme'} || "http") .
         "://" .
-        ($env->{HTTP_HOST} || $env->{SERVER_NAME}) .
+        ($env->{HTTP_HOST} || $env->{SERVER_NAME} || "") .
         ":" . ($env->{SERVER_PORT} || 80) . "/" .
         ($path || "") .
         ($env->{QUERY_STRING} ? "?$env->{QUERY_STRING}" : "");
@@ -382,20 +381,21 @@ __END__
 
 =head1 NAME
 
-Plack::Request - Portable HTTP request object
+Plack::Request - Portable HTTP request object from PSGI env hash
 
 =head1 SYNOPSIS
 
-    # normally a request object is passed into your handler
-    sub handle_request {
-        my $req = shift;
+  use Plack::Request;
 
-   };
+  sub psgi_handler {
+      my $env = shift;
+      my $req = Plack::Request->new($env);
+  }
 
 =head1 DESCRIPTION
 
 L<Plack::Request> provides a consistent API for request objects across web
-server enviroments.
+server environments.
 
 =head1 METHODS
 
@@ -422,10 +422,6 @@ Contains the request method (C<GET>, C<POST>, C<HEAD>, etc).
 =item protocol
 
 Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
-
-=item request_uri
-
-Returns the request uri (like $ENV{REQUEST_URI})
 
 =item query_parameters
 
@@ -548,14 +544,13 @@ convert Plack::Request to HTTP::Request.
 
 =head1 AUTHORS
 
+Kazuhiro Osawa
 
-=head1 THANKS TO
-
-L<Catalyst::Request>
+Tokuhiro Matsuno
 
 =head1 SEE ALSO
 
-L<HTTP::Request>, L<Catalyst::Request>
+L<Plack::Response> L<HTTP::Request>, L<Catalyst::Request>
 
 =head1 LICENSE
 

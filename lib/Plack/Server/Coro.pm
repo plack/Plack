@@ -18,12 +18,13 @@ sub run {
 package Plack::Server::Coro::Server;
 use base qw( Net::Server::Coro );
 
-our $HasAIO = eval "use Coro::AIO; 1";
+our $HasAIO = !$ENV{PLACK_NO_SENDFILE} && eval "use Coro::AIO; 1";
 
 use HTTP::Status;
 use Scalar::Util;
 use List::Util qw(sum max);
 use Plack::HTTPParser qw( parse_http_request );
+use Plack::Middleware::ContentLength;
 use constant MAX_REQUEST_SIZE => 131072;
 
 sub process_request {
@@ -56,7 +57,8 @@ sub process_request {
 
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
-            $res = Plack::Util::run_app $self->{app}, $env;
+            my $app = Plack::Middleware::ContentLength->wrap($self->{app});
+            $res = Plack::Util::run_app $app, $env;
             last;
         } elsif ($reqlen == -2) {
             # incomplete, continue
@@ -65,21 +67,13 @@ sub process_request {
         }
     }
 
-    my (@lines, $has_cl, $conn_value);
+    my (@lines, $conn_value);
 
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
         push @lines, "$k: $v\015\012";
-        if ($k =~ /^(?:(content-length)|(connection))$/i) {
-            if ($1) {
-                $has_cl = 1;
-            } else {
-                $conn_value = $v;
-            }
+        if (lc $k eq 'connection') {
+            $conn_value = $v;
         }
-    }
-    if (! $has_cl && $res->[0] != 304 && ref $res->[2] eq 'ARRAY') {
-        unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\015\012";
-        $has_cl = 1;
     }
 
     unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012";

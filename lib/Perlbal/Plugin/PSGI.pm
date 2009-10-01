@@ -110,7 +110,7 @@ Perlbal::Plugin::PSGI - PSGI web server on Perlbal
 
 =head1 DESCRIPTION
 
-This is a Perlbal plugin to asllow any PSGI application run natively
+This is a Perlbal plugin to allow any PSGI application run natively
 inside Perlbal process.
 
 =head1 AUTHOR

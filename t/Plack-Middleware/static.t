@@ -8,8 +8,7 @@ use Plack::Util;
 use HTTP::Request::Common;
 use HTTP::Response;
 use Path::Class;
-use Plack::Test::MockHTTP;
-use Plack::Test::Server;
+use Plack::Test;
 
 chdir 't'; # XXX
 
@@ -62,6 +61,6 @@ my %test = (
     app => $handler,
 );
 
-test_mock_http %test;
+test_psgi %test;
 
 done_testing;

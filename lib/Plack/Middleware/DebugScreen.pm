@@ -48,6 +48,9 @@ Plack::Middleware::DebugScreen - Displays stack trace when your app dies
 This middleware catches exceptions (run-time errors) happening in your
 application and displays nice stack trace screen.
 
+This middleware is enabled by default when you run L<plackup> in the
+default development mode.
+
 =head1 CONFIGURATION
 
 No configuration option is available.

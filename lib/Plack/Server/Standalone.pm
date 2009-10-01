@@ -9,13 +9,14 @@ use HTTP::Date;
 use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
+use Plack::Middleware::ContentLength;
 use POSIX qw(EINTR);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Time::HiRes qw(alarm time);
 
 use constant MAX_REQUEST_SIZE   => 131072;
 
-our $HasSendFile = do {
+our $HasSendFile = !$ENV{PLACK_NO_SENDFILE} && do {
     local $@;
     eval { require Sys::Sendfile; 1 };
 };
@@ -77,7 +78,9 @@ sub accept_loop {
     # TODO handle $max_reqs_per_child
     my($self, $app, $max_reqs_per_child) = @_;
     my $proc_req_count = 1;
-    
+
+    $app = Plack::Middleware::ContentLength->wrap($app);
+
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $self->{listen_sock}->accept) {
@@ -127,9 +130,9 @@ sub handle_connection {
         if ($reqlen >= 0) {
             # handle request
             if ($may_keepalive) {
-                if (my $conn = $env->{HTTP_CONNECTION}) {
+                if (my $c = $env->{HTTP_CONNECTION}) {
                     $may_keepalive = undef
-                        unless $conn =~ /^\s*keep-alive\s*/i;
+                        unless $c =~ /^\s*keep-alive\s*/i;
                 } else {
                     $may_keepalive = undef;
                 }
@@ -138,7 +141,7 @@ sub handle_connection {
             if ($env->{CONTENT_LENGTH}) {
                 # TODO can $conn seek to the begining of body and then set to 'psgi.input'?
                 while (length $buf < $env->{CONTENT_LENGTH}) {
-                    $self->read_timeout($conn, \$buf, $env->{CONTENT_LENGTH} - length($buf), length($buf))
+                    $self->read_timeout($conn, \$buf, $env->{CONTENT_LENGTH} - length($buf), length($buf), $self->{timeout})
                         or return;
                 }
             }
@@ -156,33 +159,26 @@ sub handle_connection {
         }
     }
 
-    my ($has_cl, $conn_value);
+    my $conn_value;
     my @lines = (
         "Date: @{[HTTP::Date::time2str()]}\015\012",
         "Server: Plack-Server-Standalone/$Plack::VERSION\015\012",
     );
+    my $has_cl;
     while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
-        if ($k =~ /^(?:(content-length)|(connection))$/i) {
-            if ($1) {
-                $has_cl = 1;
-            } else {
-                next unless $may_keepalive;
-                $conn_value = $v;
-            }
+        my $lck = lc $k;
+        if ($lck eq 'connection') {
+            $may_keepalive = undef
+                unless lc $v eq 'keep-alive';
+        } else {
+            $has_cl = 1
+                if $lck eq 'content-length';
+            push @lines, "$k: $v\015\012";
         }
-        push @lines, "$k: $v\015\012";
     }
-    if (! $has_cl && ref $res->[2] eq 'ARRAY') {
-        if ($res->[0] != 304) {
-            unshift @lines, "Content-Length: @{[sum map { length $_ } @{$res->[2]}]}\015\012";
-        }
-    } else {
-        $may_keepalive &&= $has_cl;
-    }
-    if ($may_keepalive && ! defined($conn_value)) {
-        unshift @lines, "Connection: keep-alive\015\012";
-        $conn_value = "keep-alive";
-    }
+    $may_keepalive &&= $has_cl;
+    push @lines, "Connection: keep-alive\015\012"
+        if $may_keepalive;
     unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012";
     push @lines, "\015\012";
 
@@ -216,7 +212,7 @@ sub handle_connection {
             }
         }
     }
-    defined($conn_value) && $conn_value =~  /keep-alive/i;
+    $may_keepalive;
 }
 
 # returns 1 if socket is ready, undef on timeout

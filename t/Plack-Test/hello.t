@@ -1,7 +1,9 @@
 use Test::More;
-use Plack::Test::Server;
+use Plack::Test;
 
-test_server(
+$Plack::Test::Impl = "MockHTTP";
+
+test_psgi
     client => sub {
         my $cb = shift;
         my $req = HTTP::Request->new(GET => "http://localhost/hello");
@@ -13,7 +15,6 @@ test_server(
     app => sub {
         my $env = shift;
         return [ 200, [ 'Content-Type' => 'text/plain' ], [ "Hello World" ] ];
-    },
-);
+    };
 
 done_testing;

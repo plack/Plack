@@ -133,7 +133,7 @@ different configuration options.
 
 =head1 AUTHOR
 
-Tokurhiro Matsuno, Tatsuhiko Miyagawa
+Tokuhiro Matsuno, Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
