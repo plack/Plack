@@ -169,7 +169,7 @@ sub handle_connection {
         my ($k, $v) = @_;
         if (lc $k eq 'connection') {
             $use_keepalive = undef
-                unless lc $v eq 'keep-alive';
+                if $use_keepalive && lc $v ne 'keep-alive';
         } else {
             push @lines, "$k:$v\015\012";
         }
