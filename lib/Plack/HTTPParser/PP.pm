@@ -49,6 +49,7 @@ sub _parse_header {
 
     $env->{REQUEST_METHOD}  = $method;
     $env->{SERVER_PROTOCOL} = "HTTP/$major.$minor";
+    $env->{REQUEST_URI}     = $uri;
 
     my($path, $query) = ( $uri =~ /^([^?]*)(?:\?(.*))?$/s );
     $env->{PATH_INFO}    = URI::Escape::uri_unescape($path);
