@@ -173,7 +173,7 @@ sub handle_connection {
             $use_keepalive = undef
                 if $use_keepalive && lc $v ne 'keep-alive';
         } else {
-            push @lines, "$k:$v\015\012";
+            push @lines, "$k: $v\015\012";
         }
     });
     if ($use_keepalive) {
