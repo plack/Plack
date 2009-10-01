@@ -10,7 +10,7 @@ requires 'LWP'; # HTTP::Status, HTTP::Headers and HTTP::Request
 requires 'HTTP::Body';
 requires 'URI';
 requires 'HTTP::Request::AsCGI';
-requires 'HTTP::Parser::XS', 0.02;
+requires 'HTTP::Parser::XS', 0.03;
 requires 'CGI::Simple::Cookie'; # Plack::Response
 requires 'Pod::Usage';  # plackup
 

@@ -126,3 +126,64 @@ sub daemon_detach {
 }
 
 1;
+
+__END__
+
+=head1 SYNOPSIS
+
+    my $server = Plack::Server::FCGI->new(
+        nproc  => $num_proc,
+        listen => $listen,
+        detach => 1,
+    );
+    $server->run($app);
+
+Starts the FastCGI server.  If C<$listen> is set, then it specifies a
+location to listen for FastCGI requests;
+
+=head2 OPTIONS
+
+=over 4
+
+=item listen
+
+    listen => '/path/to/socket'
+    listen => ':8080'
+
+Listen on a socket path, hostname:port, or :port.
+
+=item port
+
+listen via TCP on port on all interfaces (Same as C<< listen => ":$port" >>)
+
+=item leave_umask
+
+Set to 1 to disable setting umask to 0 for socket open
+
+=item nointr
+
+Do not allow the listener to be interrupted by Ctrl+C
+
+=item nproc
+
+Specify a number of processes for FCGI::ProcManager
+
+=item pidfile
+
+Specify a filename for the pid file
+
+=item manager
+
+Specify a FCGI::ProcManager sub-class
+
+=item detach
+
+Detach from console
+
+=item keep_stderr
+
+Send STDERR to STDOUT instead of the webserver
+
+=back
+
+=cut

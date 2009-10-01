@@ -446,6 +446,23 @@ our @TEST = (
             ok ! defined $res->header('transfer_encoding'), "No Transfer-Encoding";
         },
     ],
+    [
+        'REQUEST_URI is set',
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/foo/bar%20baz?x=a",
+            );
+        },
+        sub {
+            my $env = shift;
+            return [ 200, [ 'Content-Type' => 'text/plain' ], [ $env->{REQUEST_URI} ] ];
+        },
+        sub {
+            my $res = shift;
+            is $res->content, '/foo/bar%20baz?x=a';
+        },
+    ],
 );
 
 for my $test (@TEST) {

@@ -1,4 +1,5 @@
 use BeerDB;
 use Maypole::PSGI;
 
-my $handler = sub { Maypole::PSGI->run('BeerDB', @_) };
+my $app = Maypole::PSGI->new('BeerDB');
+my $handler = sub { $app->run(@_) };
