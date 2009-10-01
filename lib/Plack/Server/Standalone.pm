@@ -77,16 +77,19 @@ sub setup_listener {
 sub accept_loop {
     # TODO handle $max_reqs_per_child
     my($self, $app, $max_reqs_per_child) = @_;
-    my $proc_req_count = 1;
+    my $proc_req_count = 0;
 
     $app = Plack::Middleware::ContentLength->wrap($app);
 
-    while (1) {
+    while (! defined $max_reqs_per_child || $proc_req_count < $max_reqs_per_child) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $self->{listen_sock}->accept) {
             $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                 or die "setsockopt(TCP_NODELAY) failed:$!";
-            for (my $req_count = 1; ; ++$req_count, ++$proc_req_count) {
+            my $req_count = 0;
+            while (1) {
+                ++$req_count;
+                ++$proc_req_count;
                 my $env = {
                     SERVER_PORT => $self->{port},
                     SERVER_NAME => $self->{host},
@@ -101,13 +104,12 @@ sub accept_loop {
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server
-                $self->handle_connection(
-                    $env, $conn, $app,
-                    $req_count < $self->{max_keepalive_reqs}
-                        && (! $max_reqs_per_child
-                                || $proc_req_count < $max_reqs_per_child),
-                    $req_count != 0,
-                ) or last;
+                my $may_keepalive = $req_count < $self->{max_keepalive_reqs};
+                if ($may_keepalive && $max_reqs_per_child && $proc_req_count >= $max_reqs_per_child) {
+                    $may_keepalive = undef;
+                }
+                $self->handle_connection($env, $conn, $app, $may_keepalive, $req_count != 0)
+                    or last;
                 # TODO add special cases for clients with broken keep-alive support, as well as disabling keep-alive for HTTP/1.0 proxies
             }
         }
