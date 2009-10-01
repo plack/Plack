@@ -115,7 +115,7 @@ sub accept_loop {
 }
 
 sub handle_connection {
-    my($self, $env, $conn, $app, $may_keepalive, $is_keepalive) = @_;
+    my($self, $env, $conn, $app, $use_keepalive, $is_keepalive) = @_;
 
     my $buf = '';
     my $res = [ 400, [ 'Content-Type' => 'text/plain' ], [ 'Bad Request' ] ];
@@ -129,12 +129,12 @@ sub handle_connection {
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
             # handle request
-            if ($may_keepalive) {
+            if ($use_keepalive) {
                 if (my $c = $env->{HTTP_CONNECTION}) {
-                    $may_keepalive = undef
+                    $use_keepalive = undef
                         unless $c =~ /^\s*keep-alive\s*/i;
                 } else {
-                    $may_keepalive = undef;
+                    $use_keepalive = undef;
                 }
             }
             $buf = substr $buf, $reqlen;
@@ -168,18 +168,18 @@ sub handle_connection {
     Plack::Util::header_iter($res->[1], sub {
         my ($k, $v) = @_;
         if (lc $k eq 'connection') {
-            $may_keepalive = undef
+            $use_keepalive = undef
                 unless lc $v eq 'keep-alive';
         } else {
             push @lines, "$k:$v\015\012";
         }
     });
-    if ($may_keepalive) {
-        $may_keepalive = undef
+    if ($use_keepalive) {
+        $use_keepalive = undef
             unless Plack::Util::header_exists($res->[1], 'Content-Length');
     }
     push @lines, "Connection: keep-alive\015\012"
-        if $may_keepalive;
+        if $use_keepalive;
     unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012";
     push @lines, "\015\012";
 
@@ -213,7 +213,7 @@ sub handle_connection {
             }
         }
     }
-    $may_keepalive;
+    $use_keepalive;
 }
 
 # returns 1 if socket is ready, undef on timeout
