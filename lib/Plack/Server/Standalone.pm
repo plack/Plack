@@ -164,19 +164,20 @@ sub handle_connection {
         "Date: @{[HTTP::Date::time2str()]}\015\012",
         "Server: Plack-Server-Standalone/$Plack::VERSION\015\012",
     );
-    my $has_cl;
-    while (my ($k, $v) = splice(@{$res->[1]}, 0, 2)) {
-        my $lck = lc $k;
-        if ($lck eq 'connection') {
+
+    Plack::Util::header_iter($res->[1], sub {
+        my ($k, $v) = @_;
+        if (lc $k eq 'connection') {
             $may_keepalive = undef
                 unless lc $v eq 'keep-alive';
         } else {
-            $has_cl = 1
-                if $lck eq 'content-length';
-            push @lines, "$k: $v\015\012";
+            push @lines, "$k:$v\015\012";
         }
+    });
+    if ($may_keepalive) {
+        $may_keepalive = undef
+            unless Plack::Util::header_exists($res->[1], 'Content-Length');
     }
-    $may_keepalive &&= $has_cl;
     push @lines, "Connection: keep-alive\015\012"
         if $may_keepalive;
     unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012";
