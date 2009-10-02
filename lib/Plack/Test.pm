@@ -9,6 +9,7 @@ $Impl ||= $ENV{PLACK_TEST_IMPL} || "MockHTTP";
 
 sub test_psgi {
     eval "require Plack::Test::$Impl;";
+    die $@ if $@;
     no strict 'refs';
     &{"Plack::Test::$Impl\::test_psgi"}(@_);
 }
