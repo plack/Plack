@@ -17,3 +17,5 @@
 ^[^/]+\.yaml$
 ^[^/]+\.pl$
 ^\.shipit$
+\.git
+nytprof/
