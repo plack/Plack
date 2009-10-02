@@ -3,6 +3,7 @@ use strict;
 use AnyEvent::ReverseHTTP;
 use HTTP::Message::PSGI;
 use HTTP::Response;
+use Plack::Util;
 
 sub new {
     my($class, %args) = @_;
