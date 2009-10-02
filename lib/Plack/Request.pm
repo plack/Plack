@@ -361,6 +361,12 @@ sub uri_with {
     return $uri;
 }
 
+sub new_response {
+    my $self = shift;
+    require Plack::Response;
+    Plack::Response->new(@_);
+}
+
 sub as_http_request {
     my $self = shift;
     require HTTP::Request;
@@ -544,6 +550,15 @@ preserved.
 =item as_http_request
 
 convert Plack::Request to HTTP::Request.
+
+=item new_response
+
+  my $res = $req->new_response;
+
+Creates a new L<Plack::Response> by default. Handy to remove
+dependency on L<Plack::Response> in your code for easy subclassing and
+duck typing in web application frameworks, as well as overriding
+Response generation in middlewares.
 
 =back
 
