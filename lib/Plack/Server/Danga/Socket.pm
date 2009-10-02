@@ -7,6 +7,7 @@ use Plack::HTTPParser qw(parse_http_request);
 
 use Danga::Socket;
 use Danga::Socket::Callback;
+use Errno ();
 use IO::Handle;
 use IO::Socket::INET;
 use HTTP::Status;
@@ -207,11 +208,12 @@ sub _response_handler {
         if ($HasAIO && Plack::Util::is_real_fh($body)) {
             my $offset = 0;
             my $length = -s $body;
-
+            $socket->{sock}->blocking(1);
             my $sendfile; $sendfile = sub {
                 IO::AIO::aio_sendfile($socket->{sock}, $body, $offset, $length - $offset, sub {
-                    $offset += shift;
-                    if ($offset >= $length) {
+                    my $ret = shift;
+                    $offset += $ret if $ret > 0;
+                    if ($offset >= $length || ($ret == 1 && ! ($! == Errno::EAGAIN || $! == Errno::EINTR))) {
                         undef $sendfile;
                         $disconnect_cb->();
                     }
