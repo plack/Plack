@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use HTTP::Headers;
 use URI::QueryParam;
-BEGIN { require Carp }; # do not call Carp->import for performance
+use Carp ();
 
 use Socket qw[AF_INET inet_aton]; # for _build_hostname
 use Plack::Request::Upload;
@@ -363,7 +363,7 @@ sub uri_with {
 
 sub as_http_request {
     my $self = shift;
-    require 'HTTP/Request.pm'; ## no critic
+    require HTTP::Request;
     HTTP::Request->new( $self->method, $self->uri, $self->headers, $self->raw_body );
 }
 
