@@ -15,7 +15,8 @@ use POSIX qw(EAGAIN);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Time::HiRes qw(time);
 
-use constant MAX_REQUEST_SIZE   => 131072;
+use constant MAX_REQUEST_SIZE => 131072;
+use constant MSWin32          => $^O eq 'MSWin32';
 
 our $HasSendFile = !$ENV{PLACK_NO_SENDFILE} && do {
     local $@;
@@ -50,8 +51,10 @@ sub run {
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $listen_sock->accept) {
-            $conn->fcntl(F_SETFL, FNDELAY)
-                or die "fcntl(FNDELAY) failed:$!";
+            unless (MSWin32) {
+                $conn->fcntl(F_SETFL, FNDELAY)
+                    or die "fcntl(FNDELAY) failed:$!";
+            }
             $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                 or die "setsockopt(TCP_NODELAY) failed:$!";
             # we do not compare $req_count with $self->{max_keepalive_reqs} here, since it is an advisory variable and can be overridden by applications
