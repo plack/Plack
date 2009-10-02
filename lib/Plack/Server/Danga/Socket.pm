@@ -139,7 +139,6 @@ sub _handle_body {
     my ($self, $socket) = @_;
 
     my $env = $socket->{context}{env};
-    my $response_handler = $self->_response_handler($socket);
 
     my $bref = $socket->read(READ_SIZE);
     unless (defined $bref) {
@@ -151,7 +150,7 @@ sub _handle_body {
     if (length($socket->{context}{rbuf}) >= $env->{CONTENT_LENGTH}) {
         open my $input, '<', \$socket->{context}{rbuf};
         $env->{'psgi.input'} = $input;
-        $response_handler->($socket->{context}{app}, $env);
+        $self->_response_handler($socket, $socket->{context}{app}, $env);
     }
 }
 
@@ -160,11 +159,10 @@ sub _handle_response {
 
     my $env = $socket->{context}{env};
     my $app = $socket->{context}{app};
-    my $response_handler = $self->_response_handler($socket);
 
     open my $input, "<", \"";
     $env->{'psgi.input'} = $input;
-    $response_handler->($app, $env);
+    $self->_response_handler($socket, $app, $env);
 
 }
 
@@ -182,59 +180,55 @@ sub _write_headers {
 }
 
 sub _response_handler {
-    my ($self, $socket) = @_;
+    my ($self, $socket, $app, $env) = @_;
 
-    Scalar::Util::weaken($socket);
-    return sub {
-        my ($app, $env) = @_;
-        my $res = Plack::Util::run_app $app, $env;
+    my $res = Plack::Util::run_app $app, $env;
 
-        $self->_write_headers($socket, $res->[0], $res->[1]);
+    $self->_write_headers($socket, $res->[0], $res->[1]);
 
-        my $body = $res->[2];
-        my $disconnect_cb = sub {
-            if ($socket->write) {
-                $socket->close;
-            }
-            else {
-                $socket->watch_write(1);
-                $socket->{on_write_ready} = sub {
-                    my ($socket) = @_;
-                    $socket->write && $socket->close;
-                };
-            }
-        };
-
-        if ($HasAIO && Plack::Util::is_real_fh($body)) {
-            my $offset = 0;
-            my $length = -s $body;
-            $socket->{sock}->blocking(1);
-            my $sendfile; $sendfile = sub {
-                IO::AIO::aio_sendfile($socket->{sock}, $body, $offset, $length - $offset, sub {
-                    my $ret = shift;
-                    $offset += $ret if $ret > 0;
-                    if ($offset >= $length || ($ret == 1 && ! ($! == Errno::EAGAIN || $! == Errno::EINTR))) {
-                        undef $sendfile;
-                        $disconnect_cb->();
-                    }
-                    else {
-                        $sendfile->();
-                    }
-                });
-            };
-            $sendfile->();
-        }
-        elsif (ref $body eq 'GLOB') {
-            my $read = do { local $/; <$body> };
-            $socket->write($read);
-            $body->close;
-            $disconnect_cb->();
+    my $body = $res->[2];
+    my $disconnect_cb = sub {
+        if ($socket->write) {
+            $socket->close;
         }
         else {
-            Plack::Util::foreach( $body, sub { $socket->write($_[0]) } );
-            $disconnect_cb->();
+            $socket->watch_write(1);
+            $socket->{on_write_ready} = sub {
+                my ($socket) = @_;
+                $socket->write && $socket->close;
+            };
         }
     };
+
+    if ($HasAIO && Plack::Util::is_real_fh($body)) {
+        my $offset = 0;
+        my $length = -s $body;
+        $socket->{sock}->blocking(1);
+        my $sendfile; $sendfile = sub {
+            IO::AIO::aio_sendfile($socket->{sock}, $body, $offset, $length - $offset, sub {
+                my $ret = shift;
+                $offset += $ret if $ret > 0;
+                if ($offset >= $length || ($ret == 1 && ! ($! == Errno::EAGAIN || $! == Errno::EINTR))) {
+                    undef $sendfile;
+                    $disconnect_cb->();
+                }
+                else {
+                    $sendfile->();
+                }
+            });
+        };
+        $sendfile->();
+    }
+    elsif (ref $body eq 'GLOB') {
+        my $read = do { local $/; <$body> };
+        $socket->write($read);
+        $body->close;
+        $disconnect_cb->();
+    }
+    else {
+        Plack::Util::foreach( $body, sub { $socket->write($_[0]) } );
+        $disconnect_cb->();
+    }
 }
 
 1;
