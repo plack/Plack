@@ -15,6 +15,7 @@ is_deeply(\%env, {
     REQUEST_METHOD  => "GET",
     SCRIPT_NAME     => '',
     SERVER_PROTOCOL => 'HTTP/1.0',
+    REQUEST_URI     => '/abc?x=y',
 }, 'result of GET /');
 
 $req = <<"EOT";
@@ -34,6 +35,7 @@ is_deeply(\%env, {
     HTTP_USER_AGENT => 'hoge',
     PATH_INFO       => '/hoge',
     REQUEST_METHOD  => "POST",
+    REQUEST_URI     => '/hoge',
     QUERY_STRING    => '',
     SERVER_PROTOCOL => 'HTTP/1.1',
     SCRIPT_NAME     => '',
@@ -55,6 +57,7 @@ is_deeply(\%env, {
     PATH_INFO       => '/',
     QUERY_STRING    => '',
     REQUEST_METHOD  => 'GET',
+    REQUEST_URI     => '/',
     SCRIPT_NAME     => '',
     SERVER_PROTOCOL => 'HTTP/1.0',
 }, 'multiline');
