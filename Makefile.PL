@@ -1,4 +1,6 @@
-sub author_tests { die "You need to install Module::Install::AuthorTests and Test::Base to build from git clone\n" }
+sub author_tests  { }
+sub use_test_base { warn "You need to install Test::Base to run make test from git clone" }
+sub readme_from   { }
 
 use inc::Module::Install;
 name 'Plack';
