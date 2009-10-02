@@ -16,6 +16,10 @@ sub run {
         my $req = shift;
         my $env = $req->to_psgi;
 
+        if (my $client = delete $env->{HTTP_REQUESTING_CLIENT}) {
+            @{$env}{qw( REMOTE_ADDR REMOTE_PORT )} = split /:/, $client, 2;
+        }
+
         $env->{'psgi.nonblocking'}  = Plack::Util::TRUE;
         $env->{'psgi.multithread'}  = Plack::Util::FALSE;
         $env->{'psgi.multiprocess'} = Plack::Util::FALSE;
