@@ -1,6 +1,11 @@
 use Plack::Request;
+use Plack::Response;
 sub {
     my $env = shift;
     my $req = Plack::Request->new($env);
-    return [ 200, [ "Content-Type" => "text/plain" ], [ "Hello ", $req->param('name') ] ];
+    my $res = Plack::Response->new;
+    $res->code(200);
+    $res->header('Content-Type' => 'text/plain');
+    $res->body("Hello " . $req->param('name'));
+    $res->finalize;
 }
