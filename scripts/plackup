@@ -65,9 +65,9 @@ plackup - Run PSGI application with Plack servers
 plackup is a command line utility to run PSGI application from the command line.
 
 plackup automatically figures out the environment it is run in, and
-runs your application in that environment.  mod_perl, FastCGI, CGI,
-AnyEvent and others can all be detected. See L<Plack::Loader> for the
-authorative list.
+runs your application in that environment. FastCGI, CGI, AnyEvent and
+others can all be detected. See L<Plack::Loader> for the authorative
+list.
 
 C<plackup> assumes you have an C<app.psgi> script in your current
 directory, that would look like:
