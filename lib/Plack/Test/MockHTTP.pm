@@ -5,8 +5,7 @@ use warnings;
 use Carp;
 use HTTP::Request;
 use HTTP::Response;
-use HTTP::Request::AsCGI;
-use Plack::Server::CGI;
+use HTTP::Message::PSGI;
 
 sub test_psgi {
     my %args = @_;
@@ -16,9 +15,8 @@ sub test_psgi {
 
     my $cb = sub {
         my $req = shift;
-        my $c   = HTTP::Request::AsCGI->new($req)->setup;
-        eval { Plack::Server::CGI->new->run($app) };
-        return $c->response;
+        my $env = $req->to_psgi;
+        my $res = HTTP::Response->from_psgi($app->($env));
     };
 
     $client->($cb);

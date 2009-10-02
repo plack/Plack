@@ -2,10 +2,10 @@ package Plack::Middleware::AccessLog;
 use strict;
 use warnings;
 use base qw( Plack::Middleware );
-
 __PACKAGE__->mk_accessors(qw( logger format ));
 
 use Carp ();
+use Plack::Util;
 
 my %formats = (
     common => "%h %l %u %t \"%r\" %>s %b",
