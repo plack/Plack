@@ -74,7 +74,7 @@ sub req_to_psgi {
 sub res_from_psgi {
     my($status, $headers, $body) = @{+shift};
     my $res = HTTP::Response->new($status);
-    $res->headers->header(@$headers);
+    $res->headers->header(@$headers) if @$headers;
 
     if (ref $body eq 'ARRAY') {
         $res->content(join '', @$body);

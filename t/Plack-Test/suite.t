@@ -15,6 +15,7 @@ Plack::Test::Suite->runtests(sub {
         my $res = res_from_psgi($handler->($env));
         $test->($res);
     };
+    fail $@ if $@ && $@ !~ /an exception from app/;
 });
 
 done_testing;
