@@ -56,9 +56,7 @@ sub req_to_psgi {
         $key =~ tr/-/_/;
         $key =~ s/^HTTP_// if $field =~ /^Content-(Length|Type)$/;
 
-        if ( exists $env->{$key} ) {
-            $env->{$key} .= ", " . $req->headers->header($field);
-        } else {
+        unless ( exists $env->{$key} ) {
             $env->{$key} = $req->headers->header($field);
         }
     }
