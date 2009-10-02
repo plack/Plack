@@ -33,6 +33,10 @@ my $test_req = sub {
     like $log, qr@^127\.0\.0\.1 - - \[.*?\] "POST /foo HTTP/1\.1" 200 2@;
 }
 
-
+{
+    $log = "";
+    $test_req->(GET "http://localhost/foo%20bar?baz=baz");
+    like $log, qr@GET /foo%20bar\?baz=baz HTTP/1\.1@;
+}
 
 done_testing;

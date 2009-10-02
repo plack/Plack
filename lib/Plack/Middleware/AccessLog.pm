@@ -54,8 +54,7 @@ sub log_line {
         l => sub { '-' },
         u => sub { $env->{REMOTE_USER} || '-' },
         t => sub { "[" . POSIX::strftime("%d/%b/%Y %H:%M:%S", localtime) . "]" },
-        r => sub { $env->{REQUEST_METHOD} . " " . $env->{PATH_INFO} .
-                   (length $env->{QUERY_STRING} ? '?' . $env->{QUERY_STRING} : '') .
+        r => sub { $env->{REQUEST_METHOD} . " " . $env->{REQUEST_URI} .
                    " " . $env->{SERVER_PROTOCOL} },
         s => sub { $status },
         b => sub { $opts->{content_length} || $h->get('Content-Length') || "-" },
