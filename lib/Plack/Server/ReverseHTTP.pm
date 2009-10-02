@@ -1,11 +1,8 @@
 package Plack::Server::ReverseHTTP;
 use strict;
 use AnyEvent::ReverseHTTP;
-use AnyEvent::Handle;
-use AnyEvent::Socket;
 use HTTP::Message::PSGI;
 use HTTP::Response;
-use Plack::Util;
 
 sub new {
     my($class, %args) = @_;
