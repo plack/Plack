@@ -94,6 +94,8 @@ assuming that's when you probably maintain database etc. but serves
 404 and 403 pages using a sub request so your application can do some
 logic there like logging or doing suggestions.
 
+=back
+
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
