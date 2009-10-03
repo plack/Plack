@@ -32,7 +32,7 @@ sub run_one {
         host        => '127.0.0.1',
         port        => $port,
         manager     => '',
-        keep_stderr => 1,
+        keep_stderr => 0,
     );
     $server->run($app);
 }
