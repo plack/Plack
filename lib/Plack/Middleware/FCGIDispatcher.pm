@@ -35,6 +35,10 @@ sub call {
     my ($header_part, $content) = ($1, $2);
 
     my $res = HTTP::Response->parse($header_part);
+    if ($res->content) {
+        # we passed only headers but has body: Bad headers
+        return [ 500, [ 'Content-Type' => 'text/plain' ], [ 'Bad HTTP headers returned' ] ];
+    }
 
     my $status = $res->header('Status') || 200;
        $status =~ s/\s+.*$//; # remove ' OK' in '200 OK'
