@@ -42,7 +42,6 @@ sub run_one {
             my $port = shift;
             my $server = Plack::Server::FCGI::EV->new(host => '127.0.0.1', port => $port);
             $server->run($handler);
-            $server->run_loop;
         },
         port => $fcgi_port
     );

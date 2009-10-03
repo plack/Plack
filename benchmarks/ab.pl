@@ -53,7 +53,6 @@ sub run_one {
         my $handler = Plack::Util::load_psgi $app;
         my $server = Plack::Loader->load($server_class, port => $port);
         $server->run($handler);
-        $server->run_loop if $server->can('run_loop'); # run event loop
     }
 }
 

@@ -30,7 +30,7 @@ sub new {
     $self;
 }
 
-sub run {
+sub register_service {
     my($self, $app) = @_;
 
     my $guard = tcp_server $self->{host}, $self->{port}, sub {
@@ -170,7 +170,9 @@ sub _response_handler {
     };
 }
 
-sub run_loop {
+sub run {
+    my $self = shift;
+    $self->register_service(@_);
     AnyEvent->condvar->recv;
 }
 

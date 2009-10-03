@@ -37,6 +37,5 @@ if ($pid > 0) {
     my $handler = Plack::Util::load_psgi($opts{app});
     my $impl = Plack::Loader->load('FCGI');
     $impl->run($handler);
-    $impl->run_loop if $impl->can('run_loop'); # run event loop
     die 'should not reach here';
 }

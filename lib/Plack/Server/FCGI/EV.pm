@@ -19,7 +19,7 @@ sub new {
     $self;
 }
 
-sub run {
+sub register_service {
     my ($self, $app) = @_;
     my $sock = IO::Socket::INET->new(
         LocalAddr => $self->{host},
@@ -51,7 +51,9 @@ sub run {
     return $self;
 }
 
-sub run_loop {
+sub run {
+    my $self = shift;
+    $self->register_service(@_);
     EV::loop;
 }
 

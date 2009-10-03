@@ -10,7 +10,7 @@ sub new {
     bless \%args, $class;
 }
 
-sub run {
+sub register_service {
     my($self, $app) = @_;
     $self->{guard} = reverse_http $self->{host}, $self->{token}, sub {
         my $req = shift;
@@ -30,7 +30,9 @@ sub run {
     };
 }
 
-sub run_loop {
+sub run {
+    my $self = shift;
+    $self->register_service(@_);
     AE::cv->recv;
 }
 

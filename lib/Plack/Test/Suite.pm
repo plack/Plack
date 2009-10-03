@@ -518,7 +518,6 @@ sub run_server_tests {
             my($port, $app) = @_;
             my $server = Plack::Loader->load($server_class, port => $port, host => "127.0.0.1");
             $server->run($app);
-            $server->run_loop if $server->can('run_loop');
         }
     }
 
