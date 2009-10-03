@@ -40,8 +40,7 @@ my %test = (
             is $res->content, 'not found';
         }
 
-        TODO: {
-            local $TODO = "HTTP::Request::AsCGI bug";
+        {
             my $res = $cb->(GET "http://localhost/..%2fMakefile.PL");
             is $res->code, 403, 'directory traversal';
             is $res->content, 'forbidden';
