@@ -25,9 +25,6 @@ sub test_lighty_external (&@) {
     $lighty_port ||= empty_port();
     $fcgi_port   ||= empty_port($lighty_port);
 
-    plan skip_all => 'set TEST_LIGHTTPD to enable this test' 
-        unless $ENV{TEST_LIGHTTPD};
-
     my $lighttpd_bin = $ENV{LIGHTTPD_BIN} || `which lighttpd`;
     chomp $lighttpd_bin;
 
