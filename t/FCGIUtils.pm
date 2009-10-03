@@ -11,11 +11,32 @@ use base qw/Exporter/;
 
 # this file is copied from Catalyst. thanks!
 
-our @EXPORT = qw/ test_lighty_external /;
+our @EXPORT = qw/ test_lighty_external test_fcgi_standalone /;
 
 # TODO: tesst for .fcgi 
 sub test_lighty_fcgi {
 
+}
+
+# test using FCGI::Client + FCGI External Server
+sub test_fcgi_standalone {
+    my ($callback, $http_port, $fcgi_port) = @_;
+
+    $http_port ||= empty_port();
+    $fcgi_port ||= empty_port($http_port);
+
+    require Plack::Middleware::FCGIDispatcher;
+    my $fcgi_app = Plack::Middleware::FCGIDispatcher->new({ port => $fcgi_port })->to_app;
+
+    test_tcp(
+        server => sub {
+            my $server = Plack::Loader->load('Standalone', host => '127.0.0.1', port => $http_port);
+            $server->run($fcgi_app);
+        },
+        client => sub {
+            $callback->($http_port, $fcgi_port);
+        }
+    );
 }
 
 # test for FCGI External Server
