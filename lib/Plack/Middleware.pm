@@ -49,7 +49,7 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
       # Do something with $env
 
       # $self->app is the original app
-      my $res = $self->app->($env, @_);
+      my $res = $self->app->($env);
 
       # Do something with $res
       return $res;
