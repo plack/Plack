@@ -41,23 +41,23 @@ EOF
 
 sub run_one {
     my $server_class = shift;
-    my $port = Test::TCP::empty_port();
     print "-- server: $server_class\n";
 
-    my $pid = fork();
-    if ($pid > 0) { # parent
-        Test::TCP::wait_port($port);
-        my $uri = URI->new($url);
-        $uri->port($port);
-        $uri = shell_quote($uri);
-        print `$ab $uri | grep 'Requests per '`;
-        kill 'TERM' => $pid;
-        wait();
-    } else {
-        my $handler = Plack::Util::load_psgi $app;
-        my $server = Plack::Loader->load($server_class, port => $port);
-        $server->run($handler);
-    }
+    test_tcp(
+        client => sub {
+            my $port = shift;
+            my $uri = URI->new($url);
+            $uri->port($port);
+            $uri = shell_quote($uri);
+            print `$ab $uri | grep 'Requests per '`;
+        },
+        server => sub {
+            my $port = shift;
+            my $handler = Plack::Util::load_psgi $app;
+            my $server = Plack::Loader->load($server_class, port => $port);
+            $server->run($handler);
+        },
+    );
 }
 
 
