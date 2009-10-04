@@ -4,8 +4,6 @@ use warnings;
 use base qw(Plack::Middleware);
 __PACKAGE__->mk_accessors(qw(header));
 
-use Plack::Util;
-
 my %allowed_method = map { $_ => 1 } qw( GET HEAD POST PUT DELETE );
 
 sub call {
