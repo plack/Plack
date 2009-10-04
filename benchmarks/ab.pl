@@ -20,16 +20,20 @@ my @backends = grep eval "require Plack::Server::$_; 1",
 warn "Testing implementations: ", join(", ", @backends), "\n";
 
 GetOptions(
-    'app=s'   => \$app,
-    'bench=s' => \$ab,
-    'url=s'   => \$url,
+    'a|app=s'   => \$app,
+    'b|bench=s' => \$ab,
+    'u|url=s'   => \$url,
 ) or die;
 
 &main;
 
 sub main {
-    print "app: $app\n";
-    print "ab:  $ab\n";
+    print <<EOF;
+app: $app
+ab:  $ab
+URL: $url
+
+EOF
     for my $server_class (@backends) {
         run_one($server_class);
     }
