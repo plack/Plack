@@ -15,7 +15,7 @@ my $ab  = 'ab -n 100 -c 10 -k';
 my $url = 'http://127.0.0.1/';
 
 my @backends = grep eval "require Plack::Server::$_; 1",
-    qw( AnyEvent Standalone ServerSimple Mojo::Prefork Coro Danga::Socket );
+    qw( AnyEvent Standalone ServerSimple Coro Danga::Socket );
 
 warn "Testing implementations: ", join(", ", @backends), "\n";
 
