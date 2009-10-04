@@ -20,6 +20,9 @@ requires 'Pod::Usage';  # plackup
 feature 'Fast XS-based HTTP header parsing',
     'HTTP::Parser::XS', 0.03;
 
+feature 'Prefork HTTP server',
+    'Parallel::Prefork';
+
 requires 'CGI::ExceptionManager'; # Middleware::DebugScreen
 requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
