@@ -5,18 +5,29 @@ use base qw(Plack::Middleware);
 __PACKAGE__->mk_accessors(qw(host port socket));
 
 use FCGI::Client;
-use IO::Socket::INET;
 use HTTP::Response;
 
 sub call {
     my $self = shift;
     my $env  = shift;
 
-    # TODO: Unix socket?
-    my $sock = IO::Socket::INET->new(
-        PeerAddr => $self->host || '127.0.0.1',
-        PeerPort => $self->port,
-    ) or die $!;
+    my $sock;
+    if ($self->socket) {
+        require IO::Socket::UNIX;
+        $sock = IO::Socket::UNIX->new(
+            Peer => $self->socket,
+        );
+    } elsif ($self->port) {
+        require IO::Socket::INET;
+        $sock = IO::Socket::INET->new(
+            PeerAddr => $self->host || '127.0.0.1',
+            PeerPort => $self->port,
+        );
+    } else {
+        die "FCGI daemon host/port or socket is not specified";
+    }
+
+    $sock or die "Can't create socket to FCGI daemon: $!";
 
     my $conn = FCGI::Client::Connection->new(sock => $sock);
     my $input = delete $env->{'psgi.input'};
@@ -73,6 +84,28 @@ Plack::Middleware::FCGIDispatcher - Dispatch requests to FCGI servers
 
 Plack::Middleware::FCGIDispatcher is not really a middleware but it's
 a PSGI application to dispatch requests to external FCGI servers.
+
+=head1 CONFIGURATION
+
+=over 4
+
+=item host, port
+
+  my $app = Plack::Middleware::FCGIDispatcher->new({
+      host => '127.0.0.1', port => 8080,
+  })->to_app;
+
+Specifies host and port where FastCGI daemon is listening. host defaults to C<127.0.0.1>.
+
+=item socket
+
+  my $app = Plack::Middleware::FCGIDispatcher->new({
+      socket => "/tmp/fcgi.sock",
+  })->to_app;
+
+Specifies UNIX socket path where FastCGI daemon is listening.
+
+=back
 
 =head1 AUTHOR
 
