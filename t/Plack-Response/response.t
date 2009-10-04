@@ -1,19 +1,21 @@
 use strict;
 use warnings;
-use Test::Requires qw( CGI::Simple::Cookie );
 use Test::More;
 use Plack::Response;
 
 sub res {
-    Plack::Response->new(
-        +{ @_ }
-    )->finalize();
+    my $res = Plack::Response->new;
+    my %v = @_;
+    while (my($k, $v) = each %v) {
+        $res->$k($v);
+    }
+    $res->finalize;
 }
 
 is_deeply(
     res(
         status => 200,
-        body   => 'hello',
+        body => 'hello',
     ),
     [ 200, +[], [ 'hello' ] ]
 );
