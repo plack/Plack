@@ -214,6 +214,9 @@ sub _response_handler {
                     undef $sendfile;
                     $disconnect_cb->();
                 }
+                else {
+                    $sendfile->();
+                }
             });
         };
         $sendfile->();
