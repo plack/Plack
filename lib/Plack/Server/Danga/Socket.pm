@@ -96,6 +96,17 @@ sub run {
     if ($HasAIO) {
         Danga::Socket->AddOtherFds(IO::AIO::poll_fileno() => \&IO::AIO::poll_cb);
     }
+    Danga::Socket->AddTimer(
+        0,
+        sub {
+            my $poll
+                = $Danga::Socket::HaveKQueue ? 'kqueue'
+                : $Danga::Socket::HaveEpoll  ? 'epoll'
+                :                              'poll';
+            warn
+              "Accepting requests at http://$self->{host}:$self->{port}/ (with $poll)";
+        }
+    );
     Danga::Socket->EventLoop;
 }
 
