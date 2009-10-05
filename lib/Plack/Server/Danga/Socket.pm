@@ -249,4 +249,21 @@ sub _response_handler {
 
 __END__
 
+=head1 NAME
+
+Plack::Server::Danga::Socket - Danga::Socket based HTTP server
+
+=head1 SYNOPSIS
+
+  my $server = Plack::Server::Danga::Socket->new(
+      host => $host,
+      port => $port,
+  );
+  $server->run($app);
+
+=head1 DESCRIPTION
+
+This implementation is considered highly experimental.
+
+=cut
 
