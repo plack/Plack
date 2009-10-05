@@ -220,6 +220,7 @@ sub _response_handler {
             });
         };
         $sendfile->();
+        $socket->watch_read(0);
     }
     elsif (ref $body eq 'GLOB') {
         my $read = do { local $/; <$body> };
