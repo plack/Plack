@@ -68,7 +68,7 @@ AUTHOR
     See "AUTHORS" file.
 
 SEE ALSO
-    PSGI
+    PSGI <http://plackperl.org/>
 
 LICENSE
     This library is free software; you can redistribute it and/or modify it

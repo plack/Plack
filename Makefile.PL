@@ -30,6 +30,7 @@ requires 'MIME::Types'; # Middleware::Static
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
 test_requires 'Test::Requires';
+test_requires 'Test::Exception';
 
 tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t t/*/*/*/*/*.t';
 author_tests 'xt';
