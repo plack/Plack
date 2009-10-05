@@ -397,12 +397,26 @@ Plack::Request - Portable HTTP request object from PSGI env hash
   sub psgi_handler {
       my $env = shift;
       my $req = Plack::Request->new($env);
+      my $res = $req->new_response(200);
+      $res->content_type('text/html');
+      $res->body("Hello World");
+      return $res->finalize;
   }
 
 =head1 DESCRIPTION
 
-L<Plack::Request> provides a consistent API for request objects across web
-server environments.
+L<Plack::Request> provides a consistent API for request objects across
+web server environments.
+
+=head1 CAVEAT
+
+Note that this module is intended to be used by web application
+framework developers rather than application developers (end
+users). Writing your web application directly using Plack::Request is
+certainly possible but it's like doing so with mod_perl's
+Apache::Request: yet too low level. You're encouraged to use one of
+the web application frameworks that support PSGI, or use
+L<HTTP::Engine> if you want to write a micro web server application.
 
 =head1 METHODS
 
