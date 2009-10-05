@@ -20,7 +20,7 @@ GetOptions(
     "a|app=s"      => \$app,
     "s|server=s"   => \$ENV{PLACK_SERVER},
     "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $ENV{PLACK_SERVER} = $_[1] },
-    "E|env"        => \$env,
+    "E|env=s"      => \$env,
     'I=s@'         => \@includes,
     "h|help",      => \$help,
 );
@@ -38,7 +38,7 @@ if ($env eq 'development') {
     $handler = Plack::Middleware::AccessLog->wrap(logger => sub { print STDERR @_ }, $handler);
 }
 
-my @args = map { s/^--//; $_ } @ARGV;
+my @args = map { s/^--//; split /=/, $_ } @ARGV;
 my $server = Plack::Loader->auto(@args);
 $server->run($handler);
 $server->run_loop if $server->can('run_loop'); # run event loop

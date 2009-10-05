@@ -41,7 +41,7 @@ sub new {
     $self;
 }
 
-sub run {
+sub register_service {
     my ($self, $app) = @_;
 
     my $ssock = IO::Socket::INET->new(
@@ -90,7 +90,9 @@ sub run {
     });
 }
 
-sub run_loop {
+sub run {
+    my $self = shift;
+    $self->register_service(@_);
     if ($HasAIO) {
         Danga::Socket->AddOtherFds(IO::AIO::poll_fileno() => \&IO::AIO::poll_cb);
     }

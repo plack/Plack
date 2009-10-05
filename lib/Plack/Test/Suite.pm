@@ -242,7 +242,6 @@ our @TEST = (
     ],
     [
         '% encoding in PATH_INFO',
-        # Apache mod_cgi has a bug decoding all % encoded strings
         sub {
             my $port = $_[0] || 80;
             HTTP::Request->new(
@@ -260,6 +259,27 @@ our @TEST = (
         sub {
             my $res = shift;
             is $res->content, "/foo/bar,baz", "PATH_INFO should be decoded per RFC 3875";
+        }
+    ],
+    [
+        '% double encoding in PATH_INFO',
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/foo/bar%252cbaz",
+            );
+        },
+        sub {
+            my $env = shift;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', ],
+                [ $env->{PATH_INFO} ],
+            ];
+        },
+        sub {
+            my $res = shift;
+            is $res->content, "/foo/bar%2cbaz", "PATH_INFO should be decoded only once, per RFC 3875";
         }
     ],
     [
@@ -498,7 +518,6 @@ sub run_server_tests {
             my($port, $app) = @_;
             my $server = Plack::Loader->load($server_class, port => $port, host => "127.0.0.1");
             $server->run($app);
-            $server->run_loop if $server->can('run_loop');
         }
     }
 

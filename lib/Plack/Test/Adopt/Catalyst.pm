@@ -79,7 +79,7 @@ Plack::Test::Adopt::Catalyst - Run Catalyst::Test based tests against Plack impl
 
 =head1 SYNOPSIS
 
-  env PLACK_SERVER=Mojo \
+  env PLACK_SERVER=Standalone \
     perl -MPlack::Test::Adopt::Catalyst=TestApp -e 'runtests @ARGV' *.t
 
 =head1 AUTHOR

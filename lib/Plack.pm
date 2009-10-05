@@ -96,7 +96,7 @@ See C<AUTHORS> file.
 
 =head1 SEE ALSO
 
-L<PSGI>
+L<PSGI> L<http://plackperl.org/>
 
 =head1 LICENSE
 

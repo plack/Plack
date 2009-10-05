@@ -79,7 +79,8 @@ sub run {
             'psgi.version'      => [1,0],
             'psgi.url_scheme'   => ($env{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
             'psgi.input'        => *STDIN,
-            'psgi.errors'       => $self->{keep_stderr} ? *STDOUT : *STDERR,
+            'psgi.errors'       => *STDERR, # FCGI.pm redirects STDERR in Accept() loop, so just print STDERR
+                                            # print to the correct error handle based on keep_stderr
             'psgi.multithread'  => Plack::Util::FALSE,
             'psgi.multiprocess' => Plack::Util::TRUE,
             'psgi.run_once'     => Plack::Util::FALSE,
