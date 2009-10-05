@@ -104,7 +104,7 @@ sub run {
                 : $Danga::Socket::HaveEpoll  ? 'epoll'
                 :                              'poll';
             warn
-              "Accepting requests at http://$self->{host}:$self->{port}/ (with $poll)";
+              "Accepting requests at http://$self->{host}:$self->{port}/ (with $poll)\n";
         }
     );
     Danga::Socket->EventLoop;
