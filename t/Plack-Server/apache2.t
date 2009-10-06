@@ -20,8 +20,7 @@ done_testing();
 sub run_httpd {
     my $port = shift;
 
-#    my $tmpdir = File::Temp::tempdir( CLEANUP => 1 );
-    my $tmpdir = "/tmp";
+    my $tmpdir = $ENV{APACHE2_TMP_DIR} || File::Temp::tempdir( CLEANUP => 1 );
 
     write_file("$tmpdir/app.psgi", _render_psgi());
     write_file("$tmpdir/httpd.conf", _render_conf($tmpdir, $port, "$tmpdir/app.psgi"));
