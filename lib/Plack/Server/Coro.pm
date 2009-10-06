@@ -86,7 +86,7 @@ sub process_request {
         my $offset = 0;
         while (1) {
             my $sent = aio_sendfile( $fh->fh, $res->[2], $offset, $length - $offset );
-            $offset += $sent;
+            $offset += $sent if $sent > 0;
             last if $offset >= $length;
         }
         return;
