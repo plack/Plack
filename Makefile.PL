@@ -42,6 +42,7 @@ tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t t/*/*/*/*/*.t';
 author_tests 'xt';
 
 install_share 'share';
+install_script 'scripts/plackup';
 
 use_test_base;
 auto_include;
