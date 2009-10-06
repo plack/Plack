@@ -37,7 +37,7 @@ REQUEST_METHOD: GET
 === 200 response with filehandle
 --- app
 sub {
-    open my $fh, "<", "t/assets/kyoto.jpg";
+    open my $fh, "<", "share/kyoto.jpg";
     [ 200, [ 'Content-Type' => 'image/jpeg' ], $fh ];
 }
 --- env
