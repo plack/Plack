@@ -7,15 +7,18 @@ use Plack::Builder;
 use Plack::Util;
 use HTTP::Request::Common;
 use HTTP::Response;
+use Cwd;
 use Path::Class;
 use Plack::Test;
 
-chdir 't'; # XXX
+my $base = cwd;
+chdir "t";
 
 my $handler = builder {
     enable Plack::Middleware::Static
-        path => qr{\.(t|PL|jpg)$}i,
-        root => '.';
+        path => qr{^/share}, root => $base;
+    enable Plack::Middleware::Static
+        path => qr{\.(t|PL)$}i, root => '.';
     sub {
         [200, ['Content-Type' => 'text/plain', 'Content-Length' => 2], ['ok']]
     };
@@ -53,7 +56,7 @@ my %test = (
         }
 
         {
-            my $res = $cb->(GET "http://localhost/assets/face.jpg");
+            my $res = $cb->(GET "http://localhost/share/face.jpg");
             is $res->content_type, 'image/jpeg';
         }
     },
