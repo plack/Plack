@@ -25,6 +25,7 @@ sub run_httpd {
     write_file("$tmpdir/app.psgi", _render_psgi());
     write_file("$tmpdir/httpd.conf", _render_conf($tmpdir, $port, "$tmpdir/app.psgi"));
 
+    # TODO: wanted to run with -D FOREGROUND but sending TERM/INT to this got the whole .t process to crash. Why?
     system "httpd -f $tmpdir/httpd.conf";
 
     $SIG{TERM} = sub {
