@@ -25,6 +25,10 @@ sub _handle_static {
 
     my $path_match = $self->path or return;
 
+    if ($env->{PATH_INFO} =~ m!\.\.[/\\]!) {
+        return $self->return_403;
+    }
+
     my $path = do {
         my $matched;
         local $_ = $env->{PATH_INFO};
@@ -35,7 +39,7 @@ sub _handle_static {
         }
         return unless $matched;
         $_;
-    };
+    } or return;
 
     my $docroot = dir($self->root || ".");
     my $file = $docroot->file(File::Spec::Unix->splitpath($path));

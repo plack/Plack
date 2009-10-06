@@ -39,14 +39,12 @@ my %test = (
 
         {
             my $res = $cb->(GET "http://localhost/..%2f..%2f..%2fetc%2fpasswd.t");
-            is $res->code, 404, 'not found & traversal';
-            is $res->content, 'not found';
+            is $res->code, 403;
         }
 
         {
             my $res = $cb->(GET "http://localhost/..%2fMakefile.PL");
             is $res->code, 403, 'directory traversal';
-            is $res->content, 'forbidden';
         }
 
         {
