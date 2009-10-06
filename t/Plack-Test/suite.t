@@ -5,7 +5,6 @@ use FindBin;
 use HTTP::Message::PSGI;
 use Plack;
 use Plack::Test::Suite;
-$Plack::Test::Suite::BaseDir = "$FindBin::Bin/..";
 
 Plack::Test::Suite->runtests(sub {
     my ($name, $reqgen, $handler, $test) = @_;
