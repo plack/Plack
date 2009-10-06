@@ -21,13 +21,31 @@ sub load_class {
     return $class;
 }
 
-sub is_real_fh {
+sub is_real_fh ($) {
     my $fh = shift;
 
-    if ( Scalar::Util::reftype($fh) eq 'GLOB' &&
-         do { my $fileno = fileno $fh; defined($fileno) && $fileno >= 0 } ) {
-        return TRUE
+    my $reftype = Scalar::Util::reftype($fh);
+    if (   $reftype eq 'IO'
+        or $reftype eq 'GLOB' && *{$fh}{IO}
+    ) {
+        # if it's a blessed glob make sure to not break encapsulation with
+        # fileno($fh) (e.g. if you are filtering output then file descriptor
+        # based operations might no longer be valid).
+        # then ensure that the fileno *opcode* agrees too, that there is a
+        # valid IO object inside $fh either directly or indirectly and that it
+        # corresponds to a real file descriptor.
+        my $m_fileno = $fh->fileno;
+        return FALSE unless defined $m_fileno;
+        return FALSE unless $m_fileno >= 0;
+
+        my $f_fileno = fileno($fh);
+        return FALSE unless defined $f_fileno;
+        return FALSE unless $f_fileno >= 0;
+        return TRUE;
     } else {
+        # anything else, including GLOBS without IO (even if they are blessed)
+        # and non GLOB objects that look like filehandle objects cannot have a
+        # valid file descriptor in fileno($fh) context so may break.
         return FALSE;
     }
 }
