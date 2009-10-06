@@ -11,7 +11,7 @@ use Test::TCP;
 use Plack::Loader;
 use Plack::Lint;
 
-our $BaseDir = eval { File::ShareDir::dist_dir('Plack') || 'share' };
+our $BaseDir = eval { File::ShareDir::dist_dir('Plack') } || 'share';
 
 # 0: test name
 # 1: request generator coderef.
