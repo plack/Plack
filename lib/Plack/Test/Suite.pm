@@ -11,7 +11,7 @@ use Test::TCP;
 use Plack::Loader;
 use Plack::Lint;
 
-our $BaseDir = eval { File::ShareDir::dist_dir('Plack') } || 'share';
+my $share_dir = eval { File::ShareDir::dist_dir('Plack') } || 'share';
 
 # 0: test name
 # 1: request generator coderef.
@@ -121,7 +121,7 @@ our @RAW_TEST = (
         },
         sub {
             my $env = shift;
-            open my $fh, '<', "$BaseDir/face.jpg";
+            open my $fh, '<', "$share_dir/face.jpg";
             return [
                 200,
                 [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
@@ -146,7 +146,7 @@ our @RAW_TEST = (
         },
         sub {
             my $env = shift;
-            open my $fh, '<', "$BaseDir/kyoto.jpg";
+            open my $fh, '<', "$share_dir/kyoto.jpg";
             return [
                 200,
                 [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
