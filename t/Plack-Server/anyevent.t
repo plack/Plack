@@ -6,7 +6,6 @@ use Test::Requires qw(AnyEvent HTTP::Parser::XS);
 
 use Plack;
 use Plack::Test::Suite;
-$Plack::Test::Suite::BaseDir = "$FindBin::Bin/..";
 
 Plack::Test::Suite->run_server_tests('AnyEvent');
 done_testing();

@@ -10,7 +10,6 @@ use FindBin;
 use Plack::Test::Suite;
 use t::FCGIUtils;
 
-$Plack::Test::Suite::BaseDir = "$FindBin::Bin/..";
 
 use Data::Dumper;
 

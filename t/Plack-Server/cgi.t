@@ -7,7 +7,6 @@ use URI::Escape;
 use Plack;
 use Plack::Server::CGI;
 use Plack::Test::Suite;
-$Plack::Test::Suite::BaseDir = "$FindBin::Bin/..";
 
 Plack::Test::Suite->runtests(sub {
     my ($name, $reqgen, $handler, $test) = @_;

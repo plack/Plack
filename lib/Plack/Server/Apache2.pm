@@ -47,9 +47,9 @@ sub handler {
         ? $r->headers_out : $r->err_headers_out;
 
     while (my($h, $v) = splice(@{$res->[1]}, 0, 2)) {
-        if ($h =~ /Content-Type/i) {
+        if (lc $h eq 'content-type') {
             $r->content_type($v);
-        } elsif ($h =~ /Content-Length/i) {
+        } elsif (lc $h eq 'content-length') {
             $r->set_content_length($v);
         } else {
             $headers->add($h => $v);

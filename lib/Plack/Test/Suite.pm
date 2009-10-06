@@ -2,6 +2,7 @@ package Plack::Test::Suite;
 use strict;
 use warnings;
 use Digest::MD5;
+use File::ShareDir;
 use HTTP::Request;
 use HTTP::Request::Common;
 use LWP::UserAgent;
@@ -10,13 +11,13 @@ use Test::TCP;
 use Plack::Loader;
 use Plack::Lint;
 
-our $BaseDir = "t";
+our $BaseDir = eval { File::ShareDir::dist_dir('Plack') || 'share' };
 
 # 0: test name
 # 1: request generator coderef.
 # 2: request handler
 # 3: test case for response
-our @TEST = (
+our @RAW_TEST = (
     [
         'GET',
         sub {
@@ -46,19 +47,22 @@ our @TEST = (
         },
         sub {
             my $env = shift;
-            is($env->{CONTENT_LENGTH}, 14);
-            is($env->{CONTENT_TYPE}, 'application/x-www-form-urlencoded');
             my $body;
             $env->{'psgi.input'}->read($body, $env->{CONTENT_LENGTH});
             return [
                 200,
-                [ 'Content-Type' => 'text/plain', ],
+                [ 'Content-Type' => 'text/plain',
+                  'Client-Content-Length' => $env->{CONTENT_LENGTH},
+                  'Client-Content-Type' => $env->{CONTENT_TYPE},
+              ],
                 [ 'Hello, ' . $body ],
             ];
         },
         sub {
             my $res = shift;
             is $res->code, 200;
+            is $res->header('Client-Content-Length'), 14;
+            is $res->header('Client-Content-Type'), 'application/x-www-form-urlencoded';
             is $res->header('content_type'), 'text/plain';
             is $res->content, 'Hello, name=tatsuhiko';
         }
@@ -117,7 +121,7 @@ our @TEST = (
         },
         sub {
             my $env = shift;
-            open my $fh, '<', "$BaseDir/assets/face.jpg";
+            open my $fh, '<', "$BaseDir/face.jpg";
             return [
                 200,
                 [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
@@ -142,7 +146,7 @@ our @TEST = (
         },
         sub {
             my $env = shift;
-            open my $fh, '<', "$BaseDir/assets/kyoto.jpg";
+            open my $fh, '<', "$BaseDir/kyoto.jpg";
             return [
                 200,
                 [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
@@ -485,9 +489,10 @@ our @TEST = (
     ],
 );
 
-for my $test (@TEST) {
-    my $orig = $test->[2];
-    $test->[2] = sub {
+our @TEST = map {
+    my @new_test = @$_;
+    my $orig = $_->[2];
+    $new_test[2] = sub {
         {
             local $Carp::CarpLevel = $Carp::CarpLevel + 1;
             Plack::Lint->validate_env( $_[0] );
@@ -499,8 +504,8 @@ for my $test (@TEST) {
         }
         return $res;
     };
-}
-
+    \@new_test;
+} @RAW_TEST;
 
 sub runtests {
     my($class, $runner) = @_;

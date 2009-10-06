@@ -1,6 +1,7 @@
 sub author_tests  { }
 sub use_test_base { warn "You need to install Test::Base to run make test from git clone" }
 sub readme_from   { }
+sub install_share { warn "You need to install Module::Install::Share to install from git clone" }
 
 use inc::Module::Install;
 use Module::AutoInstall;
@@ -23,6 +24,11 @@ feature 'Fast XS-based HTTP header parsing',
 feature 'Prefork HTTP server',
     'Parallel::Prefork';
 
+feature 'Serve static files with sendfile(2)',
+    -default => 0,
+    'Sys::Sendfile' => 0.09,
+    'IO::AIO' => 3.3;
+
 requires 'CGI::ExceptionManager'; # Middleware::DebugScreen
 requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
@@ -34,6 +40,8 @@ test_requires 'Test::Exception';
 
 tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t t/*/*/*/*/*.t';
 author_tests 'xt';
+
+install_share 'share';
 
 use_test_base;
 auto_include;
