@@ -58,7 +58,7 @@ sub handler {
 
     $r->status($res->[0]);
     # TODO $r->sendfile support?
-    Plack::Util::foreach($res->[2], sub { $r->puts(@_) });
+    Plack::Util::foreach($res->[2], sub { $r->print(@_) });
 
     return Apache2::Const::OK;
 }
