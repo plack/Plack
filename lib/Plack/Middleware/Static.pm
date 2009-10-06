@@ -23,11 +23,22 @@ sub call {
 sub _handle_static {
     my($self, $env) = @_;
 
-    my $path_re = $self->path or return;
-    return if $env->{PATH_INFO} !~ $self->{path};
+    my $path_match = $self->path or return;
+
+    my $path = do {
+        my $matched;
+        local $_ = $env->{PATH_INFO};
+        if (ref $path_match eq 'CODE') {
+            $matched = $path_match->($_);
+        } else {
+            $matched = $_ =~ $path_match;
+        }
+        return unless $matched;
+        $_;
+    };
 
     my $docroot = dir($self->root || ".");
-    my $file = $docroot->file(File::Spec::Unix->splitpath($env->{PATH_INFO}));
+    my $file = $docroot->file(File::Spec::Unix->splitpath($path));
     my $realpath = Cwd::realpath($file->absolute->stringify);
 
     # Is the requested path within the root?
@@ -95,7 +106,7 @@ Plack::Middleware::Static - serve static files with Plack
 
   builder {
       enable Plack::Middleware::Static
-          path => qr{^/static/}, root => './htdocs/';
+          path => qr{^/(images|js|css)/}, root => './htdocs/';
       $app;
   };
 
@@ -120,14 +131,30 @@ based on L<MIME::Types>.
 =item path, root
 
   enable Plack::Middleware::Static
-      path => qr{^/static/}, root => './htdocs/';
+      path => qr{^/static/}, root => 'htdocs/';
 
-C<path> specifies the URL pattern to match with requests to serve
-static files for. C<root> specifies the root directory to serve those
-static files from. The default value of C<root> is the current
-directory. If you want to map multiple static directories from
-different root, simply enable this middleware multiple times with
-different configuration options.
+C<path> specifies the URL pattern (regular expression) or a callback
+to match with requests to serve static files for. C<root> specifies
+the root directory to serve those static files from. The default value
+of C<root> is the current directory.
+
+This examples configuration serves C</static/foo.jpg> from
+C<htdocs/static/foo.jpg>. Note that the matched C</static/> portion is
+still appears in the local mapped path. If you don't like it, use a
+callback instead to munge C<$_>:
+
+  enable Plack::Middleware::Static
+      path => sub { s!^/static/!! }, root => 'static-files/';
+
+This configuration would serve C</static/foo.png> from
+C<static-files/foo.png> (not C<static-files/static/foo.png>). The
+callback specified in C<path> option matches against C<$_> and then
+updates the value since it does s///, and returns the number of
+matches, so it will pass through when C</static/> doesn't match.
+
+If you want to map multiple static directories from different root,
+simply enable this middleware multiple times with different
+configuration options.
 
 =back
 

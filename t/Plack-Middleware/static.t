@@ -16,7 +16,7 @@ chdir "t";
 
 my $handler = builder {
     enable Plack::Middleware::Static
-        path => qr{^/share}, root => $base;
+        path => sub { s!^/share/!!}, root => "$base/share";
     enable Plack::Middleware::Static
         path => qr{\.(t|PL)$}i, root => '.';
     sub {
