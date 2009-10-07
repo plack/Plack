@@ -395,8 +395,6 @@ our @RAW_TEST = (
         },
         sub {
             my $env = shift;
-            my $err = $env->{'psgi.errors'};
-            ok $err;
             return [
                 200,
                 [ 'Content-Type' => 'text/plain', ],
