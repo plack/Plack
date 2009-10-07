@@ -27,4 +27,13 @@ test_psgi app => $handler, client => sub {
     }
 };
 
+test_psgi(
+    app => sub { return [ 200, [ 'X-Sendfile' => '/foo/bar.txt' ], [] ] },
+    client => sub {
+        my $cb = shift;
+        my $res = $cb->(GET "http://localhost/foo", 'X-Sendfile-Type' => 'X-Sendfile');
+        is $res->header('X-Sendfile'), '/foo/bar.txt', 'pass through app header';
+    },
+);
+
 done_testing;
