@@ -34,7 +34,7 @@ sub new {
         port               => $args{port} || 8080,
         timeout            => $args{timeout} || 300,
         max_keepalive_reqs => $args{max_keepalive_reqs} || 100,
-        keepalive_timeout  => $args{keepalive_timeout} || 5,
+        keepalive_timeout  => $args{keepalive_timeout} || 2,
     }, $class;
 
     # setup immediately if there is a superdaemon
@@ -127,7 +127,7 @@ sub handle_connection {
         my $rlen = $self->read_timeout(
             $conn, \$buf, MAX_REQUEST_SIZE - length($buf), length($buf),
             $is_keepalive || length($buf) != 0
-                ? $self->{timeout} : $self->{keepalive_timeout},
+                ? $self->{keepalive_timeout} : $self->{timeout},
         ) or return;
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
