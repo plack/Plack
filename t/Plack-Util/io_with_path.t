@@ -10,4 +10,6 @@ like scalar <$fh>, qr/use strict/;
 like $fh->getline, qr/use Test::More/;
 ok fileno $fh;
 
+isa_ok $fh, 'IO::Handle';
+
 done_testing;
