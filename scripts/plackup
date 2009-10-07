@@ -31,8 +31,8 @@ lib->import(@includes) if @includes;
 my $handler = Plack::Util::load_psgi $app;
 
 if ($env eq 'development') {
-    if (eval "require Plack::Middleware::DebugScreen; 1") {
-        $handler = Plack::Middleware::DebugScreen->wrap($handler);
+    if (eval "require Plack::Middleware::StackTrace; 1") {
+        $handler = Plack::Middleware::StackTrace->wrap($handler);
     }
     require Plack::Middleware::AccessLog;
     $handler = Plack::Middleware::AccessLog->wrap(logger => sub { print STDERR @_ }, $handler);
@@ -104,7 +104,7 @@ Specify perl library include path, like C<perl>'s -I option.
 
 Specify the environment option (default is C<development>). If it's
 set to C<development>, following middleware is enabled by default:
-L<CommonLogger>, L<DebugScreen>.
+L<CommonLogger>, L<StackTrace>.
 
 =back
 

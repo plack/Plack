@@ -1,4 +1,4 @@
-package Plack::Middleware::DebugScreen;
+package Plack::Middleware::StackTrace;
 use strict;
 use warnings;
 use base qw/Plack::Middleware/;
@@ -37,11 +37,11 @@ __END__
 
 =head1 NAME
 
-Plack::Middleware::DebugScreen - Displays stack trace when your app dies
+Plack::Middleware::StackTrace - Displays stack trace when your app dies
 
 =head1 SYNOPSIS
 
-  enable Plack::Middleware::DebugScreen;
+  enable Plack::Middleware::StackTrace;
 
 =head1 DESCRIPTION
 

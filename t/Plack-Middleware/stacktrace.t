@@ -2,9 +2,9 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Requires qw( CGI::ExceptionManager );
-use Plack::Middleware::DebugScreen;
+use Plack::Middleware::StackTrace;
 
-my $handler = Plack::Middleware::DebugScreen->wrap(sub { die "orz" });
+my $handler = Plack::Middleware::StackTrace->wrap(sub { die "orz" });
 my $res = $handler->(+{});
 is scalar(@$res), 3;
 is $res->[0], 500;
