@@ -50,10 +50,7 @@ sub _render_psgi {
 use lib "lib";
 use Plack::Test::Suite;
 
-my $handler = sub {
-    my $env = shift;
-    $Plack::Test::Suite::RAW_TEST[$env->{HTTP_X_PLACK_TEST}][2]->($env);
-};
+Plack::Test::Suite->test_app_handler;
 EOF
 }
 

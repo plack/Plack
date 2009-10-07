@@ -3,6 +3,19 @@ use strict;
 no warnings;
 use Carp;
 
+sub wrap {
+    my $class = shift;
+    my $app = shift;
+
+    return sub {
+        my $env = shift;
+        $class->validate_env($env);
+        my $res = $app->($env);
+        $class->validate_res($res);
+        return $res;
+    };
+}
+
 sub validate_env {
     my ($class, $env) = @_;
     unless ($env->{'REQUEST_METHOD'}) {

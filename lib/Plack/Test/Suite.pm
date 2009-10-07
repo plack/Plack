@@ -18,7 +18,7 @@ my $share_dir = eval { File::ShareDir::dist_dir('Plack') } || 'share';
 # 1: request generator coderef.
 # 2: request handler
 # 3: test case for response
-our @RAW_TEST = (
+our @TEST = (
     [
         'GET',
         sub {
@@ -515,24 +515,6 @@ our @RAW_TEST = (
 
 );
 
-our @TEST = map {
-    my @new_test = @$_;
-    my $orig = $_->[2];
-    $new_test[2] = sub {
-        {
-            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
-            Plack::Lint->validate_env( $_[0] );
-        }
-        my $res = $orig->(@_);
-        {
-            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
-            Plack::Lint->validate_res($res);
-        }
-        return $res;
-    };
-    \@new_test;
-} @RAW_TEST;
-
 sub runtests {
     my($class, $runner) = @_;
     for my $test (@TEST) {
@@ -548,6 +530,7 @@ sub run_server_tests {
         $server = sub {
             my($port, $app) = @_;
             my $server = Plack::Loader->load($server_class, port => $port, host => "127.0.0.1");
+            $app = Plack::Lint->wrap($app);
             $server->run($app);
         }
     }
@@ -568,14 +551,18 @@ sub run_server_tests {
         },
         server => sub {
             my $port = shift;
-            my $app = sub {
-                my $env = shift;
-                $TEST[$env->{HTTP_X_PLACK_TEST}][2]->($env);
-            };
+            my $app  = $class->test_app_handler;
             $server->($port, $app);
         },
         port => $server_port,
     );
+}
+
+sub test_app_handler {
+    return sub {
+        my $env = shift;
+        $TEST[$env->{HTTP_X_PLACK_TEST}][2]->($env);
+    };
 }
 
 1;
