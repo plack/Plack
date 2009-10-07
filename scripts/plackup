@@ -41,7 +41,6 @@ if ($env eq 'development') {
 my @args = map { s/^--//; split /=/, $_ } @ARGV;
 my $server = Plack::Loader->auto(@args);
 $server->run($handler);
-$server->run_loop if $server->can('run_loop'); # run event loop
 
 __END__
 
