@@ -1,0 +1,1 @@
+sub { die "Oops" };
