@@ -6,7 +6,7 @@ use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
 use Encode;
 
-__PACKAGE__->mk_accessors(qw/powered_by renderer/);
+__PACKAGE__->mk_accessors(qw/renderer/);
 
 sub call {
     my($self, $env) = @_;
@@ -24,7 +24,7 @@ sub call {
         callback => sub {
             $self->app->($env);
         },
-        powered_by => $self->powered_by || 'Plack',
+        powered_by => "Plack/$Plack::VERSION",
         renderer => $self->renderer,
     );
 
