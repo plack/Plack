@@ -50,6 +50,12 @@ sub is_real_fh ($) {
     }
 }
 
+sub set_io_path {
+    my($fh, $path) = @_;
+    bless $fh, 'Plack::Util::IOWithPath';
+    $fh->path($path);
+}
+
 sub content_length {
     my $body = shift;
 
@@ -215,6 +221,17 @@ sub AUTOLOAD {
 
 sub DESTROY { }
 
+package Plack::Util::IOWithPath;
+use base qw(IO::Handle);
+
+sub path {
+    my $self = shift;
+    if (@_) {
+        ${*$self}{+__PACKAGE__} = shift;
+    }
+    ${*$self}{+__PACKAGE__};
+}
+
 package Plack::Util;
 
 1;
@@ -268,6 +285,19 @@ Returns the length of content from body if it can be calculated. If
 C<$body> is an array ref it's a sum of length of each chunk, if
 C<$body> is a real filehandle it's a remaining size of the filehandle,
 otherwise returns undef.
+
+=item set_io_path
+
+  Plack::Util::set_io_path($fh, "/path/to/foobar.txt");
+
+Sets the (absolute) file path to C<$fh> filehandle object, so you can
+call C<< $fh->path >> on it. As a side effect C<$fh> is blessed to an
+internal package but it can still be treated as a normal file
+handle.
+
+This module doesn't normalize or absolutize the given path, and is
+intended to be used from Server or Middleware implementations. See
+also L<IO::File::WithPath>.
 
 =item foreach
 

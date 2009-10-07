@@ -4,6 +4,7 @@ use warnings;
 use base qw/Plack::Middleware/;
 use File::Spec::Unix;
 use Path::Class 'dir';
+use Plack::Util;
 use HTTP::Date;
 use MIME::Types;
 use Cwd ();
@@ -70,6 +71,7 @@ sub _handle_static {
 
     my $fh = $file->openr
         or return $self->return_403;
+    Plack::Util::set_io_path($fh, $realpath);
     binmode $fh;
 
     my $stat = $file->stat;
@@ -80,7 +82,7 @@ sub _handle_static {
             'Content-Length' => $stat->size,
             'Last-Modified'  => HTTP::Date::time2str( $stat->mtime )
         ],
-        $fh
+        $fh,
     ];
 }
 
