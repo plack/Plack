@@ -10,6 +10,7 @@ use Test::More;
 use Test::TCP;
 use Plack::Loader;
 use Plack::Lint;
+use Plack::Util;
 
 my $share_dir = eval { File::ShareDir::dist_dir('Plack') } || 'share';
 
@@ -485,6 +486,33 @@ our @RAW_TEST = (
             is $res->content, '/foo/bar%20baz?x=a';
         },
     ],
+    [
+        'filehandle with path()',
+        sub {
+            my $port = $_[0] || 80;
+            HTTP::Request->new(
+                GET => "http://127.0.0.1:$port/foo.jpg",
+            );
+        },
+        sub {
+            my $env = shift;
+            open my $fh, '<', "$share_dir/face.jpg";
+            Plack::Util::set_io_path($fh, "$share_dir/face.jpg");
+            return [
+                200,
+                [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
+                $fh
+            ];
+        },
+        sub {
+            my $res = shift;
+            my $port = shift || 80;
+            is $res->code, 200;
+            is $res->header('content_type'), 'image/jpeg';
+            is length $res->content, 4745;
+        },
+    ],
+
 );
 
 our @TEST = map {

@@ -9,6 +9,7 @@ use Apache2::Const -compile => qw(OK);
 use APR::Table;
 use IO::Handle;
 use Plack::Util;
+use Scalar::Util;
 
 my %apps; # psgi file to $app mapping
 
@@ -41,25 +42,30 @@ sub handler {
         $env->{PATH_INFO}   = '/';
     }
 
-    my $res = $app->($env);
+    my($status, $headers, $body) = @{ $app->($env) };
 
-    my $headers = ($res->[0] >= 200 && $res->[0] < 300)
+    my $hdrs = ($status >= 200 && $status < 300)
         ? $r->headers_out : $r->err_headers_out;
 
-    while (my($h, $v) = splice(@{$res->[1]}, 0, 2)) {
+    Plack::Util::header_iter($headers, sub {
+        my($h, $v) = @_;
         if (lc $h eq 'content-type') {
             $r->content_type($v);
         } elsif (lc $h eq 'content-length') {
             $r->set_content_length($v);
         } else {
-            $headers->add($h => $v);
+            $hdrs->add($h => $v);
         }
-    }
+    });
 
-    $r->status($res->[0]);
-    # TODO $r->sendfile support?
-    Plack::Util::foreach($res->[2], sub { $r->print(@_) });
-    $r->rflush;
+    $r->status($status);
+
+    if (Scalar::Util::blessed($body) and $body->can('path') and my $path = $body->path) {
+        $r->sendfile($path);
+    } else {
+        Plack::Util::foreach($body, sub { $r->print(@_) });
+        $r->rflush;
+    }
 
     return Apache2::Const::OK;
 }
