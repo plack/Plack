@@ -22,8 +22,11 @@ our @TEST = (
     [
         'GET',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(GET => "http://127.0.0.1:$port/?name=miyagawa");
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/?name=miyagawa");
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            is $res->content, 'Hello, name=miyagawa';
         },
         sub {
             my $env = shift;
@@ -33,18 +36,17 @@ our @TEST = (
                 [ 'Hello, ' . $env->{QUERY_STRING} ],
             ];
         },
-        sub {
-            my $res = shift;
-            is $res->code, 200;
-            is $res->header('content_type'), 'text/plain';
-            is $res->content, 'Hello, name=miyagawa';
-        }
     ],
     [
         'POST',
         sub {
-            my $port = shift || 80;
-            POST("http://127.0.0.1:$port/", [name => 'tatsuhiko']);
+            my $cb = shift;
+            my $res = $cb->(POST "http://127.0.0.1/", [name => 'tatsuhiko']);
+            is $res->code, 200;
+            is $res->header('Client-Content-Length'), 14;
+            is $res->header('Client-Content-Type'), 'application/x-www-form-urlencoded';
+            is $res->header('content_type'), 'text/plain';
+            is $res->content, 'Hello, name=tatsuhiko';
         },
         sub {
             my $env = shift;
@@ -59,20 +61,15 @@ our @TEST = (
                 [ 'Hello, ' . $body ],
             ];
         },
-        sub {
-            my $res = shift;
-            is $res->code, 200;
-            is $res->header('Client-Content-Length'), 14;
-            is $res->header('Client-Content-Type'), 'application/x-www-form-urlencoded';
-            is $res->header('content_type'), 'text/plain';
-            is $res->content, 'Hello, name=tatsuhiko';
-        }
     ],
     [
         'psgi.url_scheme',
         sub {
-            my $port = shift || 80;
-            POST("http://127.0.0.1:$port/");
+            my $cb = shift;
+            my $res = $cb->(POST "http://127.0.0.1/");
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            is $res->content, 'http';
         },
         sub {
             my $env = $_[0];
@@ -82,18 +79,16 @@ our @TEST = (
                 [ $env->{'psgi.url_scheme'} ],
             ];
         },
-        sub {
-            my $res = shift;
-            is $res->code, 200;
-            is $res->header('content_type'), 'text/plain';
-            is $res->content, 'http';
-        }
     ],
     [
         'return glob',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(GET => "http://127.0.0.1:$port/");
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/");
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            like $res->content, qr/^package /;
+            like $res->content, qr/END_MARK_FOR_TESTING$/;
         },
         sub {
             my $env = shift;
@@ -104,21 +99,15 @@ our @TEST = (
                 $fh,
             ];
         },
-        sub {
-            my $res = shift;
-            is $res->code, 200;
-            is $res->header('content_type'), 'text/plain';
-            like $res->content, qr/^package /;
-            like $res->content, qr/END_MARK_FOR_TESTING$/;
-        }
     ],
     [
         'filehandle',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo.jpg",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo.jpg");
+            is $res->code, 200;
+            is $res->header('content_type'), 'image/jpeg';
+            is length $res->content, 4745;
         },
         sub {
             my $env = shift;
@@ -129,21 +118,16 @@ our @TEST = (
                 $fh
             ];
         },
-        sub {
-            my $res = shift;
-            my $port = shift || 80;
-            is $res->code, 200;
-            is $res->header('content_type'), 'image/jpeg';
-            is length $res->content, 4745;
-        },
     ],
     [
         'bigger file',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/kyoto.jpg",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/kyoto.jpg");
+            is $res->code, 200;
+            is $res->header('content_type'), 'image/jpeg';
+            is length $res->content, 2397701;
+            is Digest::MD5::md5_hex($res->content), '9c6d7249a77204a88be72e9b2fe279e8';
         },
         sub {
             my $env = shift;
@@ -154,23 +138,15 @@ our @TEST = (
                 $fh
             ];
         },
-        sub {
-            my $res = shift;
-            my $port = shift || 80;
-            is $res->code, 200;
-            is $res->header('content_type'), 'image/jpeg';
-            is length $res->content, 2397701;
-            is Digest::MD5::md5_hex($res->content), '9c6d7249a77204a88be72e9b2fe279e8';
-        },
     ],
     [
         'handle HTTP-Header',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
-                HTTP::Headers->new( 'Foo' => 'Bar' )
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan", Foo => "Bar");
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            is $res->content, 'Bar';
         },
         sub {
             my $env = shift;
@@ -180,22 +156,15 @@ our @TEST = (
                 [$env->{HTTP_FOO}],
             ];
         },
-        sub {
-            my $res = shift;
-            my $port = shift || 80;
-            is $res->code, 200;
-            is $res->header('content_type'), 'text/plain';
-            is $res->content, 'Bar';
-        }
     ],
     [
         'handle HTTP-Cookie',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
-                HTTP::Headers->new( 'Cookie' => 'foo' )
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan", Cookie => "foo");
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            is $res->content, 'foo';
         },
         sub {
             my $env = shift;
@@ -205,21 +174,21 @@ our @TEST = (
                 [$env->{HTTP_COOKIE}],
             ];
         },
-        sub {
-            my $res = shift;
-            my $port = shift || 80;
-            is $res->code, 200;
-            is $res->header('content_type'), 'text/plain';
-            is $res->content, 'foo';
-        }
     ],
     [
         'validate env',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan");
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            is $res->content, join("\n",
+                'REQUEST_METHOD:GET',
+                'PATH_INFO:/foo/',
+                'QUERY_STRING:dankogai=kogaidan',
+                'SERVER_NAME:127.0.0.1',
+                "SERVER_PORT:" . $res->request->uri->port,
+            )."\n";
         },
         sub {
             my $env = shift;
@@ -231,27 +200,13 @@ our @TEST = (
                 [$body],
             ];
         },
-        sub {
-            my $res = shift;
-            my $port = shift || 80;
-            is $res->code, 200;
-            is $res->header('content_type'), 'text/plain';
-            is $res->content, join("\n",
-                'REQUEST_METHOD:GET',
-                'PATH_INFO:/foo/',
-                'QUERY_STRING:dankogai=kogaidan',
-                'SERVER_NAME:127.0.0.1',
-                "SERVER_PORT:$port",
-            )."\n";
-        }
     ],
     [
         '% encoding in PATH_INFO',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/bar%2cbaz",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo/bar%2cbaz");
+            is $res->content, "/foo/bar,baz", "PATH_INFO should be decoded per RFC 3875";
         },
         sub {
             my $env = shift;
@@ -261,18 +216,13 @@ our @TEST = (
                 [ $env->{PATH_INFO} ],
             ];
         },
-        sub {
-            my $res = shift;
-            is $res->content, "/foo/bar,baz", "PATH_INFO should be decoded per RFC 3875";
-        }
     ],
     [
         '% double encoding in PATH_INFO',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/bar%252cbaz",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo/bar%252cbaz");
+            is $res->content, "/foo/bar%2cbaz", "PATH_INFO should be decoded only once, per RFC 3875";
         },
         sub {
             my $env = shift;
@@ -282,18 +232,15 @@ our @TEST = (
                 [ $env->{PATH_INFO} ],
             ];
         },
-        sub {
-            my $res = shift;
-            is $res->content, "/foo/bar%2cbaz", "PATH_INFO should be decoded only once, per RFC 3875";
-        }
     ],
     [
         'SERVER_PROTOCOL is required',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan");
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            like $res->content, qr{^HTTP/1\.[01]$};
         },
         sub {
             my $env = shift;
@@ -303,32 +250,23 @@ our @TEST = (
                 [$env->{SERVER_PROTOCOL}],
             ];
         },
-        sub {
-            my $res = shift;
-            my $port = shift || 80;
-            is $res->code, 200;
-            is $res->header('content_type'), 'text/plain';
-            like $res->content, qr{^HTTP/1\.[01]$};
-        }
     ],
     [
         'SCRIPT_NAME should not be undef',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan");
+            is $res->content, 1;
         },
         sub {
             my $env = shift;
-            ok defined($env->{'SCRIPT_NAME'});
+            my $cont = defined $env->{'SCRIPT_NAME'};
             return [
                 200,
                 [ 'Content-Type' => 'text/plain', ],
-                [1],
+                [$cont],
             ];
         },
-        sub { }
     ],
     [
         # PEP-333 says:
@@ -338,10 +276,9 @@ our @TEST = (
         #   terminated early due to an error. 
         'call close after read file-like',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/call_close",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/call_close");
+            is($res->content, '1234');
         },
         sub {
             my $env = shift;
@@ -361,38 +298,31 @@ our @TEST = (
                 CalledClose->new(),
             ];
         },
-        sub {
-            my $res = shift;
-            is($res->content, '1234');
-        }
     ],
     [
         'has errors',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/has_errors",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/has_errors");
+            is $res->content, 1;
         },
         sub {
             my $env = shift;
             my $err = $env->{'psgi.errors'};
-            ok $err;
+            my $has_errors = defined $err;
             return [
                 200,
                 [ 'Content-Type' => 'text/plain', ],
-                [1]
+                [$has_errors]
             ];
         },
-        sub { }
     ],
     [
         'status line',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/?dankogai=kogaidan",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan");
+            is($res->status_line, '200 OK');
         },
         sub {
             my $env = shift;
@@ -402,38 +332,30 @@ our @TEST = (
                 [1]
             ];
         },
-        sub {
-            my $res = shift;
-            is($res->status_line, '200 OK');
-        }
     ],
     [
         'Do not crash when the app dies',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/");
+            is $res->code, 500;
         },
         sub {
             my $env = shift;
             die "Throwing an exception from app handler. Server shouldn't crash.";
         },
-        sub {
-            my $res = shift;
-            is $res->code, 500;
-        }
     ],
     [
         'multi headers',
         sub {
-            my $port = $_[0] || 80;
+            my $cb  = shift;
             my $req = HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/",
+                GET => "http://127.0.0.1/",
             );
             $req->push_header(Foo => "bar");
             $req->push_header(Foo => "baz");
-            $req;
+            my $res = $cb->($req);
+            is($res->content, "bar, baz");
         },
         sub {
             my $env = shift;
@@ -443,56 +365,43 @@ our @TEST = (
                 [ $env->{HTTP_FOO} ]
             ];
         },
-        sub {
-            my $res = shift;
-            is($res->content, "bar, baz");
-        }
     ],
     [
         'no entity headers on 304',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/",
-            );
-        },
-        sub {
-            my $env = shift;
-            return [ 304, [], [] ];
-        },
-        sub {
-            my $res = shift;
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/");
             is $res->code, 304;
             is $res->content, '';
             ok ! defined $res->header('content_type'), "No Content-Type";
             ok ! defined $res->header('content_length'), "No Content-Length";
             ok ! defined $res->header('transfer_encoding'), "No Transfer-Encoding";
         },
+        sub {
+            my $env = shift;
+            return [ 304, [], [] ];
+        },
     ],
     [
         'REQUEST_URI is set',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo/bar%20baz?x=a",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo/bar%20baz?x=a");
+            is $res->content, '/foo/bar%20baz?x=a';
         },
         sub {
             my $env = shift;
             return [ 200, [ 'Content-Type' => 'text/plain' ], [ $env->{REQUEST_URI} ] ];
         },
-        sub {
-            my $res = shift;
-            is $res->content, '/foo/bar%20baz?x=a';
-        },
     ],
     [
         'filehandle with path()',
         sub {
-            my $port = $_[0] || 80;
-            HTTP::Request->new(
-                GET => "http://127.0.0.1:$port/foo.jpg",
-            );
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo.jpg");
+            is $res->code, 200;
+            is $res->header('content_type'), 'image/jpeg';
+            is length $res->content, 4745;
         },
         sub {
             my $env = shift;
@@ -503,13 +412,6 @@ our @TEST = (
                 [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
                 $fh
             ];
-        },
-        sub {
-            my $res = shift;
-            my $port = shift || 80;
-            is $res->code, 200;
-            is $res->header('content_type'), 'image/jpeg';
-            is length $res->content, 4745;
         },
     ],
 
@@ -537,16 +439,20 @@ sub run_server_tests {
 
     test_tcp(
         client => sub {
-            my $port = $http_port || shift;
+            my $port = shift;
+
+            my $ua = LWP::UserAgent->new;
             for my $i (0..$#TEST) {
                 my $test = $TEST[$i];
                 note $test->[0];
-                my $ua  = LWP::UserAgent->new;
-                my $req = $test->[1]->($port);
-                $req->header('X-Plack-Test' => $i);
-                my $res = $ua->request($req);
-                local $Test::Builder::Level = $Test::Builder::Level + 3;
-                $test->[3]->($res, $port);
+                my $cb = sub {
+                    my $req = shift;
+                    $req->uri->port($http_port || $port);
+                    $req->header('X-Plack-Test' => $i);
+                    return $ua->request($req);
+                };
+
+                $test->[1]->($cb);
             }
         },
         server => sub {
