@@ -48,7 +48,7 @@ sub map_accel_path {
 
 sub _variation {
     my($self, $env) = @_;
-    $self->variation || $env->{'sendfile.type'} || $env->{HTTP_X_SENDFILE_TYPE};
+    $self->variation || $env->{'psgix.sendfile.type'} || $env->{HTTP_X_SENDFILE_TYPE};
 }
 
 1;
