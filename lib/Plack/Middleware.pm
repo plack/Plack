@@ -7,12 +7,9 @@ use Carp ();
 __PACKAGE__->mk_accessors(qw/app/);
 
 sub import {
-    my($class, @subclasses) = @_;
-
-    for my $sub (@subclasses) {
-        my $subclass = $sub =~ s/^\+// ? $sub : "Plack::Middleware::$sub";
-        eval "use $subclass";
-        die $@ if $@;
+    my $class = shift;
+    if (@_) {
+        Carp::carp("use Plack::Middleware qw(Foo) is deprecated. See perldoc Plack::Builder");
     }
 }
 
@@ -27,7 +24,7 @@ sub to_app {
 }
 
 sub enable {
-    Carp::croak "enable Plack::Middleware should be called inside Plack::Builder's builder {} block";
+    Carp::croak("enable Plack::Middleware::Foo is deprecated. See perldoc Plack::Builder");
 }
 
 1;
@@ -56,13 +53,12 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
 
   # then in app.psgi
   use Plack::Builder;
-  use Plack::Middleware qw( Foo Bar );
 
   my $app = sub { ... } # as usual
 
   builder {
-      enable Plack::Middleware::Foo;
-      enable Plack::Middleware::Bar %options;
+      add "Plack::Middleware::Foo";
+      add "Plack::Middleware::Bar", %options;
       $app;
   };
 
@@ -74,7 +70,7 @@ and then implement the callback C<call> method (or C<to_app> method
 that would return the PSGI code reference) to do the actual work. You
 can use C<< $self->app >> to call the original (wrapped) application.
 
-See L<Plack::Builder> how to actually enable them in your I<.psgi>
+See L<Plack::Builder> how to actually add "them", in your I<.psgi>
 application file using the DSL. If you do not like our builder DSL,
 you can also use C<wrap> method to wrap your application with a
 middleware:

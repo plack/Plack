@@ -28,7 +28,6 @@ Plack::Middleware::RearrangeHeaders - Reorder HTTP headers for buggy clients
 =head1 SYNOPSIS
 
   use Plack::Builder;
-  use Plack::Middleware qw(RearrangeHeaders);
 
   my $app = sub {
       return [ 200, [
@@ -39,7 +38,7 @@ Plack::Middleware::RearrangeHeaders - Reorder HTTP headers for buggy clients
   };
 
   builder {
-      enable Plack::Middleware::RearrangeHeaders;
+      add "Plack::Middleware::RearrangeHeaders";
       $app;
   };
 

@@ -31,11 +31,10 @@ Plack::Middleware::MethodOverride - Overrides HTTP method with X-HTTP-Method-Ove
 
 =head1 SYNOPSIS
 
-  use Plack::Middleware qw(Method::Override);
   use Plack::Builder;
 
   builder {
-      enable Plack::Middleware::MethodOverride;
+      add "Plack::Middleware::MethodOverride";
       $handler;
   };
 
@@ -50,7 +49,7 @@ HTTP request method with the value specified in HTTP header value.
 
 =item header
 
-   enable Plack::Middleware::MethodOverride
+   add "Plack::Middleware::MethodOverride",
        header => 'X-HTTP-Method';
 
 Specifies the HTTP header name to specify the overriding HTTP

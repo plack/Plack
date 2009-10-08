@@ -1,13 +1,12 @@
 use strict;
 use warnings;
 use Test::More;
-use Plack::Middleware qw(MethodOverride);
 use Plack::Builder;
 use HTTP::Request::Common;
 use Plack::Test;
 
 my $handler = builder {
-    enable Plack::Middleware::MethodOverride;
+    add "Plack::Middleware::MethodOverride";
     sub {
         my $env = shift;
         [ 200, ['Content-Type' => 'text/plain' ], [ $env->{REQUEST_METHOD} ] ];

@@ -108,10 +108,9 @@ Plack::Middleware::Static - serve static files with Plack
 =head1 SYNOPSIS
 
   use Plack::Builder;
-  use Plack::Middleware qw(Static);
 
   builder {
-      enable Plack::Middleware::Static
+      add "Plack::Middleware::Static",
           path => qr{^/(images|js|css)/}, root => './htdocs/';
       $app;
   };
@@ -136,7 +135,7 @@ based on L<MIME::Types>.
 
 =item path, root
 
-  enable Plack::Middleware::Static
+  add "Plack::Middleware::Static",
       path => qr{^/static/}, root => 'htdocs/';
 
 C<path> specifies the URL pattern (regular expression) or a callback
@@ -149,7 +148,7 @@ C<htdocs/static/foo.jpg>. Note that the matched C</static/> portion is
 still appears in the local mapped path. If you don't like it, use a
 callback instead to munge C<$_>:
 
-  enable Plack::Middleware::Static
+  add "Plack::Middleware::Static",
       path => sub { s!^/static/!! }, root => 'static-files/';
 
 This configuration would serve C</static/foo.png> from
@@ -159,7 +158,7 @@ updates the value since it does s///, and returns the number of
 matches, so it will pass through when C</static/> doesn't match.
 
 If you want to map multiple static directories from different root,
-simply enable this middleware multiple times with different
+simply add "this", middleware multiple times with different
 configuration options.
 
 =back

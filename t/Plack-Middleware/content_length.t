@@ -1,6 +1,5 @@
 use strict;
 use Test::Base;
-use Plack::Middleware qw(ContentLength);
 use Plack::Builder;
 
 filters {
@@ -14,7 +13,7 @@ plan tests => 1 * blocks;
 run {
     my $block = shift;
     my $handler = builder {
-        enable Plack::Middleware::ContentLength;
+        add "Plack::Middleware::ContentLength";
         $block->app;
     };
     my $res = $handler->($block->env);

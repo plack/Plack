@@ -1,4 +1,3 @@
-use Plack::Middleware qw(Static);
 use Plack::Builder;
 use File::Basename qw(dirname);
 
@@ -7,7 +6,7 @@ my $handler = sub {
 };
 
 builder {
-    enable Plack::Middleware::Static
+    add "Plack::Middleware::Static",
         path => qr/./, root => dirname(__FILE__) . '/static';
     $handler;
 };

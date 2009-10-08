@@ -1,11 +1,10 @@
 use strict;
 use warnings;
-use Plack::Middleware::XFramework;
 use Plack::Builder;
 use Test::More;
 
 my $handler = builder {
-    enable Plack::Middleware::XFramework
+    add "Plack::Middleware::XFramework",
         framework => 'Dog';
     sub {
         [200, [], ['ok']]
