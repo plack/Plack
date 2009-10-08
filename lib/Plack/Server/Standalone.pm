@@ -2,7 +2,6 @@ package Plack::Server::Standalone;
 use strict;
 use warnings;
 
-use Plack;
 use Plack::HTTPParser qw( parse_http_request );
 use IO::Socket::INET;
 use HTTP::Date;
