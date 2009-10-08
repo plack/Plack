@@ -17,8 +17,7 @@ sub import {
 }
 
 sub wrap {
-    my($class, @args) = @_;
-    my $app = pop @args;
+    my($class, $app, @args) = @_;
     $class->new({ app => $app, @args })->to_app;
 }
 
@@ -83,7 +82,7 @@ middleware:
   use Plack::Middleware::Foo;
 
   my $app = sub { ... };
-  Plack::Middleware::Foo->wrap(@options, $app);
+  $app = Plack::Middleware::Foo->wrap($app, %options);
 
 =head1 SEE ALSO
 

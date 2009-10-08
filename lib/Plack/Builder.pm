@@ -11,7 +11,7 @@ sub builder(&) {
     my @wrappers;
     local *Plack::Middleware::enable = sub {
         my($class, @args) = @_;
-        push @wrappers, sub { $class->wrap(@args, $_[0]) };
+        push @wrappers, sub { $class->wrap($_[0], @args) };
     };
 
     my $app = $block->();
@@ -64,9 +64,8 @@ actually creates a wrapped application handler, so:
 
 is syntactically equal to:
 
-  Plack::Middleware::Foo->wrap(
-      Plack::Middleware::Bar->wrap(opt => "val", $app)
-  );
+  $app = Plack::Middleware::Bar->wrap($app, opt => "val");
+  $app = Plack::Middleware::Foo->wrap($app);
 
 =head1 SEE ALSO
 
