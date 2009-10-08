@@ -70,7 +70,7 @@ and then implement the callback C<call> method (or C<to_app> method
 that would return the PSGI code reference) to do the actual work. You
 can use C<< $self->app >> to call the original (wrapped) application.
 
-See L<Plack::Builder> how to actually enable middlwwares in your
+See L<Plack::Builder> how to actually enable middlewares in your
 I<.psgi> application file using the DSL. If you do not like our
 builder DSL, you can also use C<wrap> method to wrap your application
 with a middleware:
