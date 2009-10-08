@@ -70,15 +70,18 @@ and then implement the callback C<call> method (or C<to_app> method
 that would return the PSGI code reference) to do the actual work. You
 can use C<< $self->app >> to call the original (wrapped) application.
 
-See L<Plack::Builder> how to actually add "them", in your I<.psgi>
-application file using the DSL. If you do not like our builder DSL,
-you can also use C<wrap> method to wrap your application with a
-middleware:
+See L<Plack::Builder> how to actually enable middlwwares in your
+I<.psgi> application file using the DSL. If you do not like our
+builder DSL, you can also use C<wrap> method to wrap your application
+with a middleware:
 
   use Plack::Middleware::Foo;
 
   my $app = sub { ... };
   $app = Plack::Middleware::Foo->wrap($app, %options);
+  $app = Plack::Middleware::Bar->wrap($app, %options);
+
+or also use L<Plack::Builder>'s non-DSL API.
 
 =head1 SEE ALSO
 
