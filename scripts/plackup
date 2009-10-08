@@ -35,7 +35,7 @@ if ($env eq 'development') {
         $handler = Plack::Middleware::StackTrace->wrap($handler);
     }
     require Plack::Middleware::AccessLog;
-    $handler = Plack::Middleware::AccessLog->wrap(logger => sub { print STDERR @_ }, $handler);
+    $handler = Plack::Middleware::AccessLog->wrap($handler, logger => sub { print STDERR @_ });
 }
 
 my @args = map { s/^--//; split /=/, $_ } @ARGV;
