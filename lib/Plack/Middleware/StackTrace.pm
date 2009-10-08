@@ -2,6 +2,7 @@ package Plack::Middleware::StackTrace;
 use strict;
 use warnings;
 use base qw/Plack::Middleware/;
+use Plack;
 use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
 use Encode;
