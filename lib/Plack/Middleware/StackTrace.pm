@@ -65,9 +65,11 @@ No configuration option is available.
 
 Tokuhiro Matsuno
 
+Tatsuhiko Miyagawa
+
 =head1 SEE ALSO
 
-L<CGI::ExceptionManager> L<Plack::Middleware>
+L<Devel::StackTrace::AsHTML> L<Plack::Middleware>
 
 =cut
 

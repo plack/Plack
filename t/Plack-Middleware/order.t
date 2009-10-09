@@ -1,5 +1,4 @@
 use strict;
-use Test::Requires qw( CGI::ExceptionManager );
 use Plack::Middleware qw( XFramework StackTrace );
 use Plack::Builder;
 use Test::More;

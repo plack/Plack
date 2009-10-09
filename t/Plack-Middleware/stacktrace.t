@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires qw( CGI::ExceptionManager );
 use Plack::Middleware::StackTrace;
 
 my $handler = Plack::Middleware::StackTrace->wrap(sub { die "orz" });
