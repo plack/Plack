@@ -282,8 +282,9 @@ Plack::Server::Standalone is a default Plack server implementation
 that runs as a standalone, single-process and reasonably fast HTTP
 server. HTTP/1.0 and Keep-Alive requests are supported.
 
-See L<Plack::Server::Standalone::Prefork> if you want a multi-process
-prefork server.
+This server should be great for the development and testing, but not
+suitable for production. See L<Plack::Server::Standalone::Prefork> if
+you want a multi-process prefork server.
 
 Some features in HTTP/1.1, notably chunked requests, responses and
 pipeline requests are B<NOT> supported yet.
