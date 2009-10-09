@@ -157,7 +157,7 @@ Listen on a socket path, hostname:port, or :port.
 
 listen via TCP on port on all interfaces (Same as C<< listen => ":$port" >>)
 
-=item leave_umask
+=item leave-umask
 
 Set to 1 to disable setting umask to 0 for socket open
 
@@ -181,7 +181,7 @@ Specify a FCGI::ProcManager sub-class
 
 Detach from console
 
-=item keep_stderr
+=item keep-stderr
 
 Send STDERR to STDOUT instead of the webserver
 
