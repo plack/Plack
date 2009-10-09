@@ -14,8 +14,13 @@ sub import {
 }
 
 sub wrap {
-    my($class, $app, @args) = @_;
-    $class->new({ app => $app, @args })->to_app;
+    my($self, $app, @args) = @_;
+    if (ref $self) {
+        $self->{app} = $app;
+    } else {
+        $self = $self->new({ app => $app, @args });
+    }
+    return $self->to_app;
 }
 
 sub to_app {
