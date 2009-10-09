@@ -21,11 +21,6 @@ our $HasSendFile = !$ENV{PLACK_NO_SENDFILE} && do {
     eval { require Sys::Sendfile; 1 };
 };
 
-our $HasServerStarter = do {
-    local $@;
-    eval { require Server::Starter; 1 };
-};
-
 sub new {
     my($class, %args) = @_;
     my $self = bless {
@@ -35,23 +30,6 @@ sub new {
         max_keepalive_reqs => $args{max_keepalive_reqs} || 100,
         keepalive_timeout  => $args{keepalive_timeout} || 2,
     }, $class;
-
-    # setup immediately if there is a superdaemon
-    if ($HasServerStarter && $ENV{SERVER_STARTER_PORT}) {
-        $self->{listen_sock} = IO::Socket::INET->new(
-            Proto => 'tcp',
-        ) or die "failed to create socket:$!";
-        my ($hostport, $fd) = %{Server::Starter::server_ports()};
-        print STDERR "HOSTPORT: $hostport, fd: $fd\n";
-        if ($hostport =~ /(.*):(\d+)/) {
-            $self->{host} = $1;
-            $self->{port} = $2;
-        } else {
-            $self->{port} = $hostport;
-        }
-        $self->{listen_sock}->fdopen($fd, 'w')
-            or die "failed to bind to listening socket:$!";
-    }
 
     $self;
 }
