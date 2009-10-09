@@ -20,7 +20,11 @@ sub call {
 
     my $res = do {
         local $@;
-        eval { $self->app->($env) };
+        eval {
+            my $r = $self->app->($env);
+            $err_info = undef;
+            $r;
+        };
     };
 
     if ($err_info) {
