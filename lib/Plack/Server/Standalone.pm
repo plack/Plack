@@ -262,3 +262,65 @@ sub sendfile_all {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Plack::Server::Standalone - single process standalone HTTP server
+
+=head1 SYNOPSIS
+
+  % plackup -s Standalone \
+      --host 127.0.0.1 --port 9091 --timeout 120 \
+      --max_keepalive_reqs 20 --keepalive_timeout 5
+
+=head1 DESCRIPTION
+
+Plack::Server::Standalone is a default Plack server implementation
+that runs as a standalone, single-process and reasonably fast HTTP
+server. HTTP/1.0 and Keep-Alive requests are supported.
+
+See L<Plack::Server::Standalone::Prefork> if you want a multi-process
+prefork server.
+
+Some features in HTTP/1.1, notably chunked requests, responses and
+pipeline requests are B<NOT> supported yet.
+
+=head1 CONFIGURATIONS
+
+=over 4
+
+=item host
+
+Host the server binds to. Defaults to all interfaces.
+
+=item port
+
+Port number the server listens on. Defaults to 8080.
+
+=item timeout
+
+Number of seconds a request times out. Defaults to 300.
+
+=item max_keepalive_reqs
+
+Max requests per a keep-alive request. Defaults to 100.
+
+=item keepalive_timeout
+
+Number of seconds a keep-alive request times out. Defaults to 2.
+
+=back
+
+=head1 AUTHOR
+
+Kazuho Oku
+
+Tatsuhiko Miyagawa
+
+=head1 SEE ALSO
+
+L<Plack::Server::Standalone::Prefork>
+
+=cut
