@@ -43,7 +43,7 @@ Plack::Server::Standalone::Prefork - Prefork standalone HTTP server
 
   % plackup -s Standalone::Prefork \
       --host 127.0.0.1 --port 9091 --timeout 120 \
-      --max-keepalive_reqs 20 --keepalive-timeout 5 \
+      --max-keepalive-reqs 20 --keepalive-timeout 5 \
       --max-workers 10 --max-reqs-per-child 320
 
 =head1 DESCRIPTION
