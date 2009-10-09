@@ -37,7 +37,13 @@ if ($env eq 'development') {
     $handler = Plack::Middleware::AccessLog->wrap($handler, logger => sub { print STDERR @_ });
 }
 
-my @args = map { s/^--//; split /=/, $_ } @ARGV;
+my @args = map {
+    my $is_long_opt = s/^--//;
+    my @v = split '=', $_, 2;
+    $v[0] =~ tr/-/_/ if $is_long_opt;
+    @v;
+} @ARGV;
+
 my $server = Plack::Loader->auto(@args);
 $server->run($handler);
 
