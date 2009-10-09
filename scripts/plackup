@@ -31,10 +31,9 @@ lib->import(@includes) if @includes;
 my $handler = Plack::Util::load_psgi $app;
 
 if ($env eq 'development') {
-    if (eval "require Plack::Middleware::StackTrace; 1") {
-        $handler = Plack::Middleware::StackTrace->wrap($handler);
-    }
+    require Plack::Middleware::StackTrace;
     require Plack::Middleware::AccessLog;
+    $handler = Plack::Middleware::StackTrace->wrap($handler);
     $handler = Plack::Middleware::AccessLog->wrap($handler, logger => sub { print STDERR @_ });
 }
 
