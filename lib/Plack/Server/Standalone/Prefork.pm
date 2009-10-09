@@ -43,8 +43,8 @@ Plack::Server::Standalone::Prefork - Prefork standalone HTTP server
 
   % plackup -s Standalone::Prefork \
       --host 127.0.0.1 --port 9091 --timeout 120 \
-      --max_keepalive_reqs 20 --keepalive_timeout 5 \
-      --max_workers 10 --max_reqs_per_child 320
+      --max-keepalive_reqs 20 --keepalive-timeout 5 \
+      --max-workers 10 --max-reqs-per-child 320
 
 =head1 DESCRIPTION
 
@@ -58,15 +58,15 @@ pipeline requests are B<NOT> supported yet.
 
 =over 4
 
-=item host, port, timeout, max_keepalive_reqs, keepalive_timeout
+=item host, port, timeout, max-keepalive-reqs, keepalive-timeout
 
 Same as L<Plack::Server::Standalone>.
 
-=item max_workers
+=item max-workers
 
 Number of prefork workers. Defaults to 10.
 
-=item max_reqs_per_child
+=item max-reqs-per-child
 
 Number of requests per worker to process. Defaults to 100.
 

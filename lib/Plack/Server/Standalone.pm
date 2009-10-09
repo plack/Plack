@@ -273,7 +273,7 @@ Plack::Server::Standalone - single process standalone HTTP server
 
   % plackup -s Standalone \
       --host 127.0.0.1 --port 9091 --timeout 120 \
-      --max_keepalive_reqs 20 --keepalive_timeout 5
+      --max-keepalive-reqs 20 --keepalive-timeout 5
 
 =head1 DESCRIPTION
 
@@ -303,11 +303,11 @@ Port number the server listens on. Defaults to 8080.
 
 Number of seconds a request times out. Defaults to 300.
 
-=item max_keepalive_reqs
+=item max-keepalive-reqs
 
 Max requests per a keep-alive request. Defaults to 100.
 
-=item keepalive_timeout
+=item keepalive-timeout
 
 Number of seconds a keep-alive request times out. Defaults to 2.
 
