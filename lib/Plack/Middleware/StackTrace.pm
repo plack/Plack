@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use base qw/Plack::Middleware/;
 use Plack;
-use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
 use Encode;
 
@@ -12,24 +11,27 @@ __PACKAGE__->mk_accessors(qw/renderer/);
 sub call {
     my($self, $env) = @_;
 
-    my $err_res;
-    no warnings 'redefine';
-    local *CGI::ExceptionManager::StackTrace::output = sub {
-        my ($err, %args) = @_;
-        my $body = $err->as_html(%args);
-        $err_res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ encode_utf8($body) ]];
+    my $err_info;
+    local $SIG{__DIE__} = sub {
+        my($msg) = @_;
+        $err_info = CGI::ExceptionManager::StackTrace->new($msg);
+        die $msg;
     };
 
-    my %args = ();
-    my $res = CGI::ExceptionManager->run(
-        callback => sub {
-            $self->app->($env);
-        },
-        powered_by => "Plack/$Plack::VERSION",
-        renderer => $self->renderer,
-    );
+    my $res = do {
+        local $@;
+        eval { $self->app->($env) };
+    };
 
-    return $err_res || $res;
+    if ($err_info) {
+        my $body = $err_info->as_html(
+            powered_by => "Plack/$Plack::VERSION",
+            renderer => $self->renderer,
+        );
+        $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ encode_utf8($body) ]];
+    }
+
+    return $res;
 }
 
 1;
