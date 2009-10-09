@@ -30,7 +30,12 @@ feature 'Serve static files with sendfile(2)',
     'Sys::Sendfile' => 0.09,
     'IO::AIO' => 3.3;
 
-requires 'CGI::ExceptionManager'; # Middleware::StackTrace
+requires 'Devel::StackTrace'; # Middleware::StackTrace
+requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
+
+feature 'Stacktrace with lexical variables',
+    'Devel::StackTrace::WithLexicals';
+
 requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
 

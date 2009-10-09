@@ -3,36 +3,35 @@ use strict;
 use warnings;
 use base qw/Plack::Middleware/;
 use Plack;
-use CGI::ExceptionManager::StackTrace;
-use Encode;
+use Plack::Util;
+use Data::Dump;
+use Devel::StackTrace;
+use Devel::StackTrace::AsHTML;
 
-__PACKAGE__->mk_accessors(qw/renderer/);
+our $StackTraceClass = "Devel::StackTrace";
+
+# Optional since it needs PadWalker
+if (eval { require Devel::StackTrace::WithLexicals; 1 }) {
+    $StackTraceClass = "Devel::StackTrace::WithLexicals";
+}
 
 sub call {
     my($self, $env) = @_;
 
-    my $err_info;
+    my $trace;
     local $SIG{__DIE__} = sub {
-        my($msg) = @_;
-        $err_info = CGI::ExceptionManager::StackTrace->new($msg);
-        die $msg;
+        $trace = $StackTraceClass->new;
+        die @_;
     };
 
     my $res = do {
         local $@;
-        eval {
-            my $r = $self->app->($env);
-            $err_info = undef;
-            $r;
-        };
+        eval { $self->app->($env) };
     };
 
-    if ($err_info) {
-        my $body = $err_info->as_html(
-            powered_by => "Plack/$Plack::VERSION",
-            renderer => $self->renderer,
-        );
-        $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ encode_utf8($body) ]];
+    if (!$res && $trace) {
+        my $body = $trace->as_html;
+        $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ $body ]];
     }
 
     return $res;

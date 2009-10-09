@@ -196,6 +196,16 @@ sub status_with_no_entity_body {
     return $status < 200 || $status == 204 || $status == 304;
 }
 
+sub encode_html {
+    my $str = shift;
+    $str =~ s/&/&amp;/g;
+    $str =~ s/>/&gt;/g;
+    $str =~ s/</&lt;/g;
+    $str =~ s/"/&quot;/g;
+    $str =~ s/'/&#39;/g;
+    return $str;
+}
+
 sub inline_object {
     my %args = @_;
     bless {%args}, 'Plack::Util::Prototype';
