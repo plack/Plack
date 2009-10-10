@@ -25,8 +25,8 @@ sub test_fcgi_standalone {
     $http_port ||= empty_port();
     $fcgi_port ||= empty_port($http_port);
 
-    require Plack::Middleware::FCGIDispatcher;
-    my $fcgi_app = Plack::Middleware::FCGIDispatcher->new({ port => $fcgi_port })->to_app;
+    require Plack::App::FCGIDispatcher;
+    my $fcgi_app = Plack::App::FCGIDispatcher->new({ port => $fcgi_port })->to_app;
 
     test_tcp(
         server => sub {

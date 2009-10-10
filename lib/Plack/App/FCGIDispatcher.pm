@@ -1,4 +1,4 @@
-package Plack::Middleware::FCGIDispatcher;
+package Plack::App::FCGIDispatcher;
 use strict;
 use warnings;
 use base qw(Plack::Middleware);
@@ -70,19 +70,19 @@ __END__
 
 =head1 NAME
 
-Plack::Middleware::FCGIDispatcher - Dispatch requests to FCGI servers
+Plack::App::FCGIDispatcher - Dispatch requests to FCGI servers
 
 =head1 SYNOPSIS
 
   # app.psgi
-  use Plack::Middleware::FCGIDispatcher;
-  my $app = Plack::Middleware::FCGIDispatcher->new({
+  use Plack::App::FCGIDispatcher;
+  my $app = Plack::App::FCGIDispatcher->new({
       port => 8080, # FastCGI daemon port
   })->to_app;
 
 =head1 DESCRIPTION
 
-Plack::Middleware::FCGIDispatcher is not really a middleware but it's
+Plack::App::FCGIDispatcher is not really a middleware but it's
 a PSGI application to dispatch requests to external FCGI servers.
 
 =head1 CONFIGURATION
@@ -91,7 +91,7 @@ a PSGI application to dispatch requests to external FCGI servers.
 
 =item host, port
 
-  my $app = Plack::Middleware::FCGIDispatcher->new({
+  my $app = Plack::App::FCGIDispatcher->new({
       host => '127.0.0.1', port => 8080,
   })->to_app;
 
@@ -99,7 +99,7 @@ Specifies host and port where FastCGI daemon is listening. host defaults to C<12
 
 =item socket
 
-  my $app = Plack::Middleware::FCGIDispatcher->new({
+  my $app = Plack::App::FCGIDispatcher->new({
       socket => "/tmp/fcgi.sock",
   })->to_app;
 
