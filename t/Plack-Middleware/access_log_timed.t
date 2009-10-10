@@ -3,12 +3,11 @@ use warnings;
 use Test::More;
 use HTTP::Request::Common;
 use Plack::Test;
-use Plack::Middleware qw(AccessLog::Timed);
 use Plack::Builder;
 
 my $log;
 my $handler = builder {
-    enable Plack::Middleware::AccessLog::Timed
+    add "Plack::Middleware::AccessLog::Timed",
         logger => sub { $log .= "@_" };
     sub { [ 200, [ 'Content-Type' => 'text/plain' ], [ 'OK' ] ] };
 };

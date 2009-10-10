@@ -4,16 +4,15 @@ use FindBin;
 use Test::More;
 use HTTP::Request::Common;
 use Plack::Test;
-use Plack::Middleware qw(ErrorDocument Static);
 use Plack::Builder;
 
 my $log;
 my $handler = builder {
-    enable Plack::Middleware::ErrorDocument
+    add "Plack::Middleware::ErrorDocument",
         500 => "$FindBin::Bin/errors/500.html";
-    enable Plack::Middleware::ErrorDocument
+    add "Plack::Middleware::ErrorDocument",
         404 => "/errors/404.html", subrequest => 1;
-    enable Plack::Middleware::Static
+    add "Plack::Middleware::Static",
         path => qr{^/errors}, root => $FindBin::Bin;
 
     sub {

@@ -46,11 +46,10 @@ Plack::Middleware::AccessLog::Timed - Logs requests with time and accurate body 
 =head1 SYNOPSIS
 
   # in app.psgi
-  use Plack::Middleware qw(AccessLog::Timed);
   use Plack::Builder;
 
   builder {
-      enable Plack::Middleware::AccessLog::Timed
+      add "Plack::Middleware::AccessLog::Timed",
           format => ""%v %h %l %u %t \"%r\" %>s %b %D";
       $app;
   };

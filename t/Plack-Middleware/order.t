@@ -1,11 +1,10 @@
 use strict;
-use Plack::Middleware qw( XFramework StackTrace );
 use Plack::Builder;
 use Test::More;
 
 my $handler = builder {
-    enable Plack::Middleware::XFramework framework => 'Dog';
-    enable Plack::Middleware::StackTrace;
+    add "Plack::Middleware::XFramework", framework => 'Dog';
+    add "Plack::Middleware::StackTrace";
     sub {
         die "Oops";
     };

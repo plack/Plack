@@ -31,10 +31,9 @@ Plack::Middleware::ContentLength - Adds Content-Length header automatically
 =head1 SYNOPSIS
 
   # in app.psgi
-  use Plack::Middleware qw(ContentLength);
 
   builder {
-      enable Plack::Middleware::ContentLength;
+      add "Plack::Middleware::ContentLength";
       $app;
   }
 

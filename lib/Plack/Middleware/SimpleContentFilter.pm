@@ -46,14 +46,13 @@ Plack::Middleware::SimpleContentFilter - Filters response content
 =head1 SYNOPSIS
 
   use Plack::Builder;
-  use Plack::Middleware qw(SimpleContentFilter);
 
   my $app = sub {
       return [ 200, [ 'Content-Type' => 'text/plain' ], [ 'Hello Foo' ] ];
   };
 
   builder {
-      enable Plack::Middleware::SimpleContentFilter
+      add "Plack::Middleware::SimpleContentFilter",
           filter => sub { s/Foo/Bar/g; };
       $app;
   };

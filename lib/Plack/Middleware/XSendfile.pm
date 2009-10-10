@@ -61,7 +61,7 @@ Plack::Middleware::XSendfile - Sets X-Sendfile (or a like) header for frontends
 
 =head1 SYNOPSIS
 
-  enable Plack::Middleware::XSendfile;
+  add "Plack::Middleware::XSendfile";
 
 =head1 DESCRIPTION
 

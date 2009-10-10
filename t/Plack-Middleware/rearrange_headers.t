@@ -1,7 +1,6 @@
 use strict;
 use Test::More;
 use Plack::Builder;
-use Plack::Middleware qw(RearrangeHeaders);
 
 my $app = sub {
     return [ 200, [
@@ -12,7 +11,7 @@ my $app = sub {
   };
 
 $app = builder {
-    enable Plack::Middleware::RearrangeHeaders;
+    add "Plack::Middleware::RearrangeHeaders";
     $app;
 };
 

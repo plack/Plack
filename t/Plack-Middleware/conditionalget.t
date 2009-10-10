@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::Base;
-use Plack::Middleware qw(ConditionalGET);
 use Plack::Builder;
 
 filters {
@@ -15,7 +14,7 @@ plan tests => 2 * blocks;
 run {
     my $block = shift;
     my $handler = builder {
-        enable Plack::Middleware::ConditionalGET;
+        add "Plack::Middleware::ConditionalGET";
         $block->app;
     };
     my $res = $handler->($block->env);

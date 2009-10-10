@@ -2,15 +2,14 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Requires qw( Path::Class );
-use Plack::Middleware qw(XSendfile Static);
 use HTTP::Request::Common;
 use Plack::Builder;
 use Plack::Test;
 use Cwd;
 
 my $handler = builder {
-    enable Plack::Middleware::XSendfile;
-    enable Plack::Middleware::Static
+    add "Plack::Middleware::XSendfile";
+    add "Plack::Middleware::Static",
         path => qr/./, root => ".";
     sub { };
 };

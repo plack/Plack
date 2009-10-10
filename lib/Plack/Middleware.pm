@@ -7,18 +7,20 @@ use Carp ();
 __PACKAGE__->mk_accessors(qw/app/);
 
 sub import {
-    my($class, @subclasses) = @_;
-
-    for my $sub (@subclasses) {
-        my $subclass = $sub =~ s/^\+// ? $sub : "Plack::Middleware::$sub";
-        eval "use $subclass";
-        die $@ if $@;
+    my $class = shift;
+    if (@_) {
+        Carp::carp("use Plack::Middleware qw(Foo) is deprecated. See perldoc Plack::Builder");
     }
 }
 
 sub wrap {
-    my($class, $app, @args) = @_;
-    $class->new({ app => $app, @args })->to_app;
+    my($self, $app, @args) = @_;
+    if (ref $self) {
+        $self->{app} = $app;
+    } else {
+        $self = $self->new({ app => $app, @args });
+    }
+    return $self->to_app;
 }
 
 sub to_app {
@@ -27,7 +29,7 @@ sub to_app {
 }
 
 sub enable {
-    Carp::croak "enable Plack::Middleware should be called inside Plack::Builder's builder {} block";
+    Carp::croak("enable Plack::Middleware::Foo is deprecated. See perldoc Plack::Builder");
 }
 
 1;
@@ -56,13 +58,12 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
 
   # then in app.psgi
   use Plack::Builder;
-  use Plack::Middleware qw( Foo Bar );
 
   my $app = sub { ... } # as usual
 
   builder {
-      enable Plack::Middleware::Foo;
-      enable Plack::Middleware::Bar %options;
+      add "Plack::Middleware::Foo";
+      add "Plack::Middleware::Bar", %options;
       $app;
   };
 
@@ -74,15 +75,18 @@ and then implement the callback C<call> method (or C<to_app> method
 that would return the PSGI code reference) to do the actual work. You
 can use C<< $self->app >> to call the original (wrapped) application.
 
-See L<Plack::Builder> how to actually enable them in your I<.psgi>
-application file using the DSL. If you do not like our builder DSL,
-you can also use C<wrap> method to wrap your application with a
-middleware:
+See L<Plack::Builder> how to actually enable middlewares in your
+I<.psgi> application file using the DSL. If you do not like our
+builder DSL, you can also use C<wrap> method to wrap your application
+with a middleware:
 
   use Plack::Middleware::Foo;
 
   my $app = sub { ... };
   $app = Plack::Middleware::Foo->wrap($app, %options);
+  $app = Plack::Middleware::Bar->wrap($app, %options);
+
+or also use L<Plack::Builder>'s non-DSL API.
 
 =head1 SEE ALSO
 

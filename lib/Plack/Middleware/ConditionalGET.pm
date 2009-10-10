@@ -38,12 +38,12 @@ __END__
 
 =head1 NAME
 
-Plack::Middleware::ConditionalGET - Middleware to enable conditional GET
+Plack::Middleware::ConditionalGET - Middleware to add "conditional", GET
 
 =head1 SYNOPSIS
 
   builder {
-      enable Plack::Middleware::ConditionalGET;
+      add "Plack::Middleware::ConditionalGET";
       ....
   };
 

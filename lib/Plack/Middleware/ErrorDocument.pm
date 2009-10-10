@@ -55,11 +55,10 @@ Plack::Middleware::ErrorDocument - Set Error Document based on HTTP status code
 =head1 SYNOPSIS
 
   # in app.psgi
-  use Plack::Middleware qw(ErrorDocument);
   use Plack::Builder;
 
   builder {
-      enable Plack::Middleware::ErrorDocument
+      add "Plack::Middleware::ErrorDocument",
           500 => '/uri/errors/500.html', 404 => '/uri/errors/404.html',
           subrequest => 1;
       $app;
@@ -82,9 +81,9 @@ Defaults to false, which means it serves error pages using file
 system path.
 
   builder {
-      enable Plack::Middleware::ErrorDocument
+      add "Plack::Middleware::ErrorDocument",
           502 => '/home/www/htdocs/errors/maint.html';
-      enable Plack::Middleware::ErrorDocument
+      add "Plack::Middleware::ErrorDocument",
           404 => '/static/404.html', 403 => '/static/403.html', subrequest => 1;
       $app;
   };

@@ -98,11 +98,10 @@ Plack::Middleware::AccessLog - Logs requests like Apache's log format
 =head1 SYNOPSIS
 
   # in app.psgi
-  use Plack::Middleware qw(AccessLog);
   use Plack::Builder;
 
   builder {
-      enable Plack::Middleware::AccessLog format => "combined";
+      add "Plack::Middleware::AccessLog", format => "combined";
       $app;
   };
 
@@ -129,7 +128,7 @@ default C<development> environment.
 
 =item format
 
-  enable Plack::Middleware::AccessLog
+  add "Plack::Middleware::AccessLog",
       format => "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"";
 
 Takes a format string (or a preset template C<combined> or C<custom>)
@@ -139,7 +138,7 @@ Apache's LogFormat templates.
 =item logger
 
   my $logger = Log::Dispatch->new(...);
-  enable Plack::Middleware::AccessLog
+  add "Plack::Middleware::AccessLog",
       logger => sub { $logger->log(debug => @_) };
 
 Sets a callback to print log message to. It prints to C<psgi.errors>

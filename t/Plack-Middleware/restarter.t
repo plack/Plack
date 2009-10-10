@@ -14,7 +14,7 @@ write_file("hello");
 my $cache;
 local $SIG{HUP} = sub { undef $cache;  };
 my $handler = builder {
-    enable Plack::Middleware::Restarter
+    add "Plack::Middleware::Restarter",
         directories => [$dir],
         filter => qr{\.txt$};
     sub {
