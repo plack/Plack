@@ -1,9 +1,10 @@
 package Plack::Builder;
 use strict;
 use base qw( Exporter );
-our @EXPORT = qw( builder add );
+our @EXPORT = qw( builder add dispatch );
 
 use Carp ();
+use Plack::App::URLMap;
 
 sub new {
     my $class = shift;
@@ -36,17 +37,27 @@ sub to_app {
 }
 
 # DSL goes here
-our $_add = sub {
-    Carp::croak("add should be called inside builder {} block");
+our $_add = our $_dispatch = sub {
+    Carp::croak("add/dispatch should be called inside builder {} block");
 };
 
-sub add { $_add->(@_) }
+sub add      { $_add->(@_) }
+sub dispatch { $_dispatch->(@_) }
 
 sub builder(&) {
     my $block = shift;
 
     my $self = __PACKAGE__->new;
-    local $_add = sub { $self->add_middleware(@_) };
+
+    my $urlmap = Plack::App::URLMap->new;
+    local $_dispatch = sub {
+        $urlmap->map(@_);
+        $urlmap;
+    };
+
+    local $_add = sub {
+        $self->add_middleware(@_);
+    };
 
     my $app = $block->();
     $self->to_app($app);
@@ -62,16 +73,28 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
 
 =head1 SYNOPSIS
 
-  # DSL in .psgi
+  # in .psgi
   use Plack::Builder;
 
   my $app = sub { ... };
 
   builder {
-     add "Plack::Middleware::Foo";
-     add "Plack::Middleware::Bar", opt => "val";
-     add "Plack::Middleware::Baz";
-     $app;
+      add "Plack::Middleware::Foo";
+      add "Plack::Middleware::Bar", opt => "val";
+      add "Plack::Middleware::Baz";
+      $app;
+  };
+
+  # use URLMap
+
+  builder {
+      dispatch "/foo" => builder {
+          add "Plack::Middleware::Foo";
+          $app;
+      };
+
+      dispatch "/bar" => $app2;
+      dispatch "http://example.com/" => builder { $app3 };
   };
 
 =head1 DESCRIPTION
@@ -86,9 +109,9 @@ pushed to the stack inside the builder, and then reversed when it
 actually creates a wrapped application handler, so:
 
   builder {
-     add "Plack::Middleware::Foo";
-     add "Plack::Middleware::Bar", opt => "val";
-     $app;
+      add "Plack::Middleware::Foo";
+      add "Plack::Middleware::Bar", opt => "val";
+      $app;
   };
 
 is syntactically equal to:
