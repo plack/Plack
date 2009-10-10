@@ -11,6 +11,11 @@ use Cwd ();
 
 __PACKAGE__->mk_accessors(qw( root ));
 
+sub should_handle {
+    my($self, $file) = @_;
+    return -f $file;
+}
+
 sub call {
     my $self = shift;
     my $env  = shift;
@@ -30,7 +35,7 @@ sub call {
     }
 
     # Does the file actually exist?
-    if (!$realpath || !-f $file) {
+    if (!$realpath || !$self->should_handle($file)) {
         return $self->return_404;
     }
 
@@ -39,17 +44,27 @@ sub call {
         return $self->return_403;
     }
 
-    my $content_type = do {
-        my $type;
-        if ($file =~ /.*\.(\S{1,})$/xms ) {
-            $type = (MIME::Types::by_suffix $1)[0];
-        }
-        $type ||= 'text/plain';
-    };
+    return $self->serve_path($env, $file, $realpath);
+}
+
+sub mime_type_for {
+    my $self = shift;
+    my $file = shift;
+    my $type;
+    if ($file =~ /.*\.(\S{1,})$/xms ) {
+        $type = (MIME::Types::by_suffix $1)[0];
+    }
+    return $type || 'text/plain';
+}
+
+sub serve_path {
+    my($self, $env, $file, $fullpath) = @_;
+
+    my $content_type = $self->mime_type_for($file);
 
     my $fh = $file->openr
         or return $self->return_403;
-    Plack::Util::set_io_path($fh, $realpath);
+    Plack::Util::set_io_path($fh, $fullpath);
     binmode $fh;
 
     my $stat = $file->stat;
@@ -89,7 +104,11 @@ Plack::App::File - Serve static files from root directory
 
 =head1 DESCRIPTION
 
-This is a static file server PSGI application, and internally used by L<Plack::Middleware::Static>.
+This is a static file server PSGI application, and internally used by
+L<Plack::Middleware::Static>. This application serves file from
+document root if the path matches with the local file. Use
+L<Plack::App::Directory> if you want to list files in the directory
+as well.
 
 =head1 CONFIGURATION
 
@@ -97,7 +116,7 @@ This is a static file server PSGI application, and internally used by L<Plack::M
 
 =item root
 
-Document root directory.
+Document root directory. Defaults to C<.> (current directory)
 
 =back
 
@@ -107,7 +126,7 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<Plack::Middleware::Static>
+L<Plack::Middleware::Static> L<Plack::App::Directory>
 
 =cut
 
