@@ -76,19 +76,60 @@ Plack::App::URLMap - Map multiple apps in different paths
   my $app2 = sub { ... };
   my $app3 = sub { ... };
 
-  my $app = Plack::App::URLMap->new;
-  $app->map("/" => $app1);
-  $app->map("/foo" => $app2);
-  $app->map("http://bar.example.com/" => $app3);
+  my $urlmap = Plack::App::URLMap->new;
+  $urlmap->map("/" => $app1);
+  $urlmap->map("/foo" => $app2);
+  $urlmap->map("http://bar.example.com/" => $app3);
 
-  $app;
+  $urlmap; # Or $urlmap->to_app
 
 =head1 DESCRIPTION
 
-TBD
+Plack::App::URLMap is a PSGI application that can dispatch multiple
+applications based on URL path and hostnames (a.k.a "virtual
+hosting"). This module is inspired by Rack::URLMap.
+
+=head1 METHODS
+
+=over 4
+
+=item map
+
+  $urlmap->map("/foo" => $app);
+  $urlmap->map("http://bar.example.com/" => $another_app);
+
+Maps URL path or an absolute URL to a PSGI application. The match
+order is sorted by host name length and then path length.
+
+URL paths need to match from the beginning and should match completely
+till the path separator (or the end of the path). For example, if you
+register the path C</foo>, it B<will> match with the request C</foo>,
+C</foo/> or C</foo/bar> but it B<won't> match with C</foox>.
+
+Mapping URL with host names is also possible, and in that case the URL
+mapping works like a virtual host.
+
+=item dispatch
+
+Alias for C<map>.
+
+=item to_app
+
+  my $handler = $urlmap->to_app;
+
+Returns the PSGI application code reference. Note that the
+Plack::App::URLMap object is callable (by overloading the code
+dereference), so returning the object itself as a PSGI application
+should also work.
+
+=back
 
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
+
+=head1 SEE ALSO
+
+L<Plack::Builder>
 
 =cut

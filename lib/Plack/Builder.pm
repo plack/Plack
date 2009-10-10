@@ -121,9 +121,25 @@ is syntactically equal to:
 
 In other words, you're suposed to C<add> middleware from outer to inner.
 
+=head1 URLMap support
+
+Plack::Builder has a native support for L<Plack::App::URLMap> with C<dispatch> method.
+
+  use Plack::Builder;
+  my $app = builder {
+      dispatch "/foo" => $app1;
+      dispatch "/bar" => builder {
+          add "Plack::Middleware::Foo";
+          $app2;
+      };
+  };
+
+See L<Plack::App::URLMap>'s C<map> method to see what they mean. With
+builder you can't use C<map> as a DSL, for the obvious reason :)
+
 =head1 SEE ALSO
 
-L<Plack::Middleware>
+L<Plack::Middleware> L<Plack::App::URLMap>
 
 =cut
 
