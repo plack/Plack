@@ -2,12 +2,7 @@ package Plack::Middleware::Static;
 use strict;
 use warnings;
 use base qw/Plack::Middleware/;
-use File::Spec::Unix;
-use Path::Class 'dir';
-use Plack::Util;
-use HTTP::Date;
-use MIME::Types;
-use Cwd ();
+use Plack::App::File;
 
 __PACKAGE__->mk_accessors(qw( path root ));
 
@@ -26,10 +21,6 @@ sub _handle_static {
 
     my $path_match = $self->path or return;
 
-    if ($env->{PATH_INFO} =~ m!\.\.[/\\]!) {
-        return $self->return_403;
-    }
-
     my $path = do {
         my $matched;
         local $_ = $env->{PATH_INFO};
@@ -42,61 +33,9 @@ sub _handle_static {
         $_;
     } or return;
 
-    my $docroot = dir($self->root || ".");
-    my $file = $docroot->file(File::Spec::Unix->splitpath($path));
-    my $realpath = Cwd::realpath($file->absolute->stringify);
-
-    # Is the requested path within the root?
-    if ($realpath && !$docroot->subsumes($realpath)) {
-        return $self->return_403;
-    }
-
-    # Does the file actually exist?
-    if (!$realpath || !-f $file) {
-        return $self->return_404;
-    }
-
-    # If the requested file present but lacking the permission to read it?
-    if (!-r $file) {
-        return $self->return_403;
-    }
-
-    my $content_type = do {
-        my $type;
-        if ($file =~ /.*\.(\S{1,})$/xms ) {
-            $type = (MIME::Types::by_suffix $1)[0];
-        }
-        $type ||= 'text/plain';
-    };
-
-    my $fh = $file->openr
-        or return $self->return_403;
-    Plack::Util::set_io_path($fh, $realpath);
-    binmode $fh;
-
-    my $stat = $file->stat;
-    return [
-        200,
-        [
-            'Content-Type'   => $content_type,
-            'Content-Length' => $stat->size,
-            'Last-Modified'  => HTTP::Date::time2str( $stat->mtime )
-        ],
-        $fh,
-    ];
+    $self->{file} ||= Plack::App::File->new({ root => $self->root || '.' });
+    return $self->{file}->call({ %$env, PATH_INFO => $path }) # rewrite PATH
 }
-
-sub return_403 {
-    my $self = shift;
-    return [403, ['Content-Type' => 'text/plain'], ['forbidden']];
-}
-
-# Hint: subclasses can override this to return undef to pass through 404
-sub return_404 {
-    my $self = shift;
-    return [404, ['Content-Type' => 'text/plain'], ['not found']];
-}
-
 
 1;
 __END__
@@ -124,7 +63,7 @@ processing.
 
 If the requested document is not within the C<root> (i.e. directory
 traversal) or the file is there but not readable, this middleware will
-return a 403 status code with a plain "forbidden" message.
+return a 403 Forbidden response.
 
 The content type returned will be determined from the file extension
 based on L<MIME::Types>.
