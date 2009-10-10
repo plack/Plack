@@ -86,8 +86,9 @@ Plack::App::URLMap - Map multiple apps in different paths
 =head1 DESCRIPTION
 
 Plack::App::URLMap is a PSGI application that can dispatch multiple
-applications based on URL path and hostnames (a.k.a "virtual
-hosting"). This module is inspired by Rack::URLMap.
+applications based on URL path and hostnames (a.k.a "virtual hosting")
+and takes care of rewriting C<SCRIPT_NAME> and C<PATH_INFO>. This
+module is inspired by Rack::URLMap.
 
 =head1 METHODS
 
