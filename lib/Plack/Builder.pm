@@ -74,16 +74,6 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
      $app;
   };
 
-  # non-DSL API
-  use Plack::Builder (); # () to disable DSL
-
-  my $builder = Plack::Builder->new;
-  $builder->add_middleware("Plack::Middleware::Foo");
-  $builder->add_middleware("Plack::Middleware::Bar", opt => "value");
-  $builder->add_middleware(sub { MyFramework::Middlware->make_app(shift) });
-
-  $app = $builder->to_app($app);
-
 =head1 DESCRIPTION
 
 Plack::Builder gives you a quick domain specific language (DSL) to

@@ -86,8 +86,6 @@ with a middleware:
   $app = Plack::Middleware::Foo->wrap($app, %options);
   $app = Plack::Middleware::Bar->wrap($app, %options);
 
-or also use L<Plack::Builder>'s non-DSL API.
-
 =head1 SEE ALSO
 
 L<Plack> L<Plack::Builder>
