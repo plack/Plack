@@ -9,7 +9,7 @@ use LWP::UserAgent;
 use Test::More;
 use Test::TCP;
 use Plack::Loader;
-use Plack::Lint;
+use Plack::Middleware::Lint;
 use Plack::Util;
 
 my $share_dir = eval { File::ShareDir::dist_dir('Plack') } || 'share';
@@ -432,7 +432,7 @@ sub run_server_tests {
         $server = sub {
             my($port, $app) = @_;
             my $server = Plack::Loader->load($server_class, port => $port, host => "127.0.0.1");
-            $app = Plack::Lint->wrap($app);
+            $app = Plack::Middleware::Lint->wrap($app);
             $server->run($app);
         }
     }

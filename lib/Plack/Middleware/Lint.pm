@@ -1,23 +1,21 @@
-package Plack::Lint;
+package Plack::Middleware::Lint;
 use strict;
 no warnings;
 use Carp;
+use base qw(Plack::Middleware);
 
-sub wrap {
-    my $class = shift;
-    my $app = shift;
+sub call {
+    my $self = shift;
+    my $env = shift;
 
-    return sub {
-        my $env = shift;
-        $class->validate_env($env);
-        my $res = $app->($env);
-        $class->validate_res($res);
-        return $res;
-    };
+    $self->validate_env($env);
+    my $res = $self->app->($env);
+    $self->validate_res($res);
+    return $res;
 }
 
 sub validate_env {
-    my ($class, $env) = @_;
+    my ($self, $env) = @_;
     unless ($env->{'REQUEST_METHOD'}) {
         Carp::croak('missing env param: REQUEST_METHOD');
     }
@@ -62,7 +60,7 @@ sub validate_env {
 }
 
 sub validate_res {
-    my ($class, $res) = @_;
+    my ($self, $res) = @_;
     unless (ref($res) && ref($res) eq 'ARRAY') {
         Carp::croak('response should be arrayref');
     }
@@ -73,3 +71,27 @@ sub validate_res {
 
 1;
 __END__
+
+=head1 NAME
+
+Plack::Middleware::Lint - Validate request and response
+
+=head1 SYNOPSIS
+
+  use Plack::Middleware::Lint;
+
+  my $app = sub { ... }; # your app or middleware
+  $app = Plack::Middleware::Lint->wrap($app);
+
+=head1 DEESCRIPTION
+
+Plack::Middleware::Lint is a middleware to validate request and
+response environment. Handy to validate missing parameters etc. when
+writing a server or middleware.
+
+=head1 AUTHOR
+
+Tokuhiro Matsuno
+
+=cut
+
