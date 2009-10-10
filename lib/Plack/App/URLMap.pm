@@ -41,15 +41,15 @@ sub to_app {
         my $path_info   = $env->{PATH_INFO};
         my $script_name = $env->{SCRIPT_NAME};
 
-        my($http_host, $server_name, $server_port) = @{$env}{qw( HTTP_HOST SERVER_NAME SERVER_PORT )};
+        my($http_host, $server_name) = @{$env}{qw( HTTP_HOST SERVER_NAME )};
 
         for my $map (@$mapping) {
             my($host, $location, $app) = @$map;
             my $path = $path_info; # copy
             no warnings 'uninitialized';
-            next unless $http_host   eq $host or
-                        $server_name eq $host or
-                        (!defined $host && ($http_host eq $server_name or $http_host eq "$server_name:$server_port"));
+            next unless not defined $host     or
+                        $http_host   eq $host or
+                        $server_name eq $host;
             next unless $path =~ s!\Q$location\E!!;
             next unless $path eq '' or $path =~ m!/!;
 
