@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use base qw/Class::Accessor::Fast/;
 use Carp ();
+use overload '&{}' => sub { shift->to_app(@_) }, fallback => 1;
 
 __PACKAGE__->mk_accessors(qw/app/);
 
@@ -85,6 +86,20 @@ with a middleware:
   my $app = sub { ... };
   $app = Plack::Middleware::Foo->wrap($app, %options);
   $app = Plack::Middleware::Bar->wrap($app, %options);
+
+Note also Plack::Middleware object is callable, by overloading the
+code dereference, so:
+
+  package Plack::Middleware::Foo;
+  use base qw(Plack::Middleware);
+
+  sub call { ... }
+
+  my $app = Plack::Middleware::Foo->new;
+
+C<$app> here is an object but can be used as a PSGI application as
+well, since C<< $app->($env) >> just calls C<< $app->call($env) >>
+internally.
 
 =head1 SEE ALSO
 

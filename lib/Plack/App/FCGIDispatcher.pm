@@ -78,7 +78,7 @@ Plack::App::FCGIDispatcher - Dispatch requests to FCGI servers
   use Plack::App::FCGIDispatcher;
   my $app = Plack::App::FCGIDispatcher->new({
       port => 8080, # FastCGI daemon port
-  })->to_app;
+  });
 
 =head1 DESCRIPTION
 
@@ -93,7 +93,7 @@ a PSGI application to dispatch requests to external FCGI servers.
 
   my $app = Plack::App::FCGIDispatcher->new({
       host => '127.0.0.1', port => 8080,
-  })->to_app;
+  });
 
 Specifies host and port where FastCGI daemon is listening. host defaults to C<127.0.0.1>.
 
@@ -101,7 +101,7 @@ Specifies host and port where FastCGI daemon is listening. host defaults to C<12
 
   my $app = Plack::App::FCGIDispatcher->new({
       socket => "/tmp/fcgi.sock",
-  })->to_app;
+  });
 
 Specifies UNIX socket path where FastCGI daemon is listening.
 

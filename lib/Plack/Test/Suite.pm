@@ -476,23 +476,19 @@ __END__
 
 =head1 SYNOPSIS
 
-    see tests.
+  # TBD See t/Plack-Servet/*.t for now
 
 =head1 DESCRIPTION
 
-Test suite for the PSGI spec. This will rename to the PSGI::TestSuite or something.
+Plack::Test::Suite is a test suite to test a new PSGI server implementation.
 
-=head1 METHODS
+=head1 AUTHOR
 
-=over 4
+Tokuhiro Matsuo
 
-=item count
+Tatsuhiko Miyagawa
 
-count the test cases.
-
-=item my ($name, $reqgen, $handler, $test) = Plack::Test->get_test($i)
-
-=back
+Kazuho Oku
 
 =cut
 
