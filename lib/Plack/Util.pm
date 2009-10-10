@@ -92,7 +92,7 @@ sub load_psgi {
     my $file = shift;
 
     my $app = do $file;
-    return $app if $app and ref $app eq 'CODE';
+    return $app if $app and ref $app eq 'CODE' or eval { $app->can('to_app') };
 
     if (my $e = $@ || $!) {
         die "Can't load $file: $e";
