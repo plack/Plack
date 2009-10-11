@@ -4,7 +4,6 @@ use warnings;
 use base qw/Plack::Middleware/;
 use Plack;
 use Plack::Util;
-use Data::Dump;
 use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
 
