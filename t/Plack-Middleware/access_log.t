@@ -22,11 +22,11 @@ my $test_req = sub {
 };
 
 {
-    my $req = GET "http://localhost/";
-    $req->header("Host" => "localhost");
+    my $req = GET "http://example.com/";
+    $req->header("Host" => "example.com");
     $test_req->($req);
     chomp $log;
-    is $log, 'localhost text/plain';
+    is $log, 'example.com text/plain';
 }
 
 done_testing;
