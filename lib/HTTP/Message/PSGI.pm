@@ -28,11 +28,7 @@ sub req_to_psgi {
 
     open my $input, "<", \do { $req->content };
 
-    my $is_std_port = ($uri->scheme eq 'https' && $uri->port == 443)
-        || ($uri->scheme eq 'http' && $uri->port == 80);
-
     my $env = {
-        HTTP_HOST         => $is_std_port ? $uri->host : $uri->host_port,
         PATH_INFO         => URI::Escape::uri_unescape($uri->path),
         QUERY_STRING      => $uri->query || '',
         SCRIPT_NAME       => '',

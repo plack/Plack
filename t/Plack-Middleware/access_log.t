@@ -22,7 +22,9 @@ my $test_req = sub {
 };
 
 {
-    $test_req->(GET "http://localhost/");
+    my $req = GET "http://localhost/";
+    $req->header("Host" => "localhost");
+    $test_req->($req);
     chomp $log;
     is $log, 'localhost text/plain';
 }
