@@ -1,13 +1,5 @@
-Makefile.PL
-cover_db
 META.yml
 Makefile
-blib
-inc
+inc/
 pm_to_blib
-MANIFEST
-Makefile.old
-old/
-*.swp
-nytprof/
-nytprof.out
+*~
