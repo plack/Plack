@@ -11,13 +11,25 @@ Plack::Server - Standard interface for Plack implementations
 
 =head1 SYNOPSIS
 
-  my $server = Plack::Server::XXX->new(%args);
-  $server->run($app);
+  package FooBarServer;
+  sub new {
+      my($class, %opt) = @_;
+      ...
+      return $self;
+  }
+
+  sub run {
+      my($self, $app) = @_;
+      # launch the server and run $app in the loop
+　}
+
+  # then from command line
+  plackup -s +FooBarServer -a app.psgi
 
 =head1 DESCRIPTION
 
-Plack::Server is a base class of Plack PSGI implementations. Plack::Server
-may inherit from this class, but as long as they implement the methods
+Plack::Server is an abstract interface (but not actually a base class)
+of Plack PSGI implementations. As long as they implement the methods
 defined as an Server unified interface, they do not need to inherit
 Plack::Server.
 
@@ -27,7 +39,7 @@ Plack::Server.
 
 =item new
 
-  $server = Plack::Server::XXX->new(%args);
+  $server = FooBarServer->new(%args);
 
 Creates a new implementation object. I<%args> can take arbitrary
 parameters per implementations but common parameters are:
@@ -38,7 +50,7 @@ parameters per implementations but common parameters are:
 
 Port number the server listens to.
 
-=item address
+=item host
 
 Address the server listens to. Set to undef to listen any interface.
 
@@ -46,9 +58,17 @@ Address the server listens to. Set to undef to listen any interface.
 
 =item run
 
-  $server->run($app)
+  $server->run($app);
 
-Starts the server process and when a request comes in, run the PSGI application passed in C<$app>.
+Starts the server process and when a request comes in, run the PSGI application passed in C<$app> in the loop.
+
+=item register_service
+
+  $server->register_service($app);
+
+Optional interface if your server should run in parallel with other
+event loop, particularly L<AnyEvent>. This is the same as C<run> but
+doen's run the main loop.
 
 =back
 
