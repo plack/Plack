@@ -1,4 +1,7 @@
 Revision history for Perl extension Plack
 
+0.9001  Tue Oct 13 00:55:34 PDT 2009
+        - Downgrade EUMM in inc/
+
 0.9000  Tue Oct 13 00:14:01 PDT 2009
         - original version
