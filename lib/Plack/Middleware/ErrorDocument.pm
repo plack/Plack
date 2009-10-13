@@ -58,7 +58,7 @@ Plack::Middleware::ErrorDocument - Set Error Document based on HTTP status code
   use Plack::Builder;
 
   builder {
-      add "Plack::Middleware::ErrorDocument",
+      enable "Plack::Middleware::ErrorDocument",
           500 => '/uri/errors/500.html', 404 => '/uri/errors/404.html',
           subrequest => 1;
       $app;
@@ -81,9 +81,9 @@ Defaults to false, which means it serves error pages using file
 system path.
 
   builder {
-      add "Plack::Middleware::ErrorDocument",
+      enable "Plack::Middleware::ErrorDocument",
           502 => '/home/www/htdocs/errors/maint.html';
-      add "Plack::Middleware::ErrorDocument",
+      enable "Plack::Middleware::ErrorDocument",
           404 => '/static/404.html', 403 => '/static/403.html', subrequest => 1;
       $app;
   };

@@ -8,7 +8,7 @@ my $app = sub {
 };
 
 $app = builder {
-    add "Plack::Middleware::SimpleContentFilter",
+    enable "Plack::Middleware::SimpleContentFilter",
         filter => sub { s/Foo/Bar/g; };
     $app;
 };

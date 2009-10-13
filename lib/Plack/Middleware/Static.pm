@@ -49,7 +49,7 @@ Plack::Middleware::Static - serve static files with Plack
   use Plack::Builder;
 
   builder {
-      add "Plack::Middleware::Static",
+      enable "Plack::Middleware::Static",
           path => qr{^/(images|js|css)/}, root => './htdocs/';
       $app;
   };
@@ -74,7 +74,7 @@ based on L<MIME::Types>.
 
 =item path, root
 
-  add "Plack::Middleware::Static",
+  enable "Plack::Middleware::Static",
       path => qr{^/static/}, root => 'htdocs/';
 
 C<path> specifies the URL pattern (regular expression) or a callback
@@ -87,7 +87,7 @@ C<htdocs/static/foo.jpg>. Note that the matched C</static/> portion is
 still appears in the local mapped path. If you don't like it, use a
 callback instead to munge C<$_>:
 
-  add "Plack::Middleware::Static",
+  enable "Plack::Middleware::Static",
       path => sub { s!^/static/!! }, root => 'static-files/';
 
 This configuration would serve C</static/foo.png> from

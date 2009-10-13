@@ -5,7 +5,7 @@ use base qw(Plack::Middleware);
 
 use Carp ();
 
-sub dispatch { shift->map(@_) }
+sub mount { shift->map(@_) }
 
 sub map {
     my $self = shift;
@@ -110,7 +110,7 @@ C</foo/> or C</foo/bar> but it B<won't> match with C</foox>.
 Mapping URL with host names is also possible, and in that case the URL
 mapping works like a virtual host.
 
-=item dispatch
+=item mount
 
 Alias for C<map>.
 

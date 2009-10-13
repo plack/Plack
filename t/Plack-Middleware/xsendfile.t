@@ -8,8 +8,8 @@ use Plack::Test;
 use Cwd;
 
 my $handler = builder {
-    add "Plack::Middleware::XSendfile";
-    add "Plack::Middleware::Static",
+    enable "Plack::Middleware::XSendfile";
+    enable "Plack::Middleware::Static",
         path => qr/./, root => ".";
     sub { };
 };

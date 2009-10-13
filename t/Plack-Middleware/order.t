@@ -3,8 +3,8 @@ use Plack::Builder;
 use Test::More;
 
 my $handler = builder {
-    add "Plack::Middleware::XFramework", framework => 'Dog';
-    add "Plack::Middleware::StackTrace";
+    enable "Plack::Middleware::XFramework", framework => 'Dog';
+    enable "Plack::Middleware::StackTrace";
     sub {
         die "Oops";
     };

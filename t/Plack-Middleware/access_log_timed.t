@@ -7,7 +7,7 @@ use Plack::Builder;
 
 my $log;
 my $handler = builder {
-    add "Plack::Middleware::AccessLog::Timed",
+    enable "Plack::Middleware::AccessLog::Timed",
         logger => sub { $log .= "@_" };
     sub { [ 200, [ 'Content-Type' => 'text/plain' ], [ 'OK' ] ] };
 };

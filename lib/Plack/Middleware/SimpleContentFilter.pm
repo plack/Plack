@@ -52,7 +52,7 @@ Plack::Middleware::SimpleContentFilter - Filters response content
   };
 
   builder {
-      add "Plack::Middleware::SimpleContentFilter",
+      enable "Plack::Middleware::SimpleContentFilter",
           filter => sub { s/Foo/Bar/g; };
       $app;
   };

@@ -43,7 +43,7 @@ Plack::Middleware::ConditionalGET - Middleware to add "conditional", GET
 =head1 SYNOPSIS
 
   builder {
-      add "Plack::Middleware::ConditionalGET";
+      enable "Plack::Middleware::ConditionalGET";
       ....
   };
 

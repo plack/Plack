@@ -26,7 +26,7 @@ Plack::Middleware::XFramework - Sample middleware to add X-Framework
 
 =head1 SYNOPSIS
 
-  add "Plack::Middleware::XFramework", framework => "Catalyst";
+  enable "Plack::Middleware::XFramework", framework => "Catalyst";
 
 =head1 DESCRIPTION
 

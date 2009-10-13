@@ -11,7 +11,7 @@ my $app = sub {
   };
 
 $app = builder {
-    add "Plack::Middleware::RearrangeHeaders";
+    enable "Plack::Middleware::RearrangeHeaders";
     $app;
 };
 

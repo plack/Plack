@@ -6,7 +6,7 @@ use HTTP::Request::Common;
 use Plack::Test;
 
 my $handler = builder {
-    add "Plack::Middleware::MethodOverride";
+    enable "Plack::Middleware::MethodOverride";
     sub {
         my $env = shift;
         [ 200, ['Content-Type' => 'text/plain' ], [ $env->{REQUEST_METHOD} ] ];

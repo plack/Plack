@@ -49,7 +49,7 @@ Plack::Middleware::AccessLog::Timed - Logs requests with time and accurate body 
   use Plack::Builder;
 
   builder {
-      add "Plack::Middleware::AccessLog::Timed",
+      enable "Plack::Middleware::AccessLog::Timed",
           format => ""%v %h %l %u %t \"%r\" %>s %b %D";
       $app;
   };

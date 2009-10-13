@@ -29,10 +29,6 @@ sub to_app {
     return sub { $self->call(@_) };
 }
 
-sub enable {
-    Carp::croak("enable Plack::Middleware::Foo is deprecated. See perldoc Plack::Builder");
-}
-
 1;
 
 __END__
@@ -63,8 +59,8 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
   my $app = sub { ... } # as usual
 
   builder {
-      add "Plack::Middleware::Foo";
-      add "Plack::Middleware::Bar", %options;
+      enable "Plack::Middleware::Foo";
+      enable "Plack::Middleware::Bar", %options;
       $app;
   };
 

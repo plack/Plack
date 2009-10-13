@@ -7,7 +7,7 @@ use Plack::Builder;
 
 my $log;
 my $handler = builder {
-    add "Plack::Middleware::AccessLog",
+    enable "Plack::Middleware::AccessLog",
         logger => sub { $log .= "@_" }, format => "%{Host}i %{Content-Type}o";
     sub { [ 200, [ 'Content-Type' => 'text/plain' ], [ 'OK' ] ] };
 };

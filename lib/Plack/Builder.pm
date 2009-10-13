@@ -1,7 +1,7 @@
 package Plack::Builder;
 use strict;
 use base qw( Exporter );
-our @EXPORT = qw( builder add dispatch );
+our @EXPORT = qw( builder add enable mount );
 
 use Carp ();
 use Plack::App::URLMap;
@@ -37,12 +37,13 @@ sub to_app {
 }
 
 # DSL goes here
-our $_add = our $_dispatch = sub {
-    Carp::croak("add/dispatch should be called inside builder {} block");
+our $_add = our $_mount = sub {
+    Carp::croak("enable/mount should be called inside builder {} block");
 };
 
-sub add      { $_add->(@_) }
-sub dispatch { $_dispatch->(@_) }
+sub add      { Carp::carp("add is deprecated. Use 'enable'"); $_add->(@_) }
+sub enable   { $_add->(@_) }
+sub mount    { $_mount->(@_) }
 
 sub builder(&) {
     my $block = shift;
@@ -50,11 +51,10 @@ sub builder(&) {
     my $self = __PACKAGE__->new;
 
     my $urlmap = Plack::App::URLMap->new;
-    local $_dispatch = sub {
+    local $_mount = sub {
         $urlmap->map(@_);
         $urlmap;
     };
-
     local $_add = sub {
         $self->add_middleware(@_);
     };
@@ -79,22 +79,22 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
   my $app = sub { ... };
 
   builder {
-      add "Plack::Middleware::Foo";
-      add "Plack::Middleware::Bar", opt => "val";
-      add "Plack::Middleware::Baz";
+      enable "Plack::Middleware::Foo";
+      enable "Plack::Middleware::Bar", opt => "val";
+      enable "Plack::Middleware::Baz";
       $app;
   };
 
   # use URLMap
 
   builder {
-      dispatch "/foo" => builder {
-          add "Plack::Middleware::Foo";
+      mount "/foo" => builder {
+          enable "Plack::Middleware::Foo";
           $app;
       };
 
-      dispatch "/bar" => $app2;
-      dispatch "http://example.com/" => builder { $app3 };
+      mount "/bar" => $app2;
+      mount "http://example.com/" => builder { $app3 };
   };
 
 =head1 DESCRIPTION
@@ -109,8 +109,8 @@ pushed to the stack inside the builder, and then reversed when it
 actually creates a wrapped application handler, so:
 
   builder {
-      add "Plack::Middleware::Foo";
-      add "Plack::Middleware::Bar", opt => "val";
+      enable "Plack::Middleware::Foo";
+      enable "Plack::Middleware::Bar", opt => "val";
       $app;
   };
 
@@ -123,13 +123,13 @@ In other words, you're suposed to C<add> middleware from outer to inner.
 
 =head1 URLMap support
 
-Plack::Builder has a native support for L<Plack::App::URLMap> with C<dispatch> method.
+Plack::Builder has a native support for L<Plack::App::URLMap> with C<mount> method.
 
   use Plack::Builder;
   my $app = builder {
-      dispatch "/foo" => $app1;
-      dispatch "/bar" => builder {
-          add "Plack::Middleware::Foo";
+      mount "/foo" => $app1;
+      mount "/bar" => builder {
+          enable "Plack::Middleware::Foo";
           $app2;
       };
   };

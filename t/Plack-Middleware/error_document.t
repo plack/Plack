@@ -8,11 +8,11 @@ use Plack::Builder;
 
 my $log;
 my $handler = builder {
-    add "Plack::Middleware::ErrorDocument",
+    enable "Plack::Middleware::ErrorDocument",
         500 => "$FindBin::Bin/errors/500.html";
-    add "Plack::Middleware::ErrorDocument",
+    enable "Plack::Middleware::ErrorDocument",
         404 => "/errors/404.html", subrequest => 1;
-    add "Plack::Middleware::Static",
+    enable "Plack::Middleware::Static",
         path => qr{^/errors}, root => $FindBin::Bin;
 
     sub {

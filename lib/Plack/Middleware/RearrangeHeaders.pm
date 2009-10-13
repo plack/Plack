@@ -38,7 +38,7 @@ Plack::Middleware::RearrangeHeaders - Reorder HTTP headers for buggy clients
   };
 
   builder {
-      add "Plack::Middleware::RearrangeHeaders";
+      enable "Plack::Middleware::RearrangeHeaders";
       $app;
   };
 

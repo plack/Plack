@@ -46,7 +46,7 @@ Plack::Middleware::StackTrace - Displays stack trace when your app dies
 
 =head1 SYNOPSIS
 
-  add "Plack::Middleware::StackTrace";
+  enable "Plack::Middleware::StackTrace";
 
 =head1 DESCRIPTION
 

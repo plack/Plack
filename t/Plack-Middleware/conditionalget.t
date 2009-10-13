@@ -14,7 +14,7 @@ plan tests => 2 * blocks;
 run {
     my $block = shift;
     my $handler = builder {
-        add "Plack::Middleware::ConditionalGET";
+        enable "Plack::Middleware::ConditionalGET";
         $block->app;
     };
     my $res = $handler->($block->env);

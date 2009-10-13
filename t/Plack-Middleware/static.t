@@ -15,9 +15,9 @@ my $base = cwd;
 chdir "t";
 
 my $handler = builder {
-    add "Plack::Middleware::Static",
+    enable "Plack::Middleware::Static",
         path => sub { s!^/share/!!}, root => "$base/share";
-    add "Plack::Middleware::Static",
+    enable "Plack::Middleware::Static",
         path => qr{\.(t|PL)$}i, root => '.';
     sub {
         [200, ['Content-Type' => 'text/plain', 'Content-Length' => 2], ['ok']]

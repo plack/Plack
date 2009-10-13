@@ -4,7 +4,7 @@ use Plack::Builder;
 use Test::More;
 
 my $handler = builder {
-    add "Plack::Middleware::XFramework",
+    enable "Plack::Middleware::XFramework",
         framework => 'Dog';
     sub {
         [200, [], ['ok']]

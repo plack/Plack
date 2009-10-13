@@ -20,13 +20,13 @@ my $app3 = $make_app->("app3");
 my $app4 = $make_app->("app4");
 
 my $app = builder {
-    dispatch "/" => $app1;
-    dispatch "/foo" => builder {
-        add "Plack::Middleware::XFramework", framework => "Bar";
+    mount "/" => $app1;
+    mount "/foo" => builder {
+        enable "Plack::Middleware::XFramework", framework => "Bar";
         $app2;
     };
-    dispatch "/foobar" => builder { $app3 };
-    dispatch "http://bar.example.com/" => $app4;
+    mount "/foobar" => builder { $app3 };
+    mount "http://bar.example.com/" => $app4;
 };
 
 test_psgi app => $app, client => sub {

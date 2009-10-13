@@ -13,7 +13,7 @@ plan tests => 1 * blocks;
 run {
     my $block = shift;
     my $handler = builder {
-        add "Plack::Middleware::ContentLength";
+        enable "Plack::Middleware::ContentLength";
         $block->app;
     };
     my $res = $handler->($block->env);

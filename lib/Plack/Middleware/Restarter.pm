@@ -48,7 +48,7 @@ Plack::Middleware::Restarter - Restart the standalone server
   use Plack::Builder;
 
   builder {
-      add "Plack::Middleware::Restarter";
+      enable "Plack::Middleware::Restarter";
       $app;
   };
 
@@ -66,14 +66,14 @@ not recommended to use on the production environment.
 
 =item directories
 
-  add "Plack::Middleware::Restarter",
+  enable "Plack::Middleware::Restarter",
       directories => "/path/to/app";
 
 Specifies which directory to watch for file updates. Defaults to C<.> (current directory).
 
 =item filter
 
-  add "Plack::Middleware::Restarter",
+  enable "Plack::Middleware::Restarter",
       filter => qr/\.pm$/;
 
 The regular expression filter to match what files to watch for updates. Defaults to C<\.(pm|yml|yaml|conf)$>.
