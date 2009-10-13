@@ -37,6 +37,7 @@ requires 'Devel::StackTrace'; # Middleware::StackTrace
 requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
 
 feature 'Stacktrace with lexical variables',
+    -default => 0,
     'Devel::StackTrace::WithLexicals';
 
 requires 'Path::Class'; # Middleware::Static
