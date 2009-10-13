@@ -304,6 +304,32 @@ sub upload {
     }
 }
 
+sub raw_uri {
+    my $self = shift;
+
+    my $env    = $self->env;
+    my $scheme = $env->{'psgi.url_scheme'} || "http";
+
+    # Host header should contain port number as well
+    my $host = $env->{HTTP_HOST} || do {
+        my $port   = $env->{SERVER_PORT} || 80;
+        my $is_std_port = ($scheme eq 'http' && $port == 80) || ($scheme eq 'https' && $port == 443);
+        $env->{SERVER_NAME} . ($is_std_port ? "" : ":$port");
+    };
+
+    my $uri = "$scheme\://$host" . $env->{REQUEST_URI};
+    return URI->new($uri);
+}
+
+sub base {
+    my $self = shift;
+
+    my $uri = $self->raw_uri;
+    $uri->path_query($self->env->{SCRIPT_NAME} || "/");
+
+    return $uri;
+}
+
 sub uri {
     my $self = shift;
     if (defined $_[0]) {
@@ -316,6 +342,7 @@ sub uri {
     }
     $self->{uri};
 }
+
 sub _build_uri  {
     my($self, ) = @_;
 
