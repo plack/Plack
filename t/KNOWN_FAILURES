@@ -1,7 +1,0 @@
-t/Plack-Middleware/restarter.t     (Wstat: 0 Tests: 4 Failed: 2)
-  #   Failed test 'Restart failed after 5 seconds'
-  This sometimes fails when HUP is sent in a weired order
-
-t/Plack-Server/apache2.t
-  You need to run this test with blib on (e.g. prove -lb)
-  
