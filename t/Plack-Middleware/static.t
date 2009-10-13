@@ -29,7 +29,7 @@ my %test = (
         my $cb  = shift;
 
         {
-            my $path = "Plack-Response/response.t";
+            my $path = "00_compile.t";
             my $res = $cb->(GET "http://localhost/$path");
             is $res->content_type, 'application/x-troff', 'ok case';
             like $res->content, qr/use Test::More/;
