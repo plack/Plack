@@ -23,6 +23,11 @@ feature 'Fast XS-based HTTP header parsing',
 feature 'Prefork HTTP server',
     'Parallel::Prefork';
 
+feature 'FastCGI daemon and dispatcher',
+    -default => 0,
+    'FCGI' => 0.67,
+    'FCGI::Client' => 0.02;
+
 feature 'Serve static files with sendfile(2)',
     -default => 0,
     'Sys::Sendfile' => 0.09,
