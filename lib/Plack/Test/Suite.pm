@@ -11,8 +11,9 @@ use Test::TCP;
 use Plack::Loader;
 use Plack::Middleware::Lint;
 use Plack::Util;
+use Try::Tiny;
 
-my $share_dir = eval { File::ShareDir::dist_dir('Plack') } || 'share';
+my $share_dir = try { File::ShareDir::dist_dir('Plack') } || 'share';
 
 # 0: test name
 # 1: request generator coderef.

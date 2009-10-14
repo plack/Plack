@@ -13,14 +13,12 @@ use Plack::Middleware::ContentLength;
 use POSIX qw(EINTR);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Time::HiRes qw(alarm time);
+use Try::Tiny;
 
 use constant MAX_REQUEST_SIZE => 131072;
 use constant MSWin32          => $^O eq 'MSWin32';
 
-our $HasSendFile = !$ENV{PLACK_NO_SENDFILE} && do {
-    local $@;
-    eval { require Sys::Sendfile; 1 };
-};
+our $HasSendFile = !$ENV{PLACK_NO_SENDFILE} && try { require Sys::Sendfile; 1 };
 
 sub new {
     my($class, %args) = @_;

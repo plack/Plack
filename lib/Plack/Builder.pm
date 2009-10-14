@@ -16,8 +16,17 @@ sub add_middleware {
 
     if (ref $mw ne 'CODE') {
         my $mw_class = $mw;
-        eval "use $mw_class";
-        die $@ if $@;
+
+        my ( $failed, $error );
+
+        do {
+            local $@;
+            $failed = not eval "use $mw_class; 1";
+            $error = $@;
+        };
+
+        die $error if $failed;
+
         $mw = sub { $mw_class->wrap($_[0], @args) };
     }
 

@@ -6,6 +6,7 @@ our @EXPORT = qw( req_to_psgi res_from_psgi );
 
 use Carp ();
 use URI::Escape ();
+use Try::Tiny;
 
 my $TRUE  = (1 == 1);
 my $FALSE = !$TRUE;
@@ -13,7 +14,7 @@ my $FALSE = !$TRUE;
 sub req_to_psgi {
     my $req = shift;
 
-    unless (eval { $req->isa('HTTP::Request') }) {
+    unless (try { $req->isa('HTTP::Request') }) {
         Carp::croak("Request is not HTTP::Request: $req");
     }
 

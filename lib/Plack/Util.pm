@@ -3,6 +3,7 @@ use strict;
 use Carp ();
 use Scalar::Util;
 use IO::Handle;
+use Try::Tiny;
 
 sub TRUE()  { 1==1 }
 sub FALSE() { !TRUE }
@@ -104,14 +105,13 @@ sub load_psgi {
 sub run_app($$) {
     my($app, $env) = @_;
 
-    local $@; my $res = eval { $app->($env) };
-    if ($@) {
+    return try {
+        $app->($env);
+    } catch {
         my $body = "Internal Server Error";
         $env->{'psgi.errors'}->print($@);
         return [ 500, [ 'Content-Type' => 'text/plain', 'Content-Length' => length($body) ], [ $body ] ];
     }
-
-    return $res;
 }
 
 sub headers {

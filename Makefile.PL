@@ -16,6 +16,7 @@ requires 'URI';
 requires 'HTTP::Request::AsCGI', 0.9;
 requires 'Pod::Usage';  # plackup
 requires 'File::ShareDir'; # Plack::Test::Suite
+requires 'Try::Tiny';
 
 feature 'Fast XS-based HTTP header parsing',
     'HTTP::Parser::XS', 0.03;
