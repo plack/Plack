@@ -1,7 +1,7 @@
 package Plack::Test;
 use strict;
 use warnings;
-use base qw(Exporter);
+use parent qw(Exporter);
 our @EXPORT = qw(test_psgi);
 
 our $Impl;

@@ -1,6 +1,6 @@
 package Plack::Builder;
 use strict;
-use base qw( Exporter );
+use parent qw( Exporter );
 our @EXPORT = qw( builder add enable mount );
 
 use Carp ();

@@ -232,7 +232,7 @@ sub AUTOLOAD {
 sub DESTROY { }
 
 package Plack::Util::IOWithPath;
-use base qw(IO::Handle);
+use parent qw(IO::Handle);
 
 sub path {
     my $self = shift;

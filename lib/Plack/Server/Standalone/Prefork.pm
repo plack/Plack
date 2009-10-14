@@ -2,7 +2,7 @@ package Plack::Server::Standalone::Prefork;
 use strict;
 use warnings;
 
-use base qw(Plack::Server::Standalone);
+use parent qw(Plack::Server::Standalone);
 use Parallel::Prefork;
 
 sub new {

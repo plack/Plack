@@ -1,7 +1,7 @@
 package HTTP::Message::PSGI;
 use strict;
 use warnings;
-use base qw(Exporter);
+use parent qw(Exporter);
 our @EXPORT = qw( req_to_psgi res_from_psgi );
 
 use Carp ();

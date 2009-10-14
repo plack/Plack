@@ -1,6 +1,6 @@
 package Plack::Middleware::ConditionalGET;
 use strict;
-use base qw( Plack::Middleware );
+use parent qw( Plack::Middleware );
 use Plack::Util;
 
 sub call {

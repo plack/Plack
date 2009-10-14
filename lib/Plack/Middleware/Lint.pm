@@ -2,7 +2,7 @@ package Plack::Middleware::Lint;
 use strict;
 no warnings;
 use Carp;
-use base qw(Plack::Middleware);
+use parent qw(Plack::Middleware);
 
 sub call {
     my $self = shift;

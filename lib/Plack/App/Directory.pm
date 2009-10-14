@@ -1,5 +1,5 @@
 package Plack::App::Directory;
-use base qw(Plack::App::File);
+use parent qw(Plack::App::File);
 use strict;
 use warnings;
 use Plack::Util;

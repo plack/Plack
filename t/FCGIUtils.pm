@@ -7,7 +7,7 @@ use Test::More;
 use IO::Socket;
 use File::Spec;
 use Test::TCP qw/test_tcp empty_port/;
-use base qw/Exporter/;
+use parent qw/Exporter/;
 
 # this file is copied from Catalyst. thanks!
 

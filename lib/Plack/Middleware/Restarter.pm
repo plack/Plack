@@ -1,7 +1,7 @@
 package Plack::Middleware::Restarter;
 use strict;
 use warnings;
-use base qw/Plack::Middleware/;
+use parent qw/Plack::Middleware/;
 use File::ChangeNotify;
 
 sub new {

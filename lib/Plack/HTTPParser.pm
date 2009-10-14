@@ -1,6 +1,6 @@
 package Plack::HTTPParser;
 use strict;
-use base qw(Exporter);
+use parent qw(Exporter);
 
 our @EXPORT = qw( parse_http_request );
 

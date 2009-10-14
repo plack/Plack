@@ -6,7 +6,7 @@ use LWP::UserAgent;
 use Test::TCP;
 use Plack::Loader;
 
-use base qw(Exporter);
+use parent qw(Exporter);
 our @EXPORT = qw( test_server );
 
 sub test_psgi {

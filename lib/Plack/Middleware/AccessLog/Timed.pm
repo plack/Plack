@@ -1,7 +1,7 @@
 package Plack::Middleware::AccessLog::Timed;
 use strict;
 use warnings;
-use base qw( Plack::Middleware::AccessLog );
+use parent qw( Plack::Middleware::AccessLog );
 
 use Time::HiRes;
 use Plack::Util;

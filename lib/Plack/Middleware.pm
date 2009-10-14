@@ -1,7 +1,7 @@
 package Plack::Middleware;
 use strict;
 use warnings;
-use base qw/Class::Accessor::Fast/;
+use parent qw/Class::Accessor::Fast/;
 use Carp ();
 use overload '&{}' => sub { shift->to_app(@_) }, fallback => 1;
 
@@ -40,7 +40,7 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
 =head1 SYNOPSIS
 
   package Plack::Middleware::Foo;
-  use base qw( Plack::Middleware );
+  use parent qw( Plack::Middleware );
 
   sub call {
       my($self, $env) = @_;
@@ -87,7 +87,7 @@ Note also Plack::Middleware object is callable, by overloading the
 code dereference, so:
 
   package Plack::Middleware::Foo;
-  use base qw(Plack::Middleware);
+  use parent qw(Plack::Middleware);
 
   sub call { ... }
 

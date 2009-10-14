@@ -1,7 +1,7 @@
 package Plack::Middleware::AccessLog;
 use strict;
 use warnings;
-use base qw( Plack::Middleware );
+use parent qw( Plack::Middleware );
 __PACKAGE__->mk_accessors(qw( logger format ));
 
 use Carp ();
