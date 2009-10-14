@@ -11,6 +11,9 @@ sub call {
     my $env  = shift;
 
     my $r = $self->app->($env);
+
+    return $r unless ref $r eq 'ARRAY';
+
     unless (is_error($r->[0]) && exists $self->{$r->[0]}) {
         return $r;
     }

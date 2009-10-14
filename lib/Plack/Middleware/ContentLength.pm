@@ -9,6 +9,8 @@ sub call {
     my $self = shift;
     my $res  = $self->app->(@_);
 
+    return $res unless ref $res eq 'ARRAY';
+
     my $h = Plack::Util::headers($res->[1]);
     if (!Plack::Util::status_with_no_entity_body($res->[0]) &&
         !$h->exists('Content-Length') &&
