@@ -30,17 +30,19 @@ sub handler {
         'psgi.version'        => [ 1, 0 ],
         'psgi.url_scheme'     => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
         'psgi.input'          => $r,
-        'psgi.errors'         => *STDERR, # xxx
+        'psgi.errors'         => *STDERR,
         'psgi.multithread'    => Plack::Util::FALSE,
         'psgi.multiprocess'   => Plack::Util::TRUE,
         'psgi.run_once'       => Plack::Util::FALSE,
     };
 
-    # http://gist.github.com/187070 and PSGI spec
-    if ($env->{SCRIPT_NAME} eq '/' and $env->{PATH_INFO} eq '') {
-        $env->{SCRIPT_NAME} = '';
-        $env->{PATH_INFO}   = '/';
-    }
+    my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+    my $location = $r->location || "/";
+       $location =~ s!/$!!;
+    (my $path_info = $vpath) =~ s/^\Q$location\E//;
+
+    $env->{SCRIPT_NAME} = $location;
+    $env->{PATH_INFO}   = $path_info;
 
     my($status, $headers, $body) = @{ $app->($env) };
 
