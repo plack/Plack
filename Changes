@@ -1,5 +1,9 @@
 Revision history for Perl extension Plack
 
+0.9002  Wed Oct 14 11:26:28 PDT 2009
+        - Added a workaround in Server::Apache2 when Location and SCRIPT_NAME don't match
+        - Use Try::Tiny and parent for smaller memory footprint and better error handling
+
 0.9001  Tue Oct 13 00:55:34 PDT 2009
         - Downgrade EUMM in inc/
 
