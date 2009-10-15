@@ -61,8 +61,8 @@ sub validate_env {
 
 sub validate_res {
     my ($self, $res) = @_;
-    unless (ref($res) && ref($res) eq 'ARRAY') {
-        Carp::croak('response should be arrayref');
+    unless (ref($res) and ref($res) eq 'ARRAY' || ref($res) eq 'CODE') {
+        Carp::croak('response should be arrayref or coderef');
     }
     if (scalar(@$res) == 3 && !ref($res)) {
         Carp::croak('third elements in response arrayref should be reference');
