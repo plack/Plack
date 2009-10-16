@@ -18,7 +18,7 @@ my $handler = builder {
     enable "Plack::Middleware::Static",
         path => sub { s!^/share/!!}, root => "$base/share";
     enable "Plack::Middleware::Static",
-        path => qr{\.(t|PL)$}i, root => '.';
+        path => qr{\.(t|PL|txt)$}i, root => '.';
     sub {
         [200, ['Content-Type' => 'text/plain', 'Content-Length' => 2], ['ok']]
     };
@@ -57,7 +57,14 @@ my %test = (
             my $res = $cb->(GET "http://localhost/share/face.jpg");
             is $res->content_type, 'image/jpeg';
         }
-    },
+
+        {
+            my $res = $cb->(GET "http://localhost/Plack-Middleware/static.txt");
+            is $res->content_type, 'text/plain';
+            my($ct, $charset) = $res->content_type;
+            is $charset, 'charset=utf-8';
+        }
+},
     app => $handler,
 );
 

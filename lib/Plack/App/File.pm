@@ -9,7 +9,7 @@ use HTTP::Date;
 use MIME::Types;
 use Cwd ();
 
-__PACKAGE__->mk_accessors(qw( root ));
+__PACKAGE__->mk_accessors(qw( root encoding ));
 
 sub should_handle {
     my($self, $file) = @_;
@@ -61,6 +61,10 @@ sub serve_path {
     my($self, $env, $file, $fullpath) = @_;
 
     my $content_type = $self->mime_type_for($file);
+
+    if ($content_type =~ m!^text/!) {
+        $content_type .= "; charset=" . ($self->encoding || "utf-8");
+    }
 
     my $fh = $file->openr
         or return $self->return_403;
@@ -117,6 +121,10 @@ as well.
 =item root
 
 Document root directory. Defaults to C<.> (current directory)
+
+=item encoding
+
+Set the file encoding for text files. Defaults to C<utf-8>.
 
 =back
 
