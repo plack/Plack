@@ -10,6 +10,7 @@ use Pod::Usage;
 my $app    = "app.psgi";
 my $env    = "development";
 my $help   = 0;
+my $backend;
 my @includes;
 
 # From 'prove': Allow cuddling the paths with the -I
@@ -18,8 +19,8 @@ my @includes;
 Getopt::Long::Configure("no_ignore_case", "pass_through");
 GetOptions(
     "a|app=s"      => \$app,
-    "s|server=s"   => \$ENV{PLACK_SERVER},
-    "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $ENV{PLACK_SERVER} = $_[1] },
+    "s|server=s"   => \$backend,
+    "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $backend = $_[1] },
     "E|env=s"      => \$env,
     'I=s@'         => \@includes,
     "h|help",      => \$help,
@@ -44,7 +45,7 @@ my @args = map {
     @v;
 } @ARGV;
 
-my $server = Plack::Loader->auto(@args);
+my $server = $backend ? Plack::Loader->load($backend, @args) : Plack::Loader->auto(@args);
 $server->run($handler);
 
 __END__
