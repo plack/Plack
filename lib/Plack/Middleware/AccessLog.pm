@@ -22,8 +22,12 @@ sub call {
 
     my $logger = $self->logger || sub { $env->{'psgi.errors'}->print(@_) };
 
-    my $content_length = Plack::Util::content_length($res->[2]);
-    $logger->( $self->log_line($res->[0], $res->[1], $env, { content_length => $content_length }) );
+    if ( ref $res eq 'ARRAY' ) {
+        my $content_length = Plack::Util::content_length($res->[2]);
+        $logger->( $self->log_line($res->[0], $res->[1], $env, { content_length => $content_length }) );
+    } else {
+        $logger->( $self->log_line("-", [], $env, {}) )
+    }
 
     return $res;
 }

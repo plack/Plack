@@ -8,6 +8,7 @@ sub call {
     my $env  = shift;
 
     my $res = $self->app->($env);
+    return $res unless ref $res eq 'ARRAY';
     return $res unless $env->{REQUEST_METHOD} =~ /^(GET|HEAD)$/;
 
     my $h = Plack::Util::headers($res->[1]);
