@@ -1,7 +1,7 @@
 my $app = sub {
     my $env = shift;
 
-    warn "This app would block currently when doing the timer sleep. Later will be updated using IO::Writer"
+    warn "This app would block with sleep(): try echo-stream.psgi"
         if $env->{'psgi.nonblocking'};
 
     my $count;
