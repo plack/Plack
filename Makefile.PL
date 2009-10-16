@@ -19,6 +19,12 @@ requires 'File::ShareDir'; # Plack::Test::Suite
 requires 'Try::Tiny';
 requires 'parent';
 
+requires 'IO::Handle::Util'; # Middleware::Writer
+requires 'Path::Class'; # Middleware::Static
+requires 'MIME::Types'; # Middleware::Static
+requires 'Devel::StackTrace'; # Middleware::StackTrace
+requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
+
 feature 'Fast XS-based HTTP header parsing',
     'HTTP::Parser::XS', 0.03;
 
@@ -35,15 +41,9 @@ feature 'Serve static files with sendfile(2)',
     'Sys::Sendfile' => 0.09,
     'IO::AIO' => 3.3;
 
-requires 'Devel::StackTrace'; # Middleware::StackTrace
-requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
-
 feature 'Stacktrace with lexical variables',
     -default => 0,
     'Devel::StackTrace::WithLexicals';
-
-requires 'Path::Class'; # Middleware::Static
-requires 'MIME::Types'; # Middleware::Static
 
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
