@@ -19,7 +19,6 @@ requires 'File::ShareDir'; # Plack::Test::Suite
 requires 'Try::Tiny';
 requires 'parent';
 
-requires 'IO::Handle::Util'; # Middleware::Writer
 requires 'Path::Class'; # Middleware::Static
 requires 'MIME::Types'; # Middleware::Static
 requires 'Devel::StackTrace'; # Middleware::StackTrace

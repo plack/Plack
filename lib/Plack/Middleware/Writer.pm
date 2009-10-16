@@ -3,15 +3,17 @@ use strict;
 no warnings;
 use Carp;
 use Plack::Util;
-use IO::Handle::Util;
 use Scalar::Util qw(weaken);
 use parent qw(Plack::Middleware);
 
 sub call {
     my ( $self, $env ) = @_;
 
+    my $caller_supports_streaming = $env->{'psgi.streaming'};
+    $env->{'psgi.streaming'} = Plack::Util::TRUE;
+
     my $res = $self->app->($env);
-    return $res if $env->{'psgi.streaming'};
+    return $res if $caller_supports_streaming;
 
     if ( ref($res) eq 'CODE' ) {
         my $ret;
