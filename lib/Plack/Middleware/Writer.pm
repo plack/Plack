@@ -22,31 +22,14 @@ sub call {
             my $write = shift;
 
             if ( @$write == 2 ) {
-                my ( $closed, @body );
+                my @body;
 
                 $ret = [ @$write, \@body ];
 
-                # two copies because we weaken the one that is closed over
-                my $writer;
-                my $ref_up = $writer = Plack::Util::inline_object(
-                    poll_cb => sub {
-                        my $cb = shift;
-
-                        until ( $closed ) {
-                            $cb->($writer);
-                        }
-                    },
-                    write => sub {
-                        push @body, $_[0];
-                    },
-                    close => sub {
-                        $closed = 1;
-                    }
+                return Plack::Util::inline_object(
+                    write => sub { push @body, $_[0] },
+                    close => sub { },
                 );
-
-                weaken($writer);
-
-                return $writer;
             } else {
                 $ret = $write;
                 return;
