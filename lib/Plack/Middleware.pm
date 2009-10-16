@@ -29,6 +29,26 @@ sub to_app {
     return sub { $self->call(@_) };
 }
 
+sub response_cb {
+    my($self, $res, $cb) = @_;
+
+    if (ref $res eq 'ARRAY') {
+        $cb->($res);
+        return $res;
+    } elsif (ref $res eq 'CODE') {
+        return sub {
+            my $respond = shift;
+            $res->(sub {
+                my $res = shift;
+                $cb->($res);
+                $respond->($res);
+            });
+        };
+    }
+
+    return $res;
+}
+
 1;
 
 __END__

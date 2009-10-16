@@ -9,17 +9,16 @@ sub call {
     my $self = shift;
     my $res  = $self->app->(@_);
 
-    return $res unless ref $res eq 'ARRAY';
-
-    my $h = Plack::Util::headers($res->[1]);
-    if (!Plack::Util::status_with_no_entity_body($res->[0]) &&
-        !$h->exists('Content-Length') &&
-        !$h->exists('Transfer-Encoding') &&
-        defined(my $content_length = Plack::Util::content_length($res->[2]))) {
-        $h->push('Content-Length' => $content_length);
-    }
-
-    return $res;
+    return $self->response_cb($res, sub {
+        my $res = shift;
+        my $h = Plack::Util::headers($res->[1]);
+        if (!Plack::Util::status_with_no_entity_body($res->[0]) &&
+            !$h->exists('Content-Length') &&
+            !$h->exists('Transfer-Encoding') &&
+            defined(my $content_length = Plack::Util::content_length($res->[2]))) {
+            $h->push('Content-Length' => $content_length);
+        }
+    });
 }
 
 1;

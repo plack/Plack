@@ -60,6 +60,8 @@ sub set_io_path {
 sub content_length {
     my $body = shift;
 
+    return unless defined $body;
+
     if (ref $body eq 'ARRAY') {
         my $cl = 0;
         for my $chunk (@$body) {
