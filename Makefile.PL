@@ -26,7 +26,7 @@ requires 'Devel::StackTrace'; # Middleware::StackTrace
 requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
 
 feature 'Fast XS-based HTTP header parsing',
-    'HTTP::Parser::XS', 0.03;
+    'HTTP::Parser::XS', 0.04;
 
 feature 'Prefork HTTP server',
     'Parallel::Prefork';
