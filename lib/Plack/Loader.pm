@@ -29,6 +29,8 @@ sub guess {
         return "AnyEvent";
     } elsif (exists $INC{"Coro.pm"}) {
         return "Coro";
+    } elsif (exists $INC{"POE.pm"}) {
+        return "POE";
     } elsif (exists $INC{"Danga/Socket.pm"}) {
         return "Danga::Socket";
     } else {
