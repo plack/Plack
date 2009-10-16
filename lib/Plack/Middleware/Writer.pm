@@ -11,6 +11,7 @@ sub call {
     my ( $self, $env ) = @_;
 
     my $res = $self->app->($env);
+    return $res if $env->{'psgi.streaming'};
 
     if ( ref($res) eq 'CODE' ) {
         my $ret;
