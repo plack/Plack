@@ -64,7 +64,7 @@ sub response_cb {
                     if ($writer) {
                         return Plack::Util::inline_object
                             write => sub { $writer->write($filter_cb->(@_)) },
-                            close => sub { $writer->close };
+                            close => sub { $writer->write($filter_cb->(undef)); $writer->close };
                     }
                 } else {
                     return $respond->($res);
