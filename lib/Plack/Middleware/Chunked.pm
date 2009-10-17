@@ -18,7 +18,7 @@ sub call {
         ) {
             $h->set('Transfer-Encoding' => 'chunked');
             my $body    = $res->[2];
-            my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : { $body->getline };
+            my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : sub { $body->getline };
             my $done;
             $res->[2] = Plack::Util::inline_object
                 getline => sub {
