@@ -80,12 +80,12 @@ sub foreach {
 
     if (ref $body eq 'ARRAY') {
         for my $line (@$body) {
-            $cb->($line);
+            $cb->($line) if length $line;
         }
     } else {
         local $/ = \4096 unless ref $/;
         while (defined(my $line = $body->getline)) {
-            $cb->($line);
+            $cb->($line) if length $line;
         }
         $body->close;
     }
