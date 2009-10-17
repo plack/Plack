@@ -9,30 +9,20 @@ use Plack::Util;
 sub call {
     my $self = shift;
 
-    my($status, $header, $body) = @{$self->app->(@_)};
-
-    my $h = Plack::Util::headers($header);
-
-    unless ($h->get('Content-Type') =~ m!^text/!) {
-        return [ $status, $header, $body ]
-    }
-
-    my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : sub { $body->getline };
-
-    my $body_filter = Plack::Util::inline_object(
-        getline => sub {
-            my $line = $getline->();
-            return unless defined $line;
-            local $_ = $line;
-            $self->filter->();
-            return $_;
-        },
-        close => sub {
-            $body->close unless ref $body eq 'ARRAY';
-        },
-    );
-
-    return [ $status, $header, $body_filter ];
+    my $res = $self->app->(@_);
+    $self->response_cb($res, sub {
+        my $res = shift;
+        my $h = Plack::Util::headers($res->[1]);
+        if ($h->get('Content-Type') =~ m!^text/!) {
+            return sub {
+                my $chunk = shift;
+                return unless defined $chunk;
+                local $_ = $chunk;
+                $self->filter->();
+                return $_;
+            };
+        }
+    });
 }
 
 1;

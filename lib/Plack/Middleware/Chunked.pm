@@ -13,25 +13,20 @@ sub call {
         if ($env->{'SERVER_PROTOCOL'} ne 'HTTP/1.0' and
             ! Plack::Util::status_with_no_entity_body($res->[0]) and
             ! $h->exists('Content-Length') and
-            ! $h->exists('Transfer-Encoding') and
-            defined $res->[2]
+            ! $h->exists('Transfer-Encoding')
         ) {
             $h->set('Transfer-Encoding' => 'chunked');
-            my $body    = $res->[2];
-            my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : sub { $body->getline };
             my $done;
-            $res->[2] = Plack::Util::inline_object
-                getline => sub {
-                    my $chunk = $getline->();
-                    return if $done;
-                    unless (defined $chunk) {
-                        $done = 1;
-                        return "0\015\012\015\012";
-                    }
-                    return '' unless length $chunk;
-                    return sprintf('%x', length $chunk) . "\015\012$chunk\015\012";
-                },
-                close => sub { $body->close if ref $body ne 'ARRAY' };
+            return sub {
+                my $chunk = shift;
+                return if $done;
+                unless (defined $chunk) {
+                    $done = 1;
+                    return "0\015\012\015\012";
+                }
+                return '' unless length $chunk;
+                return sprintf('%x', length $chunk) . "\015\012$chunk\015\012";
+            };
         }
     });
 }
