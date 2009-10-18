@@ -7,7 +7,7 @@ use File::ChangeNotify;
 sub new {
     my $class = shift;
     my %args = @_ == 1 ? %{$_[0]} : @_;
-    $args{filter} ||= qr{\.(pm|yml|yaml|conf)$};
+    $args{filter} ||= qr{\.(pm|yml|yaml|conf|psgi)$};
     $args{directories} ||= [ '.' ];
     bless {%args}, $class;
 }
@@ -77,7 +77,7 @@ Specifies which directory to watch for file updates. Defaults to C<.> (current d
   enable "Plack::Middleware::Restarter",
       filter => qr/\.pm$/;
 
-The regular expression filter to match what files to watch for updates. Defaults to C<\.(pm|yml|yaml|conf)$>.
+The regular expression filter to match what files to watch for updates. Defaults to C<\.(pm|yml|yaml|conf|psgi)$>.
 
 =back
 
