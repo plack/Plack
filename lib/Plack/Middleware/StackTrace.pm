@@ -26,7 +26,7 @@ sub call {
 
     my $res = try { $self->app->($env) };
 
-    if (!$res && $trace) {
+    if ($trace && (!$res or $res->[0] == 500)) {
         my $body = $trace->as_html;
         $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ $body ]];
     }
