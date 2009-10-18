@@ -7,7 +7,7 @@ my $app = sub {
     my $keyword = $env->{PATH_INFO};
     $keyword =~ s!^/!!;
 
-    my $cv = AE::cv;
+    my $cb = sub { };
 
     # track keywords
     my $guard = AnyEvent::Twitter::Stream->new(
@@ -15,18 +15,15 @@ my $app = sub {
         password => $ENV{TWITTER_PASSWORD},
         method   => "filter",
         track    => $keyword || "twitter",
-        on_tweet => sub { $cv->send(@_) },
+        on_tweet => sub { $cb->(@_) },
     );
 
     return sub {
         my $respond = shift;
         my $w = $respond->([ 200, ['Content-Type' => 'text/plain'] ]);
-        my $cb; $cb = sub {
-            my $tweet = shift->recv;
+        $cb = sub {
+            my $tweet = shift;
             $w->write(Encode::encode_utf8($tweet->{text}) . "\n");
-            $cv = AE::cv;
-            $cv->cb($cb);
         };
-        $cv->cb($cb);
     };
 };
