@@ -5,6 +5,7 @@ Changes
 eg/dot-psgi/cgi-pm.psgi
 eg/dot-psgi/cgi-script.psgi
 eg/dot-psgi/Dumper.psgi
+eg/dot-psgi/echo-stream.psgi
 eg/dot-psgi/echo.psgi
 eg/dot-psgi/error.psgi
 eg/dot-psgi/frameworks/Angelos.psgi
@@ -25,6 +26,7 @@ eg/dot-psgi/static.psgi
 eg/dot-psgi/static/index.html
 eg/dot-psgi/static/test.css
 eg/dot-psgi/static/test.js
+eg/dot-psgi/twitter-stream.psgi
 inc/ExtUtils/MakeMaker.pm
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
@@ -64,9 +66,11 @@ lib/Plack/Loader.pm
 lib/Plack/Middleware.pm
 lib/Plack/Middleware/AccessLog.pm
 lib/Plack/Middleware/AccessLog/Timed.pm
+lib/Plack/Middleware/Chunked.pm
 lib/Plack/Middleware/ConditionalGET.pm
 lib/Plack/Middleware/ContentLength.pm
 lib/Plack/Middleware/ErrorDocument.pm
+lib/Plack/Middleware/JSONP.pm
 lib/Plack/Middleware/Lint.pm
 lib/Plack/Middleware/MethodOverride.pm
 lib/Plack/Middleware/RearrangeHeaders.pm
@@ -74,6 +78,7 @@ lib/Plack/Middleware/Restarter.pm
 lib/Plack/Middleware/SimpleContentFilter.pm
 lib/Plack/Middleware/StackTrace.pm
 lib/Plack/Middleware/Static.pm
+lib/Plack/Middleware/Writer.pm
 lib/Plack/Middleware/XFramework.pm
 lib/Plack/Middleware/XSendfile.pm
 lib/Plack/Server.pm
@@ -99,11 +104,13 @@ t/FCGIUtils.pm
 t/Plack-HTTPParser-PP/simple.t
 t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
+t/Plack-Middleware/chunked.t
 t/Plack-Middleware/conditionalget.t
 t/Plack-Middleware/content_length.t
 t/Plack-Middleware/error_document.t
 t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html
+t/Plack-Middleware/jsonp.t
 t/Plack-Middleware/method_override.t
 t/Plack-Middleware/order.t
 t/Plack-Middleware/rearrange_headers.t
@@ -111,8 +118,10 @@ t/Plack-Middleware/restarter.t
 t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/stacktrace.t
 t/Plack-Middleware/static.t
+t/Plack-Middleware/static.txt
 t/Plack-Middleware/urlmap.t
 t/Plack-Middleware/urlmap_builder.t
+t/Plack-Middleware/writer.t
 t/Plack-Middleware/xframework.t
 t/Plack-Middleware/xsendfile.t
 t/Plack-Server/apache2.t

@@ -1,5 +1,15 @@
 Revision history for Perl extension Plack
 
+0.9003  Sun Oct 18 19:16:26 PDT 2009
+        - Added POE to Plack::Loader autoload
+        - Implemented callback style streaming in selected middlewares
+        - Bump up HTTP::Parser::XS to fix memory leaks
+        - Added Middleware::Chunked
+        - Added MIddleware::JSONP
+        - Added twitter-stream.psgi example to do streaming server push
+        - Fixed Middleware::StackTrace to DWIM in framework generated 500 errors
+        - Fixed Restarter to do what doc says
+
 0.9002  Wed Oct 14 11:26:28 PDT 2009
         - Added a workaround in Server::Apache2 when Location and SCRIPT_NAME don't match
         - Use Try::Tiny and parent for smaller memory footprint and better error handling
