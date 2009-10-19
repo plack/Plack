@@ -7,7 +7,6 @@ use Path::Class 'dir';
 use Plack::Util;
 use HTTP::Date;
 use MIME::Types;
-use Cwd ();
 
 __PACKAGE__->mk_accessors(qw( root encoding ));
 
@@ -26,16 +25,15 @@ sub call {
     }
 
     my $docroot = dir($self->root || ".");
-    my $file = $docroot->file(File::Spec::Unix->splitpath($path));
-    my $realpath = Cwd::realpath($file->absolute->stringify);
+    my $file = $docroot->file(File::Spec::Unix->splitpath($path))->absolute;
 
     # Is the requested path within the root?
-    if ($realpath && !$docroot->subsumes($realpath)) {
+    if (!$docroot->subsumes($file)) {
         return $self->return_403;
     }
 
     # Does the file actually exist?
-    if (!$realpath || !$self->should_handle($file)) {
+    if (!$self->should_handle($file)) {
         return $self->return_404;
     }
 
@@ -44,7 +42,7 @@ sub call {
         return $self->return_403;
     }
 
-    return $self->serve_path($env, $file, $realpath);
+    return $self->serve_path($env, $file);
 }
 
 sub mime_type_for {
@@ -58,7 +56,7 @@ sub mime_type_for {
 }
 
 sub serve_path {
-    my($self, $env, $file, $fullpath) = @_;
+    my($self, $env, $file) = @_;
 
     my $content_type = $self->mime_type_for($file);
 
@@ -68,7 +66,7 @@ sub serve_path {
 
     my $fh = $file->openr
         or return $self->return_403;
-    Plack::Util::set_io_path($fh, $fullpath);
+    Plack::Util::set_io_path($fh, $file->stringify);
     binmode $fh;
 
     my $stat = $file->stat;
