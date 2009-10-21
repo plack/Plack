@@ -1,5 +1,12 @@
 Revision history for Perl extension Plack
 
+0.9004  Tue Oct 20 22:57:48 PDT 2009
+        - Fixed File::ShareDir dependency (mst)
+        - App::File and Middleware::Static now auto follows symlinks (chiba)
+        - Implemented plackup -r as Plack::Loader::Reloadable (nothingmuch)
+        - Removed poll_cb from Writer middleware
+        - Added plackup common command line options: -o for --host and -p for --port 
+
 0.9003  Sun Oct 18 19:16:26 PDT 2009
         - Added POE to Plack::Loader autoload
         - Implemented callback style streaming in selected middlewares

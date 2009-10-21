@@ -39,6 +39,7 @@ inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/ReadmeFromPod.pm
+inc/Module/Install/Repository.pm
 inc/Module/Install/Scripts.pm
 inc/Module/Install/Share.pm
 inc/Module/Install/TestBase.pm
@@ -63,6 +64,7 @@ lib/Plack/Builder.pm
 lib/Plack/HTTPParser.pm
 lib/Plack/HTTPParser/PP.pm
 lib/Plack/Loader.pm
+lib/Plack/Loader/Reloadable.pm
 lib/Plack/Middleware.pm
 lib/Plack/Middleware/AccessLog.pm
 lib/Plack/Middleware/AccessLog/Timed.pm
