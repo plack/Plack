@@ -117,6 +117,15 @@ Specify the environment option (default is C<development>). If it's
 set to C<development>, following middleware is enabled by default:
 L<CommonLogger>, L<StackTrace>.
 
+=item -r, --reload
+
+Make plackup to watch updates from your development directory and
+restarts the server whenever a file is updated. You can specify the
+path to watch file updates separated by comma (C<,>) and it default to
+the current directory.
+
+  plackup -r /path/to/project/lib,/path/to/project/templates
+
 =back
 
 =head1 SEE ALSO
