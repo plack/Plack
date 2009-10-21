@@ -82,7 +82,7 @@ sub monitor_loop {
 
     while ( my @events = $watcher->wait_for_events() ) {
         for my $ev (@events) {
-            warn "-- $ev->{path} updated.\n";
+            warn "-- ", $ev->path, " updated.\n";
         }
 
         kill 'HUP' => $parent_pid;
