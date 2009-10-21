@@ -19,10 +19,12 @@ requires 'File::ShareDir', '1.00'; # Plack::Test::Suite
 requires 'Try::Tiny';
 requires 'parent';
 
-requires 'Path::Class'; # Middleware::Static
-requires 'MIME::Types'; # Middleware::Static
 requires 'Devel::StackTrace'; # Middleware::StackTrace
 requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
+
+feature 'Serve static files - Middleware::Static and App::File',
+    'Path::Class',
+    'MIME::Types';
 
 feature 'Fast XS-based HTTP header parsing',
     'HTTP::Parser::XS', 0.04;
