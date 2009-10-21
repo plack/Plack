@@ -2,19 +2,19 @@ package Plack::Loader::Reloadable;
 use strict;
 use warnings;
 use Plack::Util;
+use Try::Tiny;
 use File::ChangeNotify;
+use POSIX qw(WNOHANG);
 
-my $starter;
 
 sub wrapper {
     my $self = shift;
     my($meth, @args) = @_;
-    $starter = sub {
-        my $server = Plack::Loader->$meth(@args);
-        Plack::Util::inline_object
-            run => sub { my $app = shift; $self->run_server($server, $app) };
-    };
-    $starter->();
+
+    my $server = Plack::Loader->$meth(@args);
+
+    Plack::Util::inline_object
+        run => sub { my $app = shift; $self->run_server($server, $app) };
 }
 
 sub new {
@@ -31,33 +31,66 @@ sub new {
 sub run_server {
     my($self, $server, $app) = @_;
 
-    my $pid = fork;
-    if (!defined $pid) {
-        die "Can't fork: $!";
-    } elsif ($pid > 0) {
-        # parent = watcher
-        close STDOUT;
-        close STDIN;
+    my $parent_pid = $$;
+    my $monitor_pid = fork;
 
-        while ( my @events = $self->{watcher}->wait_for_events() ) {
-            for my $ev (@events) {
-                warn "-- $ev->{path} updated.\n";
-            }
-            warn "Restarting the server.\n";
-            kill 'INT' => $pid;
-            waitpid($pid, 0);
-            $self->restart_server($app);
-            exit;
-        }
+    if (!defined $monitor_pid) {
+        die "Can't fork: $!";
+    } elsif ($monitor_pid == 0) {
+        $self->monitor_loop($parent_pid);
+        exit;
     } else {
-        # child = server
-        $server->run($app);
+        start_server: {
+            my $server_pid = fork;
+
+            if ( !defined $server_pid ) {
+                die "Can't fork: $!";
+            } elsif ( $server_pid > 0 ) {
+                my $restart;
+				
+                local $SIG{HUP} = sub {
+                    unless ( $restart++ ) {
+                        kill TERM => $server_pid;
+                    }
+                };
+
+                1 until waitpid($server_pid, 0) == $server_pid;
+
+                if ( $restart ) {
+                    redo start_server;
+                } else {
+                    kill TERM => $monitor_pid;
+                    waitpid $monitor_pid, 0;
+                    exit;
+                }
+            } else {
+                try {
+                    $server->run($app)
+                } catch {
+                    warn $_;
+                };
+                exit;
+            }
+        }
     }
 }
 
-sub restart_server {
-    my($self, $app) = @_;
-    $starter->()->run($app);
+sub monitor_loop {
+    my ( $self, $parent_pid ) = @_;
+
+    my $watcher = $self->{watcher};
+
+    while ( my @events = $watcher->wait_for_events() ) {
+        for my $ev (@events) {
+            warn "-- $ev->{path} updated.\n";
+        }
+
+        kill 'HUP' => $parent_pid;
+
+        # no more than one restart per second
+        sleep 1;
+        $watcher->new_events();
+    }
 }
 
 sub load { shift->wrapper(load => @_) }
