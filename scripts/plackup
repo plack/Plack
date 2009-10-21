@@ -6,6 +6,7 @@ use Getopt::Long;
 use Plack::Loader;
 use Plack::Util;
 use Pod::Usage;
+use Try::Tiny;
 
 my $app    = "app.psgi";
 my $host;
@@ -54,8 +55,7 @@ my @args = map {
 push @args, host => $host, port => $port;
 
 my $loader = $reload ?
-    do { require Plack::Loader::Reloadable; Plack::Loader::Reloadable->new($reload) } :
-    'Plack::Loader';
+    do { require Plack::Loader::Reloadable; Plack::Loader::Reloadable->new($reload) } : 'Plack::Loader';
 
 my $server = $backend ? $loader->load($backend, @args) : $loader->auto(@args);
 $server->run($handler);

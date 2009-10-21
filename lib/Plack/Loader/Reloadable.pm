@@ -3,9 +3,7 @@ use strict;
 use warnings;
 use Plack::Util;
 use Try::Tiny;
-use File::ChangeNotify;
 use POSIX qw(WNOHANG);
-
 
 sub wrapper {
     my $self = shift;
@@ -21,9 +19,7 @@ sub new {
     my($class, $path) = @_;
 
     my $self = bless {}, shift;
-    $self->{watcher} = File::ChangeNotify->instantiate_watcher(
-        directories => $path,
-    );
+    $self->{path} = $path;
 
     return $self;
 }
@@ -77,28 +73,39 @@ sub run_server {
 
 sub valid_file {
     my($self, $file) = @_;
-    warn $file->path;
-    $file->path !~ m![/\\][\._]|\.bak$|~$!;
+    $file->{path} !~ m![/\\][\._]|\.bak$|~$!;
 }
 
 sub monitor_loop {
     my ( $self, $parent_pid ) = @_;
 
-    my $watcher = $self->{watcher};
+    my $watcher;
+    try {
+        # delay load in forked child for stupid FSEvents limitation
+        require Filesys::Notify::Simple;
+        $watcher = Filesys::Notify::Simple->new($self->{path});
+    } catch {
+        Carp::carp("Automatic reloading is disabled: $_\n");
+    };
 
-    while ( my @events = $watcher->wait_for_events() ) {
-        @events = grep $self->valid_file($_), @events;
-        next unless @events;
+    return unless $watcher;
 
-        for my $ev (@events) {
-            warn "-- ", $ev->path, " updated.\n";
-        }
+    while (1) {
+        $watcher->wait(sub {
+            my @events = @_;
+            @events = grep $self->valid_file($_), @events;
+            return unless @events;
 
-        kill 'HUP' => $parent_pid;
+            for my $ev (@events) {
+                warn "-- $ev->{path} updated.\n";
+            }
 
-        # no more than one restart per second
-        sleep 1;
-        $watcher->new_events();
+            warn "Reloading the server...\n";
+            kill 'HUP' => $parent_pid;
+
+            # no more than one restart per second
+            sleep 1;
+        });
     }
 }
 
