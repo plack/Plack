@@ -44,7 +44,7 @@ sub run_server {
                 warn "-- $ev->{path} updated.\n";
             }
             warn "Restarting the server.\n";
-            kill 'TERM' => $pid;
+            kill 'INT' => $pid;
             waitpid($pid, 0);
             $self->restart_server($app);
             exit;
