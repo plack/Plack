@@ -11,6 +11,7 @@ my $app    = "app.psgi";
 my $env    = "development";
 my $help   = 0;
 my $backend;
+my $reload;
 my @includes;
 
 # From 'prove': Allow cuddling the paths with the -I
@@ -23,6 +24,7 @@ GetOptions(
     "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $backend = $_[1] },
     "E|env=s"      => \$env,
     'I=s@'         => \@includes,
+    'r|reload:s'   => sub { $reload = $_[1] || '.' },
     "h|help",      => \$help,
 );
 
@@ -45,7 +47,11 @@ my @args = map {
     @v;
 } @ARGV;
 
-my $server = $backend ? Plack::Loader->load($backend, @args) : Plack::Loader->auto(@args);
+my $loader = $reload ?
+    do { require Plack::Loader::Reloadable; Plack::Loader::Reloadable->new($reload) } :
+    'Plack::Loader';
+
+my $server = $backend ? $loader->load($backend, @args) : $loader->auto(@args);
 $server->run($handler);
 
 __END__

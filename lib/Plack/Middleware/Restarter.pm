@@ -46,12 +46,7 @@ Plack::Middleware::Restarter - Restart the standalone server
 
 =head1 SYNOPSIS
 
-  use Plack::Builder;
-
-  builder {
-      enable "Plack::Middleware::Restarter";
-      $app;
-  };
+DEPRECATED. Use L<Plack::Loader::Reloadble> or L<plackup>'s C<-r> option.
 
 =head1 DESCRIPTION
 
