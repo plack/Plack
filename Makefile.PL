@@ -14,7 +14,6 @@ readme_from 'lib/Plack.pm';
 requires 'Class::Accessor::Fast';
 requires 'LWP'; # HTTP::Status, HTTP::Headers and HTTP::Request
 requires 'URI';
-requires 'HTTP::Request::AsCGI', 0.9;
 requires 'Pod::Usage';  # plackup
 requires 'File::ShareDir', '1.00'; # Plack::Test::Suite
 requires 'Try::Tiny';
