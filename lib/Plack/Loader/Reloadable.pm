@@ -22,7 +22,7 @@ sub new {
 
     my $self = bless {}, shift;
     $self->{watcher} = File::ChangeNotify->instantiate_watcher(
-        directories => [ $path ],
+        directories => $path,
     );
 
     return $self;
@@ -75,12 +75,21 @@ sub run_server {
     }
 }
 
+sub valid_file {
+    my($self, $file) = @_;
+    warn $file->path;
+    $file->path !~ m![/\\][\._]|\.bak$|~$!;
+}
+
 sub monitor_loop {
     my ( $self, $parent_pid ) = @_;
 
     my $watcher = $self->{watcher};
 
     while ( my @events = $watcher->wait_for_events() ) {
+        @events = grep $self->valid_file($_), @events;
+        next unless @events;
+
         for my $ev (@events) {
             warn "-- ", $ev->path, " updated.\n";
         }

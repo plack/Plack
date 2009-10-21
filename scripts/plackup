@@ -24,7 +24,7 @@ GetOptions(
     "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $backend = $_[1] },
     "E|env=s"      => \$env,
     'I=s@'         => \@includes,
-    'r|reload:s'   => sub { $reload = $_[1] || '.' },
+    'r|reload:s'   => sub { $reload = [ split ",", $_[1] || '.' ] },
     "h|help",      => \$help,
 );
 
