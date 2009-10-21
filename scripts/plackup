@@ -8,6 +8,8 @@ use Plack::Util;
 use Pod::Usage;
 
 my $app    = "app.psgi";
+my $host;
+my $port   = 5000;
 my $env    = "development";
 my $help   = 0;
 my $backend;
@@ -20,6 +22,8 @@ my @includes;
 Getopt::Long::Configure("no_ignore_case", "pass_through");
 GetOptions(
     "a|app=s"      => \$app,
+    "o|host=s"     => \$host,
+    "p|port=i"     => \$port,
     "s|server=s"   => \$backend,
     "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $backend = $_[1] },
     "E|env=s"      => \$env,
@@ -46,6 +50,8 @@ my @args = map {
     $v[0] =~ tr/-/_/ if $is_long_opt;
     @v;
 } @ARGV;
+
+push @args, host => $host, port => $port;
 
 my $loader = $reload ?
     do { require Plack::Loader::Reloadable; Plack::Loader::Reloadable->new($reload) } :
@@ -101,6 +107,18 @@ Use the C<--app> option to locate a C<.psgi> script with a different
 name in a different path. (Actually the path doesn't need to end in
 C<.psgi>: it's just there for convention)
 
+=item -o, --host
+
+The interface a TCP based server daemon binds to. Defauts to undef,
+which lets most server backends bind the the any (*) interface. This
+opeion doesn't mean anything if the server is not TCP based.
+
+=item -p, --port
+
+The port number a TCP based server daemon listens on. Defaults to
+5000. This option doesn't mean anything if the server is not TCP
+based.
+
 =item -s, --server
 
 Select a specific implementation to run on using the C<PLACK_SERVER>
@@ -127,6 +145,10 @@ the current directory.
   plackup -r /path/to/project/lib,/path/to/project/templates
 
 =back
+
+Other options are passed through to the backend server. See each
+Plack::Server backend documentations to see which options are
+available.
 
 =head1 SEE ALSO
 
