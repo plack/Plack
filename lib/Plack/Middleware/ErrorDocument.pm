@@ -12,39 +12,38 @@ sub call {
 
     my $r = $self->app->($env);
 
-    return $r unless ref $r eq 'ARRAY';
+    $self->response_cb($r, sub {
+        my $r = shift;
+        unless (is_error($r->[0]) && exists $self->{$r->[0]}) {
+            return;
+        }
 
-    unless (is_error($r->[0]) && exists $self->{$r->[0]}) {
-        return $r;
-    }
-
-    my $path = $self->{$r->[0]};
-    if ($self->subrequest) {
-        for my $key (keys %$env) {
-            unless ($key =~ /^psgi/) {
-                $env->{'psgix.errordocument.' . $key} = $env->{$key};
+        my $path = $self->{$r->[0]};
+        if ($self->subrequest) {
+            for my $key (keys %$env) {
+                unless ($key =~ /^psgi/) {
+                    $env->{'psgix.errordocument.' . $key} = $env->{$key};
+                }
             }
+
+            # TODO: What if SCRIPT_NAME is not empty?
+            $env->{REQUEST_METHOD} = 'GET';
+            $env->{REQUEST_URI}    = $path;
+            $env->{PATH_INFO}      = $path;
+            $env->{QUERY_STRING}   = '';
+            delete $env->{CONTENT_LENGTH};
+
+            my $sub_r = $self->app->($env);
+            if ($sub_r->[0] == 200) {
+                $r->[1] = $sub_r->[1];
+                $r->[2] = $sub_r->[2];
+            }
+            # TODO: allow 302 here?
+        } else {
+            open my $fh, "<", $path or die "$path: $!";
+            $r->[2] = $fh;
         }
-
-        # TODO: What if SCRIPT_NAME is not empty?
-        $env->{REQUEST_METHOD} = 'GET';
-        $env->{REQUEST_URI}    = $path;
-        $env->{PATH_INFO}      = $path;
-        $env->{QUERY_STRING}   = '';
-        delete $env->{CONTENT_LENGTH};
-
-        my $sub_r = $self->app->($env);
-        if ($sub_r->[0] == 200) {
-            $r->[1] = $sub_r->[1];
-            $r->[2] = $sub_r->[2];
-        }
-        # TODO: allow 302 here?
-    } else {
-        open my $fh, "<", $path or die "$path: $!";
-        $r->[2] = $fh;
-    }
-
-    return $r;
+    });
 }
 
 1;

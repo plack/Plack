@@ -14,25 +14,35 @@ sub call {
     my $length = 0;
     my $logger = $self->logger || sub { $env->{'psgi.errors'}->print(@_) };
 
-    my($status, $header, $body) = @{$self->app->($env)};
+    my $res = $self->app->($env);
 
-    my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : { $body->getline };
+    return $self->response_cb($res, sub {
+        my $res = shift;
+        my($status, $header, $body) = @$res;
 
-    my $timer_body = Plack::Util::inline_object(
-        getline => sub {
-            my $line = $getline->();
-            $length += length $line if defined $line;
-            return $line;
-        },
-        close => sub {
-            $body->close if ref $body ne 'ARRAY';
+        if (!defined $body) {
+            $logger->( $self->log_line($status, $header, $env) );
+            return;
+        }
 
-            my $now = Time::HiRes::gettimeofday;
-            $logger->( $self->log_line($status, $header, $env, { time => $now - $time, content_length => $length }) );
-        },
-    );
+        my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : { $body->getline };
 
-    return [ $status, $header, $timer_body ];
+        my $timer_body = Plack::Util::inline_object(
+            getline => sub {
+                my $line = $getline->();
+                $length += length $line if defined $line;
+                return $line;
+            },
+            close => sub {
+                $body->close if ref $body ne 'ARRAY';
+
+                my $now = Time::HiRes::gettimeofday;
+                $logger->( $self->log_line($status, $header, $env, { time => $now - $time, content_length => $length }) );
+            },
+        );
+
+        @$res = ($status, $header, $timer_body);
+    });
 }
 
 1;

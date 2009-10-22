@@ -8,13 +8,16 @@ use HTTP::Headers;
 sub call {
     my $self = shift;
 
-    my($status, $header, $body) = @{$self->app->(@_)};
+    my $res = $self->app->(@_);
+    $self->response_cb($res, sub {
+        my $res = shift;
 
-    my $h = HTTP::Headers->new(@$header);
-    my @new_headers;
-    $h->scan(sub { push @new_headers, @_ });
+        my $h = HTTP::Headers->new(@{$res->[1]});
+        my @new_headers;
+        $h->scan(sub { push @new_headers, @_ });
 
-    return [ $status, \@new_headers, $body ];
+        $res->[1] = \@new_headers;
+    });
 }
 
 1;

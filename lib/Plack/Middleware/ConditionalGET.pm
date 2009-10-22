@@ -11,14 +11,15 @@ sub call {
     return $res unless ref $res eq 'ARRAY';
     return $res unless $env->{REQUEST_METHOD} =~ /^(GET|HEAD)$/;
 
-    my $h = Plack::Util::headers($res->[1]);
-    if ( $self->etag_matches($h, $env) || $self->not_modified_since($h, $env) ) {
-        $res->[0] = 304;
-        $h->remove($_) for qw( Content-Type Content-Length Content-Disposition );
-        $res->[2] = [];
-    }
-
-    return $res;
+    $self->response_cb($res, sub {
+        my $res = shift;
+        my $h = Plack::Util::headers($res->[1]);
+        if ( $self->etag_matches($h, $env) || $self->not_modified_since($h, $env) ) {
+            $res->[0] = 304;
+            $h->remove($_) for qw( Content-Type Content-Length Content-Disposition );
+            $res->[2] = [];
+        }
+    });
 }
 
 no warnings 'uninitialized';

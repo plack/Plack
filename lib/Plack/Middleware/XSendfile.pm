@@ -11,28 +11,33 @@ sub call {
     my $self = shift;
     my $env  = shift;
 
-    my($status, $headers, $body) = @{$self->app->($env)};
+    my $res = $self->app->($env);
+    $self->response_cb($res, sub {
+        my $res = shift;
+        my($status, $headers, $body) = @$res;
+        return unless defined $body;
 
-    if (Scalar::Util::blessed($body) && $body->can('path')) {
-        my $type = $self->_variation($env) || '';
-        my $h = Plack::Util::headers($headers);
-        if ($type && !$h->exists($type)) {
-            if ($type eq 'X-Accel-Redirect') {
-                my $path = $body->path;
-                my $url = $self->map_accel_path($env, $path);
-                $h->set($type => $url) if $url;
-                $body = [];
-            } elsif ($type eq 'X-Sendfile' or $type eq 'X-Lighttpd-Send-File') {
-                my $path = $body->path;
-                $h->set($type => $path) if defined $path;
-                $body = [];
-            } else {
-                $env->{'psgi.errors'}->print("Unknown x-sendfile variation: $type");
+        if (Scalar::Util::blessed($body) && $body->can('path')) {
+            my $type = $self->_variation($env) || '';
+            my $h = Plack::Util::headers($headers);
+            if ($type && !$h->exists($type)) {
+                if ($type eq 'X-Accel-Redirect') {
+                    my $path = $body->path;
+                    my $url = $self->map_accel_path($env, $path);
+                    $h->set($type => $url) if $url;
+                    $body = [];
+                } elsif ($type eq 'X-Sendfile' or $type eq 'X-Lighttpd-Send-File') {
+                    my $path = $body->path;
+                    $h->set($type => $path) if defined $path;
+                    $body = [];
+                } else {
+                    $env->{'psgi.errors'}->print("Unknown x-sendfile variation: $type");
+                }
             }
         }
-    }
 
-    return [ $status, $headers, $body ];
+        @$res = ( $status, $headers, $body );
+    });
 }
 
 sub map_accel_path {

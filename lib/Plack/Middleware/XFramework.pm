@@ -10,14 +10,12 @@ sub call {
     my $self = shift;
 
     my $res = $self->app->( @_ );
-
-    return $res unless ref $res eq 'ARRAY';
-
-    if ($self->framework) {
-        Plack::Util::header_set $res->[1], 'X-Framework' => $self->framework;
-    }
-
-    return $res;
+    $self->response_cb($res, sub {
+        my $res = shift;
+        if ($self->framework) {
+            Plack::Util::header_set $res->[1], 'X-Framework' => $self->framework;
+        }
+    });
 }
 
 1;
