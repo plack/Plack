@@ -187,4 +187,66 @@ Send STDERR to STDOUT instead of the webserver
 
 =back
 
+=head2 WEB SERVER CONFIGURATIONS
+
+=head3 nginx
+
+This is an example nginx configuration to run your FCGI daemon on a
+Unix domain socket and run it as a root C</> application.
+
+  http {
+    server {
+      listen 3001;
+      location / {
+        set $script "";
+        set $path_info $uri;
+        fastcgi_pass unix:/tmp/fastcgi.sock;
+        fastcgi_param  SCRIPT_NAME      $script;
+        fastcgi_param  PATH_INFO        $path_info;
+        fastcgi_param  QUERY_STRING     $query_string;
+        fastcgi_param  REQUEST_METHOD   $request_method;
+        fastcgi_param  CONTENT_TYPE     $content_type;
+        fastcgi_param  CONTENT_LENGTH   $content_length;
+        fastcgi_param  REQUEST_URI      $request_uri;
+        fastcgi_param  SEREVR_PROTOCOL  $server_protocol;
+        fastcgi_param  REMOTE_ADDR      $remote_addr;
+        fastcgi_param  REMOTE_PORT      $remote_port;
+        fastcgi_param  SERVER_ADDR      $server_addr;
+        fastcgi_param  SERVER_PORT      $server_port;
+        fastcgi_param  SERVER_NAME      $server_name;
+      }
+    }
+  }
+
+If you want to host your application in a non-root path, then you
+should mangle this configuration to set the path to C<SCRIPT_NAME> and
+the rest of the path in C<PATH_INFO>.
+
+=head3 Apache mod_fcgi
+
+TBD
+
+=head3 lighttpd
+
+Host in the root path:
+
+  fastcgi.server = ( "" =>
+     ((
+       "socket" => "/tmp/fcgi.sock",
+       "check-local" => "disable"
+     ))
+
+Or in the non-root path over TCP:
+
+  fastcgi.server = ( "/foo" =>
+     ((
+       "host" = "127.0.0.1"
+       "port" = "5000"
+       "check-local" => "disable"
+     ))
+
+Plack::Server::FCGI has a workaround for lighttpd's weird
+C<SCRIPT_NAME> and C<PATH_INFO> setting when you set I<check-local> to
+C<disable> so both configurations (root or non-root) should work fine.
+
 =cut
