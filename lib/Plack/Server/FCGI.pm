@@ -192,7 +192,7 @@ Send STDERR to STDOUT instead of the webserver
 =head3 nginx
 
 This is an example nginx configuration to run your FCGI daemon on a
-Unix domain socket and run it as a root C</> application.
+Unix domain socket and run it at the server's root URL (/).
 
   http {
     server {
@@ -222,7 +222,7 @@ If you want to host your application in a non-root path, then you
 should mangle this configuration to set the path to C<SCRIPT_NAME> and
 the rest of the path in C<PATH_INFO>.
 
-=head3 Apache mod_fcgi
+=head3 Apache mod_fastcgi
 
 TBD
 
