@@ -115,7 +115,6 @@ t/Plack-Middleware/jsonp.t
 t/Plack-Middleware/method_override.t
 t/Plack-Middleware/order.t
 t/Plack-Middleware/rearrange_headers.t
-t/Plack-Middleware/restarter.t
 t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/stacktrace.t
 t/Plack-Middleware/static.t

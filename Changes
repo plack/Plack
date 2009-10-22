@@ -1,5 +1,9 @@
 Revision history for Perl extension Plack
 
+0.9005  Wed Oct 21 20:53:19 PDT 2009
+        - Switch to Filesys::Notify::Simple to watch directory to trim down deps
+        - Made some dependencies optional since they're actually optional
+
 0.9004  Tue Oct 20 22:57:48 PDT 2009
         - Fixed File::ShareDir dependency (mst)
         - App::File and Middleware::Static now auto follows symlinks (chiba)
