@@ -222,9 +222,15 @@ If you want to host your application in a non-root path, then you
 should mangle this configuration to set the path to C<SCRIPT_NAME> and
 the rest of the path in C<PATH_INFO>.
 
+See L<http://wiki.nginx.org/NginxFcgiExample> for more details.
+
 =head3 Apache mod_fastcgi
 
-TBD
+You can use C<FastCgiExternalServer> as normal.
+
+  FastCgiExternalServer /tmp/myapp.fcgi -socket /tmp/fcgi.sock
+
+See L<http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html#FastCgiExternalServer> for more details.
 
 =head3 lighttpd
 
