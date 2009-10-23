@@ -1,5 +1,11 @@
 Revision history for Perl extension Plack
 
+0.9006: Fri Oct 23 01:21:13 PDT 2009
+        - Support streaming interface in most middlewares
+        - Added Middleware::Deflater (not recommended to use: see POD)
+        - Document FCGI configuration in Server::FCGI pod (dhoss)
+        - Inline Plack::Util functions in Server::CGI to speed up (mst)
+
 0.9005  Wed Oct 21 20:53:19 PDT 2009
         - Switch to Filesys::Notify::Simple to watch directory to trim down deps
         - Made some dependencies optional since they're actually optional

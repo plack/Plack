@@ -70,6 +70,7 @@ lib/Plack/Middleware/AccessLog/Timed.pm
 lib/Plack/Middleware/Chunked.pm
 lib/Plack/Middleware/ConditionalGET.pm
 lib/Plack/Middleware/ContentLength.pm
+lib/Plack/Middleware/Deflater.pm
 lib/Plack/Middleware/ErrorDocument.pm
 lib/Plack/Middleware/JSONP.pm
 lib/Plack/Middleware/Lint.pm
