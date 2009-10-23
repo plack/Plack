@@ -79,7 +79,7 @@ sub log_line {
 
     $fmt =~ s{
         (?:
-         \%\{([\w\-]+)\}([a-z]) |
+         \%\{(.+?)\}([a-z]) |
          \%(?:[<>])?([a-z\%])
         )
     }{ $1 ? $block_handler->($1, $2) : $char_handler->($3) }egx;
