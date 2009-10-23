@@ -61,9 +61,13 @@ sub call {
                     return $buf;
                 }
                 $compress->print($chunk);
-                my $body = $buf;
-                $buf = undef;
-                return $body;
+                if (defined $buf) {
+                    my $body = $buf;
+                    $buf = undef;
+                    return $body;
+                } else {
+                    return '';
+                }
             };
         }
     });
