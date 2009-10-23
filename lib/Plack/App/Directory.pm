@@ -47,7 +47,7 @@ sub serve_path {
         return $self->SUPER::serve_path($env, $file, $fullpath);
     }
 
-    my $dir = $file->dir;
+    my $dir = dir($file);
 
     my @files = ([ "../", "Parent Directory", '', '', '' ]);
 
