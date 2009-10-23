@@ -25,7 +25,7 @@ sub call {
 
         # TODO check quality
         my $encoding = 'identity';
-        for my $enc (qw(deflate gzip identity)) {
+        for my $enc (qw(gzip deflate identity)) {
             if ($env->{HTTP_ACCEPT_ENCODING} =~ /\b$enc\b/) {
                 $encoding = $enc;
                 last;
@@ -38,9 +38,9 @@ sub call {
 
         my $encoder;
         if ($encoding eq 'gzip') {
-            $encoder = "IO::Compress::Gzip";
+            $encoder = sub { IO::Compress::Gzip->new($_[0]) };
         } elsif ($encoding eq 'deflate') {
-            $encoder = "IO::Compress::Deflate";
+            $encoder = sub { IO::Compress::Deflate->new($_[0]) };
         } elsif ($encoding ne 'identity') {
             my $msg = "An acceptable encoding for the requested resource is not found.";
             @$res = (406, ['Content-Type' => 'text/plain'], [ $msg ]);
@@ -51,7 +51,7 @@ sub call {
             $h->set('Content-Encoding' => $encoding);
             $h->remove('Content-Length');
             my($done, $buf);
-            my $compress = $encoder->new(\$buf);
+            my $compress = $encoder->(\$buf);
             return sub {
                 my $chunk = shift;
                 return if $done;
