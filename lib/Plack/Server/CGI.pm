@@ -2,7 +2,26 @@ package Plack::Server::CGI;
 use strict;
 use warnings;
 use IO::Handle;
-use Plack::Util;
+
+# Inline some of Plack::Util: because "use Plack::Util" still might be slow for vanilla CGI
+sub Plack::Util::TRUE()  { 1==1 }
+sub Plack::Util::FALSE() { 1!=1 }
+
+sub Plack::Util::foreach {
+    my($body, $cb) = @_;
+
+    if (ref $body eq 'ARRAY') {
+        for my $line (@$body) {
+            $cb->($line) if length $line;
+        }
+    } else {
+        local $/ = \4096 unless ref $/;
+        while (defined(my $line = $body->getline)) {
+            $cb->($line) if length $line;
+        }
+        $body->close;
+    }
+}
 
 sub new { bless {}, shift }
 
