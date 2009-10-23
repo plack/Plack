@@ -49,6 +49,11 @@ feature 'Stacktrace with lexical variables',
     -default => 0,
     'Devel::StackTrace::WithLexicals';
 
+feature 'Middleware::Deflater',
+    -default => 0,
+    'IO::Compress::Gzip',
+    'IO::Compress::Deflate';
+
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
 test_requires 'Test::Requires';
