@@ -3,26 +3,6 @@ use strict;
 use warnings;
 use IO::Handle;
 
-# Inline some of Plack::Util: because "use Plack::Util" still might be slow for vanilla CGI
-sub Plack::Util::TRUE()  { 1==1 }
-sub Plack::Util::FALSE() { 1!=1 }
-
-sub Plack::Util::foreach {
-    my($body, $cb) = @_;
-
-    if (ref $body eq 'ARRAY') {
-        for my $line (@$body) {
-            $cb->($line) if length $line;
-        }
-    } else {
-        local $/ = \4096 unless ref $/;
-        while (defined(my $line = $body->getline)) {
-            $cb->($line) if length $line;
-        }
-        $body->close;
-    }
-}
-
 sub new { bless {}, shift }
 
 sub run {
@@ -37,9 +17,9 @@ sub run {
     $env{'psgi.url_scheme'} = ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http';
     $env{'psgi.input'}      = *STDIN;
     $env{'psgi.errors'}     = *STDERR;
-    $env{'psgi.multithread'}  = Plack::Util::FALSE;
-    $env{'psgi.multiprocess'} = Plack::Util::TRUE;
-    $env{'psgi.run_once'}     = Plack::Util::TRUE;
+    $env{'psgi.multithread'}  = 1==0;
+    $env{'psgi.multiprocess'} = 1==1;
+    $env{'psgi.run_once'}     = 1==1;
     my $res = $app->(\%env);
     print "Status: $res->[0]\n";
     my $headers = $res->[1];
@@ -51,7 +31,18 @@ sub run {
     my $body = $res->[2];
     my $cb = sub { print STDOUT $_[0] };
 
-    Plack::Util::foreach($body, $cb);
+    # inline Plack::Util::foreach here
+    if (ref $body eq 'ARRAY') {
+        for my $line (@$body) {
+            $cb->($line) if length $line;
+        }
+    } else {
+        local $/ = \4096 unless ref $/;
+        while (defined(my $line = $body->getline)) {
+            $cb->($line) if length $line;
+        }
+        $body->close;
+    }
 }
 
 1;
