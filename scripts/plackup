@@ -77,11 +77,11 @@ plackup - Run PSGI application with Plack servers
   # read your app from app.psgi file
   plackup
 
-  # can be passed with --app option (Or -a)
-  plackup --app hello.psgi
+  # Use a different .psgi file path
+  plackup hello.psgi
 
   # Switch server implementation with --server (or -s)
-  plackup --server Coro --port 9090
+  plackup --server Coro --port 9090 -a foo.psgi
 
 =head1 DESCRIPTION
 
@@ -109,9 +109,15 @@ PSGI application.
 
 =item -a, --app
 
-Use the C<--app> option to locate a C<.psgi> script with a different
+Use C<--app> option to locate a C<.psgi> script with a different
 name in a different path. (Actually the path doesn't need to end in
 C<.psgi>: it's just there for convention)
+
+You can also pass this as a first non-option command line argument, so
+the following two mean the same thing:
+
+  plackup -a foo.psgi --port 9011
+  plackup --port 9011 foo.psgi
 
 =item -o, --host
 
