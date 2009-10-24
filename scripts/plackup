@@ -8,7 +8,7 @@ use Plack::Util;
 use Pod::Usage;
 use Try::Tiny;
 
-my $app    = "app.psgi";
+my $app;
 my $host;
 my $port   = 5000;
 my $env    = "development";
@@ -36,6 +36,21 @@ GetOptions(
 pod2usage(0) if $help;
 lib->import(@includes) if @includes;
 
+my(@opts, @args);
+while (my $arg = shift @ARGV) {
+    if ($arg =~ s/^--//) {
+        my @v = split '=', $arg, 2;
+        $v[0] =~ tr/-/_/;
+        push @v, shift @ARGV if @v == 1;
+        push @opts, @v
+    } else {
+        push @args, $arg;
+    }
+}
+
+push @opts, host => $host, port => $port;
+
+$app ||= shift @args || "app.psgi";
 my $handler = Plack::Util::load_psgi $app;
 
 if ($env eq 'development') {
@@ -45,19 +60,10 @@ if ($env eq 'development') {
     $handler = Plack::Middleware::AccessLog->wrap($handler, logger => sub { print STDERR @_ });
 }
 
-my @args = map {
-    my $is_long_opt = s/^--//;
-    my @v = split '=', $_, 2;
-    $v[0] =~ tr/-/_/ if $is_long_opt;
-    @v;
-} @ARGV;
-
-push @args, host => $host, port => $port;
-
 my $loader = $reload ?
     do { require Plack::Loader::Reloadable; Plack::Loader::Reloadable->new($reload) } : 'Plack::Loader';
 
-my $server = $backend ? $loader->load($backend, @args) : $loader->auto(@args);
+my $server = $backend ? $loader->load($backend, @opts) : $loader->auto(@opts);
 $server->run($handler);
 
 __END__
