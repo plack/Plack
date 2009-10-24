@@ -55,6 +55,10 @@ Plack::Middleware::ETag - Automatically sets the ETag header on all String bodie
 
 Automatically sets the ETag header on all String bodies
 
+=head1 SEE ALSO
+
+L<http://github.com/rack/rack-contrib/blob/master/lib/rack/contrib/etag.rb>
+
 =head1 AUTHOR
 
 Fayland Lam
