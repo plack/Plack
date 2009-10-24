@@ -17,6 +17,13 @@ my $backend;
 my $reload;
 my @includes;
 
+# delay the build process for reloader
+sub build(&;$) {
+    my $block = shift;
+    my $app   = shift || sub { };
+    return sub { $block->($app->()) };
+}
+
 # From 'prove': Allow cuddling the paths with the -I
 @ARGV = map { /^(-I)(.+)/ ? ($1,$2) : $_ } @ARGV;
 
@@ -36,13 +43,13 @@ GetOptions(
 pod2usage(0) if $help;
 lib->import(@includes) if @includes;
 
-my $handler = Plack::Util::load_psgi $app;
+my $handler = build { Plack::Util::load_psgi $app };
 
 if ($env eq 'development') {
     require Plack::Middleware::StackTrace;
     require Plack::Middleware::AccessLog;
-    $handler = Plack::Middleware::StackTrace->wrap($handler);
-    $handler = Plack::Middleware::AccessLog->wrap($handler, logger => sub { print STDERR @_ });
+    $handler = build { Plack::Middleware::StackTrace->wrap($_[0]) } $handler;
+    $handler = build { Plack::Middleware::AccessLog->wrap($_[0], logger => sub { print STDERR @_ }) } $handler;
 }
 
 my @args = map {
@@ -58,7 +65,7 @@ my $loader = $reload ?
     do { require Plack::Loader::Reloadable; Plack::Loader::Reloadable->new($reload) } : 'Plack::Loader';
 
 my $server = $backend ? $loader->load($backend, @args) : $loader->auto(@args);
-$server->run($handler);
+$server->run($reload ? $handler : $handler->());
 
 __END__
 

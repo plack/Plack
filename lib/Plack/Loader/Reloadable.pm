@@ -61,7 +61,7 @@ sub run_server {
                 }
             } else {
                 try {
-                    $server->run($app)
+                    $server->run($app->());
                 } catch {
                     warn $_;
                 };
