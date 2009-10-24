@@ -12,7 +12,7 @@ my %formats = (
     combined => "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"",
 );
 
-use POSIX;
+use POSIX ();
 
 sub call {
     my $self = shift;
@@ -33,6 +33,10 @@ sub log_line {
     my($self, $status, $headers, $env, $opts) = @_;
 
     my $h = Plack::Util::headers($headers);
+
+    # 24/Oct/2009 13:58:07, Oct is en LANG
+    my $old_locale = &POSIX::setlocale(&POSIX::LC_ALL);
+    &POSIX::setlocale(&POSIX::LC_ALL, 'en');
 
     my $block_handler = sub {
         my($block, $type) = @_;
@@ -83,6 +87,8 @@ sub log_line {
          \%(?:[<>])?([a-z\%])
         )
     }{ $1 ? $block_handler->($1, $2) : $char_handler->($3) }egx;
+
+    &POSIX::setlocale(&POSIX::LC_ALL, $old_locale);
 
     return $fmt . "\n";
 }
