@@ -6,7 +6,7 @@ my $handler = sub {
 };
 
 builder {
-    add "Plack::Middleware::Static",
+    enable "Plack::Middleware::Static",
         path => qr/./, root => dirname(__FILE__) . '/static';
     $handler;
 };
