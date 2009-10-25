@@ -38,7 +38,9 @@ feature 'Prefork HTTP server',
 feature 'FastCGI daemon and dispatcher',
     -default => 0,
     'FCGI' => 0.67,
-    'FCGI::Client' => 0.02;
+    'FCGI::Client' => 0.02,
+    'FCGI::ProcManager';
+
 
 feature 'Serve static files with sendfile(2)',
     -default => 0,
