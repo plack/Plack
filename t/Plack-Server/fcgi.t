@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires qw(FCGI);
+use Test::Requires qw(FCGI FCGI::ProcManager);
 use Plack;
 use Plack::Server::FCGI;
 use Test::TCP;
@@ -9,10 +9,6 @@ use LWP::UserAgent;
 use FindBin;
 use Plack::Test::Suite;
 use t::FCGIUtils;
-# use AnyEvent;
-
-
-use Data::Dumper;
 
 my $lighty_port;
 my $fcgi_port;
