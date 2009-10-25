@@ -21,6 +21,7 @@ my $app = sub { (shift @app)->(@_) };
 test_psgi app => Plack::Middleware::Deflater->wrap($app), client => sub {
     my $cb = shift;
 
+    no warnings;
     local *HTTP::Request::decodable = sub { wantarray ? ('gzip') : 'gzip' };
     for (0..$#app) {
         my $req = GET "http://localhost/";

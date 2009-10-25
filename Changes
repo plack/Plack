@@ -1,5 +1,13 @@
 Revision history for Perl extension Plack
 
+0.9007: Sat Oct 24 17:41:33 PDT 2009
+        - Fixed Server::CGI to really inline fuctions to avoid warnings
+        - Fixed Middleware::AccessLog to let %{..}t strftime log format work (beppu)
+        - Fixed a flush bug in gzip encoding in Middleware::Deflater
+        - Fixed a bug in Middleware::AccessLog so POSIX strftime always works in English (fayland)
+        - Added Middleware::ContetnMD5 (Fayland)
+        - Fixed plackup -r to actually reload the application code (robinsmidsrod)
+
 0.9006: Fri Oct 23 01:21:13 PDT 2009
         - Support streaming interface in most middlewares
         - Added Middleware::Deflater (not recommended to use: see POD)

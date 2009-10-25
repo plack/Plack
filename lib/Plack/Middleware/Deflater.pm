@@ -19,7 +19,7 @@ sub call {
 
         my $h = Plack::Util::headers($res->[1]);
         if (Plack::Util::status_with_no_entity_body($res->[0]) or
-            $h->get('Cache-Control') =~ /\bno-transform\b/) {
+            $h->exists('Cache-Control') && $h->get('Cache-Control') =~ /\bno-transform\b/) {
             return;
         }
 
@@ -32,7 +32,7 @@ sub call {
             }
         }
 
-        my @vary = split /\s*,\s*/, $h->get('Vary');
+        my @vary = split /\s*,\s*/, ($h->get('Vary') || '');
         push @vary, 'Accept-Encoding';
         $h->set('Vary' => join(",", @vary));
 
