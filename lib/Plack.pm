@@ -68,7 +68,7 @@ with a clean API, and compatibility with L<Plack::Builder> DSL.
 
 =head2 Plack::Builder
 
-L<Plack::Builder> gives you a DSL that you can add "Middleware", in
+L<Plack::Builder> gives you a DSL that you can enable Middleware in
 C<.psgi> files to wrap existent PSGI applications.
 
 =head2 Plack::Request, Plack::Response
