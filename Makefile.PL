@@ -22,8 +22,7 @@ requires 'parent';
 requires 'Devel::StackTrace'; # Middleware::StackTrace
 requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
 
-feature 'Automatic reload in plackup (-r)',
-    'Filesys::Notify::Simple';
+requires 'Filesys::Notify::Simple'; # plackup -r
 
 feature 'Serve static files - Middleware::Static and App::File',
     'Path::Class',
