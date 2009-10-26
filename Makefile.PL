@@ -44,8 +44,7 @@ feature 'FastCGI daemon and dispatcher',
 
 feature 'Serve static files with sendfile(2)',
     -default => 0,
-    'Sys::Sendfile' => 0.09,
-    'IO::AIO' => 3.3;
+    'Sys::Sendfile' => 0.09;
 
 feature 'Stacktrace with lexical variables',
     -default => 0,
