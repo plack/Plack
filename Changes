@@ -1,5 +1,9 @@
 Revision history for Perl extension Plack
 
+0.9008: Tue Oct 27 14:15:28 PDT 2009
+        - Removed optional deps from Makefile.PL and moved them to Task::Plack (mst)
+        - Make some middleware deps as required to make it simple, for now
+
 0.9007: Sat Oct 24 17:41:33 PDT 2009
         - Fixed Server::CGI to really inline fuctions to avoid warnings
         - Fixed Middleware::AccessLog to let %{..}t strftime log format work (beppu)
