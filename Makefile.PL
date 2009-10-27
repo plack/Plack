@@ -24,35 +24,12 @@ requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
 
 requires 'Filesys::Notify::Simple'; # plackup -r
 
-feature 'Serve static files - Middleware::Static and App::File',
-    'Path::Class',
-    'MIME::Types';
+# TODO: they can go away once we create Plack-Middlewares dist
+# Middleware::Static and App::File
+requires 'Path::Class', 'MIME::Types';
 
-feature 'Fast XS-based HTTP header parsing',
-    'HTTP::Parser::XS', 0.04;
-
-feature 'Prefork HTTP server',
-    'Parallel::Prefork';
-
-feature 'FastCGI daemon and dispatcher',
-    -default => 0,
-    'FCGI' => 0.67,
-    'FCGI::Client' => 0.02,
-    'FCGI::ProcManager';
-
-
-feature 'Serve static files with sendfile(2)',
-    -default => 0,
-    'Sys::Sendfile' => 0.09;
-
-feature 'Stacktrace with lexical variables',
-    -default => 0,
-    'Devel::StackTrace::WithLexicals';
-
-feature 'Middleware::Deflater',
-    -default => 0,
-    'IO::Compress::Gzip',
-    'IO::Compress::Deflate';
+# Middleware::Deflater
+requires 'IO::Compress::Gzip','IO::Compress::Deflate';
 
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;

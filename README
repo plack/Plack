@@ -47,7 +47,7 @@ MODULES AND UTILITIES
     clean API, and compatibility with Plack::Builder DSL.
 
   Plack::Builder
-    Plack::Builder gives you a DSL that you can add "Middleware", in ".psgi"
+    Plack::Builder gives you a DSL that you can enable Middleware in ".psgi"
     files to wrap existent PSGI applications.
 
   Plack::Request, Plack::Response
