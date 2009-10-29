@@ -1,6 +1,8 @@
 use strict;
 use warnings;
-use Test::Requires qw(HTTP::Request::AsCGI);
+use Test::Requires {
+    'HTTP::Request::AsCGI' => 0.9,
+};
 use Test::More;
 use FindBin;
 use HTTP::Request::AsCGI;
