@@ -60,7 +60,7 @@ __END__
         return [
             200,
             [ 'Content-Type' => 'text/plain', 'Content-Length' => 13 ],
-            'Hello, world!',
+            [ 'Hello, world!' ],
         ];
     };
 
