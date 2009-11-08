@@ -1,5 +1,8 @@
 Revision history for Perl extension Plack
 
+0.9009: Sat Nov  7 20:43:17 PST 2009
+        - Fixed dependencies for tests
+
 0.9008: Tue Oct 27 14:15:28 PDT 2009
         - Removed optional deps from Makefile.PL and moved them to Task::Plack (mst)
         - Make some middleware deps as required to make it simple, for now
