@@ -18,6 +18,9 @@ Plack::Server::Apache1 - Apache 1.3.x handlers to run PSGI application
 use Apache::Request;
 use Apache::Constants qw(:common :response);
 
+use Plack::Util;
+use Scalar::Util;
+
 =head2 handler
 
 Apache mod_perl handler, takes apache request object, returns Apache constant for HTTP Status
@@ -59,6 +62,7 @@ sub handler {
     $env->{SCRIPT_NAME} = $location;
     $env->{PATH_INFO}   = $path_info;
 
+    my($status, $headers, $body) = @{ $app->($env) };
 
     my $hdrs = ($status >= 200 && $status < 300)
         ? $r->headers_out : $r->err_headers_out;
@@ -75,9 +79,9 @@ sub handler {
     $r->status($status);
 
     if (Scalar::Util::blessed($body) and $body->can('path') and my $path = $body->path) {
-	open(FILE, $path) || return 404;
-	$r->send_fd(FILE);
-	close(FILE);
+	open(my $FILE, $path) || return 404;
+	$r->send_fd($FILE);
+	close($FILE);
     } else {
         Plack::Util::foreach($body, sub { $r->print(@_) });
 #        $r->rflush;
