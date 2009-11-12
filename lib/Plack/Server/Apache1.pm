@@ -79,7 +79,7 @@ sub handler {
     $r->status($status);
     $r->send_http_header;
 
-    if (Scalar::Util::blessed($body) and $body->can('path') and my $path = $body->path) {
+    if(Plack::Util::is_real_fh($body)) {
 	$r->send_fd($body);
     } else {
         Plack::Util::foreach($body, sub { $r->print(@_) });
