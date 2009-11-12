@@ -117,6 +117,7 @@ t/Plack-Middleware/errors/500.html
 t/Plack-Middleware/jsonp.t
 t/Plack-Middleware/method_override.t
 t/Plack-Middleware/order.t
+t/Plack-Middleware/prefix.t
 t/Plack-Middleware/rearrange_headers.t
 t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/stacktrace.t
