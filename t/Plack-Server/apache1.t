@@ -6,6 +6,8 @@ use Plack;
 use Test::TCP;
 use LWP::UserAgent;
 use FindBin;
+use File::Path;
+
 use Plack::Test::Suite;
 
 plan skip_all => "TEST_APACHE1 is not set"
@@ -13,6 +15,8 @@ plan skip_all => "TEST_APACHE1 is not set"
 
 Plack::Test::Suite->run_server_tests(\&run_httpd);
 done_testing();
+
+my $log_filename;
 
 sub run_httpd {
     my $port = shift;
@@ -23,9 +27,17 @@ sub run_httpd {
 
     write_file("$tmpdir/app.psgi", _render_psgi());
     write_file("$tmpdir/httpd.conf", _render_conf($tmpdir, $port, "$tmpdir/app.psgi"));
+    mkpath( "$tmpdir/conf" );
+    write_file("$tmpdir/conf/mime.types", _render_mimetypes());
 
-    exec "$httpd -X -D FOREGROUND -f $tmpdir/httpd.conf" or die "couldn't start httpd : $!\n";
+
+    $log_filename = "$tmpdir/error_log";
+    system ("touch $log_filename");
+    link($log_filename, 'err');
+
+    exec "$httpd -X -F -f $tmpdir/httpd.conf" or die "couldn't start httpd : $!\n";
 }
+
 
 sub write_file {
     my($path, $content) = @_;
@@ -33,6 +45,11 @@ sub write_file {
     open my $out, ">", $path or die "$path: $!";
     print $out $content;
 }
+
+sub _render_mimetypes {
+    return 'text/html                                       html htm';
+}
+
 
 sub _render_psgi {
     return <<'EOF';
