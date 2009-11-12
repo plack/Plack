@@ -45,7 +45,6 @@ EOF
 
 sub _render_conf {
     my ($tmpdir, $port, $psgi_path) = @_;
-    $port = 8888;
     my $load_module = ( -f "$tmpdir/libexec/mod_perl.so" ) ? 'LoadModule perl_module libexec/mod_perl.so' : '' ;
     my $conf = <<"END";
 $load_module
