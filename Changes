@@ -1,5 +1,8 @@
 Revision history for Perl extension Plack
 
+0.9011: Thu Nov 12 03:53:28 PST 2009
+        - Added Apache1 support (Aaron Trevena)
+
 0.9010: Wed Nov 11 23:18:37 PST 2009
         - You can no omit Plack::Middleware:: in Builder DSL's enable()
 
