@@ -15,18 +15,7 @@ sub add_middleware {
     my($self, $mw, @args) = @_;
 
     if (ref $mw ne 'CODE') {
-        my $mw_class = $mw;
-
-        my ( $failed, $error );
-
-        do {
-            local $@;
-            $failed = not eval "use $mw_class; 1";
-            $error = $@;
-        };
-
-        die $error if $failed;
-
+        my $mw_class = Plack::Util::load_class($mw, 'Plack::Middleware');
         $mw = sub { $mw_class->wrap($_[0], @args) };
     }
 

@@ -11,8 +11,10 @@ sub FALSE() { !TRUE }
 sub load_class {
     my($class, $prefix) = @_;
 
-    if ($class !~ s/^\+// && $prefix) {
-        $class = "$prefix\::$class";
+    if ($prefix) {
+        unless ($class =~ s/^\+// || $class =~ /^$prefix/) {
+            $class = "$prefix\::$class";
+        }
     }
 
     my $file = $class;
