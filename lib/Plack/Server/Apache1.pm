@@ -77,14 +77,12 @@ sub handler {
     });
 
     $r->status($status);
+    $r->send_http_header;
 
     if (Scalar::Util::blessed($body) and $body->can('path') and my $path = $body->path) {
-	open(my $FILE, $path) || return 404;
-	$r->send_fd($FILE);
-	close($FILE);
+	$r->send_fd($body);
     } else {
         Plack::Util::foreach($body, sub { $r->print(@_) });
-#        $r->rflush;
     }
 
 
