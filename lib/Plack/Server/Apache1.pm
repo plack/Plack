@@ -1,31 +1,10 @@
 package Plack::Server::Apache1;
 use strict;
-
-=head1 NAME
-
-Plack::Server::Apache1 - Apache 1.3.x handlers to run PSGI application
-
-=head1 SYNOPSIS
-
-  <Locaion />
-  SetHandler perl-script
-  PerlHandler Plack::Server::Apache1
-  PerlSetVar psgi_app /path/to/app.psgi
-  </Location>
-
-=cut
-
 use Apache::Request;
 use Apache::Constants qw(:common :response);
 
 use Plack::Util;
 use Scalar::Util;
-
-=head2 handler
-
-Apache mod_perl handler, takes apache request object, returns Apache constant for HTTP Status
-
-=cut
 
 my %apps; # psgi file to $app mapping
 
@@ -85,7 +64,6 @@ sub handler {
         Plack::Util::foreach($body, sub { $r->print(@_) });
     }
 
-
     return OK;
 }
 
@@ -93,9 +71,24 @@ sub handler {
 
 __END__
 
+
+=head1 NAME
+
+Plack::Server::Apache1 - Apache 1.3.x handlers to run PSGI application
+
+=head1 SYNOPSIS
+
+  <Locaion />
+  SetHandler perl-script
+  PerlHandler Plack::Server::Apache1
+  PerlSetVar psgi_app /path/to/app.psgi
+  </Location>
+
 =head1 AUTHOR
 
 Aaron Trevena
+
+Tatsuhiko Miyagawa
 
 =cut
 
