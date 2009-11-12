@@ -66,6 +66,7 @@ sub _render_conf {
     my $conf = <<"END";
 $load_module
 ServerRoot $tmpdir
+ServerName 127.0.0.1
 PidFile $tmpdir/httpd.pid
 LockFile $tmpdir/httpd.lock
 ErrorLog $tmpdir/error_log
