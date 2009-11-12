@@ -85,6 +85,7 @@ lib/Plack/Middleware/Writer.pm
 lib/Plack/Middleware/XFramework.pm
 lib/Plack/Middleware/XSendfile.pm
 lib/Plack/Server.pm
+lib/Plack/Server/Apache1.pm
 lib/Plack/Server/Apache2.pm
 lib/Plack/Server/CGI.pm
 lib/Plack/Server/FCGI.pm
@@ -128,6 +129,7 @@ t/Plack-Middleware/urlmap_builder.t
 t/Plack-Middleware/writer.t
 t/Plack-Middleware/xframework.t
 t/Plack-Middleware/xsendfile.t
+t/Plack-Server/apache1.t
 t/Plack-Server/apache2.t
 t/Plack-Server/cgi.t
 t/Plack-Server/fcgi.t
