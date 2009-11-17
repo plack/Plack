@@ -1,5 +1,8 @@
 Revision history for Perl extension Plack
 
+0.9012 Tue Nov 17 13:38:38 PST 2009
+        - Added Middleware::Conditional and enable_if DSL for dynamic builder (scook)
+
 0.9011 Thu Nov 12 03:53:28 PST 2009
         - Added Apache1 support (Aaron Trevena)
 

@@ -68,6 +68,7 @@ lib/Plack/Middleware.pm
 lib/Plack/Middleware/AccessLog.pm
 lib/Plack/Middleware/AccessLog/Timed.pm
 lib/Plack/Middleware/Chunked.pm
+lib/Plack/Middleware/Conditional.pm
 lib/Plack/Middleware/ConditionalGET.pm
 lib/Plack/Middleware/ContentLength.pm
 lib/Plack/Middleware/ContentMD5.pm
@@ -109,6 +110,7 @@ t/Plack-HTTPParser-PP/simple.t
 t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
 t/Plack-Middleware/chunked.t
+t/Plack-Middleware/conditional.t
 t/Plack-Middleware/conditionalget.t
 t/Plack-Middleware/content_length.t
 t/Plack-Middleware/deflater.t
