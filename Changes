@@ -1,19 +1,19 @@
 Revision history for Perl extension Plack
 
-0.9011: Thu Nov 12 03:53:28 PST 2009
+0.9011 Thu Nov 12 03:53:28 PST 2009
         - Added Apache1 support (Aaron Trevena)
 
-0.9010: Wed Nov 11 23:18:37 PST 2009
+0.9010 Wed Nov 11 23:18:37 PST 2009
         - You can now omit Plack::Middleware:: in Builder DSL's enable()
 
-0.9009: Sat Nov  7 20:43:17 PST 2009
+0.9009 Sat Nov  7 20:43:17 PST 2009
         - Fixed dependencies for tests
 
-0.9008: Tue Oct 27 14:15:28 PDT 2009
+0.9008 Tue Oct 27 14:15:28 PDT 2009
         - Removed optional deps from Makefile.PL and moved them to Task::Plack (mst)
         - Make some middleware deps as required to make it simple, for now
 
-0.9007: Sat Oct 24 17:41:33 PDT 2009
+0.9007 Sat Oct 24 17:41:33 PDT 2009
         - Fixed Server::CGI to really inline fuctions to avoid warnings
         - Fixed Middleware::AccessLog to let %{..}t strftime log format work (beppu)
         - Fixed a flush bug in gzip encoding in Middleware::Deflater
@@ -21,24 +21,24 @@ Revision history for Perl extension Plack
         - Added Middleware::ContetnMD5 (Fayland)
         - Fixed plackup -r to actually reload the application code (robinsmidsrod)
 
-0.9006: Fri Oct 23 01:21:13 PDT 2009
+0.9006 Fri Oct 23 01:21:13 PDT 2009
         - Support streaming interface in most middlewares
         - Added Middleware::Deflater (not recommended to use: see POD)
         - Document FCGI configuration in Server::FCGI pod (dhoss)
         - Inline Plack::Util functions in Server::CGI to speed up (mst)
 
-0.9005  Wed Oct 21 20:53:19 PDT 2009
+0.9005 Wed Oct 21 20:53:19 PDT 2009
         - Switch to Filesys::Notify::Simple to watch directory to trim down deps
         - Made some dependencies optional since they're actually optional
 
-0.9004  Tue Oct 20 22:57:48 PDT 2009
+0.9004 Tue Oct 20 22:57:48 PDT 2009
         - Fixed File::ShareDir dependency (mst)
         - App::File and Middleware::Static now auto follows symlinks (chiba)
         - Implemented plackup -r as Plack::Loader::Reloadable (nothingmuch)
         - Removed poll_cb from Writer middleware
         - Added plackup common command line options: -o for --host and -p for --port 
 
-0.9003  Sun Oct 18 19:16:26 PDT 2009
+0.9003 Sun Oct 18 19:16:26 PDT 2009
         - Added POE to Plack::Loader autoload
         - Implemented callback style streaming in selected middlewares
         - Bump up HTTP::Parser::XS to fix memory leaks
@@ -48,12 +48,12 @@ Revision history for Perl extension Plack
         - Fixed Middleware::StackTrace to DWIM in framework generated 500 errors
         - Fixed Restarter to do what doc says
 
-0.9002  Wed Oct 14 11:26:28 PDT 2009
+0.9002 Wed Oct 14 11:26:28 PDT 2009
         - Added a workaround in Server::Apache2 when Location and SCRIPT_NAME don't match
         - Use Try::Tiny and parent for smaller memory footprint and better error handling
 
-0.9001  Tue Oct 13 00:55:34 PDT 2009
+0.9001 Tue Oct 13 00:55:34 PDT 2009
         - Downgrade EUMM in inc/
 
-0.9000  Tue Oct 13 00:14:01 PDT 2009
+0.9000 Tue Oct 13 00:14:01 PDT 2009
         - original version
