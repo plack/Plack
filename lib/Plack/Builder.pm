@@ -1,10 +1,11 @@
 package Plack::Builder;
 use strict;
 use parent qw( Exporter );
-our @EXPORT = qw( builder add enable mount );
+our @EXPORT = qw( builder add enable enable_if mount );
 
 use Carp ();
 use Plack::App::URLMap;
+use Plack::Middleware::Conditional;
 
 sub new {
     my $class = shift;
@@ -22,6 +23,19 @@ sub add_middleware {
     push @{$self->{middlewares}}, $mw;
 }
 
+sub add_middleware_if {
+    my($self, $cond, $mw, @args) = @_;
+
+    if (ref $mw ne 'CODE') {
+        my $mw_class = Plack::Util::load_class($mw, 'Plack::Middleware');
+        $mw = sub { $mw_class->wrap($_[0], @args) };
+    }
+
+    push @{$self->{middlewares}}, sub {
+        Plack::Middleware::Conditional->wrap($_[0], condition => $cond, builder => $mw);
+    };
+}
+
 # do you want remove_middleware() etc.?
 
 sub to_app {
@@ -35,13 +49,14 @@ sub to_app {
 }
 
 # DSL goes here
-our $_add = our $_mount = sub {
+our $_add = our $_add_if = our $_mount = sub {
     Carp::croak("enable/mount should be called inside builder {} block");
 };
 
 sub add      { Carp::carp("add is deprecated. Use 'enable'"); $_add->(@_) }
-sub enable   { $_add->(@_) }
-sub mount    { $_mount->(@_) }
+sub enable         { $_add->(@_) }
+sub enable_if(&$@) { $_add_if->(@_) }
+sub mount          { $_mount->(@_) }
 
 sub builder(&) {
     my $block = shift;
@@ -55,6 +70,9 @@ sub builder(&) {
     };
     local $_add = sub {
         $self->add_middleware(@_);
+    };
+    local $_add_if = sub {
+        $self->add_middleware_if(@_);
     };
 
     my $app = $block->();
