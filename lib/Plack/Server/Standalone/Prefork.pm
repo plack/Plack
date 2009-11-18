@@ -7,7 +7,10 @@ use Parallel::Prefork;
 
 sub new {
     my($class, %args) = @_;
-    my $self = $class->SUPER::new(%args);
+    my $self = $class->SUPER::new(
+        max_keepalive_reqs => 100,
+        %args,
+    );
     $self->{max_workers} = $args{max_workers} || 10;
     $self->{max_reqs_per_child} = $args{max_reqs_per_child} || 100;
     $self;

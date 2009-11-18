@@ -26,7 +26,7 @@ sub new {
         host               => $args{host} || 0,
         port               => $args{port} || 8080,
         timeout            => $args{timeout} || 300,
-        max_keepalive_reqs => $args{max_keepalive_reqs} || 100,
+        max_keepalive_reqs => $args{max_keepalive_reqs} || 1,
         keepalive_timeout  => $args{keepalive_timeout} || 2,
     }, $class;
 
