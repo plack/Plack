@@ -15,11 +15,7 @@ sub new {
 sub call {
     my($self, $env) = @_;
 
-    my $app = $self->app;
-    if ($self->condition->($env)) {
-        $app = $self->middleware;
-    }
-
+    my $app = $self->condition->($env) ? $self->middleware : $self->app;
     return $app->($env);
 }
 
