@@ -85,7 +85,7 @@ sub accept_loop {
                 if ($may_keepalive && $max_reqs_per_child && $proc_req_count >= $max_reqs_per_child) {
                     $may_keepalive = undef;
                 }
-                $self->handle_connection($env, $conn, $app, $may_keepalive, $req_count != 0)
+                $self->handle_connection($env, $conn, $app, $may_keepalive, $req_count != 1)
                     or last;
                 # TODO add special cases for clients with broken keep-alive support, as well as disabling keep-alive for HTTP/1.0 proxies
             }
@@ -102,8 +102,7 @@ sub handle_connection {
     while (1) {
         my $rlen = $self->read_timeout(
             $conn, \$buf, MAX_REQUEST_SIZE - length($buf), length($buf),
-            $is_keepalive || length($buf) != 0
-                ? $self->{keepalive_timeout} : $self->{timeout},
+            $is_keepalive ? $self->{keepalive_timeout} : $self->{timeout},
         ) or return;
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
