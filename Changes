@@ -1,5 +1,10 @@
 Revision history for Perl extension Plack
 
+0.9013 Wed Nov 18 18:26:31 PST 2009
+        - Disable keep-alive in Standalone by default (kazuho, frew)
+        - Fixed a bug in Standalone where 'timeout' property is ignored in the first request (kazuho)
+        - Fixed a documentation bug in Middleware::Conditional (confound, scook)
+       
 0.9012 Tue Nov 17 13:38:38 PST 2009
         - Added Middleware::Conditional and enable_if DSL for dynamic builder (scook)
 
