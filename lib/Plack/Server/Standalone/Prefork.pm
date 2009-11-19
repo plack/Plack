@@ -61,7 +61,7 @@ pipeline requests are B<NOT> supported yet.
 
 =over 4
 
-=item host, port, timeout, max-keepalive-reqs, keepalive-timeout
+=item host, port, timeout, keepalive-timeout
 
 Same as L<Plack::Server::Standalone>.
 
@@ -72,6 +72,10 @@ Number of prefork workers. Defaults to 10.
 =item max-reqs-per-child
 
 Number of requests per worker to process. Defaults to 100.
+
+=item max-keepalive-reqs
+
+Max requests per a keep-alive request. Defaults to 100.
 
 =back
 
