@@ -1,4 +1,4 @@
-package Plack::Middleware::Authen::Basic;
+package Plack::Middleware::Auth::Basic;
 use strict;
 use parent qw(Plack::Middleware);
 __PACKAGE__->mk_accessors(qw(realm authenticator));
@@ -41,7 +41,7 @@ __END__
 
 =head1 NAME
 
-Plack::Middleware::Authen::Basic - Simple basic authentication middleware
+Plack::Middleware::Auth::Basic - Simple basic authentication middleware
 
 =head1 SYNOPSIS
 
@@ -49,7 +49,7 @@ Plack::Middleware::Authen::Basic - Simple basic authentication middleware
   my $app = sub { ... };
 
   builder {
-      enable "Authen::Basic", authenticator => \&authen_cb;
+      enable "Auth::Basic", authenticator => \&authen_cb;
       $app;
   };
 
@@ -60,7 +60,7 @@ Plack::Middleware::Authen::Basic - Simple basic authentication middleware
 
 =head1 DESCRIPTION
 
-Plack::Middleware::Authen::Basic is a basic authentication handler for Plack.
+Plack::Middleware::Auth::Basic is a basic authentication handler for Plack.
 
 =head1 AUTHOR
 

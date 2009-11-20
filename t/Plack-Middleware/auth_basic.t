@@ -5,7 +5,7 @@ use HTTP::Request::Common;
 
 my $app = sub { return [ 200, [ 'Content-Type' => 'text/plain' ], [ "Hello $_[0]->{REMOTE_USER}" ] ] };
 $app = builder {
-    enable "Authen::Basic", authenticator => \&cb;
+    enable "Auth::Basic", authenticator => \&cb;
     $app;
 };
 
