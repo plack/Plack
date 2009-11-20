@@ -26,10 +26,12 @@ requires 'Filesys::Notify::Simple'; # plackup -r
 
 # TODO: they can go away once we create Plack-Middlewares dist
 # Middleware::Static and App::File
-requires 'Path::Class', 'MIME::Types';
+requires 'Path::Class';
+requires 'MIME::Types';
 
 # Middleware::Deflater
-requires 'IO::Compress::Gzip','IO::Compress::Deflate';
+requires 'IO::Compress::Gzip';
+requires 'IO::Compress::Deflate';
 
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
