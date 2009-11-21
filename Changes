@@ -31,7 +31,7 @@ Revision history for Perl extension Plack
         - Fixed Middleware::AccessLog to let %{..}t strftime log format work (beppu)
         - Fixed a flush bug in gzip encoding in Middleware::Deflater
         - Fixed a bug in Middleware::AccessLog so POSIX strftime always works in English (fayland)
-        - Added Middleware::ContetnMD5 (Fayland)
+        - Added Middleware::ContentMD5 (Fayland)
         - Fixed plackup -r to actually reload the application code (robinsmidsrod)
 
 0.9006 Fri Oct 23 01:21:13 PDT 2009
@@ -56,7 +56,7 @@ Revision history for Perl extension Plack
         - Implemented callback style streaming in selected middlewares
         - Bump up HTTP::Parser::XS to fix memory leaks
         - Added Middleware::Chunked
-        - Added MIddleware::JSONP
+        - Added Middleware::JSONP
         - Added twitter-stream.psgi example to do streaming server push
         - Fixed Middleware::StackTrace to DWIM in framework generated 500 errors
         - Fixed Restarter to do what doc says
