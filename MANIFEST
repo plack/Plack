@@ -26,7 +26,6 @@ eg/dot-psgi/static/index.html
 eg/dot-psgi/static/test.css
 eg/dot-psgi/static/test.js
 eg/dot-psgi/twitter-stream.psgi
-inc/ExtUtils/MakeMaker.pm
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AuthorTests.pm
@@ -67,6 +66,7 @@ lib/Plack/Loader/Reloadable.pm
 lib/Plack/Middleware.pm
 lib/Plack/Middleware/AccessLog.pm
 lib/Plack/Middleware/AccessLog/Timed.pm
+lib/Plack/Middleware/Auth/Basic.pm
 lib/Plack/Middleware/Chunked.pm
 lib/Plack/Middleware/Conditional.pm
 lib/Plack/Middleware/ConditionalGET.pm
@@ -109,6 +109,7 @@ t/FCGIUtils.pm
 t/Plack-HTTPParser-PP/simple.t
 t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
+t/Plack-Middleware/auth_basic.t
 t/Plack-Middleware/chunked.t
 t/Plack-Middleware/conditional.t
 t/Plack-Middleware/conditionalget.t

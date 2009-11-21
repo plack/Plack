@@ -1,5 +1,10 @@
 Revision history for Perl extension Plack
 
+0.9014 Fri Nov 20 21:51:47 PST 2009
+        - Updated docs for Standalone keep-alive options
+        - Added Auth::Basic middleware
+        - Fixed dependencies and MakeMaker issues in the archive
+
 0.9013 Wed Nov 18 18:26:31 PST 2009
         - Disable keep-alive in Standalone by default (kazuho, frew)
         - Fixed a bug in Standalone where 'timeout' property is ignored in the first request (kazuho)
