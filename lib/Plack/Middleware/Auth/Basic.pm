@@ -62,6 +62,17 @@ Plack::Middleware::Auth::Basic - Simple basic authentication middleware
 
 Plack::Middleware::Auth::Basic is a basic authentication handler for Plack.
 
+=head1 CONFIGURATION
+
+=over 4
+
+=item authenticator
+
+A callback function that takes username and password supplied and
+returns whether the authentication succeeds. Required.
+
+=back
+
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
