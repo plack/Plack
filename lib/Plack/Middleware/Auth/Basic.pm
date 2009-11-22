@@ -71,6 +71,10 @@ Plack::Middleware::Auth::Basic is a basic authentication handler for Plack.
 A callback function that takes username and password supplied and
 returns whether the authentication succeeds. Required.
 
+=item realm
+
+Realm name to display in the basic authentication dialog. Defaults to I<restricted area>.
+
 =back
 
 =head1 AUTHOR
