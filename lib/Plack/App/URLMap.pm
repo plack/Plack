@@ -53,7 +53,9 @@ sub to_app {
             next unless $path =~ s!\Q$location\E!!;
             next unless $path eq '' or $path =~ m!/!;
 
-            return $app->({ %$env, PATH_INFO => $path, SCRIPT_NAME => $script_name . $location  });
+            local $env->{PATH_INFO}  = $path;
+            local $env->{SCRIPT_NAME} = $script_name . $location;
+            return $app->($env);
         }
 
         return [404, [ 'Content-Type' => 'text/plain' ], [ "Not Found" ]];
