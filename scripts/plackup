@@ -9,6 +9,7 @@ use Pod::Usage;
 use Try::Tiny;
 
 my $app    = "app.psgi";
+my $eval;
 my $host;
 my $port   = 5000;
 my $env    = "development";
@@ -35,6 +36,7 @@ GetOptions(
     "s|server=s"   => \$backend,
     "i|impl=s"     => sub { warn "-i is deprecated. Use -s instead\n"; $backend = $_[1] },
     "E|env=s"      => \$env,
+    "e=s"          => \$eval,
     'I=s@'         => \@includes,
     'r|reload:s'   => sub { $reload = [ split ",", $_[1] || '.' ] },
     "h|help",      => \$help,
@@ -43,7 +45,7 @@ GetOptions(
 pod2usage(0) if $help;
 lib->import(@includes) if @includes;
 
-my $handler = build { Plack::Util::load_psgi $app };
+my $handler = $eval ? build { eval $eval or die $@ } : build { Plack::Util::load_psgi $app };
 
 if ($env eq 'development') {
     require Plack::Middleware::StackTrace;
@@ -113,6 +115,11 @@ PSGI application.
 Use the C<--app> option to locate a C<.psgi> script with a different
 name in a different path. (Actually the path doesn't need to end in
 C<.psgi>: it's just there for convention)
+
+=item -e
+
+Evaluate the given perl code as a PSGI app, much like perl's C<-e>
+option.
 
 =item -o, --host
 
