@@ -8,7 +8,7 @@ use Plack::Util;
 use Pod::Usage;
 use Try::Tiny;
 
-my $app    = "app.psgi";
+my $psgi   = "app.psgi";
 my $eval;
 my $host;
 my $port   = 5000;
@@ -30,7 +30,7 @@ sub build(&;$) {
 
 Getopt::Long::Configure("no_ignore_case", "pass_through");
 GetOptions(
-    "a|app=s"      => \$app,
+    "a|app=s"      => \$psgi,
     "o|host=s"     => \$host,
     "p|port=i"     => \$port,
     "s|server=s"   => \$backend,
@@ -45,7 +45,7 @@ GetOptions(
 pod2usage(0) if $help;
 lib->import(@includes) if @includes;
 
-my $handler = $eval ? build { eval $eval or die $@ } : build { Plack::Util::load_psgi $app };
+my $handler = $eval ? build { eval $eval or die $@ } : build { Plack::Util::load_psgi $psgi };
 
 if ($env eq 'development') {
     require Plack::Middleware::StackTrace;
@@ -63,11 +63,19 @@ my @args = map {
 
 push @args, host => $host, port => $port;
 
-my $loader = $reload ?
-    do { require Plack::Loader::Reloadable; Plack::Loader::Reloadable->new($reload) } : 'Plack::Loader';
+my($loader, $app);
+
+if ($reload) {
+    require Plack::Loader::Reloadable;
+    $loader = Plack::Loader::Reloadable->new($reload);
+    $app = $handler;
+} else {
+    $loader = 'Plack::Loader';
+    $app = $handler->();
+}
 
 my $server = $backend ? $loader->load($backend, @args) : $loader->auto(@args);
-$server->run($reload ? $handler : $handler->());
+$server->run($app);
 
 __END__
 
