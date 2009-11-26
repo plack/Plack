@@ -1,5 +1,17 @@
 Revision history for Perl extension Plack
 
+0.9015 Thu Nov 26 17:31:33 JST 2009
+        - Fixed a bug in URLMap where $env is shallow copied and some middleware don't work
+        - Added -e and -M to plackup
+        - plackup -r with args (directories to watch) is deprecated. Use -R instead
+        - plackup foo.psgi now DWIMs. -a (--app) continues to work
+        - Optimizaitons to Middleware and docs to explicitly call to_app because overloading happens
+          every request and is inefficient.
+        - The abilitiy to auto-select server backends for POE/AnyEvent/Coro is restored. Doesn't work with -r though. #50
+        - Display server package name in the Standalone/Prefork startup
+        - Fixed a bug in Plack::Test::MockHTTP where $res doesn't return the request (teejay)
+        - Fixed a bug in URLMap where requests to / fails in some cases (chiba)
+
 0.9014 Fri Nov 20 21:51:47 PST 2009
         - Updated docs for Standalone keep-alive options
         - Added Auth::Basic middleware

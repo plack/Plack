@@ -129,6 +129,7 @@ t/Plack-Middleware/static.t
 t/Plack-Middleware/static.txt
 t/Plack-Middleware/urlmap.t
 t/Plack-Middleware/urlmap_builder.t
+t/Plack-Middleware/urlmap_env.t
 t/Plack-Middleware/writer.t
 t/Plack-Middleware/xframework.t
 t/Plack-Middleware/xsendfile.t
@@ -139,6 +140,7 @@ t/Plack-Server/fcgi.t
 t/Plack-Server/fcgi_client.t
 t/Plack-Server/standalone-prefork.t
 t/Plack-Server/standalone.t
+t/Plack-Test/cookie.t
 t/Plack-Test/hello.t
 t/Plack-Test/hello_server.t
 t/Plack-Test/suite.t
