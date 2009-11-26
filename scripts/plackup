@@ -17,6 +17,7 @@ my $help   = 0;
 my $backend;
 my $reload;
 my @includes;
+my @modules;
 
 # delay the build process for reloader
 sub build(&;$) {
@@ -25,8 +26,8 @@ sub build(&;$) {
     return sub { $block->($app->()) };
 }
 
-# From 'prove': Allow cuddling the paths with the -I
-@ARGV = map { /^(-I)(.+)/ ? ($1,$2) : $_ } @ARGV;
+# From 'prove': Allow cuddling the paths with -I and -M
+@ARGV = map { /^(-[IM])(.+)/ ? ($1,$2) : $_ } @ARGV;
 
 Getopt::Long::Configure("no_ignore_case", "pass_through");
 GetOptions(
@@ -38,6 +39,7 @@ GetOptions(
     "E|env=s"      => \$env,
     "e=s"          => \$eval,
     'I=s@'         => \@includes,
+    'M=s@'         => \@modules,
     'r|reload'     => sub { $reload = [ '.' ] },
     'R|Reload=s'   => sub { $reload = [ split ",", $_[1] ] },
     "h|help",      => \$help,
@@ -45,6 +47,12 @@ GetOptions(
 
 pod2usage(0) if $help;
 lib->import(@includes) if @includes;
+
+for (@modules) {
+    my($module, @import) = split /[=,]/;
+    eval "require $module" or die $@;
+    $module->import(@import) if @import;
+}
 
 my(@options, @argv);
 while (defined($_ = shift @ARGV)) {
