@@ -50,7 +50,7 @@ sub to_app {
             next unless not defined $host     or
                         $http_host   eq $host or
                         $server_name eq $host;
-            next unless $path =~ s!\Q$location\E!!;
+            next unless $location eq '' or $path =~ s!\Q$location\E!!;
             next unless $path eq '' or $path =~ m!/!;
 
             local $env->{PATH_INFO}  = $path;

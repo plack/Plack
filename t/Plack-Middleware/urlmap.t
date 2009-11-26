@@ -52,6 +52,12 @@ test_psgi app => $app, client => sub {
 
     $res = $cb->(GET "http://bar.example.com/foo");
     is $res->content, 'app4||/foo';
+
+    # Fix a bug where $location eq ''
+    $_ = "bar"; /bar/;
+    $res = $cb->(GET "http://localhost/");
+    is $res->content, 'app1||/';
+
 };
 
 done_testing;
