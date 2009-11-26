@@ -90,7 +90,7 @@ Plack::App::Directory - Serve static files from document root with directory ind
 
   # app.psgi
   use Plack::App::Directory;
-  my $app = Plack::App::Directory->new({ root => "/path/to/htdocs" });
+  my $app = Plack::App::Directory->new({ root => "/path/to/htdocs" })->to_app;
 
 =head1 DESCRIPTION
 

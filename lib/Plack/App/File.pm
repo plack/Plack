@@ -102,7 +102,7 @@ Plack::App::File - Serve static files from root directory
 =head1 SYNOPSIS
 
   use Plack::App::File;
-  my $app = Plack::App::File->new({ root => "/path/to/htdocs" });
+  my $app = Plack::App::File->new({ root => "/path/to/htdocs" })->to_app;
 
 =head1 DESCRIPTION
 

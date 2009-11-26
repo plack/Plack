@@ -83,7 +83,7 @@ Plack::App::URLMap - Map multiple apps in different paths
   $urlmap->map("/foo" => $app2);
   $urlmap->map("http://bar.example.com/" => $app3);
 
-  $urlmap; # Or $urlmap->to_app
+  my $app = $urlmap->to_app;
 
 =head1 DESCRIPTION
 

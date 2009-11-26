@@ -130,20 +130,6 @@ with a middleware:
   $app = Plack::Middleware::Foo->wrap($app, %options);
   $app = Plack::Middleware::Bar->wrap($app, %options);
 
-Note also Plack::Middleware object is callable, by overloading the
-code dereference, so:
-
-  package Plack::Middleware::Foo;
-  use parent qw(Plack::Middleware);
-
-  sub call { ... }
-
-  my $app = Plack::Middleware::Foo->new;
-
-C<$app> here is an object but can be used as a PSGI application as
-well, since C<< $app->($env) >> just calls C<< $app->call($env) >>
-internally.
-
 =head1 SEE ALSO
 
 L<Plack> L<Plack::Builder>
