@@ -1,6 +1,6 @@
 package Plack::Middleware::Chunked;
 use strict;
-use base qw(Plack::Middleware);
+use parent qw(Plack::Middleware);
 
 use Plack::Util;
 

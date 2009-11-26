@@ -1,6 +1,6 @@
 package Plack::Middleware::Deflater;
 use strict;
-use base qw(Plack::Middleware);
+use parent qw(Plack::Middleware);
 
 use IO::Compress::Deflate;
 use IO::Compress::Gzip;
