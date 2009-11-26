@@ -48,7 +48,7 @@ sub setup_listener {
         Proto     => 'tcp',
         ReuseAddr => 1,
     ) or die "failed to listen to port $self->{port}:$!";
-    warn "Accepting connections at http://$self->{host}:$self->{port}/\n";
+    warn ref($self), ": Accepting connections at http://$self->{host}:$self->{port}/\n";
 }
 
 sub accept_loop {
