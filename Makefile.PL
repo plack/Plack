@@ -5,7 +5,6 @@ sub install_share { warn "You need to install Module::Install::Share to install 
 sub auto_set_repository { }
 
 use inc::Module::Install;
-use Module::AutoInstall;
 
 name 'Plack';
 all_from 'lib/Plack.pm';
