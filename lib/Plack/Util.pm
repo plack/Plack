@@ -97,6 +97,7 @@ sub load_psgi {
     my $file = shift;
 
     my $app = do $file;
+    return $app->to_app if $app and Scalar::Util::blessed($app) and $app->can('to_app');
     return $app if $app and ref $app eq 'CODE' or overload::Method($app, '&{}');
 
     if (my $e = $@ || $!) {
