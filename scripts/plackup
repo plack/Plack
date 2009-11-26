@@ -51,7 +51,7 @@ lib->import(@includes) if @includes;
 for (@modules) {
     my($module, @import) = split /[=,]/;
     eval "require $module" or die $@;
-    $module->import(@import) if @import;
+    $module->import(@import);
 }
 
 my(@options, @argv);
