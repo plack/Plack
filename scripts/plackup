@@ -164,7 +164,7 @@ option.
 =item -o, --host
 
 The interface a TCP based server daemon binds to. Defauts to undef,
-which lets most server backends bind the the any (*) interface. This
+which lets most server backends bind the any (*) interface. This
 opeion doesn't mean anything if the server is not TCP based.
 
 =item -p, --port
@@ -182,6 +182,10 @@ be prefered over the environment variable if present.
 =item -I
 
 Specify perl library include path, like C<perl>'s -I option.
+
+=item -M
+
+Specify modules to load before loading the app code.
 
 =item -E, --env
 
