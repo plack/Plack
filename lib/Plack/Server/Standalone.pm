@@ -18,7 +18,7 @@ use Time::HiRes qw(time);
 
 my $alarm_interval;
 BEGIN {
-    if ($^O eq 'Win32') {
+    if ($^O eq 'MSWin32') {
         $alarm_interval = 1;
     } else {
         Time::HiRes->import('alarm');
