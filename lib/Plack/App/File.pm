@@ -66,7 +66,10 @@ sub serve_path {
 
     my $fh = $file->openr
         or return $self->return_403;
-    Plack::Util::set_io_path($fh, $file->stringify);
+
+    my $path = $file->stringify;
+       $path =~ s!\\!/!g;
+    Plack::Util::set_io_path($fh, $path);
     binmode $fh;
 
     my $stat = $file->stat;
