@@ -72,7 +72,6 @@ lib/Plack/Middleware/Conditional.pm
 lib/Plack/Middleware/ConditionalGET.pm
 lib/Plack/Middleware/ContentLength.pm
 lib/Plack/Middleware/ContentMD5.pm
-lib/Plack/Middleware/Deflater.pm
 lib/Plack/Middleware/ErrorDocument.pm
 lib/Plack/Middleware/JSONP.pm
 lib/Plack/Middleware/Lint.pm
@@ -114,7 +113,6 @@ t/Plack-Middleware/chunked.t
 t/Plack-Middleware/conditional.t
 t/Plack-Middleware/conditionalget.t
 t/Plack-Middleware/content_length.t
-t/Plack-Middleware/deflater.t
 t/Plack-Middleware/error_document.t
 t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html

@@ -28,10 +28,6 @@ requires 'Filesys::Notify::Simple'; # plackup -r
 requires 'Path::Class';
 requires 'MIME::Types';
 
-# Middleware::Deflater
-requires 'IO::Compress::Gzip';
-requires 'IO::Compress::Deflate';
-
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
 test_requires 'Test::Requires';
