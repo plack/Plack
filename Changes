@@ -1,5 +1,10 @@
 Revision history for Perl extension Plack
 
+0.9016 Sun Nov 29 16:39:40 JST 2009
+        - removed Middleware::Deflater from the dist.
+        - Fixed Standalone so as not to use Time::HiRes::Alarm on Win32 systems (charsbar, kazuho)
+        - Fixed App::File to set file path using forward slashes on Win32 (charsbar) #49
+
 0.9015 Thu Nov 26 17:31:33 JST 2009
         - Fixed a bug in URLMap where $env is shallow copied and some middleware don't work
         - Added -e and -M to plackup

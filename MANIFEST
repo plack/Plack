@@ -125,6 +125,7 @@ t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/stacktrace.t
 t/Plack-Middleware/static.t
 t/Plack-Middleware/static.txt
+t/Plack-Middleware/static_env.t
 t/Plack-Middleware/urlmap.t
 t/Plack-Middleware/urlmap_builder.t
 t/Plack-Middleware/urlmap_env.t
