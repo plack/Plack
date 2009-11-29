@@ -13,13 +13,17 @@ use Plack::Middleware::ContentLength;
 use POSIX qw(EINTR);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
+use Try::Tiny;
+use Time::HiRes qw(time);
+
 my $alarm_interval;
 BEGIN {
-    use Try::Tiny;
-    use Time::HiRes ();
-    try { Time::HiRes->import('time') };
-    try { Time::HiRes->import('alarm'); $alarm_interval = 0.1 }
-        catch { $alarm_interval = 1 };
+    if ($^O eq 'Win32') {
+        $alarm_interval = 1;
+    } else {
+        Time::HiRes->import('alarm');
+        $alarm_interval = 0.1;
+    }
 }
 
 use constant MAX_REQUEST_SIZE => 131072;
