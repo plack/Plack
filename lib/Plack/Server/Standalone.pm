@@ -12,8 +12,15 @@ use Plack::Util;
 use Plack::Middleware::ContentLength;
 use POSIX qw(EINTR);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
-use Time::HiRes qw(alarm time);
-use Try::Tiny;
+
+my $alarm_interval;
+BEGIN {
+    use Try::Tiny;
+    use Time::HiRes ();
+    try { Time::HiRes->import('time') };
+    try { Time::HiRes->import('alarm'); $alarm_interval = 0.1 }
+        catch { $alarm_interval = 1 };
+}
 
 use constant MAX_REQUEST_SIZE => 131072;
 use constant MSWin32          => $^O eq 'MSWin32';
@@ -211,7 +218,7 @@ sub do_timeout {
         # got EINTR
         my $left = $wait_until - time;
         last if $left <= 0;
-        alarm($left + 0.1);
+        alarm($left + $alarm_interval);
     }
     alarm(0);
     $ret;
