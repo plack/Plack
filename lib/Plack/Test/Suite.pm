@@ -133,6 +133,7 @@ our @TEST = (
         sub {
             my $env = shift;
             open my $fh, '<', "$share_dir/kyoto.jpg";
+            binmode $fh;
             return [
                 200,
                 [ 'Content-Type' => 'image/jpeg', 'Content-Length' => -s $fh ],
