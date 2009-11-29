@@ -34,7 +34,8 @@ sub _handle_static {
     } or return;
 
     $self->{file} ||= Plack::App::File->new({ root => $self->root || '.', encoding => $self->encoding });
-    return $self->{file}->call({ %$env, PATH_INFO => $path }) # rewrite PATH
+    local $env->{PATH_INFO} = $path; # rewrite PATH
+    return $self->{file}->call($env);
 }
 
 1;
