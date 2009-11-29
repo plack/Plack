@@ -1,14 +1,12 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires qw( Path::Class );
 use Plack::Middleware::Static;
 use Plack::Builder;
 use Plack::Util;
 use HTTP::Request::Common;
 use HTTP::Response;
 use Cwd;
-use Path::Class;
 use Plack::Test;
 
 my $base = cwd;
@@ -33,8 +31,9 @@ my %test = (
             my $res = $cb->(GET "http://localhost/$path");
             is $res->content_type, 'application/x-troff', 'ok case';
             like $res->content, qr/use Test::More/;
-            is file($path)->stat->size, length($res->content);
-            is file($path)->slurp,$res->content;
+            is -s $path, length($res->content);
+            my $content = do { open my $fh, "<", $path; binmode $fh; join '', <$fh> };
+            is $content,$res->content;
         }
 
         {
