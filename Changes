@@ -1,5 +1,8 @@
 Revision history for Perl extension Plack
 
+0.9017 Sun Nov 29 17:33:36 JST 2009
+        - Fixed more tests that fail on Win32 (charsbar)
+
 0.9016 Sun Nov 29 16:39:40 JST 2009
         - removed Middleware::Deflater from the dist.
         - Fixed Standalone so as not to use Time::HiRes::Alarm on Win32 systems (charsbar, kazuho)
