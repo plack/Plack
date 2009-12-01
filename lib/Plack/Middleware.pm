@@ -8,6 +8,17 @@ use overload '&{}' => sub { shift->to_app(@_) }, fallback => 1;
 
 __PACKAGE__->mk_accessors(qw/app/);
 
+sub new {
+    my $proto = shift;
+    my $class = ref $proto || $proto;
+
+    if (@_ == 1 && ref $_[0] eq 'HASH') {
+        return bless {%{$_[0]}}, $class;
+    } else {
+        return bless {@_}, $class;
+    }
+}
+
 sub import {
     my $class = shift;
     if (@_) {
