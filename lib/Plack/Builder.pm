@@ -5,7 +5,7 @@ our @EXPORT = qw( builder add enable enable_if mount );
 
 use Carp ();
 use Plack::App::URLMap;
-use Plack::Middleware::Conditional;
+use Plack::Middleware::Conditional; # TODO delayed load?
 
 sub new {
     my $class = shift;

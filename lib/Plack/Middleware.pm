@@ -12,11 +12,14 @@ sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;
 
+    my $self;
     if (@_ == 1 && ref $_[0] eq 'HASH') {
-        return bless {%{$_[0]}}, $class;
+        $self = bless {%{$_[0]}}, $class;
     } else {
-        return bless {@_}, $class;
+        $self = bless {@_}, $class;
     }
+
+    $self;
 }
 
 sub import {
