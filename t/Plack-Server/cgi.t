@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::Requires {
-    'HTTP::Request::AsCGI' => 0.9,
+    'HTTP::Request::AsCGI' => 1.0,
 };
 use Test::More;
 use FindBin;
@@ -19,7 +19,6 @@ Plack::Test::Suite->runtests(sub {
         my $req = shift;
 
         my $cgi = HTTP::Request::AsCGI->new($req);
-        $cgi->environment->{PATH_INFO} = uri_unescape $req->uri->path; # fix AsCGI.pm bug
         my $c = $cgi->setup;
         eval { Plack::Server::CGI->new->run($handler) };
         my $res = $c->response;
