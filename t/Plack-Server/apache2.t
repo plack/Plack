@@ -53,6 +53,11 @@ LockFile $tmpdir/httpd.lock
 ErrorLog $tmpdir/error_log
 Listen $port
 
+<Perl>
+use Plack::Server::Apache2;
+Plack::Server::Apache2->preload("$tmpdir/app.psgi");
+</Perl>
+
 <Location />
 SetHandler perl-script
 PerlHandler Plack::Server::Apache2

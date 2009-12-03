@@ -8,16 +8,27 @@ use Scalar::Util;
 
 my %apps; # psgi file to $app mapping
 
+sub preload {
+    my $class = shift;
+    for my $app (@_) {
+        $class->load_app($app);
+    }
+}
+
+sub load_app {
+    my($class, $app) = @_;
+    return $apps{$app} ||= do {
+        local $ENV{MOD_PERL}; # trick Catalyst/CGI.pm etc.
+        Plack::Util::load_psgi $app;
+    };
+}
+
 sub handler {
     my $r = shift;
     my $apr = Apache::Request->new($r);
 
     my $psgi = $r->dir_config('psgi_app');
-
-    my $app = $apps{$psgi} ||= do {
-        delete $ENV{MOD_PERL}; # trick Catalyst/CGI.pm etc.
-        Plack::Util::load_psgi $psgi;
-    };
+    my $app = __PACKAGE__->load_app($psgi);
 
     $r->subprocess_env; # let Apache create %ENV for us :)
 
@@ -83,6 +94,11 @@ Plack::Server::Apache1 - Apache 1.3.x handlers to run PSGI application
   PerlHandler Plack::Server::Apache1
   PerlSetVar psgi_app /path/to/app.psgi
   </Location>
+
+  <Perl>
+  use Plack::Server::Apache1;
+  Plack::Server::Apache1->preload("/path/to/app.psgi");
+  </Perl>
 
 =head1 AUTHOR
 
