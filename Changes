@@ -1,5 +1,11 @@
 Revision history for Perl extension Plack
 
+0.9018 Thu Dec  3 00:48:04 PST 2009
+        - Allow Plack::Middleware->new to accept plain hashes
+        - Added Plack::App::Cascade to create a compound apps that cascade requests
+        - Added POE backend to benchmarks/ab.pl
+        - Implemented Plack::Server::Apache[12]->preload to preload apps in <Perl> or startup file
+
 0.9017 Sun Nov 29 17:33:36 JST 2009
         - Fixed more tests that fail on Win32 (charsbar)
 

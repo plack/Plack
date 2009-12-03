@@ -54,6 +54,7 @@ inc/Test/Requires.pm
 inc/Test/TCP.pm
 lib/HTTP/Message/PSGI.pm
 lib/Plack.pm
+lib/Plack/App/Cascade.pm
 lib/Plack/App/Directory.pm
 lib/Plack/App/FCGIDispatcher.pm
 lib/Plack/App/File.pm
@@ -109,6 +110,7 @@ t/Plack-HTTPParser-PP/simple.t
 t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
 t/Plack-Middleware/auth_basic.t
+t/Plack-Middleware/cascade.t
 t/Plack-Middleware/chunked.t
 t/Plack-Middleware/conditional.t
 t/Plack-Middleware/conditionalget.t
