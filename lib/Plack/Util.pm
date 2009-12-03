@@ -158,6 +158,7 @@ sub header_set {
     my($set, @new_headers);
     header_iter $headers, sub {
         if (lc $key eq lc $_[0]) {
+            next if $set;
             $_[1] = $val;
             $set++;
         }

@@ -53,5 +53,11 @@ use Plack::Util;
     is Plack::Util::header_exists($headers, 'Foo'), 1;
 }
 
+{
+    my $headers = [ Foo => 'bar', Foo => 'baz' ];
+    Plack::Util::header_set($headers, Foo => 'quox');
+    is_deeply $headers, [ Foo => 'quox' ];
+}
+
 done_testing;
 
