@@ -46,6 +46,10 @@ and L<CGI::Compile>.
 This would give you the extreme easiness when you have bunch of old
 CGI scripts that is loaded using I<cgi-bin> of Apache web server.
 
+This module does not stat files nor recompile files on every
+request. You need to restart the server process to reflect the changes
+to the CGI scripts.
+
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
@@ -53,3 +57,5 @@ Tatsuhiko Miyagawa
 =head1 SEE ALSO
 
 L<Plack::App::File> L<CGI::Emulate::PSGI> L<CGI::Compile>
+
+=cut
