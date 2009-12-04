@@ -3,9 +3,9 @@ use Test::More;
 use Test::Requires { 'CGI::Emulate::PSGI' => 0, 'CGI::Compile' => 0.03 };
 use Plack::Test;
 use HTTP::Request::Common;
-use Plack::App::CGIScript;
+use Plack::App::CGIBin;
 
-my $app = Plack::App::CGIScript->new(root => "t/Plack-Middleware/cgi-bin")->to_app;
+my $app = Plack::App::CGIBin->new(root => "t/Plack-Middleware/cgi-bin")->to_app;
 
 test_psgi app => $app, client => sub {
     my $cb = shift;
