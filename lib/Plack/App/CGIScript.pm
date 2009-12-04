@@ -26,9 +26,16 @@ Plack::App::CGIScript - cgi-bin replacement for Plack servers
 
 =head1 SYNOPSIS
 
-  # mount a directory with cgi scripts
+  use Plack::App::CGIScript;
+  use Plack::Builder;
+
   my $app = Plack::App::CGIScript->new(root => "/path/to/cgi-bin")->to_app;
-  mount "/cgi-bin" => $app;
+  builder {
+      mount "/cgi-bin" => $app;
+  };
+
+  # Or from the command line
+  plackup -MPlack::App::CGIScript -e 'Plack::App::CGIScript->new(root => "/path/to/cgi-bin")->to_app'
 
 =head1 DESCRIPTION
 
