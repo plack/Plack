@@ -55,9 +55,11 @@ inc/Test/TCP.pm
 lib/HTTP/Message/PSGI.pm
 lib/Plack.pm
 lib/Plack/App/Cascade.pm
+lib/Plack/App/CGIBin.pm
 lib/Plack/App/Directory.pm
 lib/Plack/App/FCGIDispatcher.pm
 lib/Plack/App/File.pm
+lib/Plack/App/PSGIBin.pm
 lib/Plack/App/URLMap.pm
 lib/Plack/Builder.pm
 lib/Plack/HTTPParser.pm
@@ -111,6 +113,9 @@ t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
 t/Plack-Middleware/auth_basic.t
 t/Plack-Middleware/cascade.t
+t/Plack-Middleware/cgi-bin/hello.cgi
+t/Plack-Middleware/cgi-bin/hello2.cgi
+t/Plack-Middleware/cgibin.t
 t/Plack-Middleware/chunked.t
 t/Plack-Middleware/conditional.t
 t/Plack-Middleware/conditionalget.t
@@ -122,6 +127,7 @@ t/Plack-Middleware/jsonp.t
 t/Plack-Middleware/method_override.t
 t/Plack-Middleware/order.t
 t/Plack-Middleware/prefix.t
+t/Plack-Middleware/psgibin.t
 t/Plack-Middleware/rearrange_headers.t
 t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/stacktrace.t
