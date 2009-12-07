@@ -1,5 +1,9 @@
 Revision history for Perl extension Plack
 
+0.9020 Mon Dec  7 10:38:37 GMT 2009
+        - Fixed a test (psgibin.t) failure in case sensitive filesystem
+        - Fixed a warning in Plack::Util::header_set
+
 0.9019 Sun Dec  6 05:56:30 GMT 2009
         - Fixed a bug in Plack::Util::header_set when to clear multiple headers (chiba)
         - Added Plack::App::CGIBin that runs cgi-bin scripts as a PSGI application
