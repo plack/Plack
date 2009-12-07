@@ -9,7 +9,7 @@ my $app = Plack::App::PSGIBin->new(root => "eg/dot-psgi")->to_app;
 test_psgi app => $app, client => sub {
     my $cb = shift;
 
-    my $res = $cb->(GET "http://localhost/hello.psgi?name=foo");
+    my $res = $cb->(GET "http://localhost/Hello.psgi?name=foo");
     is $res->code, 200;
     is $res->content, "Hello World";
 };
