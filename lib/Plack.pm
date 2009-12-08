@@ -90,6 +90,30 @@ callbacks.
 
 L<Plack::Test::Suite> is a test suite to test a new PSGI server backend.
 
+=head1 CONTRIBUTING
+
+=head2 Patches and Bug Fixes
+
+Small patches and bug fixes can be either submitted via rt.cpan.org, email
+or nopasted on IRC. Larger fixes are better done as forks on github.
+
+=head2 Module Namespaces
+
+Modules added to the Plack:: sub-namespaces should be reasonably generic
+components which are useful as builing blocks and not just simply using
+Plack.
+
+Middleware authors are free to use the Plack::Middleware:: namespace for
+their middleware components. Middleware must be written in the pipeline
+style such that they can chained together with other middleware components.
+The Plack::Middleware:: modules in the core distribution are good examples
+of such modules.
+
+Not all middleware components are wrappers, but instead are more like
+endpoints in a middleware chain. These types of components should use the
+Plack::App:: namespace. Again, look in the core modules to see excellent
+examples of these (L<Plack::App::File>, L<Plack::App::Directory>, etc.).
+
 =head1 AUTHORS
 
 Tatsuhiko Miyagawa
