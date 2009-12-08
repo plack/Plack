@@ -109,12 +109,15 @@ Middleware authors are free to use the Plack::Middleware:: namespace for
 their middleware components. Middleware must be written in the pipeline
 style such that they can chained together with other middleware components.
 The Plack::Middleware:: modules in the core distribution are good examples
-of such modules.
+of such modules. It is recommended that you inherit from L<Plack::Middleware>
+for these types of modules.
 
 Not all middleware components are wrappers, but instead are more like
 endpoints in a middleware chain. These types of components should use the
 Plack::App:: namespace. Again, look in the core modules to see excellent
 examples of these (L<Plack::App::File>, L<Plack::App::Directory>, etc.).
+It is recommended that you inherit from L<Plack::Component> for these
+types of modules.
 
 =head1 AUTHORS
 

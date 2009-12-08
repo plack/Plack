@@ -1,7 +1,7 @@
 package Plack::App::URLMap;
 use strict;
 use warnings;
-use parent qw(Plack::Middleware);
+use parent qw(Plack::Component);
 
 use Carp ();
 
