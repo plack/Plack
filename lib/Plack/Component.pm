@@ -45,11 +45,11 @@ __END__
 
 =head1 NAME
 
-Plack::Component - Base class for easy-to-use PSGI middleware and endpoints
+Plack::Component - Base class for PSGI endpoints
 
 =head1 SYNOPOSIS
 
-  package Plack::Middleware::Foo;
+  package Plack::App::Foo;
   use parent qw( Plack::Component );
 
   sub call {
@@ -64,10 +64,10 @@ Plack::Component - Base class for easy-to-use PSGI middleware and endpoints
 
 =head1 DESCRIPTION
 
-Plack::Component is the base class shared between Plack::Middleware and
-Plack::App::* modules. If you are writing middleware, you should inherit
-from Plack::Middleware, but if you are writing a Plack::App::* you should
-inherit from this directly.
+Plack::Component is the base class shared between Plack::Middleware
+and Plack::App::* modules. If you are writing middleware, you should
+inherit from L<Plack::Middleware>, but if you are writing a
+Plack::App::* you should inherit from this directly.
 
 =head1 REQUIRED METHOD
 
@@ -120,6 +120,6 @@ not use this and use L<Plack::Util::Accessor> instead.
 
 =head1 SEE ALSO
 
-L<Plack> L<Plack::Builder>
+L<Plack> L<Plack::Builder> L<Plack::Middleware>
 
 =cut
