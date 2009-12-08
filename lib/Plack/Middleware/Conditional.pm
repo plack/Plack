@@ -2,7 +2,7 @@ package Plack::Middleware::Conditional;
 use strict;
 use parent qw(Plack::Middleware);
 
-__PACKAGE__->mk_accessors(qw(condition middleware builder));
+use Plack::Util::Accessor qw( condition middleware builder );
 
 sub new {
     my $class = shift;

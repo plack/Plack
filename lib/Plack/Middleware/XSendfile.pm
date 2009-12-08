@@ -2,10 +2,10 @@ package Plack::Middleware::XSendfile;
 use strict;
 use warnings;
 use parent qw(Plack::Middleware);
-__PACKAGE__->mk_accessors(qw(variation));
 
 use Plack::Util;
 use Scalar::Util;
+use Plack::Util::Accessor qw( variation );
 
 sub call {
     my $self = shift;

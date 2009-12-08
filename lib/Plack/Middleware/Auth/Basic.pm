@@ -1,7 +1,7 @@
 package Plack::Middleware::Auth::Basic;
 use strict;
 use parent qw(Plack::Middleware);
-__PACKAGE__->mk_accessors(qw(realm authenticator));
+use Plack::Util::Accessor qw( realm authenticator );
 
 use MIME::Base64;
 

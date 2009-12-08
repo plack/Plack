@@ -2,7 +2,7 @@ package Plack::Middleware::MethodOverride;
 use strict;
 use warnings;
 use parent qw(Plack::Middleware);
-__PACKAGE__->mk_accessors(qw(header));
+use Plack::Util::Accessor qw( header );
 
 my %allowed_method = map { $_ => 1 } qw( GET HEAD POST PUT DELETE );
 

@@ -2,7 +2,7 @@ package Plack::Middleware::ErrorDocument;
 use strict;
 use warnings;
 use parent qw(Plack::Middleware);
-__PACKAGE__->mk_accessors(qw(subrequest));
+use Plack::Util::Accessor qw( subrequest );
 
 use HTTP::Status qw(is_error);
 

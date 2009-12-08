@@ -2,9 +2,9 @@ package Plack::Middleware::SimpleContentFilter;
 use strict;
 use warnings;
 use parent qw( Plack::Middleware );
-__PACKAGE__->mk_accessors(qw(filter));
 
 use Plack::Util;
+use Plack::Util::Accessor qw( filter );
 
 sub call {
     my $self = shift;

@@ -2,7 +2,7 @@ package Plack::App::Cascade;
 use strict;
 use base qw(Plack::Middleware);
 
-__PACKAGE__->mk_accessors(qw(apps catch codes));
+use Plack::Util::Accessor qw(apps catch codes);
 
 sub add {
     my $self = shift;

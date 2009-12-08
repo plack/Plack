@@ -1,12 +1,11 @@
 package Plack::Middleware;
 use strict;
 use warnings;
-use parent qw/Class::Accessor::Fast/;
 use Carp ();
 use Plack::Util;
 use overload '&{}' => sub { shift->to_app(@_) }, fallback => 1;
 
-__PACKAGE__->mk_accessors(qw/app/);
+use Plack::Util::Accessor qw( app );
 
 sub new {
     my $proto = shift;
@@ -20,6 +19,11 @@ sub new {
     }
 
     $self;
+}
+
+sub mk_accessors {
+    my $self = shift;
+    Plack::Util::Accessor::mk_accessors( ref( $self ) || $self, @_ )
 }
 
 sub import {

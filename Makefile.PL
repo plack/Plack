@@ -10,7 +10,6 @@ name 'Plack';
 all_from 'lib/Plack.pm';
 readme_from 'lib/Plack.pm';
 
-requires 'Class::Accessor::Fast';
 requires 'LWP', 5.814; # HTTP::Status, HTTP::Headers and HTTP::Request
 requires 'URI';
 requires 'Pod::Usage';  # plackup
