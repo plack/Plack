@@ -62,6 +62,7 @@ lib/Plack/App/File.pm
 lib/Plack/App/PSGIBin.pm
 lib/Plack/App/URLMap.pm
 lib/Plack/Builder.pm
+lib/Plack/Component.pm
 lib/Plack/HTTPParser.pm
 lib/Plack/HTTPParser/PP.pm
 lib/Plack/Loader.pm
@@ -99,6 +100,7 @@ lib/Plack/Test/MockHTTP.pm
 lib/Plack/Test/Server.pm
 lib/Plack/Test/Suite.pm
 lib/Plack/Util.pm
+lib/Plack/Util/Accessor.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
@@ -147,6 +149,7 @@ t/Plack-Server/fcgi.t
 t/Plack-Server/fcgi_client.t
 t/Plack-Server/standalone-prefork.t
 t/Plack-Server/standalone.t
+t/Plack-Test/2args.t
 t/Plack-Test/cookie.t
 t/Plack-Test/hello.t
 t/Plack-Test/hello_server.t

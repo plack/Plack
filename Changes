@@ -1,5 +1,12 @@
 Revision history for Perl extension Plack
 
+0.9021 Tue Dec  8 14:29:08 PST 2009
+        - Doc patches to Plack about CONTRIBUTING (stevan)
+        - Remove Class::Accessor::Fast and added Plack::Util::Accessor (stevan)
+        - Added Plack::Component the common base class for both App:: and Middleware (stevan)
+        - Plack::Test test_psgi now accepts $app, $client in positional args
+        - Plack::Test client callback can now omit host names like $cb->(GET "/")
+
 0.9020 Mon Dec  7 10:38:37 GMT 2009
         - Fixed a test (psgibin.t) failure in case sensitive filesystem
         - Fixed a warning in Plack::Util::header_set
