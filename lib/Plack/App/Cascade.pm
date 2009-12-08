@@ -1,6 +1,6 @@
 package Plack::App::Cascade;
 use strict;
-use base qw(Plack::Middleware);
+use base qw(Plack::Component);
 
 use Plack::Util::Accessor qw(apps catch codes);
 

@@ -1,7 +1,7 @@
 package Plack::App::File;
 use strict;
 use warnings;
-use parent qw/Plack::Middleware/;
+use parent qw/Plack::Component/;
 use File::Spec::Unix;
 use Path::Class 'dir';
 use Plack::Util;
