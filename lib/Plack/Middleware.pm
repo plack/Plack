@@ -4,6 +4,7 @@ use warnings;
 use Carp ();
 use parent qw(Plack::Component);
 use Plack::Util;
+use Plack::Util::Accessor qw( app );
 
 sub import {
     my $class = shift;

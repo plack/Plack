@@ -5,8 +5,6 @@ use Carp ();
 use Plack::Util;
 use overload '&{}' => sub { shift->to_app(@_) }, fallback => 1;
 
-use Plack::Util::Accessor qw( app );
-
 sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;
