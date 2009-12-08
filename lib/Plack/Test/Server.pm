@@ -21,6 +21,7 @@ sub test_psgi {
             my $port = shift;
             my $cb = sub {
                 my $req = shift;
+                $req->uri->scheme('http');
                 $req->uri->host($args{host} || '127.0.0.1');
                 $req->uri->port($port);
                 return $ua->request($req);

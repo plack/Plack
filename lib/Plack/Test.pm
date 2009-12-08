@@ -11,6 +11,9 @@ sub test_psgi {
     eval "require Plack::Test::$Impl;";
     die $@ if $@;
     no strict 'refs';
+    if (@_ == 2) {
+        @_ = (app => $_[0], client => $_[1]);
+    }
     &{"Plack::Test::$Impl\::test_psgi"}(@_);
 }
 
@@ -26,6 +29,7 @@ Plack::Test - Test PSGI applications with various backends
 
   use Plack::Test;
 
+  # named params
   test_psgi
       app => sub {
           my $env = shift;
@@ -38,6 +42,17 @@ Plack::Test - Test PSGI applications with various backends
           like $res->content, qr/Hello World/;
       };
 
+   use HTTP::Request::Common;
+
+   # positional params (app, client)
+   my $app = sub { return [ 200, [], [ "Hello "] ] };
+   test_psgi $app, sub {
+       my $cb = shift;
+       my $res = $cb->(GET "/");
+       is $res->content, "Hello";
+   };
+
+
 =head1 DESCRIPTION
 
 Plack::Test is an unified interface to test PSGI applications using
@@ -46,6 +61,32 @@ to run PSGI applications in various ways, by default using C<MockHTTP>
 backend but can also use C<Server> backend, which uses one of
 L<Plack::Server> implementations to run the web server to do live HTTP
 requests.
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item test_psgi
+
+  test_psgi $app, $client;
+  test_psgi app => $app, client => $client;
+
+Runs the client test code C<$client> against a PSGI application
+C<$app>. The client callback gets one argument C<$cb>, that is a
+callback that accepts an HTTP::Request object and returns an
+HTTP::Response object.
+
+For the convenience, HTTP::Request given to the callback is
+automatically adjusted to the correct protocol (I<http>) and host
+names (I<127.0.0.1> by default), so the following code just works.
+
+  use HTTP::Request::Common;
+  test_psgi $app, sub {
+      my $cb = shift;
+      my $res = $cb->(GET "/hello");
+  };
+
+=back
 
 =head1 OPTIONS
 
