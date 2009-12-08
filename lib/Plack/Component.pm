@@ -31,8 +31,11 @@ sub mk_accessors {
     Plack::Util::Accessor::mk_accessors( ref( $self ) || $self, @_ )
 }
 
+sub prepare_app { return }
+
 sub to_app {
     my $self = shift;
+    $self->prepare_app;
     return sub { $self->call(@_) };
 }
 
