@@ -17,7 +17,8 @@ Plack - PSGI reference implementation and utilities
 Plack is a set of PSGI reference server implementations and helper
 utilities for Web application frameworks, exactly like Ruby's Rack.
 
-See L<PSGI> for the PSGI specification.
+See L<PSGI> for the PSGI specification and L<PSGI::FAQ> to know what
+PSGI and Plack are and why we need them.
 
 =head1 MODULES AND UTILITIES
 
