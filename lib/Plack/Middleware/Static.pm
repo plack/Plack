@@ -4,7 +4,7 @@ use warnings;
 use parent qw/Plack::Middleware/;
 use Plack::App::File;
 
-__PACKAGE__->mk_accessors(qw( path root encoding ));
+use Plack::Util::Accessor qw( path root encoding );
 
 sub call {
     my $self = shift;

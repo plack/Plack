@@ -8,7 +8,7 @@ use Plack::Util;
 use HTTP::Date;
 use MIME::Types;
 
-__PACKAGE__->mk_accessors(qw( root encoding ));
+use Plack::Util::Accessor qw( root encoding );
 
 sub should_handle {
     my($self, $file) = @_;

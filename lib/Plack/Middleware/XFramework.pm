@@ -2,9 +2,9 @@ package Plack::Middleware::XFramework;
 use strict;
 use warnings;
 use parent qw/Plack::Middleware/;
-__PACKAGE__->mk_accessors(qw/framework/);
 
 use Plack::Util;
+use Plack::Util::Accessor qw( framework );
 
 sub call {
     my $self = shift;
