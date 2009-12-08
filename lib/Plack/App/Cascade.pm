@@ -10,13 +10,10 @@ sub add {
     push @{$self->apps}, @_;
 }
 
-sub to_app {
+sub prepare_app {
     my $self = shift;
-
     my %codes = map { $_ => 1 } @{ $self->catch || [ 404 ] };
     $self->codes(\%codes);
-
-    $self->SUPER::to_app;
 }
 
 sub call {

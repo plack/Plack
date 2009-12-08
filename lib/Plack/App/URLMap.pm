@@ -25,41 +25,40 @@ sub map {
     push @{$self->{_mapping}}, [ $host, $location, $app ];
 }
 
-sub to_app {
+sub prepare_app {
     my $self = shift;
-
     # sort by path length
-    my $mapping = [
+    $self->{_sorted_mapping} = [
         map  { [ @{$_}[2..4] ] }
         sort { $b->[0] <=> $a->[0] || $b->[1] <=> $a->[1] }
         map  { [ ($_->[0] ? length $_->[0] : 0), length($_->[1]), @$_ ] } @{$self->{_mapping}},
     ];
+}
 
-    return sub {
-        my $env = shift;
+sub call {
+    my ($self, $env) = @_;
 
-        my $path_info   = $env->{PATH_INFO};
-        my $script_name = $env->{SCRIPT_NAME};
+    my $path_info   = $env->{PATH_INFO};
+    my $script_name = $env->{SCRIPT_NAME};
 
-        my($http_host, $server_name) = @{$env}{qw( HTTP_HOST SERVER_NAME )};
+    my($http_host, $server_name) = @{$env}{qw( HTTP_HOST SERVER_NAME )};
 
-        for my $map (@$mapping) {
-            my($host, $location, $app) = @$map;
-            my $path = $path_info; # copy
-            no warnings 'uninitialized';
-            next unless not defined $host     or
-                        $http_host   eq $host or
-                        $server_name eq $host;
-            next unless $location eq '' or $path =~ s!\Q$location\E!!;
-            next unless $path eq '' or $path =~ m!/!;
+    for my $map (@{ $self->{_sorted_mapping} }) {
+        my($host, $location, $app) = @$map;
+        my $path = $path_info; # copy
+        no warnings 'uninitialized';
+        next unless not defined $host     or
+                    $http_host   eq $host or
+                    $server_name eq $host;
+        next unless $location eq '' or $path =~ s!\Q$location\E!!;
+        next unless $path eq '' or $path =~ m!/!;
 
-            local $env->{PATH_INFO}  = $path;
-            local $env->{SCRIPT_NAME} = $script_name . $location;
-            return $app->($env);
-        }
+        local $env->{PATH_INFO}  = $path;
+        local $env->{SCRIPT_NAME} = $script_name . $location;
+        return $app->($env);
+    }
 
-        return [404, [ 'Content-Type' => 'text/plain' ], [ "Not Found" ]];
-    };
+    return [404, [ 'Content-Type' => 'text/plain' ], [ "Not Found" ]];
 }
 
 1;
