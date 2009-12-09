@@ -81,7 +81,6 @@ lib/Plack/Middleware/JSONP.pm
 lib/Plack/Middleware/Lint.pm
 lib/Plack/Middleware/MethodOverride.pm
 lib/Plack/Middleware/RearrangeHeaders.pm
-lib/Plack/Middleware/Restarter.pm
 lib/Plack/Middleware/SimpleContentFilter.pm
 lib/Plack/Middleware/StackTrace.pm
 lib/Plack/Middleware/Static.pm
