@@ -35,7 +35,8 @@ sub test_fcgi_standalone {
         },
         client => sub {
             $callback->($http_port, $fcgi_port);
-        }
+        },
+        port => $http_port,
     );
 }
 
