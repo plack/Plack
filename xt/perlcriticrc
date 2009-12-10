@@ -1,2 +1,7 @@
 [TestingAndDebugging::ProhibitNoStrict]
 allow=refs
+
+[-Subroutines::ProhibitSubroutinePrototypes]
+
+[BuiltinFunctions::ProhibitStringyEval]
+allow_includes=1

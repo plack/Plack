@@ -486,7 +486,7 @@ Plack::Test::Suite is a test suite to test a new PSGI server implementation.
 
 =head1 AUTHOR
 
-Tokuhiro Matsuo
+Tokuhiro Matsuno
 
 Tatsuhiko Miyagawa
 

@@ -83,7 +83,7 @@ Plack::Middleware::Lint - Validate request and response
   my $app = sub { ... }; # your app or middleware
   $app = Plack::Middleware::Lint->wrap($app);
 
-=head1 DEESCRIPTION
+=head1 DESCRIPTION
 
 Plack::Middleware::Lint is a middleware to validate request and
 response environment. Handy to validate missing parameters etc. when

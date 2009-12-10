@@ -1,4 +1,5 @@
 package Plack::Middleware::JSONP;
+use strict;
 use parent qw(Plack::Middleware);
 use Plack::Util;
 use URI::Escape ();
