@@ -12,6 +12,7 @@ API
 AnyEvent
 CGI
 CPAN
+Cascadable
 Coro
 DSL
 FCGI
@@ -19,11 +20,15 @@ FastCGI
 HTTP
 HUP
 IP
+IRC
 Kazuhiro Osawa
 Kazuho Oku
+Kogman
+Middlewares
 MockHTTP
 Mojo
 Mojo's
+Namespaces
 OO
 Oku's
 PSGI
@@ -34,23 +39,32 @@ ServerSimple
 Tatsuhiko Miyagawa
 Tokuhiro Matsuno
 URI
+URLMap
 XS
+Yuval
 app
 backend
 callback
+cgi
 coroutine
 env
 fallback
 filename
+github
 hookout
 hostname
+hostnames
+http
 https
 implementors
 internet
 middleware
+middlewares
 multithread
 namespace
+namespaces
 natively
+nopaste
 param
 plackup
 pm
