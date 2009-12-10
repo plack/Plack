@@ -37,7 +37,7 @@ __END__
 
 Plack::App::Cascade - Cascadable compound application
 
-=head1 SYSNOPSIS
+=head1 SYNOPSIS
 
   use Plack::App::Cascade;
   use Plack::App::URLMap;

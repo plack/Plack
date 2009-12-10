@@ -102,7 +102,7 @@ L<irc://irc.perl.org/#plack> or email. You could also fork on github
 =head2 Module Namespaces
 
 Modules added to the Plack:: sub-namespaces should be reasonably generic
-components which are useful as builing blocks and not just simply using
+components which are useful as building blocks and not just simply using
 Plack.
 
 Middleware authors are free to use the Plack::Middleware:: namespace for

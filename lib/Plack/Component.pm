@@ -47,7 +47,7 @@ __END__
 
 Plack::Component - Base class for PSGI endpoints
 
-=head1 SYNOPOSIS
+=head1 SYNOPSIS
 
   package Plack::App::Foo;
   use parent qw( Plack::Component );
@@ -76,7 +76,7 @@ Plack::App::* you should inherit from this directly.
 =item call ($env)
 
 You are expected to implement a C<call> method in your component. This is
-where all the work gets done. It recieves the PSGI C<$env> hash-ref as an
+where all the work gets done. It receives the PSGI C<$env> hash-ref as an
 argument and is expected to return a proper PSGI response value.
 
 =back
@@ -105,7 +105,7 @@ instead.
 
 =back
 
-=head1 BACKWARDS COMPATABILITY
+=head1 BACKWARDS COMPATIBILITY
 
 The L<Plack::Middleware> module used to inherit from L<Class::Accessor::Fast>,
 which has been removed in favor of the L<Plack::Util::Accessor> module. When
@@ -114,7 +114,7 @@ like so:
 
   use Plack::Util::Accessor qw( foo bar baz );
 
-However, in order to keep backwards compatability this module provides a
+However, in order to keep backwards compatibility this module provides a
 C<mk_accessors> method similar to L<Class::Accessor::Fast>. New code should
 not use this and use L<Plack::Util::Accessor> instead.
 

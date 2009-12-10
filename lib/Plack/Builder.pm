@@ -135,7 +135,7 @@ is syntactically equal to:
   $app = Plack::Middleware::Bar->wrap($app, opt => "val");
   $app = Plack::Middleware::Foo->wrap($app);
 
-In other words, you're suposed to C<add> middleware from outer to inner.
+In other words, you're supposed to C<add> middleware from outer to inner.
 
 =head1 URLMap support
 

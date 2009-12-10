@@ -40,7 +40,7 @@ Plack::App::CGIBin - cgi-bin replacement for Plack servers
 =head1 DESCRIPTION
 
 Plack::App::CGIBin allows you to load CGI scripts from a directory and
-convert them into a (persistent) PSGI applicaiton. This application
+convert them into a (persistent) PSGI application. This application
 uses L<CGI::Compile> to compile a cgi script into a sub (like
 L<ModPerl::Registry>) and then run it using L<CGI::Emulate::PSGI>.
 

@@ -68,7 +68,7 @@ Starts the server process and when a request comes in, run the PSGI application 
 
 Optional interface if your server should run in parallel with other
 event loop, particularly L<AnyEvent>. This is the same as C<run> but
-doen's run the main loop.
+doesn't run the main loop.
 
 =back
 
