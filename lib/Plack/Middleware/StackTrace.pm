@@ -31,6 +31,11 @@ sub call {
         $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ $body ]];
     }
 
+    # break $trace here since $SIG{__DIE__} holds the ref to it, and
+    # $trace has refs to Standalone.pm's args ($conn etc.) and
+    # prevents garbage collection to be happening.
+    undef $trace;
+
     return $res;
 }
 
