@@ -1,8 +1,10 @@
 package Plack::Middleware::Lint;
 use strict;
 no warnings;
-use Carp;
+use Carp ();
 use parent qw(Plack::Middleware);
+use Scalar::Util qw(blessed);
+use Plack::Util;
 
 sub call {
     my $self = shift;
@@ -61,11 +63,33 @@ sub validate_env {
 
 sub validate_res {
     my ($self, $res) = @_;
+
     unless (ref($res) and ref($res) eq 'ARRAY' || ref($res) eq 'CODE') {
         Carp::croak('response should be arrayref or coderef');
     }
-    if (scalar(@$res) == 3 && !ref($res)) {
-        Carp::croak('third elements in response arrayref should be reference');
+
+    return unless ref $res eq 'ARRAY';
+
+    unless (@$res == 3) {
+        Carp::croak('response needs to be 3 element array');
+    }
+
+    unless ($res->[0] =~ /^\d+$/ && $res->[0] >= 100) {
+        Carp::croak('status code needs to be an integer greater than or equal to 100');
+    }
+
+    unless (ref $res->[1] eq 'ARRAY') {
+        Carp::croak('Headers needs to be an array ref');
+    }
+
+    unless (ref $res->[2] eq 'ARRAY' ||
+            Plack::Util::is_real_fh($res->[2]) ||
+            (blessed($res->[2]) && $res->[2]->can('getline'))) {
+        Carp::croak('body should be an array ref or filehandle');
+    }
+
+    if (ref $res->[2] eq 'ARRAY' && grep utf8::is_utf8($_), @{$res->[2]}) {
+        Carp::croak('body must be bytes and should not contain wide characters (UTF-8 strings).');
     }
 }
 
