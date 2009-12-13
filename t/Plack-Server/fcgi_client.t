@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires qw(FCGI FCGI::Client);
+use Test::Requires { FCGI => 0, 'FCGI::Client' => 0.03 };
 use Plack;
 use Plack::Server::FCGI;
 use Test::TCP;
