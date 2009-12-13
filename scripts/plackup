@@ -48,6 +48,10 @@ GetOptions(
 pod2usage(0) if $help;
 lib->import(@includes) if @includes;
 
+if ($eval) {
+    push @modules, 'Plack::Builder';
+}
+
 for (@modules) {
     my($module, @import) = split /[=,]/;
     eval "require $module" or die $@;
