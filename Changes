@@ -1,5 +1,15 @@
 Revision history for Perl extension Plack
 
+0.9022 Sun Dec 13 10:53:01 PST 2009
+        - Added more assertions to Middleware::Lint
+        - Added a new test to test big HTTP header, which reeals the FCGI::Client bug (zrail, tokuhirom)
+        - plackup -e now automatically loads Plack::Builder
+        - Fixed fcgi tests (tokuhirom)
+        - Fixed Test::MockHTTP to make 500 response when the app died
+        - Fixed a memory leak in StackTrace when WithLexicals is used (chiba, Sartak)
+        - Fixed Middleware::ConditionalGET to deal with stupid IE headers (chiba)
+        - Fixed lots of typos (Sartak)
+
 0.9021 Tue Dec  8 14:29:08 PST 2009
         - Doc patches to Plack about CONTRIBUTING (stevan)
         - Remove Class::Accessor::Fast and added Plack::Util::Accessor (stevan)

@@ -125,6 +125,7 @@ t/Plack-Middleware/error_document.t
 t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html
 t/Plack-Middleware/jsonp.t
+t/Plack-Middleware/lint.t
 t/Plack-Middleware/method_override.t
 t/Plack-Middleware/order.t
 t/Plack-Middleware/prefix.t
