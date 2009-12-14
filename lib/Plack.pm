@@ -119,6 +119,11 @@ examples of these (L<Plack::App::File>, L<Plack::App::Directory>, etc.).
 It is recommended that you inherit from L<Plack::Component> for these
 types of modules.
 
+B<DO NOT USE> Plack:: namespace to build a new web application or a
+framework. It's like naming your application under CGI:: namespace if
+it's supposed to run on CGI and that is a really bad choice and
+confuse people.
+
 =head1 AUTHORS
 
 Tatsuhiko Miyagawa
