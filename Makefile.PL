@@ -27,6 +27,8 @@ requires 'Filesys::Notify::Simple'; # plackup -r
 requires 'Path::Class';
 requires 'MIME::Types';
 
+requires 'Parallel::Prefork'; # Server::Standalone::Prefork
+
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
 test_requires 'Test::Requires';
