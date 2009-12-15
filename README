@@ -90,6 +90,11 @@ CONTRIBUTING
     etc.). It is recommended that you inherit from Plack::Component for
     these types of modules.
 
+    DO NOT USE Plack:: namespace to build a new web application or a
+    framework. It's like naming your application under CGI:: namespace if
+    it's supposed to run on CGI and that is a really bad choice and confuse
+    people.
+
 AUTHORS
     Tatsuhiko Miyagawa
 

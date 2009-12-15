@@ -43,3 +43,17 @@ auto_include;
 auto_install;
 auto_set_repository;
 WriteAll;
+
+warn <<RECOMMENDS;
+
+  This is Plack, PSGI toolkit containing servers, middleware and utils.
+
+  To run the default backends faster with XS extensions, as well as run some server
+  backends like Prefork and FCGI, you need to install additional Perl module dependencies,
+  that are included in Task::Plack bundle. You're recommended to run
+
+    cpan> install Task::Plack
+
+  once this distribution is installed. Enjoy!
+
+RECOMMENDS
