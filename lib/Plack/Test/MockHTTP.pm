@@ -16,7 +16,8 @@ sub test_psgi {
 
     my $cb = sub {
         my $req = shift;
-        $req->uri->scheme('http');
+        $req->uri->scheme('http')    unless defined $req->uri->scheme;
+        $req->uri->host('localhost') unless defined $req->uri->host;
         my $env = $req->to_psgi;
         my $res;
         try {
