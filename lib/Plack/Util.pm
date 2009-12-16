@@ -93,12 +93,19 @@ sub foreach {
     }
 }
 
-sub load_psgi {
-    my $file = shift;
+sub class_to_file {
+    my $class = shift;
+    $class =~ s!::!/!g;
+    $class . ".pm";
+}
 
-    my $app = do $file;
+sub load_psgi {
+    my $stuff = shift;
+
+    my $file = $stuff =~ /^[a-zA-Z0-9\_\:]+$/ ? class_to_file($stuff) : $stuff;
+    my $app = require $file;
     return $app->to_app if $app and Scalar::Util::blessed($app) and $app->can('to_app');
-    return $app if $app and ref $app eq 'CODE' or overload::Method($app, '&{}');
+    return $app if $app and (ref $app eq 'CODE' or overload::Method($app, '&{}'));
 
     if (my $e = $@ || $!) {
         die "Can't load $file: $e";
