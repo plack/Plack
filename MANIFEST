@@ -157,8 +157,11 @@ t/Plack-Test/suite.t
 t/Plack-Util/foreach.t
 t/Plack-Util/headers.t
 t/Plack-Util/headers_obj.t
+t/Plack-Util/Hello.pm
+t/Plack-Util/hello.psgi
 t/Plack-Util/io_with_path.t
 t/Plack-Util/is_real_fh.t
+t/Plack-Util/load.t
 xt/perlcriticrc
 xt/pod.t
 xt/podspell.t
