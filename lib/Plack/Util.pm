@@ -335,11 +335,25 @@ the binary file, unless otherwise set in the caller's code.
 
 =item load_psgi
 
-  my $app = Plack::Util::load_psgi $app_psgi;
+  my $app = Plack::Util::load_psgi $psgi_file_or_class;
 
-Load C<app.psgi> file and evaluate the code to get PSGI application
-handler. If the file can't be loaded (e.g. file doesn't exist or has a
-perl syntax error), it will throw an exception.
+Load C<app.psgi> file or a class name (like C<MyApp::PSGI>) and
+require the file to get PSGI application handler. If the file can't be
+loaded (e.g. file doesn't exist or has a perl syntax error), it will
+throw an exception.
+
+B<Security>: If you give this function a class name or module name
+that is loadable from your system, it will load the module. This could
+lead to a security hole:
+
+  my $psgi = ...; # user-input: consider "Moose.pm"
+  $app = Plack::Util::load_psgi($psgi); # this does 'require "Moose.pm"'!
+
+Be sure to validate the argument passed to this function. If you do
+not want to accept an arbitrary class name but only load from a file
+path, make sure that the argument C<$psgi_file_or_class> begins with
+C</> so that Perl's built-in require function won't search the include
+path.
 
 =item run_app
 
