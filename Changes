@@ -1,5 +1,11 @@
 Revision history for Perl extension Plack
 
+0.9023 Thu Dec 17 13:16:38 PST 2009
+        - Document the use of Plack:: namespace
+        - Use safer Unicode characters in tests to silence warnings #66
+        - Plack::Util::load_psgi now takes a class name as well. Added notes about the security of its use
+        - Set default host in MockHTTP and keep them if explicitly set (nihen)
+
 0.9022 Sun Dec 13 10:53:01 PST 2009
         - Added more assertions to Middleware::Lint
         - Added a new test to test big HTTP header, which reeals the FCGI::Client bug (zrail, tokuhirom)
