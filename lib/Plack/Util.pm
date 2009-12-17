@@ -349,11 +349,12 @@ lead to a security hole:
   my $psgi = ...; # user-input: consider "Moose.pm"
   $app = Plack::Util::load_psgi($psgi); # this does 'require "Moose.pm"'!
 
-Be sure to validate the argument passed to this function. If you do
-not want to accept an arbitrary class name but only load from a file
-path, make sure that the argument C<$psgi_file_or_class> begins with
-C</> so that Perl's built-in require function won't search the include
-path.
+Generally speaking, passing an external input to this function is
+considered very insecure. But if you really want to do that, be sure
+to validate the argument passed to this function. Also, if you do not
+want to accept an arbitrary class name but only load from a file path,
+make sure that the argument C<$psgi_file_or_class> begins with C</> so
+that Perl's built-in require function won't search the include path.
 
 =item run_app
 
