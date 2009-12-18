@@ -112,7 +112,7 @@ sub monitor_loop {
 sub load { shift->wrapper(load => @_) }
 sub auto {
     unless ($ENV{PLACK_SERVER}) {
-        warn "Automatic server selection is disabled with plackup -r. Set it with -s or PLACK_SERVER\n";
+        warn "Automatic server selection is disabled with plackup -r or -R. Set it with -s or PLACK_SERVER\n";
     }
     shift->wrapper(auto => @_);
 }
