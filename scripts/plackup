@@ -15,7 +15,7 @@ my $port   = 5000;
 my $env    = "development";
 my $help   = 0;
 my $backend;
-my $reload;
+my @reload;
 my @includes;
 my @modules;
 
@@ -40,8 +40,8 @@ GetOptions(
     "e=s"          => \$eval,
     'I=s@'         => \@includes,
     'M=s@'         => \@modules,
-    'r|reload'     => sub { $reload = [ '.' ] },
-    'R|Reload=s'   => sub { $reload = [ split ",", $_[1] ] },
+    'r|reload'     => sub { push @reload, '.'; },
+    'R|Reload=s'   => sub { push @reload, split ",", $_[1] },
     "h|help",      => \$help,
 );
 
@@ -87,9 +87,12 @@ if ($env eq 'development') {
 
 my($loader, $app);
 
-if ($reload) {
+if (@reload) {
+    my %seen;
+    @reload = grep !$seen{$_}++, @reload;
+    warn "plackup: Watching ", join(", ", @reload), " for changes\n";
     require Plack::Loader::Reloadable;
-    $loader = Plack::Loader::Reloadable->new($reload);
+    $loader = Plack::Loader::Reloadable->new(\@reload);
     $app = $handler;
 } else {
     $loader = 'Plack::Loader';
