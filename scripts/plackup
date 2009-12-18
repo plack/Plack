@@ -2,6 +2,7 @@
 use strict;
 use lib "lib";
 use Cwd;
+use File::Basename;
 use Getopt::Long;
 use Plack::Loader;
 use Plack::Util;
@@ -16,6 +17,7 @@ my $env    = "development";
 my $help   = 0;
 my $backend;
 my @reload;
+my $reload;
 my @includes;
 my @modules;
 
@@ -40,7 +42,7 @@ GetOptions(
     "e=s"          => \$eval,
     'I=s@'         => \@includes,
     'M=s@'         => \@modules,
-    'r|reload'     => sub { push @reload, 'lib', glob("*.psgi"); },
+    'r|reload'     => sub { $reload = 1 },
     'R|Reload=s'   => sub { push @reload, split ",", $_[1] },
     "h|help",      => \$help,
 );
@@ -87,9 +89,10 @@ if ($env eq 'development') {
 
 my($loader, $app);
 
-if (@reload) {
-    my %seen;
-    @reload = grep !$seen{$_}++, @reload;
+if ($reload or @reload) {
+    if ($reload) {
+        push @reload, $eval ? "lib" : ( File::Basename::dirname($psgi) . "/lib", $psgi );
+    }
     warn "plackup: Watching ", join(", ", @reload), " for changes\n";
     require Plack::Loader::Reloadable;
     $loader = Plack::Loader::Reloadable->new(\@reload);
