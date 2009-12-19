@@ -1,5 +1,8 @@
 Revision history for Perl extension Plack
 
+0.9024 Sat Dec 19 12:25:52 PST 2009
+        - Overwhauled how -r and -R works in plackup. Looks at .psgi and lib/ under that by default.
+
 0.9023 Thu Dec 17 13:16:38 PST 2009
         - Document the use of Plack:: namespace
         - Use safer Unicode characters in tests to silence warnings #66
