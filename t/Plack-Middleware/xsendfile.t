@@ -21,7 +21,8 @@ test_psgi app => $handler, client => sub {
         my $req = GET "http://localhost/t/00_compile.t", 'X-Sendfile-Type' => 'X-Sendfile';
         my $res = $cb->($req);
         is $res->content_type, 'application/x-troff';;
-        is $res->header('X-Sendfile'), Cwd::realpath("t/00_compile.t");
+        # Can fail on Win32 when drive letter (C:) is uppercase instead of lowercase
+        is lc $res->header('X-Sendfile'), lc Cwd::realpath("t/00_compile.t");
         is $res->content, '';
     }
 };
