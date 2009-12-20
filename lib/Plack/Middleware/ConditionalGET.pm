@@ -8,7 +8,6 @@ sub call {
     my $env  = shift;
 
     my $res = $self->app->($env);
-    return $res unless ref $res eq 'ARRAY';
     return $res unless $env->{REQUEST_METHOD} =~ /^(GET|HEAD)$/;
 
     $self->response_cb($res, sub {
