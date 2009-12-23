@@ -39,6 +39,7 @@ sub new {
         timeout            => $args{timeout} || 300,
         max_keepalive_reqs => $args{max_keepalive_reqs} || 1,
         keepalive_timeout  => $args{keepalive_timeout} || 2,
+        server_software    => $args{server_software} || "$class/$Plack::VERSION",
     }, $class;
 
     $self;
@@ -151,7 +152,7 @@ sub handle_connection {
     my $conn_value;
     my @lines = (
         "Date: @{[HTTP::Date::time2str()]}\015\012",
-        "Server: Plack-Server-Standalone/$Plack::VERSION\015\012",
+        "Server: $self->{server_software}\015\012",
     );
 
     Plack::Util::header_iter($res->[1], sub {
