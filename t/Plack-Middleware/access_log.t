@@ -34,6 +34,7 @@ my $test = sub {
 
 {
     $test->("%D")->(GET "/");
+    chomp $log;
     is $log, '-';
 }
 
