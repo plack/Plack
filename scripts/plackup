@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 use strict;
 use lib "lib";
-use Cwd;
 use File::Basename;
 use Getopt::Long;
 use Plack::Loader;
