@@ -142,7 +142,8 @@ line options and pass that to C<run> method of this class.
 C<run> method does exactly the same thing as the L<plackup> script
 does, but one notable addition is that you can pass a PSGI application
 code reference directly with C<--app> option, rather than via C<.psgi>
-file path or with C<-e> switch.
+file path or with C<-e> switch. This would be useful if you want to
+make an installable PSGI application.
 
 Also, when C<-h> or C<--help> switch is passed, the usage text is
 automatically extracted from your own script using L<Pod::Usage>.
