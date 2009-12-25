@@ -67,7 +67,7 @@ traversal) or the file is there but not readable, this middleware will
 return a 403 Forbidden response.
 
 The content type returned will be determined from the file extension
-based on L<MIME::Types>.
+based on L<Plack::MIME>.
 
 =head1 CONFIGURATIONS
 

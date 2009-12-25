@@ -29,7 +29,7 @@ my %test = (
         {
             my $path = "00_compile.t";
             my $res = $cb->(GET "http://localhost/$path");
-            is $res->content_type, 'application/x-troff', 'ok case';
+            is $res->content_type, 'text/troff', 'ok case';
             like $res->content, qr/use Test::More/;
             is -s $path, length($res->content);
             my $content = do { open my $fh, "<", $path; binmode $fh; join '', <$fh> };

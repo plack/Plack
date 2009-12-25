@@ -5,8 +5,8 @@ use parent qw/Plack::Component/;
 use File::Spec::Unix;
 use Path::Class 'dir';
 use Plack::Util;
+use Plack::MIME;
 use HTTP::Date;
-use MIME::Types;
 
 use Plack::Util::Accessor qw( root encoding );
 
@@ -45,20 +45,10 @@ sub call {
     return $self->serve_path($env, $file);
 }
 
-sub mime_type_for {
-    my $self = shift;
-    my $file = shift;
-    my $type;
-    if ($file =~ /.*\.(\S{1,})$/xms ) {
-        $type = (MIME::Types::by_suffix $1)[0];
-    }
-    return $type || 'text/plain';
-}
-
 sub serve_path {
     my($self, $env, $file) = @_;
 
-    my $content_type = $self->mime_type_for($file);
+    my $content_type = Plack::MIME->mime_type($file) || 'text/plain';
 
     if ($content_type =~ m!^text/!) {
         $content_type .= "; charset=" . ($self->encoding || "utf-8");
