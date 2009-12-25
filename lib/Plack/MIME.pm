@@ -181,8 +181,10 @@ sub mime_type {
 }
 
 sub add_type {
-    my($class, $ext, $type) = @_;
-    $MIME_TYPES->{lc $ext} = $type;
+    my $class = shift;
+    while (my($ext, $type) = splice @_, 0, 2) {
+        $MIME_TYPES->{lc $ext} = $type;
+    }
 }
 
 sub set_fallback {
