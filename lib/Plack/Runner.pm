@@ -89,7 +89,7 @@ sub run {
 
     $psgi ||= $argv[0] || "app.psgi";
     my $app = $eval               ? build { eval $eval or die $@ }
-            : ref $psgi eq 'CODE' ? $psgi
+            : ref $psgi eq 'CODE' ? sub   { $psgi }
             :                       build { Plack::Util::load_psgi $psgi };
 
     if ($env eq 'development') {
