@@ -25,7 +25,7 @@ sub call {
             return;
         }
 
-        my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : { $body->getline };
+        my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : sub { $body->getline };
 
         my $timer_body = Plack::Util::inline_object(
             getline => sub {
