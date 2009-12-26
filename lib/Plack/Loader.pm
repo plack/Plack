@@ -53,7 +53,7 @@ Plack::Loader - (auto)load Plack Servers
   Plack::Loader->auto(%args)->run($app);
 
   # specify the implementation with a name
-  Plack::Loader->load('ServerSimple', %args)->run($app);
+  Plack::Loader->load('Standalone::Prefork', %args)->run($app);
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ hashes.
 
 =item PLACK_SERVER
 
-  env PLACK_SERVER=ServerSimple ...
+  env PLACK_SERVER=AnyEvent ...
 
 Plack users can specify the specific implementation they want to load
 using the C<PLACK_SERVER> environment variable.
