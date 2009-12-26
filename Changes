@@ -1,5 +1,14 @@
 Revision history for Perl extension Plack
 
+0.9025 Sat Dec 26 10:11:59 JST 2009
+        - Server::Standalone::* should now display the correct Server: value
+        - Fixed a bug in AccessLog::Timed where %D and %T do not work
+        - Fixed a bug in AccessLog::Timed to work with filehandles
+        - Removed a dependency to MIME::Types and include Plack::MIME
+        - Refactored plackup into Plack::Runner
+        - Fixed a failing test under stupid Win32 filesystem
+        - Fixed ConditioanlGET to work with delayed response
+
 0.9024 Sat Dec 19 12:25:52 PST 2009
         - Overwhauled how -r and -R works in plackup. Looks at .psgi and lib/ under that by default.
 

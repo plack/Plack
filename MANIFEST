@@ -20,6 +20,7 @@ eg/dot-psgi/frameworks/Squatting.psgi
 eg/dot-psgi/Hello.psgi
 eg/dot-psgi/image.psgi
 eg/dot-psgi/plack-req.psgi
+eg/dot-psgi/runnable.psgi
 eg/dot-psgi/slowapp.psgi
 eg/dot-psgi/static.psgi
 eg/dot-psgi/static/index.html
@@ -48,7 +49,6 @@ inc/Test/Base.pm
 inc/Test/Base/Filter.pm
 inc/Test/Builder.pm
 inc/Test/Builder/Module.pm
-inc/Test/Exception.pm
 inc/Test/More.pm
 inc/Test/Requires.pm
 inc/Test/TCP.pm
@@ -87,6 +87,8 @@ lib/Plack/Middleware/Static.pm
 lib/Plack/Middleware/Writer.pm
 lib/Plack/Middleware/XFramework.pm
 lib/Plack/Middleware/XSendfile.pm
+lib/Plack/MIME.pm
+lib/Plack/Runner.pm
 lib/Plack/Server.pm
 lib/Plack/Server/Apache1.pm
 lib/Plack/Server/Apache2.pm
@@ -142,6 +144,9 @@ t/Plack-Middleware/urlmap_env.t
 t/Plack-Middleware/writer.t
 t/Plack-Middleware/xframework.t
 t/Plack-Middleware/xsendfile.t
+t/Plack-MIME/add_type.t
+t/Plack-MIME/basic.t
+t/Plack-MIME/fallback.t
 t/Plack-Server/apache1.t
 t/Plack-Server/apache2.t
 t/Plack-Server/cgi.t
