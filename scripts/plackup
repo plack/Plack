@@ -125,6 +125,6 @@ options are available.
 
 =head1 SEE ALSO
 
-L<Plack::Loader>
+L<Plack::Runner> L<Plack::Loader>
 
 =cut

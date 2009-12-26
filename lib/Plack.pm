@@ -49,13 +49,16 @@ would be loaded (via perl's core function C<do>) to return the PSGI
 application code reference. See eg/dot-psgi directory for the example
 C<.psgi> files.
 
-=head2 plackup
+=head2 plackup, Plack::Runner
 
 L<plackup> is a command line launcher to run PSGI applications from
 command line using L<Plack::Loader> to load PSGI backends. It can be
 used to run standalone servers and FastCGI daemon processes. Other
 server backends like Apache2 needs a separate configuration but
 C<.psgi> application file can still be the same.
+
+If you want to write your own frontend that replaces, or adds
+functionalities to L<plackup>, take a look at L<Plack::Runner> module.
 
 =head2 Plack::Middleware
 
