@@ -31,12 +31,17 @@ sub response_cb {
         my $filter_cb = $cb->($res);
         # If response_cb returns a callback, treat it as a $body filter
         if (defined $filter_cb && ref $filter_cb eq 'CODE') {
+            Plack::Util::header_remove($res->[1], 'Content-Length');
             if (defined $res->[2]) {
                 my $body    = $res->[2];
-                my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : sub { $body->getline };
-                $res->[2] = Plack::Util::inline_object
-                    getline => sub { $filter_cb->($getline->()) },
-                    close => sub { $body->close if ref $body ne 'ARRAY' };
+                if (ref $body eq 'ARRAY') {
+                    $res->[2] = [ map $filter_cb->($_), @$body ];
+                } else {
+                    my $getline = sub { $body->getline };
+                    $res->[2] = Plack::Util::inline_object
+                        getline => sub { $filter_cb->($getline->()) },
+                        close => sub { $body->close };
+                }
             } else {
                 return $filter_cb;
             }
