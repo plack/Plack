@@ -4,7 +4,7 @@ use Plack::Test;
 use Plack::Builder;
 
 my $app = sub {
-    return [ 200, [ 'Content-Type' => 'text/plain', 'Content-Length' => 9 ], [ 'Hello Foo' ] ];
+    return [ 200, [ 'Content-Type' => 'text/plain', 'Content-Length' => 9 ], [ 'Hello ', 'Foo' ] ];
 };
 
 $app = builder {

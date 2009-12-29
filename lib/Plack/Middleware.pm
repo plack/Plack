@@ -33,10 +33,12 @@ sub response_cb {
         if (defined $filter_cb && ref $filter_cb eq 'CODE') {
             Plack::Util::header_remove($res->[1], 'Content-Length');
             if (defined $res->[2]) {
-                my $body    = $res->[2];
-                if (ref $body eq 'ARRAY') {
-                    $res->[2] = [ map $filter_cb->($_), @$body ];
+                if (ref $res->[2] eq 'ARRAY') {
+                    for my $line (@{$res->[2]}) {
+                        $line = $filter_cb->($line);
+                    }
                 } else {
+                    my $body    = $res->[2];
                     my $getline = sub { $body->getline };
                     $res->[2] = Plack::Util::inline_object
                         getline => sub { $filter_cb->($getline->()) },
