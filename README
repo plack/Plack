@@ -31,12 +31,15 @@ MODULES AND UTILITIES
     be loaded (via perl's core function "do") to return the PSGI application
     code reference. See eg/dot-psgi directory for the example ".psgi" files.
 
-  plackup
+  plackup, Plack::Runner
     plackup is a command line launcher to run PSGI applications from command
     line using Plack::Loader to load PSGI backends. It can be used to run
     standalone servers and FastCGI daemon processes. Other server backends
     like Apache2 needs a separate configuration but ".psgi" application file
     can still be the same.
+
+    If you want to write your own frontend that replaces, or adds
+    functionalities to plackup, take a look at Plack::Runner module.
 
   Plack::Middleware
     PSGI middleware is a PSGI application that wraps existent PSGI

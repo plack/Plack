@@ -115,6 +115,7 @@ t/Plack-HTTPParser-PP/simple.t
 t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
 t/Plack-Middleware/auth_basic.t
+t/Plack-Middleware/auth_basic_simple.t
 t/Plack-Middleware/cascade.t
 t/Plack-Middleware/cgi-bin/hello.cgi
 t/Plack-Middleware/cgi-bin/hello2.cgi
@@ -126,6 +127,7 @@ t/Plack-Middleware/content_length.t
 t/Plack-Middleware/error_document.t
 t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html
+t/Plack-Middleware/htpasswd
 t/Plack-Middleware/jsonp.t
 t/Plack-Middleware/lint.t
 t/Plack-Middleware/method_override.t
