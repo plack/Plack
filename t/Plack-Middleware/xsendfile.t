@@ -7,6 +7,10 @@ use Plack::Builder;
 use Plack::Test;
 use Cwd;
 
+sub is_wo_case($$;$) {
+    is lc $_[0], lc $_[1], $_[2];
+}
+
 my $handler = builder {
     enable "Plack::Middleware::XSendfile";
     enable "Plack::Middleware::Static",
@@ -21,8 +25,7 @@ test_psgi app => $handler, client => sub {
         my $req = GET "http://localhost/t/00_compile.t", 'X-Sendfile-Type' => 'X-Sendfile';
         my $res = $cb->($req);
         is $res->content_type, 'text/troff';;
-        # Can fail on Win32 when drive letter (C:) is uppercase instead of lowercase
-        is lc $res->header('X-Sendfile'), lc Cwd::realpath("t/00_compile.t");
+        is_wo_case $res->header('X-Sendfile'), Cwd::realpath("t/00_compile.t"); # wo_case for Win32--
         is $res->content, '';
     }
 };
