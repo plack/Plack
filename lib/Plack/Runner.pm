@@ -5,7 +5,6 @@ use File::Basename;
 use Getopt::Long;
 use Plack::Loader;
 use Plack::Util;
-use Pod::Usage ();
 use Try::Tiny;
 
 sub new {
@@ -57,7 +56,11 @@ sub run {
         "h|help",      => \$help,
     );
 
-    Pod::Usage::pod2usage(0) if $help;
+    if ($help) {
+        require Pod::Usage;
+        Pod::Usage::pod2usage(0);
+    }
+
     lib->import(@includes) if @includes;
 
     if ($eval) {
