@@ -121,7 +121,7 @@ sub run_app($$) {
         $app->($env);
     } catch {
         my $body = "Internal Server Error";
-        $env->{'psgi.errors'}->print($@);
+        $env->{'psgi.errors'}->print($_);
         return [ 500, [ 'Content-Type' => 'text/plain', 'Content-Length' => length($body) ], [ $body ] ];
     }
 }
