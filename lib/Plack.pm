@@ -10,7 +10,7 @@ __END__
 
 =head1 NAME
 
-Plack - PSGI reference implementation and utilities
+Plack - PSGI toolkit and servers
 
 =head1 DESCRIPTION
 

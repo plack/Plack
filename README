@@ -1,5 +1,5 @@
 NAME
-    Plack - PSGI reference implementation and utilities
+    Plack - PSGI toolkit and servers
 
 DESCRIPTION
     Plack is a set of PSGI reference server implementations and helper
