@@ -21,7 +21,7 @@ Plack::Server - Standard interface for Plack implementations
   sub run {
       my($self, $app) = @_;
       # launch the server and run $app in the loop
-　}
+  }
 
   # then from command line
   plackup -s +FooBarServer -a app.psgi
