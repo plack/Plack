@@ -81,6 +81,7 @@ lib/Plack/Middleware/JSONP.pm
 lib/Plack/Middleware/Lint.pm
 lib/Plack/Middleware/MethodOverride.pm
 lib/Plack/Middleware/RearrangeHeaders.pm
+lib/Plack/Middleware/Runtime.pm
 lib/Plack/Middleware/SimpleContentFilter.pm
 lib/Plack/Middleware/StackTrace.pm
 lib/Plack/Middleware/Static.pm
@@ -135,6 +136,7 @@ t/Plack-Middleware/order.t
 t/Plack-Middleware/prefix.t
 t/Plack-Middleware/psgibin.t
 t/Plack-Middleware/rearrange_headers.t
+t/Plack-Middleware/runtime.t
 t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/stacktrace.t
 t/Plack-Middleware/static.t

@@ -1,5 +1,9 @@
 Revision history for Perl extension Plack
 
+0.9027 Sun Jan  3 16:33:23 PST 2010
+        - Added new middleware Runtime that adds X-Runtime header
+        - Delay load Pod::Usage in Plack::Runner and plackup
+
 0.9026 Fri Jan  1 10:35:26 JST 2010
         - Auth::Basic now accepts an object that duck types to ->authenticate (e.g. Authen::Simple)
         - Reworked how response_cb body callback works, so Content-Length will be updated correctly
