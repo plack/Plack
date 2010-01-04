@@ -344,6 +344,8 @@ our @TEST = (
         },
         sub {
             my $env = shift;
+            open my $io, '>', \my $error;
+            $env->{'psgi.errors'} = $io;
             die "Throwing an exception from app handler. Server shouldn't crash.";
         },
     ],
