@@ -32,6 +32,11 @@ sub call {
     my $conn = FCGI::Client::Connection->new(sock => $sock);
     my $input = delete $env->{'psgi.input'};
     my $content_in = do { local $/; <$input> };
+
+    for my $key (keys %$env) {
+        delete $env->{$key} if $key =~ /^psgi\./;
+    }
+
     my ($stdout, $stderr) = $conn->request(
         $env,
         $content_in,
