@@ -45,6 +45,7 @@ sub handler {
         'psgi.multithread'    => Plack::Util::FALSE,
         'psgi.multiprocess'   => Plack::Util::TRUE,
         'psgi.run_once'       => Plack::Util::FALSE,
+        'psgi.streaming'      => Plack::Util::TRUE,
     };
 
     my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
@@ -55,7 +56,27 @@ sub handler {
     $env->{SCRIPT_NAME} = $location;
     $env->{PATH_INFO}   = $path_info;
 
-    my($status, $headers, $body) = @{ $app->($env) };
+    my $res = $app->($env);
+
+    if (ref $res eq 'ARRAY') {
+        _handle_response($r, $res);
+    }
+    elsif (ref $res eq 'CODE') {
+        $res->(sub {
+            _handle_response($r, $_[0]);
+        });
+    }
+    else {
+        die "Bad response $res";
+    }
+
+    return Apache2::Const::OK;
+}
+
+sub _handle_response {
+    my ($r, $res) = @_;
+
+    my ($status, $headers, $body) = @{ $res };
 
     my $hdrs = ($status >= 200 && $status < 300)
         ? $r->headers_out : $r->err_headers_out;
@@ -75,9 +96,14 @@ sub handler {
 
     if (Scalar::Util::blessed($body) and $body->can('path') and my $path = $body->path) {
         $r->sendfile($path);
-    } else {
+    } elsif (defined $body) {
         Plack::Util::foreach($body, sub { $r->print(@_) });
         $r->rflush;
+    }
+    else {
+        return Plack::Util::inline_object
+            write => sub { $r->print(@_); $r->rflush },
+            close => sub { $r->rflush };
     }
 
     return Apache2::Const::OK;
