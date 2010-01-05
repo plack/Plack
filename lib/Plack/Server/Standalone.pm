@@ -90,6 +90,7 @@ sub accept_loop {
                     'psgi.run_once'     => Plack::Util::FALSE,
                     'psgi.multithread'  => Plack::Util::FALSE,
                     'psgi.multiprocess' => Plack::Util::FALSE,
+                    'psgi.streaming'    => Plack::Util::TRUE,
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server
