@@ -149,7 +149,6 @@ sub handle_connection {
         }
     }
 
-    my $conn_value;
     my @lines = (
         "Date: @{[HTTP::Date::time2str()]}\015\012",
         "Server: $self->{server_software}\015\012",
