@@ -49,7 +49,7 @@ sub handler {
 
     my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
     my $location = $r->location || "/";
-       $location =~ s!/$!!;
+       $location =~ s{/$}{};
     (my $path_info = $vpath) =~ s/^\Q$location\E//;
 
     $env->{SCRIPT_NAME} = $location;
