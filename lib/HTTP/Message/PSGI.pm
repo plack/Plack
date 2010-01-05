@@ -74,7 +74,9 @@ sub res_from_psgi {
     my $res = HTTP::Response->new($status);
     $res->headers->header(@$headers) if @$headers;
 
-    if (ref $body eq 'ARRAY') {
+    if (!defined $body) {
+        # noop
+    } elsif (ref $body eq 'ARRAY') {
         $res->content(join '', @$body);
     } else {
         local $/ = \4096;
