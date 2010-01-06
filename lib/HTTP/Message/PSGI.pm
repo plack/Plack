@@ -33,7 +33,13 @@ sub req_to_psgi {
     # Plack::Request :/
     utf8::downgrade $$uri;
 
-    open my $input, "<", \do { $req->content };
+    my $input;
+    my $content = $req->content;
+    if (ref $content eq 'CODE') {
+        $input = HTTP::Message::PSGI::ChunkedInput->new($content);
+    } else {
+        open $input, "<", \$content;
+    }
 
     my $env = {
         PATH_INFO         => URI::Escape::uri_unescape($uri->path),
@@ -137,6 +143,26 @@ sub HTTP::Response::from_psgi {
     my $class = shift;
     res_from_psgi(@_);
 }
+
+package
+    HTTP::Message::PSGI::ChunkedInput;
+
+sub new {
+    my($class, $content) = @_;
+    bless { content => $content }, $class;
+}
+
+sub read {
+    my $self = shift;
+    my $chunk = $self->{content}->();
+    return 0 unless defined $chunk;
+    $_[0] = $chunk;
+    return length $chunk;
+}
+
+sub close { }
+
+package HTTP::Message::PSGI;
 
 1;
 
