@@ -84,6 +84,7 @@ sub run {
             'psgi.multithread'  => Plack::Util::FALSE,
             'psgi.multiprocess' => Plack::Util::TRUE,
             'psgi.run_once'     => Plack::Util::FALSE,
+            'psgi.streaming'    => Plack::Util::TRUE,
         };
 
         # If we're running under Lighttpd, swap PATH_INFO and SCRIPT_NAME if PATH_INFO is empty
@@ -96,19 +97,42 @@ sub run {
         }
 
         my $res = Plack::Util::run_app $app, $env;
-        print "Status: $res->[0]\n";
-        my $headers = $res->[1];
-        while (my ($k, $v) = splice @$headers, 0, 2) {
-            print "$k: $v\n";
+
+        if (ref $res eq 'ARRAY') {
+            $self->_handle_response($res);
         }
-        print "\n";
-
-        my $body = $res->[2];
-        my $cb = sub { print STDOUT $_[0] };
-
-        Plack::Util::foreach($body, $cb);
+        elsif (ref $res eq 'CODE') {
+            $res->(sub {
+                $self->_handle_response($_[0]);
+            });
+        }
+        else {
+            die "Bad response $res";
+        }
 
         $proc_manager && $proc_manager->pm_post_dispatch();
+    }
+}
+
+sub _handle_response {
+    my ($self, $res) = @_;
+
+    print "Status: $res->[0]\n";
+    my $headers = $res->[1];
+    while (my ($k, $v) = splice @$headers, 0, 2) {
+        print "$k: $v\n";
+    }
+    print "\n";
+
+    my $cb = sub { print STDOUT $_[0] };
+    my $body = $res->[2];
+    if (defined $body) {
+        Plack::Util::foreach($body, $cb);
+    }
+    else {
+        return Plack::Util::inline_object
+            write => $cb,
+            close => sub { };
     }
 }
 

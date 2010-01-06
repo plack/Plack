@@ -90,6 +90,7 @@ sub accept_loop {
                     'psgi.run_once'     => Plack::Util::FALSE,
                     'psgi.multithread'  => Plack::Util::FALSE,
                     'psgi.multiprocess' => Plack::Util::FALSE,
+                    'psgi.streaming'    => Plack::Util::TRUE,
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server
@@ -149,6 +150,22 @@ sub handle_connection {
         }
     }
 
+    if (ref $res eq 'ARRAY') {
+        $self->_handle_response($res, $conn, \$use_keepalive);
+    } elsif (ref $res eq 'CODE') {
+        $res->(sub {
+            $self->_handle_response($_[0], $conn, \$use_keepalive);
+        });
+    } else {
+        die "Bad response $res";
+    }
+
+    return $use_keepalive;
+}
+
+sub _handle_response {
+    my($self, $res, $conn, $use_keepalive_r) = @_;
+
     my @lines = (
         "Date: @{[HTTP::Date::time2str()]}\015\012",
         "Server: $self->{server_software}\015\012",
@@ -157,18 +174,18 @@ sub handle_connection {
     Plack::Util::header_iter($res->[1], sub {
         my ($k, $v) = @_;
         if (lc $k eq 'connection') {
-            $use_keepalive = undef
-                if $use_keepalive && lc $v ne 'keep-alive';
+            $$use_keepalive_r = undef
+                if $$use_keepalive_r && lc $v ne 'keep-alive';
         } else {
             push @lines, "$k: $v\015\012";
         }
     });
-    if ($use_keepalive) {
-        $use_keepalive = undef
+    if ($$use_keepalive_r) {
+        $$use_keepalive_r = undef
             unless Plack::Util::header_exists($res->[1], 'Content-Length');
     }
     push @lines, "Connection: keep-alive\015\012"
-        if $use_keepalive;
+        if $$use_keepalive_r;
     unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012";
     push @lines, "\015\012";
 
@@ -177,7 +194,7 @@ sub handle_connection {
 
     if ($HasSendFile && Plack::Util::is_real_fh($res->[2])) {
         $self->sendfile_all($conn, $res->[2], $self->{timeout});
-    } else {
+    } elsif (defined $res->[2]) {
         my $err;
         my $done;
         {
@@ -201,8 +218,11 @@ sub handle_connection {
                 die $err;
             }
         }
+    } else {
+        return Plack::Util::inline_object
+            write => sub { $self->write_all($conn, $_[0], $self->{timeout}) },
+            close => sub { };
     }
-    $use_keepalive;
 }
 
 # returns 1 if socket is ready, undef on timeout

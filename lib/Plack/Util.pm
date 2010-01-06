@@ -27,7 +27,7 @@ sub load_class {
 sub is_real_fh ($) {
     my $fh = shift;
 
-    my $reftype = Scalar::Util::reftype($fh);
+    my $reftype = Scalar::Util::reftype($fh) or return;
     if (   $reftype eq 'IO'
         or $reftype eq 'GLOB' && *{$fh}{IO}
     ) {

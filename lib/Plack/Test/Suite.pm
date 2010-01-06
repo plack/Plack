@@ -438,6 +438,59 @@ our @TEST = (
             ];
         },
     ],
+    [
+        'coderef res',
+        sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/?name=miyagawa");
+            return if $res->code == 501;
+
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            is $res->content, 'Hello, name=miyagawa';
+        },
+        sub {
+            my $env = shift;
+            $env->{'psgi.streaming'} or return [ 501, ['Content-Type','text/plain'], [] ];
+            return sub {
+                my $respond = shift;
+                $respond->([
+                    200,
+                    [ 'Content-Type' => 'text/plain', ],
+                    [ 'Hello, ' . $env->{QUERY_STRING} ],
+                ]);
+            }
+        },
+     ],
+    [
+        'coderef streaming',
+        sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/?name=miyagawa");
+            return if $res->code == 501;
+
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            is $res->content, 'Hello, name=miyagawa';
+        },
+        sub {
+            my $env = shift;
+            $env->{'psgi.streaming'} or return [ 501, ['Content-Type','text/plain'], [] ];
+
+            return sub {
+                my $respond = shift;
+
+                my $writer = $respond->([
+                    200,
+                    [ 'Content-Type' => 'text/plain', ],
+                ]);
+
+                $writer->write("Hello, ");
+                $writer->write($env->{QUERY_STRING});
+                $writer->close();
+            }
+        },
+     ],
 );
 
 sub runtests {

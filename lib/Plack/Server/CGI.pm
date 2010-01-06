@@ -20,7 +20,23 @@ sub run {
     $env{'psgi.multithread'}  = 1==0;
     $env{'psgi.multiprocess'} = 1==1;
     $env{'psgi.run_once'}     = 1==1;
+    $env{'psgi.streaming'}    = 1==1;
     my $res = $app->(\%env);
+    if (ref $res eq 'ARRAY') {
+        $self->_handle_response($res);
+    }
+    elsif (ref $res eq 'CODE') {
+        $res->(sub {
+            $self->_handle_response($_[0]);
+        });
+    }
+    else {
+        die "Bad response $res";
+    }
+}
+
+sub _handle_response {
+    my ($self, $res) = @_;
     print "Status: $res->[0]\n";
     my $headers = $res->[1];
     while (my ($k, $v) = splice(@$headers, 0, 2)) {
@@ -36,14 +52,30 @@ sub run {
         for my $line (@$body) {
             $cb->($line) if length $line;
         }
-    } else {
+    }
+    elsif (defined $body) {
         local $/ = \4096 unless ref $/;
         while (defined(my $line = $body->getline)) {
             $cb->($line) if length $line;
         }
         $body->close;
     }
+    else {
+        return Plack::Server::CGI::Writer->new;
+    }
 }
+
+package Plack::Server::CGI::Writer;
+
+sub new {
+    return bless \do { my $x }, $_[0];
+}
+
+sub write {
+    print $_[1];
+}
+
+sub close { }
 
 1;
 __END__

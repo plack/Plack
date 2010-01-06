@@ -41,18 +41,38 @@ sub handler {
         'psgi.multithread'    => Plack::Util::FALSE,
         'psgi.multiprocess'   => Plack::Util::TRUE,
         'psgi.run_once'       => Plack::Util::FALSE,
+        'psgi.streaming'      => Plack::Util::TRUE,
     };
 
     my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
 
     my $location = $r->location || "/";
-       $location =~ s!/$!!;
+       $location =~ s{/$}{};
     (my $path_info = $vpath) =~ s/^\Q$location\E//;
 
     $env->{SCRIPT_NAME} = $location;
     $env->{PATH_INFO}   = $path_info;
 
-    my($status, $headers, $body) = @{ $app->($env) };
+    my $res = $app->($env);
+
+    if (ref $res eq 'ARRAY') {
+        _handle_response($r, $res);
+    }
+    elsif (ref $res eq 'CODE') {
+        $res->(sub {
+            _handle_response($r, $_[0]);
+        });
+    }
+    else {
+        die "Bad response $res";
+    }
+
+    return OK;
+}
+
+sub _handle_response {
+    my ($r, $res) = @_;
+    my ($status, $headers, $body) = @{ $res };
 
     my $hdrs = ($status >= 200 && $status < 300)
         ? $r->headers_out : $r->err_headers_out;
@@ -69,13 +89,18 @@ sub handler {
     $r->status($status);
     $r->send_http_header;
 
-    if(Plack::Util::is_real_fh($body)) {
-	$r->send_fd($body);
-    } else {
-        Plack::Util::foreach($body, sub { $r->print(@_) });
+    if (defined $body) {
+        if (Plack::Util::is_real_fh($body)) {
+            $r->send_fd($body);
+        } else {
+            Plack::Util::foreach($body, sub { $r->print(@_) });
+        }
     }
-
-    return OK;
+    else {
+        return Plack::Util::inline_object
+            write => sub { $r->print(@_) },
+            close => sub { };
+    }
 }
 
 1;
