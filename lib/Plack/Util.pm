@@ -229,11 +229,11 @@ sub can {
 }
 
 sub AUTOLOAD {
-    my ($self, @args) = @_;
+    my $self = shift;
     my $attr = $AUTOLOAD;
     $attr =~ s/.*://;
     if (ref($self->{$attr}) eq 'CODE') {
-        $self->{$attr}->(@args);
+        $self->{$attr}->(@_);
     } else {
         Carp::croak(qq/Can't locate object method "$attr" via package "Plack::Util::Prototype"/);
     }
