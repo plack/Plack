@@ -4,6 +4,7 @@ Changes
 eg/dot-psgi/cgi-pm.psgi
 eg/dot-psgi/cgi-script.psgi
 eg/dot-psgi/Dumper.psgi
+eg/dot-psgi/echo-stream-sync.psgi
 eg/dot-psgi/echo-stream.psgi
 eg/dot-psgi/echo.psgi
 eg/dot-psgi/error.psgi

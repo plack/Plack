@@ -1,5 +1,11 @@
 Revision history for Perl extension Plack
 
+0.9028 Tue Jan  5 18:42:07 PST 2010
+        - Fixed a long standing bug where errors are not printed correctly when the
+          application dies. (tokuhirom)
+        - Fixed FCGIClient passing bogus psgi.* environment values to the backend
+        - Implemented psgi.streaming in all blocking servers (miyagawa, rafl)
+
 0.9027 Sun Jan  3 16:33:23 PST 2010
         - Added new middleware Runtime that adds X-Runtime header
         - Delay load Pod::Usage in Plack::Runner and plackup
