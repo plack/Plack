@@ -17,7 +17,7 @@ test_psgi $app, sub {
     my $cb = shift;
     my $res = $cb->(GET "/");
 
-    ok $res->header('X-Runtime') > 1;
+    ok $res->header('X-Runtime') >= 1;
 };
 
 done_testing;
