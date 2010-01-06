@@ -1,7 +1,6 @@
 sub author_tests  { }
 sub use_test_base { warn "You need to install Test::Base to run make test from git clone" }
 sub readme_from   { }
-sub install_share { warn "You need to install Module::Install::Share to install from git clone" }
 sub auto_set_repository { }
 
 use inc::Module::Install;
