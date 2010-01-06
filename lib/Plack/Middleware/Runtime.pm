@@ -8,12 +8,12 @@ use Time::HiRes;
 sub call {
     my($self, $env) = @_;
 
-    my $start = Time::HiRes::gettimeofday;
+    my $start = [ Time::HiRes::gettimeofday ];
     my $res = $self->app->($env);
 
     $self->response_cb($res, sub {
         my $res = shift;
-        my $req_time = sprintf '%.6f', Time::HiRes::gettimeofday - $start;
+        my $req_time = sprintf '%.6f', Time::HiRes::tv_interval($start);
         Plack::Util::header_set($res->[1], 'X-Runtime', $req_time);
     });
 }
