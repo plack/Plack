@@ -36,7 +36,7 @@ sub req_to_psgi {
     my $input;
     my $content = $req->content;
     if (ref $content eq 'CODE') {
-        if ($req->content_length) {
+        if (defined $req->content_length) {
             $input = HTTP::Message::PSGI::ChunkedInput->new($content);
         } else {
             $req->header("Transfer-Encoding" => "chunked");
