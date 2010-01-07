@@ -127,6 +127,10 @@ framework. It's like naming your application under CGI:: namespace if
 it's supposed to run on CGI and that is a really bad choice and
 confuse people.
 
+=head1 COPYRIGHT
+
+Copyright 2009- Tatsuhiko Miyagawa
+
 =head1 AUTHORS
 
 Tatsuhiko Miyagawa
