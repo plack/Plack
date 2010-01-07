@@ -41,13 +41,13 @@ sub _handle_response {
     *STDOUT->autoflush(1);
 
     my $hdrs;
-    $hdrs = "Status: $res->[0]\n";
+    $hdrs = "Status: $res->[0]\015\012";
 
     my $headers = $res->[1];
     while (my ($k, $v) = splice(@$headers, 0, 2)) {
-        $hdrs .= "$k: $v\n";
+        $hdrs .= "$k: $v\015\012";
     }
-    $hdrs .= "\n";
+    $hdrs .= "\015\012";
 
     print STDOUT $hdrs;
 
