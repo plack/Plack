@@ -491,6 +491,19 @@ our @TEST = (
             }
         },
      ],
+     [
+         'CRLF output and FCGI parse bug',
+        sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/");
+
+            is $res->header("Foo"), undef;
+            is $res->content, "Foo: Bar\r\n\r\nHello World";
+        },
+        sub {
+            return [ 200, [ "Content-Type", "text/plain" ], [ "Foo: Bar\r\n\r\nHello World" ] ];
+        },
+     ],
 );
 
 sub runtests {

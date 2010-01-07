@@ -89,32 +89,21 @@ sub _render_conf {
     my ($tmpdir, $port, $fcgiport) = @_;
     <<"END";
 # basic lighttpd config file for testing fcgi(external server)+Plack
-server.modules = (
-    "mod_access",
-    "mod_fastcgi",
-    "mod_accesslog"
-)
+server.modules += ("mod_fastcgi")
 
 server.document-root = "$tmpdir"
-
-server.errorlog    = "$tmpdir/error.log"
-accesslog.filename = "$tmpdir/access.log"
 
 server.bind = "127.0.0.1"
 server.port = $port
 
 # HTTP::Engine app specific fcgi setup
 fastcgi.server = (
-    "" => (
-        "FastCgiTest" => (
+    "" => ((
             "check-local"     => "disable",
             "host"            => "127.0.0.1",
             "port"            => $fcgiport,
-            "min-procs"       => 1,
-            "max-procs"       => 1,
             "idle-timeout"    => 20,
-        )
-    )
+    ))
 )
 END
 }
