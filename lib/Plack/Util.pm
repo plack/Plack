@@ -85,7 +85,7 @@ sub foreach {
             $cb->($line) if length $line;
         }
     } else {
-        local $/ = \4096 unless ref $/;
+        local $/ = \65536 unless ref $/;
         while (defined(my $line = $body->getline)) {
             $cb->($line) if length $line;
         }

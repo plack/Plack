@@ -37,12 +37,19 @@ sub run {
 
 sub _handle_response {
     my ($self, $res) = @_;
-    print "Status: $res->[0]\n";
+
+    *STDOUT->autoflush(1);
+
+    my $hdrs;
+    $hdrs = "Status: $res->[0]\n";
+
     my $headers = $res->[1];
     while (my ($k, $v) = splice(@$headers, 0, 2)) {
-        print "$k: $v\n";
+        $hdrs .= "$k: $v\n";
     }
-    print "\n";
+    $hdrs .= "\n";
+
+    print STDOUT $hdrs;
 
     my $body = $res->[2];
     my $cb = sub { print STDOUT $_[0] };
@@ -54,7 +61,7 @@ sub _handle_response {
         }
     }
     elsif (defined $body) {
-        local $/ = \4096 unless ref $/;
+        local $/ = \65536 unless ref $/;
         while (defined(my $line = $body->getline)) {
             $cb->($line) if length $line;
         }

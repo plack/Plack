@@ -117,12 +117,18 @@ sub run {
 sub _handle_response {
     my ($self, $res) = @_;
 
-    print STDOUT "Status: $res->[0]\015\012";
+    *STDOUT->autoflush(1);
+
+    my $hdrs;
+    $hdrs = "Status: $res->[0]\015\012";
+
     my $headers = $res->[1];
     while (my ($k, $v) = splice @$headers, 0, 2) {
-        print STDOUT "$k: $v\015\012";
+        $hdrs .= "$k: $v\015\012";
     }
-    print STDOUT "\015\012";
+    $hdrs .= "\015\012";
+
+    print STDOUT $hdrs;
 
     my $cb = sub { print STDOUT $_[0] };
     my $body = $res->[2];
