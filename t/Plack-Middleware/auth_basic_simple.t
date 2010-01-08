@@ -20,6 +20,10 @@ test_psgi $app, sub {
     $res = $cb->($req);
     is $res->code, 200;
     is $res->content, "Hello admin";
+
+    $req = GET "http://localhost/", "Authorization" => "Basic bogus";
+    $res = $cb->($req);
+    is $res->code, 401;
 };
 done_testing;
 
