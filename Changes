@@ -1,7 +1,7 @@
 Revision history for Perl extension Plack
 
 0.9029 Thu Jan  7 19:09:17 PST 2010
-        - Fixed runtime.t to relax test condition to avodi failures on Win32 (xaicron)
+        - Fixed runtime.t to relax test condition to avoid failures on Win32 (xaicron)
         - Fixed a bug in FCGI engine where it creates a bogus response when running under a
           buffered I/O with lighttpd. (fcharlier, typester)
         - FCGI and CGI server now autoflushes STDOUT to do non-buffering output
