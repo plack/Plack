@@ -21,6 +21,7 @@ test_psgi $app, sub {
     is $res->code, 200;
     is $res->content, "Hello admin";
 
+    local $^W = 0;
     $req = GET "http://localhost/", "Authorization" => "Basic bogus";
     $res = $cb->($req);
     is $res->code, 401;

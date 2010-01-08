@@ -4,7 +4,6 @@ use parent qw(Plack::Middleware);
 use Plack::Util::Accessor qw( realm authenticator );
 use Scalar::Util;
 use MIME::Base64;
-use Try::Tiny;
 
 sub prepare_app {
     my $self = shift;
@@ -24,7 +23,7 @@ sub call {
         or return $self->unauthorized;
 
     if ($auth =~ /^Basic (.*)$/) {
-        my($user, $pass) = split /:/, (try { MIME::Base64::decode($1) } || ":");
+        my($user, $pass) = split /:/, (MIME::Base64::decode($1) || ":");
         $pass = '' unless defined $pass;
         if ($self->authenticator->($user, $pass)) {
             $env->{REMOTE_USER} = $user;
