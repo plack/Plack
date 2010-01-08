@@ -7,5 +7,6 @@ is x ".gif", "image/gif";
 is x "foo.png", "image/png";
 is x "foo.GIF", "image/gif";
 is x "foo.bar", undef;
+is x "foo.mp3", "audio/mpeg";
 
 done_testing;

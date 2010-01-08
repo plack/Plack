@@ -176,8 +176,8 @@ my $fallback = sub { };
 
 sub mime_type {
     my($class, $file) = @_;
-    $file =~ /(\.[a-z]+)$/i or return;
-    $MIME_TYPES->{lc $1} || $fallback->($1);
+    $file =~ /(\.[a-zA-Z0-9]+)$/ or return;
+    $MIME_TYPES->{lc $1} || $fallback->(lc $1);
 }
 
 sub add_type {
