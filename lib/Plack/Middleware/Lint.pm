@@ -63,8 +63,10 @@ sub validate_env {
 sub validate_res {
     my ($self, $res, $streaming) = @_;
 
+    my $croak = $streaming ? \&Carp::confess : \&Carp::croak;
+
     unless (ref($res) and ref($res) eq 'ARRAY' || ref($res) eq 'CODE') {
-        Carp::croak('response should be arrayref or coderef');
+        $croak->('response should be arrayref or coderef');
     }
 
     if (ref $res eq 'CODE') {
@@ -72,15 +74,15 @@ sub validate_res {
     }
 
     unless (@$res == 3 || ($streaming && @$res == 2)) {
-        Carp::croak('response needs to be 3 element array, or 2 element in streaming');
+        $croak->('response needs to be 3 element array, or 2 element in streaming');
     }
 
     unless ($res->[0] =~ /^\d+$/ && $res->[0] >= 100) {
-        Carp::croak('status code needs to be an integer greater than or equal to 100');
+        $croak->('status code needs to be an integer greater than or equal to 100');
     }
 
     unless (ref $res->[1] eq 'ARRAY') {
-        Carp::croak('Headers needs to be an array ref');
+        $croak->('Headers needs to be an array ref');
     }
 
     # @$res == 2 is only right in psgi.streaming, and it's already checked.
@@ -88,11 +90,11 @@ sub validate_res {
             ref $res->[2] eq 'ARRAY' ||
             Plack::Util::is_real_fh($res->[2]) ||
             (blessed($res->[2]) && $res->[2]->can('getline'))) {
-        Carp::croak('body should be an array ref or filehandle');
+        $croak->('body should be an array ref or filehandle');
     }
 
     if (ref $res->[2] eq 'ARRAY' && grep utf8::is_utf8($_), @{$res->[2]}) {
-        Carp::croak('body must be bytes and should not contain wide characters (UTF-8 strings).');
+        $croak->('body must be bytes and should not contain wide characters (UTF-8 strings).');
     }
 
     return $res;
