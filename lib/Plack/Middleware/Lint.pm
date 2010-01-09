@@ -12,8 +12,7 @@ sub call {
 
     $self->validate_env($env);
     my $res = $self->app->($env);
-    $self->validate_res($res);
-    return $res;
+    return $self->validate_res($res);
 }
 
 sub validate_env {
@@ -62,15 +61,17 @@ sub validate_env {
 }
 
 sub validate_res {
-    my ($self, $res) = @_;
+    my ($self, $res, $streaming) = @_;
 
     unless (ref($res) and ref($res) eq 'ARRAY' || ref($res) eq 'CODE') {
         Carp::croak('response should be arrayref or coderef');
     }
 
-    return unless ref $res eq 'ARRAY';
+    if (ref $res eq 'CODE') {
+        return $self->response_cb($res, sub { $self->validate_res(@_, 1) });
+    }
 
-    unless (@$res == 3) {
+    unless (@$res == 3 || ($streaming && @$res == 2)) {
         Carp::croak('response needs to be 3 element array');
     }
 
@@ -82,7 +83,8 @@ sub validate_res {
         Carp::croak('Headers needs to be an array ref');
     }
 
-    unless (ref $res->[2] eq 'ARRAY' ||
+    unless ($streaming ||
+            ref $res->[2] eq 'ARRAY' ||
             Plack::Util::is_real_fh($res->[2]) ||
             (blessed($res->[2]) && $res->[2]->can('getline'))) {
         Carp::croak('body should be an array ref or filehandle');
@@ -91,6 +93,8 @@ sub validate_res {
     if (ref $res->[2] eq 'ARRAY' && grep utf8::is_utf8($_), @{$res->[2]}) {
         Carp::croak('body must be bytes and should not contain wide characters (UTF-8 strings).');
     }
+
+    return $res;
 }
 
 1;
