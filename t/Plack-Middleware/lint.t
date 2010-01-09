@@ -11,6 +11,10 @@ my @bad = map { Plack::Middleware::Lint->wrap($_) } (
     sub { return [ 200, {}, [] ] },
     sub { return [ 0, [], "Hello World" ] },
     sub { return [ 200, [], [ "\x{1234}" ] ] },
+    sub { return [ 200, [], {} ] },
+    sub { return [ 200, [], undef ] },
+    sub { return sub { shift->([ 200, [], {} ]) } },
+    sub { return sub { shift->([ 200, [], undef ]) } },
 );
 
 for my $app (@bad) {

@@ -72,7 +72,7 @@ sub validate_res {
     }
 
     unless (@$res == 3 || ($streaming && @$res == 2)) {
-        Carp::croak('response needs to be 3 element array');
+        Carp::croak('response needs to be 3 element array, or 2 element in streaming');
     }
 
     unless ($res->[0] =~ /^\d+$/ && $res->[0] >= 100) {
@@ -83,7 +83,8 @@ sub validate_res {
         Carp::croak('Headers needs to be an array ref');
     }
 
-    unless ($streaming ||
+    # @$res == 2 is only right in psgi.streaming, and it's already checked.
+    unless (@$res == 2 ||
             ref $res->[2] eq 'ARRAY' ||
             Plack::Util::is_real_fh($res->[2]) ||
             (blessed($res->[2]) && $res->[2]->can('getline'))) {
