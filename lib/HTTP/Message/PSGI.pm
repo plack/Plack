@@ -6,6 +6,7 @@ our @EXPORT = qw( req_to_psgi res_from_psgi );
 
 use Carp ();
 use URI::Escape ();
+use Plack::Util;
 use Try::Tiny;
 
 my $TRUE  = (1 == 1);
@@ -48,6 +49,7 @@ sub req_to_psgi {
         'psgi.multithread'  => $FALSE,
         'psgi.multiprocess' => $FALSE,
         'psgi.run_once'     => $TRUE,
+        'psgi.streaming'    => $TRUE,
         @_,
     };
 
@@ -70,25 +72,55 @@ sub req_to_psgi {
 }
 
 sub res_from_psgi {
-    my($status, $headers, $body) = @{+shift};
-    my $res = HTTP::Response->new($status);
-    $res->headers->header(@$headers) if @$headers;
+    my ($psgi_res) = @_;
 
-    if (!defined $body) {
-        # noop
-    } elsif (ref $body eq 'ARRAY') {
-        $res->content(join '', @$body);
-    } else {
-        local $/ = \4096;
-        my $content;
-        while (defined(my $buf = $body->getline)) {
-            $content .= $buf;
-        }
-        $body->close;
-        $res->content($content);
+    my $res;
+    if (ref $psgi_res eq 'ARRAY') {
+        _res_from_psgi($psgi_res, \$res);
+    }
+    elsif (ref $psgi_res eq 'CODE') {
+        $psgi_res->(sub {
+            _res_from_psgi($_[0], \$res);
+        });
     }
 
     return $res;
+}
+
+sub _res_from_psgi {
+    my ($status, $headers, $body) = @{+shift};
+    my $res_ref = shift;
+
+    my $convert_resp = sub {
+        my $res = HTTP::Response->new($status);
+        $res->headers->header(@$headers) if @$headers;
+
+        if (ref $body eq 'ARRAY') {
+            $res->content(join '', @$body);
+        } else {
+            local $/ = \4096;
+            my $content;
+            while (defined(my $buf = $body->getline)) {
+                $content .= $buf;
+            }
+            $body->close;
+            $res->content($content);
+        }
+
+        ${ $res_ref } = $res;
+
+        return;
+    };
+
+    if (!defined $body) {
+        my $o = Plack::Util::inline_object
+            write => sub { push @{ $body ||= [] }, @_ },
+            close => $convert_resp;
+
+        return $o;
+    }
+
+    $convert_resp->();
 }
 
 sub HTTP::Request::to_psgi {
