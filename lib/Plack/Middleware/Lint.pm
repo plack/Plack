@@ -116,11 +116,14 @@ Plack::Middleware::Lint - Validate request and response
 
 =head1 DESCRIPTION
 
-Plack::Middleware::Lint is a middleware to validate request and
-response environment. Handy to validate missing parameters etc. when
-writing a server or middleware.
+Plack::Middleware::Lint is a middleware component to validate request
+and response environment. You are strongly suggested to use enable
+this middleware when you develop a framework adapter or a new server
+that implements PSGI interface.
 
 =head1 AUTHOR
+
+Tatsuhiko Miyagawa
 
 Tokuhiro Matsuno
 
