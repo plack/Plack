@@ -91,7 +91,7 @@ sub run {
     push @options, host => $host, port => $port;
 
     $psgi ||= $argv[0] || "app.psgi";
-    my $app = $eval               ? build { eval $eval or die $@ }
+    my $app = $eval               ? build { no strict; no warnings; eval $eval or die $@ }
             : ref $psgi eq 'CODE' ? sub   { $psgi }
             :                       build { Plack::Util::load_psgi $psgi };
 
