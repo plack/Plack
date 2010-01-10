@@ -37,6 +37,8 @@ sub response_cb {
                     for my $line (@{$res->[2]}) {
                         $line = $filter_cb->($line);
                     }
+                    # Send EOF.
+                    push @{ $res->[2] }, $filter_cb->( undef );
                 } else {
                     my $body    = $res->[2];
                     my $getline = sub { $body->getline };
