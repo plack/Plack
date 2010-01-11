@@ -107,7 +107,7 @@ __END__
 
 =head1 SEE ALSO
 
-L<Plack::Server::Base>
+L<Plack::Server>
 
 =cut
 
