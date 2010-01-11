@@ -5,6 +5,7 @@ use warnings;
 use Plack::Util;
 use Path::Class;
 use HTTP::Date;
+use Plack::MIME;
 
 # Stolen from rack/directory.rb
 my $dir_file = "<tr><td class='name'><a href='%s'>%s</a></td><td class='size'>%s</td><td class='type'>%s</td><td class='mtime'>%s</td></tr>";
@@ -62,7 +63,7 @@ sub serve_path {
             $url      .= "/";
         }
 
-        my $mime_type = $file->is_dir ? 'directory' : $self->mime_type_for($file);
+        my $mime_type = $file->is_dir ? 'directory' : ( Plack::MIME->mime_type($file) || 'text/plain' );
         my $stat = $file->stat;
 
         push @files, [ $url, $basename, $stat->size, $mime_type, HTTP::Date::time2str($stat->mtime) ];
