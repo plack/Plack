@@ -26,7 +26,6 @@ sub req_to_psgi {
     $uri->host('localhost') unless $uri->host;
     $uri->port(80)          unless $uri->port;
     $uri->host_port($host)  unless !$host || ( $host eq $uri->host_port );
-    $uri = $uri->canonical;
 
     open my $input, "<", \do { $req->content };
 
