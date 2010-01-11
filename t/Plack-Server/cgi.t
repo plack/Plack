@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::Requires {
-    'HTTP::Request::AsCGI' => 1.0,
+    'HTTP::Request::AsCGI' => 1.2,
 };
 use Test::More;
 use FindBin;
