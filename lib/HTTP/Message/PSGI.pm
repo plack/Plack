@@ -169,7 +169,7 @@ L<Plack::Response>.
 
   my $env = req_to_psgi($req [, $key => $val ... ]);
 
-Converts HTTP::Response object into PSGI env hash reference.
+Converts HTTP::Request object into PSGI env hash reference.
 
 =item HTTP::Request::to_psgi
 
