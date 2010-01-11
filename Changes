@@ -1,5 +1,11 @@
 Revision history for Perl extension Plack
 
+0.9031 Mon Jan 11 11:29:04 PST 2010
+        - Fixed Plack::App::Directory directory listing by switching to Plack::MIME (tokuhirom)
+          This has been broken since 0.9025
+        - Fixed body filtering middleware such as Plack::Middleware::Deflater (hiratara)
+          This has been broken since 0.9026
+
 0.9030 Sat Jan  9 13:13:17 PST 2010
         - Support streaming interface in HTTP::Message::PSGI, Lint and Plack::Test (rafl)
         - plackup -e doesn't enable strict and warnings by default, like perl
