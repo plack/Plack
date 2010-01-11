@@ -390,8 +390,8 @@ our @TEST = (
         'REQUEST_URI is set',
         sub {
             my $cb  = shift;
-            my $res = $cb->(GET "http://127.0.0.1/foo/bar%20baz?x=a");
-            is $res->content, '/foo/bar%20baz?x=a';
+            my $res = $cb->(GET "http://127.0.0.1/foo/bar%20baz%73?x=a");
+            is $res->content, '/foo/bar%20baz%73?x=a';
         },
         sub {
             my $env = shift;
