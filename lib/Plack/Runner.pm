@@ -99,7 +99,9 @@ sub run {
         require Plack::Middleware::StackTrace;
         require Plack::Middleware::AccessLog;
         $app = build { Plack::Middleware::StackTrace->wrap($_[0]) } $app;
-        $app = build { Plack::Middleware::AccessLog->wrap($_[0], logger => sub { print STDERR @_ }) } $app;
+        unless ($ENV{GATEWAY_INTERFACE}) {
+            $app = build { Plack::Middleware::AccessLog->wrap($_[0], logger => sub { print STDERR @_ }) } $app;
+        }
     }
 
     my $loader;
