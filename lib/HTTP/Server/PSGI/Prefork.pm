@@ -1,8 +1,8 @@
-package Plack::Server::Standalone::Prefork;
+package HTTP::Server::PSGI::Prefork;
 use strict;
 use warnings;
 
-use parent qw(Plack::Server::Standalone);
+use parent qw(HTTP::Server::PSGI);
 use Parallel::Prefork;
 
 sub new {
@@ -40,18 +40,18 @@ __END__
 
 =head1 NAME
 
-Plack::Server::Standalone::Prefork - Prefork standalone HTTP server
+HTTP::Server::PSGI::Prefork - Prefork standalone HTTP server
 
 =head1 SYNOPSIS
 
-  % plackup -s Standalone::Prefork \
+  % plackup -s Standalone \
       --host 127.0.0.1 --port 9091 --timeout 120 \
       --max-keepalive-reqs 20 --keepalive-timeout 5 \
       --max-workers 10 --max-reqs-per-child 320
 
 =head1 DESCRIPTION
 
-Plack::Server::Standalone::Prefork is a prefork standalone HTTP
+HTTP::Server::PSGI::Prefork is a prefork standalone HTTP
 server. HTTP/1.0 and Keep-Alive requests are supported.
 
 Some features in HTTP/1.1, notably chunked requests, responses and
@@ -63,7 +63,7 @@ pipeline requests are B<NOT> supported yet.
 
 =item host, port, timeout, keepalive-timeout
 
-Same as L<Plack::Server::Standalone>.
+Same as L<HTTP::Server::PSGI>.
 
 =item max-workers
 
@@ -85,6 +85,6 @@ Kazuho Oku
 
 =head1 SEE ALSO
 
-L<Plack::Server::Standalone>
+L<HTTP::Server::PSGI>
 
 =cut
