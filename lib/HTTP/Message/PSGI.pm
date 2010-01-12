@@ -36,7 +36,12 @@ sub req_to_psgi {
     my $input;
     my $content = $req->content;
     if (ref $content eq 'CODE') {
-        $input = HTTP::Message::PSGI::ChunkedInput->new($content);
+        if ($req->content_length) {
+            $input = HTTP::Message::PSGI::ChunkedInput->new($content);
+        } else {
+            $req->header("Transfer-Encoding" => "chunked");
+            $input = HTTP::Message::PSGI::ChunkedInput->new($content, 1);
+        }
     } else {
         open $input, "<", \$content;
     }
@@ -148,15 +153,37 @@ package
     HTTP::Message::PSGI::ChunkedInput;
 
 sub new {
-    my($class, $content) = @_;
-    bless { content => $content }, $class;
+    my($class, $content, $chunked) = @_;
+
+    my $content_cb;
+    if ($chunked) {
+        my $done;
+        $content_cb = sub {
+            my $chunk = $content->();
+            return if $done;
+            unless (defined $chunk) {
+                $done = 1;
+                return "0\015\012\015\012";
+            }
+            return '' unless length $chunk;
+            return sprintf('%x', length $chunk) . "\015\012$chunk\015\012";
+        };
+    } else {
+        $content_cb = $content;
+    }
+
+    bless { content => $content_cb }, $class;
 }
 
 sub read {
     my $self = shift;
+
     my $chunk = $self->{content}->();
     return 0 unless defined $chunk;
-    $_[0] = $chunk;
+
+    $_[0] = '';
+    substr($_[0], $_[2] || 0, length $chunk) = $chunk;
+
     return length $chunk;
 }
 
