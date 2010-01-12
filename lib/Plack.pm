@@ -10,7 +10,7 @@ __END__
 
 =head1 NAME
 
-Plack - PSGI toolkit and servers
+Plack - PSGI toolkit and server adapters
 
 =head1 DESCRIPTION
 
@@ -24,15 +24,16 @@ PSGI and Plack are and why we need them.
 
 =head2 Plack::Server
 
-L<Plack::Server> is a namespace for PSGI server implementations. We
-have Standalone, CGI, FCGI, Apache, AnyEvent, Coro, Danga::Socket and
-many server environments that you can run PSGI applications on.
+L<Plack::Server> and its subclasses contains adapters for PSGI
+servers. We have adapters for Standalone, CGI, FCGI, Apache, AnyEvent,
+Coro, Danga::Socket and many server environments that you can run PSGI
+applications on.
 
-See L<Plack::Server> how to write your own server implementation.
+See L<Plack::Server> how to write your own adapters.
 
 =head2 Plack::Loader
 
-L<Plack::Loader> is a loader to load one of Plack::Server backends and
+L<Plack::Loader> is a loader to load one of Plack::Server adapters and
 run PSGI application code reference with it.
 
 =head2 Plack::Util
