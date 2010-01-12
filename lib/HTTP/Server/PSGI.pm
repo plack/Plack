@@ -1,4 +1,4 @@
-package Plack::Server::Standalone;
+package HTTP::Server::PSGI;
 use strict;
 use warnings;
 
@@ -296,7 +296,7 @@ __END__
 
 =head1 NAME
 
-Plack::Server::Standalone - single process standalone HTTP server
+HTTP::Server::PSGI - Standalone PSGI compatiblle HTTP server
 
 =head1 SYNOPSIS
 
@@ -305,13 +305,13 @@ Plack::Server::Standalone - single process standalone HTTP server
 
 =head1 DESCRIPTION
 
-Plack::Server::Standalone is a default Plack server implementation
-that runs as a standalone, single-process and reasonably fast HTTP
-server. HTTP/1.0 and Keep-Alive requests are supported.
+HTTP::Server::PSGI is a standalone, single-process and PSGI compatible
+HTTP server implementations. It runs reasonably fast and HTTP/1.0 and
+Keep-Alive requests are supported.
 
 This server should be great for the development and testing, but not
-suitable for production. See L<Plack::Server::Standalone::Prefork> if
-you want a multi-process prefork server.
+suitable for production. See L<HTTP::Server::PSGI::Prefork> if you
+want a multi-process prefork server.
 
 Some features in HTTP/1.1, notably chunked requests, responses and
 pipeline requests are B<NOT> supported yet.
