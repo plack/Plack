@@ -40,6 +40,7 @@ sub new {
         max_keepalive_reqs => $args{max_keepalive_reqs} || 1,
         keepalive_timeout  => $args{keepalive_timeout} || 2,
         server_software    => $args{server_software} || "$class/$Plack::VERSION",
+        server_ready       => $args{server_ready} || sub {},
     }, $class;
 
     $self;
@@ -60,7 +61,8 @@ sub setup_listener {
         Proto     => 'tcp',
         ReuseAddr => 1,
     ) or die "failed to listen to port $self->{port}:$!";
-    warn ref($self), ": Accepting connections at http://$self->{host}:$self->{port}/\n";
+
+    $self->{server_ready}->($self);
 }
 
 sub accept_loop {

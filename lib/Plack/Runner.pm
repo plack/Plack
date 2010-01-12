@@ -102,6 +102,11 @@ sub run {
         unless ($ENV{GATEWAY_INTERFACE}) {
             $app = build { Plack::Middleware::AccessLog->wrap($_[0], logger => sub { print STDERR @_ }) } $app;
         }
+
+        push @options, server_ready => sub {
+            my($server) = @_;
+            print STDERR ref($server), ": Accepting connections at http://$server->{host}:$server->{port}/\n";
+        };
     }
 
     my $loader;
