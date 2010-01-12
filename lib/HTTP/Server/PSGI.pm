@@ -300,8 +300,15 @@ HTTP::Server::PSGI - Standalone PSGI compatiblle HTTP server
 
 =head1 SYNOPSIS
 
-  % plackup -s Standalone \
-      --host 127.0.0.1 --port 9091 --timeout 120
+  use HTTP::Server::PSGI;
+
+  my $server = HTTP::Server::PSGI->new(
+      host => "127.0.0.1",
+      port => 9091,
+      timeout => 120,
+  );
+
+  $server->run($app);
 
 =head1 DESCRIPTION
 
@@ -315,32 +322,6 @@ want a multi-process prefork server.
 
 Some features in HTTP/1.1, notably chunked requests, responses and
 pipeline requests are B<NOT> supported yet.
-
-=head1 CONFIGURATIONS
-
-=over 4
-
-=item host
-
-Host the server binds to. Defaults to all interfaces.
-
-=item port
-
-Port number the server listens on. Defaults to 8080.
-
-=item timeout
-
-Number of seconds a request times out. Defaults to 300.
-
-=item max-keepalive-reqs
-
-Max requests per a keep-alive request. Defaults to 1, which means Keep-alive is off.
-
-=item keepalive-timeout
-
-Number of seconds a keep-alive request times out. Defaults to 2.
-
-=back
 
 =head1 AUTHOR
 

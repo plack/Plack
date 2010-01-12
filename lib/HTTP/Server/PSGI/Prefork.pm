@@ -44,10 +44,19 @@ HTTP::Server::PSGI::Prefork - Prefork standalone HTTP server
 
 =head1 SYNOPSIS
 
-  % plackup -s Standalone \
-      --host 127.0.0.1 --port 9091 --timeout 120 \
-      --max-keepalive-reqs 20 --keepalive-timeout 5 \
-      --max-workers 10 --max-reqs-per-child 320
+  use HTTP::Server::PSGI;
+
+  my $server = HTTP::Server::PSGI->new(
+      host => "127.0.0.1",
+      port => 9091,
+      timeout => 120,
+      max_keepalive_reqs => 20,
+      keepalive_timeout => 5,
+      max_workers => 10,
+      max_reqs_per_child => 320,
+  );
+
+  $server->run($app);
 
 =head1 DESCRIPTION
 
@@ -56,28 +65,6 @@ server. HTTP/1.0 and Keep-Alive requests are supported.
 
 Some features in HTTP/1.1, notably chunked requests, responses and
 pipeline requests are B<NOT> supported yet.
-
-=head1 CONFIGURATIONS
-
-=over 4
-
-=item host, port, timeout, keepalive-timeout
-
-Same as L<HTTP::Server::PSGI>.
-
-=item max-workers
-
-Number of prefork workers. Defaults to 10.
-
-=item max-reqs-per-child
-
-Number of requests per worker to process. Defaults to 100.
-
-=item max-keepalive-reqs
-
-Max requests per a keep-alive request. Defaults to 100.
-
-=back
 
 =head1 AUTHOR
 
