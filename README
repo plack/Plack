@@ -1,5 +1,5 @@
 NAME
-    Plack - PSGI toolkit and servers
+    Plack - PSGI toolkit and server adapters
 
 DESCRIPTION
     Plack is a set of PSGI reference server implementations and helper
@@ -10,14 +10,15 @@ DESCRIPTION
 
 MODULES AND UTILITIES
   Plack::Server
-    Plack::Server is a namespace for PSGI server implementations. We have
-    Standalone, CGI, FCGI, Apache, AnyEvent, Coro, Danga::Socket and many
-    server environments that you can run PSGI applications on.
+    Plack::Server and its subclasses contains adapters for PSGI servers. We
+    have adapters for Standalone, CGI, FCGI, Apache, AnyEvent, Coro,
+    Danga::Socket and many server environments that you can run PSGI
+    applications on.
 
-    See Plack::Server how to write your own server implementation.
+    See Plack::Server how to write your own adapters.
 
   Plack::Loader
-    Plack::Loader is a loader to load one of Plack::Server backends and run
+    Plack::Loader is a loader to load one of Plack::Server adapters and run
     PSGI application code reference with it.
 
   Plack::Util

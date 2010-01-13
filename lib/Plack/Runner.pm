@@ -75,7 +75,7 @@ sub run {
 
     my(@options, @argv);
     while (defined($_ = shift @ARGV)) {
-        if (s/^--//) {
+        if (s/^--?//) {
             my @v = split '=', $_, 2;
             $v[0] =~ tr/-/_/;
             if (@v == 2) {
