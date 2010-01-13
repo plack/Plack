@@ -29,8 +29,6 @@ BEGIN {
 use constant MAX_REQUEST_SIZE => 131072;
 use constant MSWin32          => $^O eq 'MSWin32';
 
-our $HasSendFile = !$ENV{PLACK_NO_SENDFILE} && try { require Sys::Sendfile; 1 };
-
 sub new {
     my($class, %args) = @_;
 
@@ -235,9 +233,7 @@ sub _handle_response {
     $self->write_all($conn, join('', @lines), $self->{timeout})
         or return;
 
-    if ($HasSendFile && Plack::Util::is_real_fh($res->[2])) {
-        $self->sendfile_all($conn, $res->[2], $self->{timeout});
-    } elsif (defined $res->[2]) {
+    if (defined $res->[2]) {
         my $err;
         my $done;
         {
@@ -313,24 +309,6 @@ sub write_all {
         $off += $ret;
     }
     return length $buf;
-}
-
-sub sendfile_all {
-    # TODO fallback to write_all
-    my ($self, $sock, $fd, $timeout) = @_;
-    my $off = 0;
-    my $len = -s $fd;
-    die "TODO" unless defined $len;
-    while ($off < $len) {
-        my $r = $self->do_timeout(
-            sub { Sys::Sendfile::sendfile($sock, $fd, $len - $off, $off) },
-            $timeout,
-        );
-        return
-            unless defined $r;
-        $off += $r;
-    }
-    return $off;
 }
 
 1;
