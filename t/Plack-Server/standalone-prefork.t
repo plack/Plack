@@ -10,6 +10,6 @@ use FindBin;
 use Plack;
 use Plack::Test::Suite;
 
-Plack::Test::Suite->run_server_tests('Standalone::Prefork');
+Plack::Test::Suite->run_server_tests('Standalone', undef, undef, max_workers => 10);
 done_testing();
 

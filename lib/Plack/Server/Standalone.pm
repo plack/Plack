@@ -7,13 +7,7 @@ use parent qw( HTTP::Server::PSGI );
 
 sub new {
     my($class, %args) = @_;
-
-    if ($args{max_workers}) {
-        require HTTP::Server::PSGI::Prefork;
-        return HTTP::Server::PSGI::Prefork->new(%args);
-    } else {
-        return HTTP::Server::PSGI->new(%args);
-    }
+    HTTP::Server::PSGI->new(%args);
 }
 
 1;

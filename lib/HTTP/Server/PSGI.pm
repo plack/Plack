@@ -33,15 +33,33 @@ our $HasSendFile = !$ENV{PLACK_NO_SENDFILE} && try { require Sys::Sendfile; 1 };
 
 sub new {
     my($class, %args) = @_;
+
     my $self = bless {
         host               => $args{host} || 0,
         port               => $args{port} || 8080,
         timeout            => $args{timeout} || 300,
-        max_keepalive_reqs => $args{max_keepalive_reqs} || 1,
         keepalive_timeout  => $args{keepalive_timeout} || 2,
-        server_software    => $args{server_software} || "$class/$Plack::VERSION",
+        max_keepalive_reqs => $args{max_keepalive_reqs},
+        server_software    => $args{server_software} || $class,
         server_ready       => $args{server_ready} || sub {},
+        max_workers        => $args{max_workers} || 1,
+        max_reqs_per_child => $args{max_reqs_per_child} || 100,
     }, $class;
+
+    if ($self->{max_workers} > 1) {
+        try {
+            require Parallel::Prefork;
+            $self->{prefork} = 1;
+            $self->{max_keepalive_reqs} ||= 100;
+            $self->{server_software} .= " (prefork)";
+        } catch {
+            die "You need to install Parallel::Prefork to run multi workers (max_workers=$self->{max_workers}): $_";
+        };
+    }
+
+    unless ($self->{prefork}) {
+        $self->{max_keepalive_reqs} ||= 1;
+    }
 
     $self;
 }
@@ -49,7 +67,12 @@ sub new {
 sub run {
     my($self, $app) = @_;
     $self->setup_listener();
-    $self->accept_loop($app);
+
+    if ($self->{prefork}) {
+        $self->run_prefork($app);
+    } else {
+        $self->accept_loop($app);
+    }
 }
 
 sub setup_listener {
@@ -63,6 +86,24 @@ sub setup_listener {
     ) or die "failed to listen to port $self->{port}:$!";
 
     $self->{server_ready}->($self);
+}
+
+sub run_prefork {
+    my($self, $app) = @_;
+
+    my $pm = Parallel::Prefork->new({
+        max_workers => $self->{max_workers},
+        trap_signals => {
+            TERM => 'TERM',
+            HUP  => 'TERM',
+        },
+    });
+    while ($pm->signal_received ne 'TERM') {
+        $pm->start and next;
+        $self->accept_loop($app, $self->{max_reqs_per_child});
+        $pm->finish;
+    }
+    $pm->wait_all_children;
 }
 
 sub accept_loop {

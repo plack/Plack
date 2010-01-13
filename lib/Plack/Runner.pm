@@ -104,8 +104,9 @@ sub run {
         }
 
         push @options, server_ready => sub {
-            my($server) = @_;
-            print STDERR ref($server), ": Accepting connections at http://$server->{host}:$server->{port}/\n";
+            my($args) = @_;
+            my $name = $args->{server_software} || ref($args); # $args is $server
+            print STDERR "$name: Accepting connections at http://$args->{host}:$args->{port}/\n";
         };
     }
 
