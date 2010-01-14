@@ -11,7 +11,7 @@ sub test_psgi {
     eval "require Plack::Test::$Impl;";
     die $@ if $@;
     no strict 'refs';
-    if (@_ == 2) {
+    if (ref $_[0] && @_ == 2) {
         @_ = (app => $_[0], client => $_[1]);
     }
     &{"Plack::Test::$Impl\::test_psgi"}(@_);
