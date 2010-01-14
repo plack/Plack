@@ -16,16 +16,32 @@ my @app = (
     sub { [ 200, [], io_from_array [ 'Hello', '', ' World' ] ] },
 );
 
+@app = (@app, @app); # for 1.0 and 1.1
+
 my $app = sub { (shift @app)->(@_) };
 
 test_psgi app => Plack::Middleware::Chunked->wrap($app), client => sub {
     my $cb = shift;
 
-    for (0..$#app) {
-        my $res = $cb->(GET "http://localhost/");
-        is $res->content, 'Hello World';
-        is $res->decoded_content, 'Hello World';
-        is $res->header('client-transfer-encoding'), 'chunked';
+    for my $proto (qw( HTTP/1.1 HTTP/1.0 )) {
+        my $is_http_10 = $proto eq 'HTTP/1.0';
+        if ($is_http_10) {
+            require LWP::Protocol::http10;
+            LWP::Protocol::implementor('http', 'LWP::Protocol::http10');
+        }
+
+        for (1..@app/2) {
+            my $req = GET "http://localhost/";
+            $req->protocol($proto);
+            my $res = $cb->($req);
+            is $res->content, 'Hello World';
+            is $res->decoded_content, 'Hello World';
+            if ($is_http_10) {
+                isnt $res->header('client-transfer-encoding'), 'chunked', 'Chunked shouldn\'t be used in HTTP/1.0';
+            } else {
+                is $res->header('client-transfer-encoding'), 'chunked';
+            }
+        }
     }
 };
 
