@@ -15,6 +15,7 @@ sub new {
         includes => [],
         modules  => [],
         watch    => [],
+        @_,
     }, $class;
 }
 
