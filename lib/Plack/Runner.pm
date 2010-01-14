@@ -49,23 +49,6 @@ sub parse_options {
         "h|help",      => \$self->{help},
     );
 
-    if ($self->{help}) {
-        require Pod::Usage;
-        Pod::Usage::pod2usage(0);
-    }
-
-    lib->import(@{$self->{includes}}) if @{$self->{includes}};
-
-    if ($self->{eval}) {
-        push @{$self->{modules}}, 'Plack::Builder';
-    }
-
-    for (@{$self->{modules}}) {
-        my($module, @import) = split /[=,]/;
-        eval "require $module" or die $@;
-        $module->import(@import);
-    }
-
     my(@options, @argv);
     while (defined($_ = shift @ARGV)) {
         if (s/^--?//) {
@@ -93,6 +76,23 @@ sub run {
         $self = $self->new;
         $self->parse_options(@_);
         return $self->run;
+    }
+
+    if ($self->{help}) {
+        require Pod::Usage;
+        Pod::Usage::pod2usage(0);
+    }
+
+    lib->import(@{$self->{includes}}) if @{$self->{includes}};
+
+    if ($self->{eval}) {
+        push @{$self->{modules}}, 'Plack::Builder';
+    }
+
+    for (@{$self->{modules}}) {
+        my($module, @import) = split /[=,]/;
+        eval "require $module" or die $@;
+        $module->import(@import);
     }
 
     my @args = @_ ? @_ : @{$self->{argv}};
