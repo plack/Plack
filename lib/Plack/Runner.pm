@@ -69,14 +69,8 @@ sub parse_options {
     $self->{argv}    = \@argv;
 }
 
-sub run {
+sub setup {
     my $self = shift;
-
-    unless (ref $self) {
-        $self = $self->new;
-        $self->parse_options(@_);
-        return $self->run;
-    }
 
     if ($self->{help}) {
         require Pod::Usage;
@@ -94,36 +88,78 @@ sub run {
         eval "require $module" or die $@;
         $module->import(@import);
     }
+}
 
-    my @args = @_ ? @_ : @{$self->{argv}};
+sub locate_app {
+    my($self, @args) = @_;
+
+    if ($self->{eval}) {
+        $self->watch("lib");
+        return build {
+            no strict;
+            no warnings;
+            eval $self->{eval} or die $@;
+        };
+    }
 
     my $psgi = $self->{app} || $args[0] || "app.psgi";
 
-    my $app = $self->{eval}       ? build { no strict; no warnings; eval $self->{eval} or die $@ }
-            : ref $psgi eq 'CODE' ? sub   { $psgi }
-            :                       build { Plack::Util::load_psgi $psgi };
+    if (ref $psgi eq 'CODE') {
+        return sub { $psgi };
+    }
+
+    $self->watch( File::Basename::dirname($psgi) . "/lib", $psgi );
+    build { Plack::Util::load_psgi $psgi };
+}
+
+sub watch {
+    my($self, @dir) = @_;
+
+    push @{$self->{watch}}, @dir
+        if $self->{reload};
+}
+
+sub prepare_devel {
+    my($self, $app) = @_;
+
+    require Plack::Middleware::StackTrace;
+    require Plack::Middleware::AccessLog;
+    $app = build { Plack::Middleware::StackTrace->wrap($_[0]) } $app;
+    unless ($ENV{GATEWAY_INTERFACE}) {
+        $app = build { Plack::Middleware::AccessLog->wrap($_[0], logger => sub { print STDERR @_ }) } $app;
+    }
+
+    push @{$self->{options}}, server_ready => sub {
+        my($args) = @_;
+        my $name = $args->{server_software} || ref($args); # $args is $server
+        print STDERR "$name: Accepting connections at http://$args->{host}:$args->{port}/\n";
+    };
+
+    $app;
+}
+
+sub run {
+    my $self = shift;
+
+    unless (ref $self) {
+        $self = $self->new;
+        $self->parse_options(@_);
+        return $self->run;
+    }
+
+    my @args = @_ ? @_ : @{$self->{argv}};
+
+    $self->setup;
+
+    my $app = $self->locate_app(@args);
 
     if ($self->{env} eq 'development') {
-        require Plack::Middleware::StackTrace;
-        require Plack::Middleware::AccessLog;
-        $app = build { Plack::Middleware::StackTrace->wrap($_[0]) } $app;
-        unless ($ENV{GATEWAY_INTERFACE}) {
-            $app = build { Plack::Middleware::AccessLog->wrap($_[0], logger => sub { print STDERR @_ }) } $app;
-        }
-
-        push @{$self->{options}}, server_ready => sub {
-            my($args) = @_;
-            my $name = $args->{server_software} || ref($args); # $args is $server
-            print STDERR "$name: Accepting connections at http://$args->{host}:$args->{port}/\n";
-        };
+        $app = $self->prepare_devel($app);
     }
 
     my $loader;
 
-    if ($self->{reload} or @{$self->{watch}}) {
-        if ($self->{reload}) {
-            push @{$self->{watch}}, $self->{eval} ? "lib" : ( File::Basename::dirname($psgi) . "/lib", $psgi );
-        }
+    if (@{$self->{watch}}) {
         warn "plackup: Watching ", join(", ", @{$self->{watch}}), " for changes\n";
         require Plack::Loader::Reloadable;
         $loader = Plack::Loader::Reloadable->new($self->{watch});
