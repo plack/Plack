@@ -3,7 +3,9 @@ use strict;
 use lib "lib";
 use Plack::Runner;
 
-Plack::Runner->run(@ARGV);
+my $runner = Plack::Runner->new;
+$runner->parse_options(@ARGV);
+$runner->run;
 
 __END__
 
