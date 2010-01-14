@@ -7,7 +7,75 @@ use parent qw( HTTP::Server::PSGI );
 
 sub new {
     my($class, %args) = @_;
-    HTTP::Server::PSGI->new(%args);
+    bless { args => \%args }, $class;
+}
+
+sub _fork_and_start {
+    my($self, $builder) = @_;
+
+    my $pid = fork;
+    die "Can't fork: $!" unless defined $pid;
+
+    return $self->run($builder->()) if $pid == 0; # child
+
+    $self->{pid} = $pid;
+}
+
+sub _kill_child {
+    my $self = shift;
+
+    my $pid = $self->{pid} or return;
+    warn "Killing the existing server (pid:$pid)\n";
+    kill INT => $pid;
+    waitpid($pid, 0);
+    warn "Successfully killed! Restarting the new server process.\n";
+}
+
+sub valid_file {
+    my($self, $file) = @_;
+    $file->{path} !~ m![/\\][\._]|\.bak$|~$!;
+}
+
+sub run_with_reload {
+    my($self, $builder, %args) = @_;
+
+    $self->_fork_and_start($builder);
+
+    require Filesys::Notify::Simple;
+    my $watcher = Filesys::Notify::Simple->new($args{watch});
+    warn "Watching @{$args{watch}} for file updates.\n";
+
+    while (1) {
+        my @restart;
+
+        # this is blocking
+        $watcher->wait(sub {
+            my @events = @_;
+            @events = grep $self->valid_file($_), @events;
+            return unless @events;
+
+            @restart = @events;
+        });
+
+        next unless @restart;
+
+        for my $ev (@restart) {
+            warn "-- $ev->{path} updated.\n";
+        }
+
+        $self->_kill_child;
+        $self->_fork_and_start($builder);
+    }
+}
+
+sub run {
+    my($self, $app) = @_;
+    $self->_server->run($app);
+}
+
+sub _server {
+    my $self = shift;
+    HTTP::Server::PSGI->new(%{$self->{args}});
 }
 
 1;

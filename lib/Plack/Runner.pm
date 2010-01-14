@@ -1,6 +1,7 @@
 package Plack::Runner;
 use strict;
 use warnings;
+use Carp ();
 use File::Basename;
 use Getopt::Long;
 use Plack::Loader;
@@ -45,7 +46,7 @@ sub parse_options {
         'I=s@'         => $self->{includes},
         'M=s@'         => $self->{modules},
         'r|reload'     => sub { $self->{reload} = 1 },
-        'R|Reload=s'   => sub { push @{$self->{watch}}, split ",", $_[1] },
+        'R|Reload=s'   => sub { $self->{reload} = 1; push @{$self->{watch}}, split ",", $_[1] },
         "h|help",      => \$self->{help},
     );
 
@@ -138,6 +139,16 @@ sub prepare_devel {
     $app;
 }
 
+sub load_server {
+    my $self = shift;
+
+    if ($self->{server}) {
+        return Plack::Loader->load($self->{server}, @{$self->{options}});
+    } else {
+        return Plack::Loader->auto(@{$self->{options}});
+    }
+}
+
 sub run {
     my $self = shift;
 
@@ -157,21 +168,19 @@ sub run {
         $app = $self->prepare_devel($app);
     }
 
-    my $loader;
+    my $server = $self->load_server;
 
-    if (@{$self->{watch}}) {
-        warn "plackup: Watching ", join(", ", @{$self->{watch}}), " for changes\n";
-        require Plack::Loader::Reloadable;
-        $loader = Plack::Loader::Reloadable->new($self->{watch});
-    } else {
-        $loader = 'Plack::Loader';
-        $app = $app->();
+    if ($self->{reload}) {
+        if ($server->can('run_with_reload')) {
+            # $app is a builder to return $app
+            return $server->run_with_reload($app, watch => $self->{watch});
+        } else {
+            die "The server (", ref($server), ") doesn't support reloading.\n";
+        }
     }
 
-    my $server = $self->{server} ? $loader->load($self->{server}, @{$self->{options}}) : $loader->auto(@{$self->{options}});
-    $server->run($app);
+    $server->run($app->());
 }
-
 
 1;
 

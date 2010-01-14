@@ -81,8 +81,8 @@ use the corresponding server implementation.
 
 =item %INC
 
-If one of L<AnyEvent>, L<Coro> or L<Danga::Socket> is loaded, the
-relevant implementation will be loaded.
+If one of L<AnyEvent>, L<Coro>, L<POE> or L<Danga::Socket> is loaded,
+the relevant implementation will be loaded.
 
 =back
 

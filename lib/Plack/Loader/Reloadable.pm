@@ -1,4 +1,5 @@
 package Plack::Loader::Reloadable;
+# DEPRECATED. This code is now moved to Server::Standalone adapter
 use strict;
 use warnings;
 use Plack::Util;
