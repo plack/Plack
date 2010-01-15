@@ -36,11 +36,16 @@ sub _app {
             close $read;
 
             # TODO buffer streaming
-            my $res = $builder->()->($env);
-
-            my @body;
-            Plack::Util::foreach($res->[2], sub { push @body, $_[0] });
-            $res->[2] = \@body;
+            my $res;
+            try {
+                $res = $builder->()->($env);
+                my @body;
+                Plack::Util::foreach($res->[2], sub { push @body, $_[0] });
+                $res->[2] = \@body;
+            } catch {
+                warn $_;
+                $res = [ 500, [ "Content-Type", "text/plain" ], [ "Internal Server Error" ] ];
+            };
 
             print {$write} Storable::freeze($res);
             close $write;
