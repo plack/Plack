@@ -1,4 +1,4 @@
-package Plack::Server::Standalone;
+package Plack::Handler::Standalone;
 use strict;
 use warnings;
 
@@ -84,7 +84,7 @@ __END__
 
 =head1 NAME
 
-Plack::Server::Standalone - adapters for HTTP::Server::PSGI
+Plack::Handler::Standalone - adapters for HTTP::Server::PSGI
 
 =head1 SYNOPSIS
 
@@ -93,7 +93,7 @@ Plack::Server::Standalone - adapters for HTTP::Server::PSGI
 
 =head1 DESCRIPTION
 
-Plack::Server::Standalone is an adapter for default Plack server
+Plack::Handler::Standalone is an adapter for default Plack server
 implementation L<HTTP::Server::PSGI>.
 
 =head1 CONFIGURATIONS

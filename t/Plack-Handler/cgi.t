@@ -8,7 +8,7 @@ use FindBin;
 use HTTP::Request::AsCGI;
 use URI::Escape;
 use Plack;
-use Plack::Server::CGI;
+use Plack::Handler::CGI;
 use Plack::Test::Suite;
 
 Plack::Test::Suite->runtests(sub {
@@ -20,7 +20,7 @@ Plack::Test::Suite->runtests(sub {
 
         my $cgi = HTTP::Request::AsCGI->new($req);
         my $c = $cgi->setup;
-        eval { Plack::Server::CGI->new->run($handler) };
+        eval { Plack::Handler::CGI->new->run($handler) };
         my $res = $c->response;
         $res->request($req);
 

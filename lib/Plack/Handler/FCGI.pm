@@ -1,4 +1,4 @@
-package Plack::Server::FCGI;
+package Plack::Handler::FCGI;
 use strict;
 use warnings;
 use constant RUNNING_IN_HELL => $^O eq 'MSWin32';
@@ -162,7 +162,7 @@ __END__
 
 =head1 SYNOPSIS
 
-    my $server = Plack::Server::FCGI->new(
+    my $server = Plack::Handler::FCGI->new(
         nproc  => $num_proc,
         listen => $listen,
         detach => 1,
@@ -281,7 +281,7 @@ Or in the non-root path over TCP:
        "check-local" => "disable"
      ))
 
-Plack::Server::FCGI has a workaround for lighttpd's weird
+Plack::Handler::FCGI has a workaround for lighttpd's weird
 C<SCRIPT_NAME> and C<PATH_INFO> setting when you set I<check-local> to
 C<disable> so both configurations (root or non-root) should work fine.
 

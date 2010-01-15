@@ -51,7 +51,7 @@ This middleware is quite similar to what Rack::Reoader does. If you
 have issues with this reloading technique, for instance when you have
 in-file templates that needs to be recompiled, or Moose classes that
 has C<make_immutable>, take a look at L<plackup>'s default -r option
-or L<Plack::Server::Shotgun> instead.
+or L<Plack::Handler::Shotgun> instead.
 
 =head1 AUTHOR
 

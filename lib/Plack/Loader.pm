@@ -8,12 +8,12 @@ sub auto {
 
     my $server = $class->guess
         or Carp::croak("Couldn't auto-guess server serverementation. Set it with PLACK_SERVER");
-    Plack::Util::load_class($server, "Plack::Server")->new(%args);
+    Plack::Util::load_class($server, "Plack::Handler")->new(%args);
 }
 
 sub load {
     my($class, $server, @args) = @_;
-    Plack::Util::load_class($server, "Plack::Server")->new(@args);
+    Plack::Util::load_class($server, "Plack::Handler")->new(@args);
 }
 
 sub guess {
@@ -57,7 +57,7 @@ Plack::Loader - (auto)load Plack Servers
 
 =head1 DESCRIPTION
 
-Plack::Loader is a factory class to load one of Plack::Server subclasses based on the environment.
+Plack::Loader is a factory class to load one of Plack::Handler subclasses based on the environment.
 
 =head1 AUTOLOADING
 

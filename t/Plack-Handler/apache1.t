@@ -74,7 +74,7 @@ Listen $port
 
 <Location />
 SetHandler perl-script
-PerlHandler Plack::Server::Apache1
+PerlHandler Plack::Handler::Apache1
 PerlSetVar psgi_app $tmpdir/app.psgi
 </Location>
 END

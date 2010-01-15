@@ -1,4 +1,4 @@
-package Plack::Server::Apache1;
+package Plack::Handler::Apache1;
 use strict;
 use Apache::Request;
 use Apache::Constants qw(:common :response);
@@ -110,19 +110,19 @@ __END__
 
 =head1 NAME
 
-Plack::Server::Apache1 - Apache 1.3.x handlers to run PSGI application
+Plack::Handler::Apache1 - Apache 1.3.x handlers to run PSGI application
 
 =head1 SYNOPSIS
 
   <Locaion />
   SetHandler perl-script
-  PerlHandler Plack::Server::Apache1
+  PerlHandler Plack::Handler::Apache1
   PerlSetVar psgi_app /path/to/app.psgi
   </Location>
 
   <Perl>
-  use Plack::Server::Apache1;
-  Plack::Server::Apache1->preload("/path/to/app.psgi");
+  use Plack::Handler::Apache1;
+  Plack::Handler::Apache1->preload("/path/to/app.psgi");
   </Perl>
 
 =head1 AUTHOR

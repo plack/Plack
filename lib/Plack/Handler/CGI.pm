@@ -1,4 +1,4 @@
-package Plack::Server::CGI;
+package Plack::Handler::CGI;
 use strict;
 use warnings;
 use IO::Handle;
@@ -68,11 +68,11 @@ sub _handle_response {
         $body->close;
     }
     else {
-        return Plack::Server::CGI::Writer->new;
+        return Plack::Handler::CGI::Writer->new;
     }
 }
 
-package Plack::Server::CGI::Writer;
+package Plack::Handler::CGI::Writer;
 
 sub new {
     return bless \do { my $x }, $_[0];
@@ -101,8 +101,8 @@ __END__
 
   ### Or, if you really want to be explict (NOT RECOMMENDED)
   #!/usr/bin/perl
-  use Plack::Server::CGI;
-  Plack::Server::CGI->new->run($app);
+  use Plack::Handler::CGI;
+  Plack::Handler::CGI->new->run($app);
 
 =head1 DESCRIPTION
 
@@ -110,7 +110,7 @@ This is a handler module to run any PSGI application as a CGI script.
 
 =head1 SEE ALSO
 
-L<Plack::Server>
+L<Plack::Handler>
 
 =cut
 

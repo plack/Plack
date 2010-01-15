@@ -219,7 +219,7 @@ automatically extracted from your own script using L<Pod::Usage>.
 
 Do not directly call this module from your C<.psgi>, since that makes
 your PSGI application unnecesarily depend on L<plackup> and won't run
-other backends like L<Plack::Server::Apache2> or mod_psgi.
+other backends like L<Plack::Handler::Apache2> or mod_psgi.
 
 If you I<really> want to make your C<.psgi> runnable as a standalone
 script, you can do this:

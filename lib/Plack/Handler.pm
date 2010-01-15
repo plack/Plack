@@ -1,4 +1,4 @@
-package Plack::Server;
+package Plack::Handler;
 use strict;
 
 1;
@@ -7,11 +7,11 @@ __END__
 
 =head1 NAME
 
-Plack::Server - Adapters for PSGI servers
+Plack::Handler - Adapters for PSGI servers
 
 =head1 SYNOPSIS
 
-  package Plack::Server::AwesomeWebServer;
+  package Plack::Handler::AwesomeWebServer;
   sub new {
       my($class, %opt) = @_;
       ...
@@ -35,13 +35,13 @@ Plack::Server - Adapters for PSGI servers
 
 =head1 DESCRIPTION
 
-Plack::Server defines an adapter interface to adapt L<plackup> and
+Plack::Handler defines an adapter interface to adapt L<plackup> and
 L<Plack::Runner> to various PSGI web servers, such as Apache2 for
 mod_perl and Standalone for L<HTTP::Server::PSGI>.
 
 It is an empty class, and as long as they implement the methods
 defined as an Server adapter interface, they do not need to inherit
-Plack::Server.
+Plack::Handler.
 
 =head1 METHODS
 

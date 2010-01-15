@@ -3,7 +3,7 @@ use warnings;
 use Test::More;
 use Test::Requires qw(FCGI FCGI::ProcManager);
 use Plack;
-use Plack::Server::FCGI;
+use Plack::Handler::FCGI;
 use Test::TCP;
 use LWP::UserAgent;
 use FindBin;
@@ -26,7 +26,7 @@ sub run_server {
 
     $| = 0; # Test::Builder autoflushes this. reset!
 
-    my $server = Plack::Server::FCGI->new(
+    my $server = Plack::Handler::FCGI->new(
         host        => '127.0.0.1',
         port        => $port,
         manager     => '',

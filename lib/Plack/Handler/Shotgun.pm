@@ -1,4 +1,4 @@
-package Plack::Server::Shotgun;
+package Plack::Handler::Shotgun;
 use strict;
 use Storable;
 use HTTP::Server::PSGI;
@@ -57,7 +57,7 @@ __END__
 
 =head1 NAME
 
-Plack::Server::Shotgun - forking implementation of plackup
+Plack::Handler::Shotgun - forking implementation of plackup
 
 =head1 SYNOPSIS
 
