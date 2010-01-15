@@ -352,6 +352,6 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<Plack::Server::Standalone::Prefork>
+L<Plack::Handler::Standalone>
 
 =cut
