@@ -1,11 +1,10 @@
 package Plack::Server::CGI;
 use strict;
 use parent qw(Plack::Handler::CGI);
-use Carp;
 
 sub new {
     my $class = shift;
-    Carp::carp "Use of $class is deprecated. Use Plack::Handler::CGI or Plack::Loader to upgrade.";
+    print STDERR "Use of $class is deprecated. Use Plack::Handler::CGI or Plack::Loader to upgrade.\n";
     $class->SUPER::new(@_);
 }
 
