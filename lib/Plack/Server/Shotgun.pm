@@ -23,7 +23,7 @@ sub _app {
         pipe my $read, my $write;
 
         my $pid = fork;
-        if ($pid > 0) {
+        if ($pid) {
             # parent
             close $write;
             my $res = Storable::thaw(join '', <$read>);
