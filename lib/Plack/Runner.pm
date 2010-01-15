@@ -2,8 +2,6 @@ package Plack::Runner;
 use strict;
 use warnings;
 use Carp ();
-use File::Basename;
-use Getopt::Long;
 use Plack::Loader;
 use Plack::Util;
 use Try::Tiny;
@@ -35,8 +33,9 @@ sub parse_options {
     # From 'prove': Allow cuddling the paths with -I and -M
     @ARGV = map { /^(-[IM])(.+)/ ? ($1,$2) : $_ } @ARGV;
 
+    require Getopt::Long;
     Getopt::Long::Configure("no_ignore_case", "pass_through");
-    GetOptions(
+    Getopt::Long::GetOptions(
         "a|app=s"      => \$self->{app},
         "o|host=s"     => \$self->{host},
         "p|port=i"     => \$self->{port},
@@ -109,6 +108,7 @@ sub locate_app {
         return sub { $psgi };
     }
 
+    require File::Basename;
     $self->watch( File::Basename::dirname($psgi) . "/lib", $psgi );
     build { Plack::Util::load_psgi $psgi };
 }
