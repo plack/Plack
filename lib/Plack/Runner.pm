@@ -99,7 +99,7 @@ sub locate_app {
         return build {
             no strict;
             no warnings;
-            eval $self->{eval} or die $@;
+            eval "builder { $self->{eval} }" or die $@;
         };
     }
 
