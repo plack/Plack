@@ -11,13 +11,27 @@ use URI;
 use String::ShellQuote;
 
 my $app = 'eg/dot-psgi/Hello.psgi';
-my $ab  = 'ab -n 100 -c 10 -k';
+my $ab  = 'ab -t 1 -c 10 -k';
 my $url = 'http://127.0.0.1/';
 
-my @backends = grep eval "require Plack::Server::$_; 1",
-    qw( AnyEvent Standalone Standalone::Prefork ServerSimple Coro Danga::Socket POE );
+my @try = (
+    [ 'AnyEvent' ],
+    [ 'Standalone' ],
+    [ 'Standalone', max_workers => 10 ],
+    [ 'ServerSimple' ],
+    [ 'Coro' ],
+    [ 'Danga::Socket' ],
+    [ 'POE' ],
+);
 
-warn "Testing implementations: ", join(", ", @backends), "\n";
+my @backends;
+
+for my $handler (@try) {
+    eval { Plack::Loader->load($handler->[0]) };
+    push @backends, $handler unless $@;
+}
+
+warn "Testing implementations: ", join(", ", map $_->[0], @backends), "\n";
 
 GetOptions(
     'a|app=s'   => \$app,
@@ -34,13 +48,13 @@ ab:  $ab
 URL: $url
 
 EOF
-    for my $server_class (@backends) {
-        run_one($server_class);
+    for my $handler (@backends) {
+        run_one(@$handler);
     }
 }
 
 sub run_one {
-    my $server_class = shift;
+    my($server_class, @args) = @_;
     print "-- server: $server_class\n";
 
     test_tcp(
@@ -54,7 +68,7 @@ sub run_one {
         server => sub {
             my $port = shift;
             my $handler = Plack::Util::load_psgi $app;
-            my $server = Plack::Loader->load($server_class, port => $port);
+            my $server = Plack::Loader->load($server_class, port => $port, @args);
             $server->run($handler);
         },
     );
