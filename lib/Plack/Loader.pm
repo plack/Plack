@@ -22,7 +22,8 @@ sub load {
             $server_class = Plack::Util::load_class($server, $prefix);
         } catch {
             $error ||= $_;
-        }
+        };
+        last if $server_class;
     }
 
     if ($server_class) {
