@@ -38,11 +38,11 @@ Plack::App::WrapCGI - Compiles a CGI script as PSGI application
 =head1 DESCRIPTION
 
 Plack::App::WrapCGI compiles a CGI script into a PSGI application
-using L<CGI::Compile> and L<CGI::Emulate::PSGI>, and run it with any
+using L<CGI::Compile> and L<CGI::Emulate::PSGI>, and runs it with any
 PSGI server as a PSGI application.
 
 See also L<Plack::App::CGIBin> if you have a directory that contains a
-lots of CGI scripts and server them like Apache's mod_cgi.
+lot of CGI scripts and serve them like Apache's mod_cgi.
 
 =head1 AUTHOR
 
