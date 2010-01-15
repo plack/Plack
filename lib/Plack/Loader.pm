@@ -2,18 +2,34 @@ package Plack::Loader;
 use strict;
 use Carp ();
 use Plack::Util;
+use Try::Tiny;
 
 sub auto {
-    my($class, %args) = @_;
+    my($class, @args) = @_;
 
     my $server = $class->guess
         or Carp::croak("Couldn't auto-guess server serverementation. Set it with PLACK_SERVER");
-    Plack::Util::load_class($server, "Plack::Handler")->new(%args);
+
+    $class->load($server, @args);
 }
 
 sub load {
     my($class, $server, @args) = @_;
-    Plack::Util::load_class($server, "Plack::Handler")->new(@args);
+
+    my($server_class, $error);
+    for my $prefix (qw( Plack::Handler Plack::Server )) {
+        try {
+            $server_class = Plack::Util::load_class($server, $prefix);
+        } catch {
+            $error ||= $_;
+        }
+    }
+
+    if ($server_class) {
+        $server_class->new(@args);
+    } else {
+        die $error;
+    }
 }
 
 sub guess {

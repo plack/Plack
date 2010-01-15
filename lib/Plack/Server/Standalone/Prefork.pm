@@ -1,10 +1,11 @@
 package Plack::Server::Standalone::Prefork;
 use strict;
-use parent qw(Plack::Handler::Standalone);
+use parent qw(HTTP::Server::PSGI); # because Standalone is a wrapper
+use Carp;
 
 sub new {
     my $class = shift;
-    warn "Use of $class is deprecated. Use Plack::Handler::Standalone or Plack::Loader to upgrade.";
+    Carp::carp "Use of $class is deprecated. Use Plack::Handler::Standalone or Plack::Loader to upgrade.";
     $class->SUPER::new(@_);
 }
 
