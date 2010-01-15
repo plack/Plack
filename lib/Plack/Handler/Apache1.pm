@@ -114,7 +114,7 @@ Plack::Handler::Apache1 - Apache 1.3.x handlers to run PSGI application
 
 =head1 SYNOPSIS
 
-  <Locaion />
+  <Location />
   SetHandler perl-script
   PerlHandler Plack::Handler::Apache1
   PerlSetVar psgi_app /path/to/app.psgi

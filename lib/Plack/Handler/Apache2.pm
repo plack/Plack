@@ -119,7 +119,7 @@ Plack::Handler::Apache2 - Apache 2.0 handlers to run PSGI application
 
 =head1 SYNOPSIS
 
-  <Locaion />
+  <Location />
   SetHandler perl-script
   PerlResponseHandler Plack::Handler::Apache2
   PerlSetVar psgi_app /path/to/app.psgi
