@@ -4,15 +4,12 @@ use warnings;
 use parent qw/Plack::App::File/;
 use CGI::Emulate::PSGI;
 use CGI::Compile;
+use Plack::App::WrapCGI;
 
 sub serve_path {
     my($self, $env, $file) = @_;
 
-    my $app = $self->{_compiled}->{$file} ||= do {
-        my $sub = CGI::Compile->compile($file);
-        my $app = CGI::Emulate::PSGI->handler($sub);
-    };
-
+    my $app = $self->{_compiled}->{$file} ||= Plack::App::WrapCGI->new(script => $file);
     $app->($env);
 }
 
@@ -51,12 +48,16 @@ This module does not (yet) stat files nor recompile files on every
 request for the interest of performance. You need to restart the
 server process to reflect the changes to the CGI scripts.
 
+See also L<Plack::App::WrapCGI> if you compile one CGI script into a
+PSGI application without serving CGI scripts from a directory, to
+remove overhead of filesystem lookups, etc.
+
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<Plack::App::File> L<CGI::Emulate::PSGI> L<CGI::Compile>
+L<Plack::App::File> L<CGI::Emulate::PSGI> L<CGI::Compile> L<Plack::App::WrapCGI>
 
 =cut
