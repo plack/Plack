@@ -89,18 +89,25 @@ __END__
 
 =head1 SYNOPSIS
 
-  ### rename .psgi to .cgi and change the shebang line this way:
+Want to run PSGI application as a CGI script? Rename .psgi to .cgi and
+change the shebang line like:
+
   #!/usr/bin/env plackup
   # rest of the file can be the same as other .psgi file
 
-  ### Or, you can also say
+You can alternatively create a file that contains something like:
+
   #!/usr/bin/perl
   use Plack::Loader;
   my $app = Plack::Util::load_psgi("/path/to/app.psgi");
-  Plack::Loader->auto->run($app); # this will autoload CGI handler
+  Plack::Loader->auto->run($app);
 
-  ### Or, if you really want to be explict (NOT RECOMMENDED)
-  #!/usr/bin/perl
+This will auto-recognize the CGI environment variable to load this class.
+
+If you really want to explicitly load the CGI handler, for instance
+when you want to embed a PSGI application server built into
+CGI-compatible perl based web server:
+
   use Plack::Handler::CGI;
   Plack::Handler::CGI->new->run($app);
 
