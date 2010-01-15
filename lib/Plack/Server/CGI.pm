@@ -89,21 +89,24 @@ __END__
 
 =head1 SYNOPSIS
 
-    ## in your .cgi
-    #!/usr/bin/perl
-    use Plack::Server::CGI;
+  ### rename .psgi to .cgi and change the shebang line this way:
+  #!/usr/bin/env plackup
+  # rest of the file can be the same as other .psgi file
 
-    # or Plack::Util::load_psgi("/path/to/app.psgi");
-    my $app = sub {
-        my $env = shift;
-        return [
-            200,
-            [ 'Content-Type' => 'text/plain', 'Content-Length' => 13 ],
-            [ 'Hello, world!' ],
-        ];
-    };
+  ### Or, you can also say
+  #!/usr/bin/perl
+  use Plack::Loader;
+  my $app = Plack::Util::load_psgi("/path/to/app.psgi");
+  Plack::Loader->auto->run($app); # this will autoload CGI handler
 
-    Plack::Server::CGI->new->run($app);
+  ### Or, if you really want to be explict (NOT RECOMMENDED)
+  #!/usr/bin/perl
+  use Plack::Server::CGI;
+  Plack::Server::CGI->new->run($app);
+
+=head1 DESCRIPTION
+
+This is a handler module to run any PSGI application as a CGI script.
 
 =head1 SEE ALSO
 
