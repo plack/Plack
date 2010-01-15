@@ -15,16 +15,17 @@ my $req = HTTP::Request->new(GET => "http://localhost/foo");
 my $cgi = HTTP::Request::AsCGI->new($req);
 my $c = $cgi->setup;
 
-my $warning;
+my $stderr;
 {
-    local $SIG{__WARN__} = sub { $warning .= "@_" };
+    close STDERR;
+    open STDERR, ">", \$stderr;
     my $s = Plack::Server::CGI->new;
     $s->run($app);
 }
 
 my $res = $c->response;
 is $res->content, "/foo";
-like $warning, qr/deprecated/;
+like $stderr, qr/deprecated/;
 
 done_testing;
 
