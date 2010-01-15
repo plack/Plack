@@ -107,6 +107,12 @@ the PSGI application in-process and returns HTTP::Response.
 Runs one of Plack::Server backends (C<Standalone> by default) and
 sends live HTTP requests to test.
 
+=item ExternalServer
+
+Runs tests against an external server specified in the
+C<PLACK_TEST_EXTERNALSERVER_URI> environment variable instead of spawning the
+application in a server locally.
+
 =back
 
 For instance, you can test your application with C<ServerSimple> server backends with:
