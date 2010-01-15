@@ -7,7 +7,7 @@ __END__
 
 =head1 NAME
 
-Plack::Handler - Adapters for PSGI servers
+Plack::Handler - Connects PSGI applications and Web servers
 
 =head1 SYNOPSIS
 
@@ -35,9 +35,9 @@ Plack::Handler - Adapters for PSGI servers
 
 =head1 DESCRIPTION
 
-Plack::Handler defines an adapter interface to adapt L<plackup> and
-L<Plack::Runner> to various PSGI web servers, such as Apache2 for
-mod_perl and Standalone for L<HTTP::Server::PSGI>.
+Plack::Handler defines an adapter (connector) interface to adapt
+L<plackup> and L<Plack::Runner> to various PSGI web servers, such as
+Apache2 for mod_perl and Standalone for L<HTTP::Server::PSGI>.
 
 It is an empty class, and as long as they implement the methods
 defined as an Server adapter interface, they do not need to inherit
