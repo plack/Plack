@@ -10,7 +10,7 @@ __END__
 
 =head1 NAME
 
-Plack - PSGI toolkit and server adapters
+Plack - Perl Superglue for Web frameworks and Web Servers (PSGI toolkit)
 
 =head1 DESCRIPTION
 

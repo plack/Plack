@@ -1,5 +1,5 @@
 NAME
-    Plack - PSGI toolkit and server adapters
+    Plack - Perl Superglue for Web frameworks and Web Servers (PSGI toolkit)
 
 DESCRIPTION
     Plack is a set of PSGI reference server implementations and helper
@@ -9,13 +9,13 @@ DESCRIPTION
     Plack are and why we need them.
 
 MODULES AND UTILITIES
-  Plack::Server
-    Plack::Server and its subclasses contains adapters for PSGI servers. We
+  Plack::Handler
+    Plack::Handler and its subclasses contains adapters for web servers. We
     have adapters for Standalone, CGI, FCGI, Apache, AnyEvent, Coro,
     Danga::Socket and many server environments that you can run PSGI
     applications on.
 
-    See Plack::Server how to write your own adapters.
+    See Plack::Handler how to write your own adapters.
 
   Plack::Loader
     Plack::Loader is a loader to load one of Plack::Server adapters and run
