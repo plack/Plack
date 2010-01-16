@@ -93,20 +93,25 @@ sub setup {
 sub locate_app {
     my($self, @args) = @_;
 
+    my $psgi = $self->{app} || $args[0];
+
+    if (ref $psgi eq 'CODE') {
+        return sub { $psgi };
+    }
+
     if ($self->{eval}) {
         $self->watch("lib");
         return build {
             no strict;
             no warnings;
-            eval "builder { $self->{eval} }" or die $@;
+            my $eval = "builder { $self->{eval};";
+            $eval .= "Plack::Util::load_psgi(\$psgi);" if $psgi;
+            $eval .= "}";
+            eval $eval or die $@;
         };
     }
 
-    my $psgi = $self->{app} || $args[0] || "app.psgi";
-
-    if (ref $psgi eq 'CODE') {
-        return sub { $psgi };
-    }
+    $psgi ||= "app.psgi";
 
     require File::Basename;
     $self->watch( File::Basename::dirname($psgi) . "/lib", $psgi );
