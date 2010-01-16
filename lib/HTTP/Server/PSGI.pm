@@ -130,7 +130,7 @@ sub accept_loop {
                     'psgi.url_scheme' => 'http',
                     'psgi.run_once'     => Plack::Util::FALSE,
                     'psgi.multithread'  => Plack::Util::FALSE,
-                    'psgi.multiprocess' => Plack::Util::FALSE,
+                    'psgi.multiprocess' => $self->{prefork},
                     'psgi.streaming'    => Plack::Util::TRUE,
                 };
 
