@@ -44,8 +44,8 @@ sub validate_env {
     unless (!defined($env->{'SERVER_PROTOCOL'}) || $env->{'SERVER_PROTOCOL'} =~ m{^HTTP/1.\d$}) {
         Carp::croak('invalid SERVER_PROTOCOL');
     }
-    for my $param (qw/version url_scheme input errors/) {
-        unless (defined($env->{"psgi.$param"})) {
+    for my $param (qw/version url_scheme input errors streaming nonblocking run_once multithread multiprocess/) {
+        unless (exists $env->{"psgi.$param"}) {
             Carp::croak("missing psgi.$param");
         }
     }
@@ -57,6 +57,12 @@ sub validate_env {
     }
     unless ($env->{'psgi.url_scheme'} =~ /^https?$/) {
         Carp::croak('psgi.version should be "http" or "https"');
+    }
+    if ($env->{HTTP_CONTENT_TYPE}) {
+        Carp::croak('HTTP_CONTENT_TYPE should not exist');
+    }
+    if ($env->{HTTP_CONTENT_LENGTH}) {
+        Carp::croak('HTTP_CONTENT_LENGTH should not exist');
     }
 }
 

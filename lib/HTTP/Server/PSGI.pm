@@ -132,6 +132,7 @@ sub accept_loop {
                     'psgi.multithread'  => Plack::Util::FALSE,
                     'psgi.multiprocess' => $self->{prefork},
                     'psgi.streaming'    => Plack::Util::TRUE,
+                    'psgi.nonblocking'  => Plack::Util::FALSE,
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server

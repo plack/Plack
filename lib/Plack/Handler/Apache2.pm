@@ -46,6 +46,7 @@ sub handler {
         'psgi.multiprocess'   => Plack::Util::TRUE,
         'psgi.run_once'       => Plack::Util::FALSE,
         'psgi.streaming'      => Plack::Util::TRUE,
+        'psgi.nonblocking'    => Plack::Util::FALSE,
     };
 
     my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};

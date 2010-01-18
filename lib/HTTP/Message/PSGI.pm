@@ -55,6 +55,7 @@ sub req_to_psgi {
         'psgi.multiprocess' => $FALSE,
         'psgi.run_once'     => $TRUE,
         'psgi.streaming'    => $TRUE,
+        'psgi.nonblocking'  => $FALSE,
         @_,
     };
 

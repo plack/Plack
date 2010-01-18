@@ -21,6 +21,7 @@ sub run {
     $env{'psgi.multiprocess'} = 1==1;
     $env{'psgi.run_once'}     = 1==1;
     $env{'psgi.streaming'}    = 1==1;
+    $env{'psgi.nonblocking'}  = 1==0;
     my $res = $app->(\%env);
     if (ref $res eq 'ARRAY') {
         $self->_handle_response($res);
