@@ -34,7 +34,7 @@ sub handler {
 
     my $env = {
         %ENV,
-        'psgi.version'        => [ 1, 0 ],
+        'psgi.version'        => [ 1, 1 ],
         'psgi.url_scheme'     => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
         'psgi.input'          => $r,
         'psgi.errors'         => *STDERR,

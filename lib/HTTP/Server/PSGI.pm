@@ -125,7 +125,7 @@ sub accept_loop {
                     SERVER_NAME => $self->{host},
                     SCRIPT_NAME => '',
                     REMOTE_ADDR => $conn->peerhost,
-                    'psgi.version' => [ 1, 0 ],
+                    'psgi.version' => [ 1, 1 ],
                     'psgi.errors'  => *STDERR,
                     'psgi.url_scheme' => 'http',
                     'psgi.run_once'     => Plack::Util::FALSE,

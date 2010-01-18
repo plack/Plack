@@ -76,7 +76,7 @@ sub run {
 
         my $env = {
             %env,
-            'psgi.version'      => [1,0],
+            'psgi.version'      => [1,1],
             'psgi.url_scheme'   => ($env{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
             'psgi.input'        => *STDIN,
             'psgi.errors'       => *STDERR, # FCGI.pm redirects STDERR in Accept() loop, so just print STDERR
@@ -85,6 +85,7 @@ sub run {
             'psgi.multiprocess' => Plack::Util::TRUE,
             'psgi.run_once'     => Plack::Util::FALSE,
             'psgi.streaming'    => Plack::Util::TRUE,
+            'psgi.nonblocking'  => Plack::Util::FALSE,
         };
 
         # If we're running under Lighttpd, swap PATH_INFO and SCRIPT_NAME if PATH_INFO is empty

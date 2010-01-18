@@ -13,7 +13,7 @@ sub run {
         $env{$k} = $v;
     }
     $env{'HTTP_COOKIE'}   ||= $ENV{COOKIE};
-    $env{'psgi.version'}    = [ 1, 0 ];
+    $env{'psgi.version'}    = [ 1, 1 ];
     $env{'psgi.url_scheme'} = ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http';
     $env{'psgi.input'}      = *STDIN;
     $env{'psgi.errors'}     = *STDERR;
