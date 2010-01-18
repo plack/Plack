@@ -59,7 +59,7 @@ Plack::Loader::Shotgun - forking implementation of plackup
 
 =head1 SYNOPSIS
 
-  plackup -r -l Shotgun
+  plackup -l Shotgun
 
 =head1 DESCRIPTIOM
 
