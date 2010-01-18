@@ -1,0 +1,80 @@
+package Plack::Middleware::LogDispatch;
+use strict;
+use parent qw(Plack::Middleware);
+use Plack::Util::Accessor qw(logger);
+use Carp ();
+
+sub prepare_app {
+    my $self = shift;
+    unless ($self->logger) {
+        Carp::croak "logger is not defined";
+    }
+}
+
+sub call {
+    my($self, $env) = @_;
+
+    $env->{'psgi.logger'} = sub {
+        my($level, $message) = @_;
+        $level = 'critical' if $level eq 'fatal';
+        $self->logger->log( level => $level, message => $message );
+    };
+
+    $self->app->($env);
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+Plack::Middleware::LogDispatch - Uses Log::Dispatch to configure logger
+
+=head1 SYNOPSIS
+
+  use Log::Dispatch;
+
+  my $logger = Log::Dispatch->new;
+  $logger->add( Log::Dispatch::File->new(...) );
+  $logger->add( Log::Dispatch::DesktopNotification->new(...) );
+
+  builder {
+      enable "LogDispatch", logger => $logger;
+      $app;
+  }
+
+  # use with Log::Dispatch::Config
+  use Log::Dispatch::Config;
+  Log::Dispatch::Config->configure('/path/to/log.conf');
+
+  builder {
+      enable "LogDispatch", logger => Log::Dispatch::Config->instance;
+      ...
+  }
+
+=head1 DESCRIPTION
+
+LogDispatch is a Plack::Middleware component that allows you to use
+L<Log::Dispatch> to configure logging object.
+
+=head1 CONFIGURATION
+
+=over 4
+
+=item logger
+
+Log::Dispatch object to send logs to. Required.
+
+=back
+
+=head1 AUTHOR
+
+Tatsuhiko Miyagawa
+
+=head1 SEE ALSO
+
+L<Log::Dispatch>
+
+=cut
+
