@@ -74,3 +74,27 @@ sub run {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Plack::Loader::Restarter - Restarting loader
+
+=head1 SYNOPSIS
+
+  plackup -r -R paths
+
+=head1 DESCRIPTIOM
+
+Plack::Loader::Restarter is a loader backend that implements C<-r> and
+C<-R> option for the L<plackup> script. It forks the server as a child
+process and the parent watches the directories for file updates, and
+whenever it receives the notification, kills the child server and
+restart.
+
+=head1 SEE ALSO
+
+L<Plack::Runner>, L<Catalyst::Restarter>
+
+=cut
