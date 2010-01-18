@@ -18,7 +18,7 @@ $logger->add(Log::Dispatch::Array->new(
 
 my $app = sub {
     my $env = shift;
-    $env->{'psgi.logger'}->(debug => "This is debug");
+    $env->{'psgi.logger'}->({ level => "debug", message => "This is debug" });
     return [ 200, [], [] ];
 };
 

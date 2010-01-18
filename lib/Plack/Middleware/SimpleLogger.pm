@@ -14,10 +14,10 @@ sub call {
     my $min = $level_numbers{ $self->level || "debug" };
 
     $env->{'psgi.logger'} = sub {
-        my($level, $message) = @_;
+        my $args = shift;
 
-        if ($level_numbers{$level} >= $min) {
-            $env->{'psgi.errors'}->print($self->format_message($level, $message));
+        if ($level_numbers{$args->{level}} >= $min) {
+            $env->{'psgi.errors'}->print($self->format_message($args->{level}, $args->{message}));
         }
     };
 

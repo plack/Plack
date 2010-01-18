@@ -19,8 +19,9 @@ sub call {
     my($self, $env) = @_;
 
     $env->{'psgi.logger'} = sub {
-        my($level, $message) = @_;
-        $self->logger->$level($message);
+        my $args = shift;
+        my $level = $args->{level};
+        $self->logger->$level($args->{message});
     };
 
     $self->app->($env);

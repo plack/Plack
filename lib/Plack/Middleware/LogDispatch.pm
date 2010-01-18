@@ -15,9 +15,9 @@ sub call {
     my($self, $env) = @_;
 
     $env->{'psgi.logger'} = sub {
-        my($level, $message) = @_;
-        $level = 'critical' if $level eq 'fatal';
-        $self->logger->log( level => $level, message => $message );
+        my $args = shift;
+        $args->{level} = 'critical' if $args->{level} eq 'fatal';
+        $self->logger->log(%$args);
     };
 
     $self->app->($env);
