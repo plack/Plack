@@ -2,7 +2,6 @@ package Plack::Runner;
 use strict;
 use warnings;
 use Carp ();
-use Plack::Loader;
 use Plack::Util;
 use Try::Tiny;
 
@@ -11,9 +10,9 @@ sub new {
     bless {
         port => 5000,
         env  => 'development',
+        loader   => 'Plack::Loader',
         includes => [],
         modules  => [],
-        watch    => [],
         @_,
     }, $class;
 }
@@ -44,8 +43,9 @@ sub parse_options {
         "e=s"          => \$self->{eval},
         'I=s@'         => $self->{includes},
         'M=s@'         => $self->{modules},
-        'r|reload'     => sub { $self->{reload} = 1 },
-        'R|Reload=s'   => sub { $self->{reload} = 1; push @{$self->{watch}}, split ",", $_[1] },
+        'r|reload'     => sub { $self->{loader} = "Restarter" },
+        'R|Reload=s'   => sub { $self->{loader} = "Restarter"; $self->loader->watch(split ",", $_[1]) },
+        'l|loader=s'   => \$self->{loader},
         "h|help",      => \$self->{help},
     );
 
@@ -100,7 +100,7 @@ sub locate_app {
     }
 
     if ($self->{eval}) {
-        $self->watch("lib");
+        $self->loader->watch("lib");
         return build {
             no strict;
             no warnings;
@@ -114,7 +114,7 @@ sub locate_app {
     $psgi ||= "app.psgi";
 
     require File::Basename;
-    $self->watch( File::Basename::dirname($psgi) . "/lib", $psgi );
+    $self->loader->watch( File::Basename::dirname($psgi) . "/lib", $psgi );
     build { Plack::Util::load_psgi $psgi };
 }
 
@@ -122,7 +122,7 @@ sub watch {
     my($self, @dir) = @_;
 
     push @{$self->{watch}}, @dir
-        if $self->{reload};
+        if $self->{loader} eq 'Restarter';
 }
 
 sub prepare_devel {
@@ -144,13 +144,18 @@ sub prepare_devel {
     $app;
 }
 
-sub load_server {
+sub loader {
     my $self = shift;
+    $self->{_loader} ||= Plack::Util::load_class($self->{loader}, 'Plack::Loader')->new;
+}
+
+sub load_server {
+    my($self, $loader) = @_;
 
     if ($self->{server}) {
-        return Plack::Loader->load($self->{server}, @{$self->{options}});
+        return $loader->load($self->{server}, @{$self->{options}});
     } else {
-        return Plack::Loader->auto(@{$self->{options}});
+        return $loader->auto(@{$self->{options}});
     }
 }
 
@@ -173,18 +178,9 @@ sub run {
         $app = $self->prepare_devel($app);
     }
 
-    my $server = $self->load_server;
-
-    if ($self->{reload}) {
-        if ($server->can('run_with_reload')) {
-            # $app is a builder to return $app
-            return $server->run_with_reload($app, watch => $self->{watch});
-        } else {
-            die "The server (", ref($server), ") doesn't support reloading.\n";
-        }
-    }
-
-    $server->run($app->());
+    my $loader = $self->loader;
+    my $server = $self->load_server($loader);
+    $loader->run($server, $app);
 }
 
 1;

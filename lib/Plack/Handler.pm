@@ -23,13 +23,6 @@ Plack::Handler - Connects PSGI applications and Web servers
       # launch the AwesomeWebServer and run $app in the loop
   }
 
-  # optional: reloading support
-  sub run_with_reload {
-      my($self, $builder, %args);
-      # $builder is a coderef to get $app
-      # $args{watch} is an array ref of directories
-  }
-
   # then from command line
   plackup -s AwesomeWebServer -a app.psgi
 

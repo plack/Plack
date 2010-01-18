@@ -1,17 +1,12 @@
-package Plack::Handler::Shotgun;
+package Plack::Loader::Shotgun;
 use strict;
+use parent qw(Plack::Loader);
 use Storable;
-use HTTP::Server::PSGI;
 use Try::Tiny;
 
-sub new {
-    my($class, %args) = @_;
-    bless { args => \%args }, $class;
-}
-
-sub run_with_reload {
-    my($self, $builder) = @_;
-    HTTP::Server::PSGI->new(%{$self->{args}})->run($self->_app($builder));
+sub run {
+    my($self, $server, $builder) = @_;
+    $server->run($self->_app($builder));
 }
 
 sub _app {
@@ -54,23 +49,21 @@ sub _app {
     };
 }
 
-sub run { die "Run this by `plackup -r -s Shotgun`" }
-
 1;
 
 __END__
 
 =head1 NAME
 
-Plack::Handler::Shotgun - forking implementation of plackup
+Plack::Loader::Shotgun - forking implementation of plackup
 
 =head1 SYNOPSIS
 
-  plackup -r -s Shotgun
+  plackup -r -l Shotgun
 
 =head1 DESCRIPTIOM
 
-Shotgun server delays the compilation and execution of your
+Shotgun loader delays the compilation and execution of your
 application until the runtime. When a new request comes in, this forks
 a new child, compiles your code and runs the application.
 

@@ -4,6 +4,15 @@ use Carp ();
 use Plack::Util;
 use Try::Tiny;
 
+sub new {
+    my $class = shift;
+    bless {}, $class;
+}
+
+sub watch {
+    # do nothing. Override in subclass
+}
+
 sub auto {
     my($class, @args) = @_;
 
@@ -53,6 +62,11 @@ sub guess {
     } else {
         return "Standalone";
     }
+}
+
+sub run {
+    my($self, $server, $builder) = @_;
+    $server->run($builder->());
 }
 
 1;
