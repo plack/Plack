@@ -18,7 +18,7 @@ sub prepare_app {
 sub call {
     my($self, $env) = @_;
 
-    $env->{'psgi.logger'} = sub {
+    $env->{'psgix.logger'} = sub {
         my $args = shift;
         my $level = $args->{level};
         $self->logger->$level($args->{message});

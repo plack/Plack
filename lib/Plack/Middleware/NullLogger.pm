@@ -3,7 +3,7 @@ use strict;
 
 sub call {
     my($self, $env) = @_;
-    $env->{'psgi.logger'} = sub { };
+    $env->{'psgix.logger'} = sub { };
     $self->app->($env);
 }
 

@@ -13,7 +13,7 @@ sub call {
 
     my $min = $level_numbers{ $self->level || "debug" };
 
-    $env->{'psgi.logger'} = sub {
+    $env->{'psgix.logger'} = sub {
         my $args = shift;
 
         if ($level_numbers{$args->{level}} >= $min) {

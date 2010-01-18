@@ -9,8 +9,8 @@ my $app = sub {
     my $errors;
     $env->{'psgi.errors'} = do { open my $io, ">", \$errors; $io };
 
-    $env->{'psgi.logger'}->({ level => "debug", message => "This is debug" });
-    $env->{'psgi.logger'}->({ level => "info", message => "This is info" });
+    $env->{'psgix.logger'}->({ level => "debug", message => "This is debug" });
+    $env->{'psgix.logger'}->({ level => "info", message => "This is info" });
 
     return [ 200, [], [$errors] ];
 };

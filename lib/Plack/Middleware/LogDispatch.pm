@@ -14,7 +14,7 @@ sub prepare_app {
 sub call {
     my($self, $env) = @_;
 
-    $env->{'psgi.logger'} = sub {
+    $env->{'psgix.logger'} = sub {
         my $args = shift;
         $args->{level} = 'critical' if $args->{level} eq 'fatal';
         $self->logger->log(%$args);
