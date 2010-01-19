@@ -1,6 +1,6 @@
-package Plack::Server::Standalone;
+package Plack::Server::Standalone::Prefork;
 use strict;
-use parent qw(Plack::Handler::Standalone);
+use parent qw(HTTP::Server::PSGI); # because Standalone is a wrapper
 use Carp;
 
 sub new {
@@ -15,7 +15,7 @@ __END__
 
 =head1 NAME
 
-Plack::Server::Standalone - DEPRECATED
+Plack::Server::Standalone::Prefork - DEPRECATED
 
 =head1 DESCRIPTION
 

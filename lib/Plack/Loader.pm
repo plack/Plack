@@ -2,18 +2,44 @@ package Plack::Loader;
 use strict;
 use Carp ();
 use Plack::Util;
+use Try::Tiny;
+
+sub new {
+    my $class = shift;
+    bless {}, $class;
+}
+
+sub watch {
+    # do nothing. Override in subclass
+}
 
 sub auto {
-    my($class, %args) = @_;
+    my($class, @args) = @_;
 
     my $server = $class->guess
         or Carp::croak("Couldn't auto-guess server serverementation. Set it with PLACK_SERVER");
-    Plack::Util::load_class($server, "Plack::Server")->new(%args);
+
+    $class->load($server, @args);
 }
 
 sub load {
     my($class, $server, @args) = @_;
-    Plack::Util::load_class($server, "Plack::Server")->new(@args);
+
+    my($server_class, $error);
+    for my $prefix (qw( Plack::Handler Plack::Server )) {
+        try {
+            $server_class = Plack::Util::load_class($server, $prefix);
+        } catch {
+            $error ||= $_;
+        };
+        last if $server_class;
+    }
+
+    if ($server_class) {
+        $server_class->new(@args);
+    } else {
+        die $error;
+    }
 }
 
 sub guess {
@@ -38,6 +64,11 @@ sub guess {
     }
 }
 
+sub run {
+    my($self, $server, $builder) = @_;
+    $server->run($builder->());
+}
+
 1;
 
 __END__
@@ -57,7 +88,7 @@ Plack::Loader - (auto)load Plack Servers
 
 =head1 DESCRIPTION
 
-Plack::Loader is a factory class to load one of Plack::Server subclasses based on the environment.
+Plack::Loader is a factory class to load one of Plack::Handler subclasses based on the environment.
 
 =head1 AUTOLOADING
 
@@ -81,8 +112,8 @@ use the corresponding server implementation.
 
 =item %INC
 
-If one of L<AnyEvent>, L<Coro> or L<Danga::Socket> is loaded, the
-relevant implementation will be loaded.
+If one of L<AnyEvent>, L<Coro>, L<POE> or L<Danga::Socket> is loaded,
+the relevant implementation will be loaded.
 
 =back
 

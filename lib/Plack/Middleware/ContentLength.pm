@@ -38,7 +38,7 @@ Plack::Middleware::ContentLength - Adds Content-Length header automatically
       $app;
   }
 
-  # Or in Plack::Server::*
+  # Or in Plack::Handler::*
   $app = Plack::Middleware::ContentLength->wrap($app);
 
 =head1 DESCRIPTION

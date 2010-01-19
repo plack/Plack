@@ -3,7 +3,9 @@ use strict;
 use lib "lib";
 use Plack::Runner;
 
-Plack::Runner->run(@ARGV);
+my $runner = Plack::Runner->new;
+$runner->parse_options(@ARGV);
+$runner->run;
 
 __END__
 
@@ -107,8 +109,8 @@ L<AccessLog>, L<StackTrace>.
 
 Make plackup to watch updates from your development directory and
 restarts the server whenever a file is updated. This option by default
-watches the current directory. Use C<-R> if you want to watch other
-directories.
+watches the C<lib> directory and the base directory where I<.psgi>
+file is located. Use C<-R> if you want to watch other directories.
 
 =item -R, --Reload
 
@@ -116,6 +118,12 @@ C<-R> option allows you to specify the path to watch file updates
 separated by comma (C<,>).
 
   plackup -R /path/to/project/lib,/path/to/project/templates
+
+=item -l, --loader
+
+Specify the server loading subclass that implements how to run the
+server. Available options are I<Plack::Loader> (default), I<Restarter>
+(automatically set when C<-r> or C<-R> is used) and I<Shotgun>.
 
 =back
 

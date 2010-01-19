@@ -125,13 +125,14 @@ sub accept_loop {
                     SERVER_NAME => $self->{host},
                     SCRIPT_NAME => '',
                     REMOTE_ADDR => $conn->peerhost,
-                    'psgi.version' => [ 1, 0 ],
+                    'psgi.version' => [ 1, 1 ],
                     'psgi.errors'  => *STDERR,
                     'psgi.url_scheme' => 'http',
                     'psgi.run_once'     => Plack::Util::FALSE,
                     'psgi.multithread'  => Plack::Util::FALSE,
-                    'psgi.multiprocess' => Plack::Util::FALSE,
+                    'psgi.multiprocess' => $self->{prefork},
                     'psgi.streaming'    => Plack::Util::TRUE,
+                    'psgi.nonblocking'  => Plack::Util::FALSE,
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server
@@ -352,6 +353,6 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<Plack::Server::Standalone::Prefork>
+L<Plack::Handler::Standalone>
 
 =cut

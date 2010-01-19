@@ -103,7 +103,7 @@ sub load_psgi {
     my $stuff = shift;
 
     my $file = $stuff =~ /^[a-zA-Z0-9\_\:]+$/ ? class_to_file($stuff) : $stuff;
-    my $app = require $file;
+    my $app = do $file;
     return $app->to_app if $app and Scalar::Util::blessed($app) and $app->can('to_app');
     return $app if $app and (ref $app eq 'CODE' or overload::Method($app, '&{}'));
 
@@ -354,7 +354,7 @@ considered very insecure. But if you really want to do that, be sure
 to validate the argument passed to this function. Also, if you do not
 want to accept an arbitrary class name but only load from a file path,
 make sure that the argument C<$psgi_file_or_class> begins with C</> so
-that Perl's built-in require function won't search the include path.
+that Perl's built-in do function won't search the include path.
 
 =item run_app
 

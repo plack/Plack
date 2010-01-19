@@ -47,7 +47,7 @@ sub req_to_psgi {
         REMOTE_PORT       => int( rand(64000) + 1000 ),                   # not in RFC 3875
         REQUEST_URI       => $uri->path_query,                            # not in RFC 3875
         REQUEST_METHOD    => $req->method,
-        'psgi.version'      => [ 1, 0 ],
+        'psgi.version'      => [ 1, 1 ],
         'psgi.url_scheme'   => $uri->scheme eq 'https' ? 'https' : 'http',
         'psgi.input'        => $input,
         'psgi.errors'       => *STDERR,
@@ -55,6 +55,7 @@ sub req_to_psgi {
         'psgi.multiprocess' => $FALSE,
         'psgi.run_once'     => $TRUE,
         'psgi.streaming'    => $TRUE,
+        'psgi.nonblocking'  => $FALSE,
         @_,
     };
 
