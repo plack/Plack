@@ -8,9 +8,14 @@ use HTTP::Headers;
 use URI::QueryParam;
 use Carp ();
 
-use Socket qw[AF_INET inet_aton]; # for _build_hostname
 use Plack::Request::Upload;
 use URI;
+
+sub _deprecated {
+    my $self = shift;
+    my $method = (caller(1))[3];
+    Carp::carp("$method is deprecated. Use Piglet::Request instead.");
+}
 
 sub new {
     my($class, $env) = @_;
@@ -25,6 +30,7 @@ sub new {
 sub env { $_[0]->{env} }
 
 sub address     { $_[0]->env->{REMOTE_ADDR} }
+sub remote_host { $_[0]->env->{REMOTE_HOST} }
 sub protocol    { $_[0]->env->{SERVER_PROTOCOL} }
 sub method      { $_[0]->env->{REQUEST_METHOD} }
 sub port        { $_[0]->env->{SERVER_PORT} }
@@ -32,6 +38,12 @@ sub user        { $_[0]->env->{REMOTE_USER} }
 sub request_uri { $_[0]->env->{REQUEST_URI} }
 sub url_scheme  { $_[0]->env->{'psgi.url_scheme'} }
 sub session     { $_[0]->env->{'psgix.session'} }
+
+sub hostname {
+    my $self = shift;
+    _deprecated;
+    $self->remote_host || $self->address;
+}
 
 sub secure {
     $_[0]->url_scheme eq 'https';
@@ -109,33 +121,6 @@ sub content_type     { shift->headers->content_type(@_) }
 sub header           { shift->headers->header(@_) }
 sub referer          { shift->headers->referer(@_) }
 sub user_agent       { shift->headers->user_agent(@_) }
-
-sub hostname {
-    my $self = shift;
-    if (defined $_[0]) {
-        $self->{hostname} = $_[0];
-    } elsif (!defined $self->{hostname}) {
-        $self->{hostname} = $self->env->{REMOTE_HOST} || $self->_resolve_hostname;
-    }
-    $self->{hostname};
-}
-
-sub _resolve_hostname {
-    my ( $self, ) = @_;
-    gethostbyaddr( inet_aton( $self->address ), AF_INET );
-}
-# for win32 hacks
-BEGIN {
-    if ($^O eq 'MSWin32') {
-        no warnings 'redefine';
-        *_build_hostname = sub {
-            my ( $self, ) = @_;
-            my $address = $self->address;
-            return 'localhost' if $address eq '127.0.0.1';
-            return gethostbyaddr( inet_aton( $address ), AF_INET );
-        };
-    }
-}
 
 # TODO: This attribute should be private. I will remove deps for HTTP::Body
 sub _http_body {
