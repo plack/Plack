@@ -19,7 +19,7 @@ sub _deprecated {
 
 sub new {
     my($class, $env) = @_;
-    Carp::confess(q{$env is required})
+    Carp::croak(q{$env is required})
         unless defined $env && ref($env) eq 'HASH';
 
     bless {
@@ -55,7 +55,7 @@ sub cookies {
     my $self = shift;
     if (defined $_[0]) {
         unless (ref($_[0]) eq 'HASH') {
-            Carp::confess "Attribute (cookies) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
+            Carp::croak "Attribute (cookies) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
         }
         $self->{cookies} = $_[0];
     } elsif (!defined $self->{cookies}) {
@@ -73,7 +73,7 @@ sub query_parameters {
     my $self = shift;
     if (defined $_[0]) {
         unless (ref($_[0]) eq 'HASH') {
-            Carp::confess "Attribute (query_parameters) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
+            Carp::croak "Attribute (query_parameters) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
         }
         $self->{query_parameters} = $_[0];
     } elsif (!defined $self->{query_parameters}) {
@@ -147,7 +147,7 @@ sub parameters {
     my $self = shift;
     if (defined $_[0]) {
         unless (ref($_[0]) eq 'HASH') {
-            Carp::confess "Attribute (parameters) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
+            Carp::croak "Attribute (parameters) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
         }
         $self->{parameters} = $_[0];
     } elsif (!defined $self->{parameters}) {
@@ -181,7 +181,7 @@ sub uploads {
     my $self = shift;
     if (defined $_[0]) {
         unless (ref($_[0]) eq 'HASH') {
-            Carp::confess "Attribute (uploads) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
+            Carp::croak "Attribute (uploads) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
         }
         $self->{uploads} = $_[0];
     } elsif (!defined $self->{uploads}) {
@@ -327,7 +327,7 @@ sub uri {
     my $self = shift;
     if (defined $_[0]) {
         unless (eval { $_[0]->isa('URI') }) {
-            Carp::confess "Attribute (uri) does not pass the type constraint because: Validation failed for 'URI' failed with value $_[0]";
+            Carp::croak "Attribute (uri) does not pass the type constraint because: Validation failed for 'URI' failed with value $_[0]";
         }
         $self->{uri} = $_[0];
     } elsif (!defined $self->{uri}) {
