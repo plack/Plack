@@ -6,12 +6,7 @@ use Plack::Request;
 
 my $app = sub {
     my $req = Plack::Request->new(shift);
-    is $req->content, 'body';
-    is $req->raw_body, 'body';
-    eval {
-        $req->content("bar");
-    };
-    like $@, qr/unsupported/;
+    is $req->body, 'body';
     $req->new_response(200)->finalize;
 };
 

@@ -22,9 +22,7 @@ sub new {
     Carp::croak(q{$env is required})
         unless defined $env && ref($env) eq 'HASH';
 
-    bless {
-        env => $env,
-    }, $class;
+    bless { env => $env }, $class;
 }
 
 sub env { $_[0]->{env} }
@@ -91,7 +89,7 @@ sub _body_parser {
     $self->{_body_parser};
 }
 
-sub raw_body {
+sub body {
     my $self = shift;
     if (!defined($self->{raw_body})) {
         $self->{raw_body} ||= $self->_body_parser->raw_body($self);
@@ -99,6 +97,13 @@ sub raw_body {
     $self->{raw_body};
 }
 
+sub raw_body {
+    my $self = shift;
+    _deprecated;
+    $self->body;
+}
+
+sub content { $_[0]->body }
 
 sub headers {
     my $self = shift;
@@ -139,8 +144,6 @@ sub body_parameters {
         return {};
     }
 }
-
-sub body            { shift->_http_body->body(@_) }
 
 # contains body_params and query_params
 sub parameters {
@@ -363,16 +366,6 @@ sub new_response {
     my $self = shift;
     require Plack::Response;
     Plack::Response->new(@_);
-}
-
-sub content {
-    my ( $self, @args ) = @_;
-
-    if ( @args ) {
-        Carp::croak "The HTTP::Request method 'content' is unsupported when used as a writer, use Plack::RequestBuilder";
-    } else {
-        return $self->raw_body;
-    }
 }
 
 1;

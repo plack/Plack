@@ -7,7 +7,7 @@ use HTTP::Request::Common;
 
 my $app = sub {
     my $req = Plack::Request->new(shift);
-    is $req->raw_body, 'foo=bar';
+    is $req->body, 'foo=bar';
     is_deeply $req->body_params, { foo => 'bar' };
     $req->new_response(200)->finalize;
 };
