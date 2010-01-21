@@ -92,19 +92,20 @@ sub _body_parser {
 
 sub body {
     my $self = shift;
-    if (!defined($self->{raw_body})) {
-        $self->{raw_body} ||= $self->_body_parser->raw_body($self);
-    }
-    $self->{raw_body};
+    $self->env->{'psgi.input'};
 }
 
 sub raw_body {
     my $self = shift;
     _deprecated;
-    $self->body;
+    $self->content;
 }
 
-sub content { $_[0]->body }
+sub content {
+    my $self = shift;
+    $self->body->read(my($content), $self->content_length);
+    return $content;
+}
 
 sub headers {
     my $self = shift;

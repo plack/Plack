@@ -6,7 +6,7 @@ use Plack::Request;
 
 my $app = sub {
     my $req = Plack::Request->new(shift);
-    is $req->body, 'body';
+    is $req->content, 'body';
     $req->new_response(200)->finalize;
 };
 
