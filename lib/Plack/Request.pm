@@ -5,7 +5,6 @@ use 5.008_001;
 our $VERSION = "0.09";
 
 use HTTP::Headers;
-use URI::QueryParam;
 use Carp ();
 use Hash::MultiValue;
 use HTTP::Body;
