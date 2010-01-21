@@ -40,8 +40,10 @@ sub request_uri { $_[0]->env->{REQUEST_URI} }
 sub path_info   { $_[0]->env->{PATH_INFO} }
 sub script_name { $_[0]->env->{SCRIPT_NAME} }
 sub url_scheme  { $_[0]->env->{'psgi.url_scheme'} }
-sub session     { $_[0]->env->{'psgix.session'} }
-sub logger      { $_[0]->env->{'psgix.logger'} }
+
+sub session         { $_[0]->env->{'psgix.session'} }
+sub session_options { $_[0]->env->{'psgix.session.options'} }
+sub logger          { $_[0]->env->{'psgix.logger'} }
 
 sub hostname {
     my $self = shift;
