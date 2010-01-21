@@ -14,9 +14,9 @@ use Try::Tiny;
             CONTENT_LENGTH => 3,
             CONTENT_TYPE   => 'application/octet-stream'
         });
-        $req->_body_parser->http_body();
+        $req->body_parameters;
     } catch {
-        like $_, qr/Wrong Content-Length value: 3/;
+        like $_, qr/Bad Content-Length/;
     }
 }
 

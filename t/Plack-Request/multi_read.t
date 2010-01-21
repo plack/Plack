@@ -6,8 +6,12 @@ use Plack::Request;
 use HTTP::Request::Common;
 
 my $app = sub {
-    my $req = Plack::Request->new(shift);
-    is_deeply $req->body_params, { foo => 'bar' };
+    my $env = shift;
+    my $req = Plack::Request->new($env);
+    is $req->content, 'foo=bar';
+    is $req->content, 'foo=bar';
+
+    $req = Plack::Request->new($env);
     is $req->content, 'foo=bar';
     $req->new_response(200)->finalize;
 };

@@ -7,6 +7,9 @@ our $VERSION = "0.09";
 use HTTP::Headers;
 use URI::QueryParam;
 use Carp ();
+use Hash::MultiValue;
+use HTTP::Body;
+use IO::File;
 
 use Plack::Request::Upload;
 use URI;
@@ -34,6 +37,8 @@ sub method      { $_[0]->env->{REQUEST_METHOD} }
 sub port        { $_[0]->env->{SERVER_PORT} }
 sub user        { $_[0]->env->{REMOTE_USER} }
 sub request_uri { $_[0]->env->{REQUEST_URI} }
+sub path_info   { $_[0]->env->{PATH_INFO} }
+sub script_name { $_[0]->env->{SCRIPT_NAME} }
 sub url_scheme  { $_[0]->env->{'psgi.url_scheme'} }
 sub session     { $_[0]->env->{'psgix.session'} }
 sub logger      { $_[0]->env->{'psgix.logger'} }
@@ -81,15 +86,6 @@ sub query_parameters {
     $self->{query_parameters};
 }
 
-sub _body_parser {
-    my $self = shift;
-    unless (defined $self->{_body_parser}) {
-        require Plack::Request::BodyParser;
-        $self->{_body_parser} = Plack::Request::BodyParser->new( $self->env );
-    }
-    $self->{_body_parser};
-}
-
 sub body {
     my $self = shift;
     $self->env->{'psgi.input'};
@@ -103,8 +99,15 @@ sub raw_body {
 
 sub content {
     my $self = shift;
-    $self->body->read(my($content), $self->content_length);
-    return $content;
+
+    if (my $fh = $self->env->{'plack.request.tempfile'}) {
+        $fh->read(my($content), $self->content_length);
+        $fh->seek(0, 0);
+        return $content;
+    }
+
+    $self->_parse_request_body;
+    $self->content; # redo
 }
 
 sub headers {
@@ -129,22 +132,15 @@ sub header           { shift->headers->header(@_) }
 sub referer          { shift->headers->referer(@_) }
 sub user_agent       { shift->headers->user_agent(@_) }
 
-# TODO: This attribute should be private. I will remove deps for HTTP::Body
-sub _http_body {
-    my $self = shift;
-    if (!defined $self->{_http_body}) {
-        $self->{_http_body} = $self->_body_parser->http_body();
-    }
-    $self->{_http_body};
-}
 sub body_parameters {
     my $self = shift;
 
-    if (@_ || defined $self->{_http_body} || $self->method eq 'POST') {
-        return $self->_http_body->param(@_);
-    } else {
-        return {};
+    if ($self->env->{'plack.request.body'}) {
+        return $self->env->{'plack.request.body'};
     }
+
+    $self->_parse_request_body;
+    $self->env->{'plack.request.body'};
 }
 
 # contains body_params and query_params
@@ -184,44 +180,13 @@ sub _build_parameters {
 
 sub uploads {
     my $self = shift;
-    if (defined $_[0]) {
-        unless (ref($_[0]) eq 'HASH') {
-            Carp::croak "Attribute (uploads) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
-        }
-        $self->{uploads} = $_[0];
-    } elsif (!defined $self->{uploads}) {
-        $self->{uploads} = $self->_build_uploads;
-    }
-    $self->{uploads};
-}
-sub _build_uploads {
-    my $self = shift;
-    my $uploads = $self->_http_body->upload;
-    my %uploads;
-    for my $name (keys %{ $uploads }) {
-        my $files = $uploads->{$name};
-        $files = ref $files eq 'ARRAY' ? $files : [$files];
 
-        my @uploads;
-        for my $upload (@{ $files }) {
-            my $headers = HTTP::Headers->new( %{ $upload->{headers} } );
-            push(
-                @uploads,
-                Plack::Request::Upload->new(
-                    headers  => $headers,
-                    tempname => $upload->{tempname},
-                    size     => $upload->{size},
-                    filename => $upload->{filename},
-                )
-            );
-        }
-        $uploads{$name} = @uploads > 1 ? \@uploads : $uploads[0];
-
-        # support access to the filename as a normal param
-        my @filenames = map { $_->{filename} } @uploads;
-        $self->parameters->{$name} =  @filenames > 1 ? \@filenames : $filenames[0];
+    if ($self->env->{'plack.request.upload'}) {
+        return $self->env->{'plack.request.upload'};
     }
-    return \%uploads;
+
+    $self->_parse_request_body;
+    return $self->env->{'plack.request.upload'};
 }
 
 # aliases
@@ -229,9 +194,6 @@ sub body_params  { shift->body_parameters(@_) }
 sub input        { shift->body(@_) }
 sub params       { shift->parameters(@_) }
 sub query_params { shift->query_parameters(@_) }
-
-sub path_info    { shift->env->{PATH_INFO} }
-sub script_name  { shift->env->{SCRIPT_NAME} }
 
 sub cookie {
     my $self = shift;
@@ -275,31 +237,9 @@ sub upload {
 
     return keys %{ $self->uploads } if @_ == 0;
 
-    if (@_ == 1) {
-        my $upload = shift;
-        return wantarray ? () : undef unless exists $self->uploads->{$upload};
-
-        if (ref $self->uploads->{$upload} eq 'ARRAY') {
-            return (wantarray)
-              ? @{ $self->uploads->{$upload} }
-          : $self->uploads->{$upload}->[0];
-        } else {
-            return (wantarray)
-              ? ( $self->uploads->{$upload} )
-          : $self->uploads->{$upload};
-        }
-    } else {
-        while ( my($field, $upload) = splice(@_, 0, 2) ) {
-            if ( exists $self->uploads->{$field} ) {
-                for ( $self->uploads->{$field} ) {
-                    $_ = [$_] unless ref($_) eq "ARRAY";
-                    push(@{ $_ }, $upload);
-                }
-            } else {
-                $self->uploads->{$field} = $upload;
-            }
-        }
-    }
+    my $key = shift;
+    return $self->uploads->{$key} unless wantarray;
+    return $self->uploads->get_all($key);
 }
 
 sub raw_uri {
@@ -368,6 +308,66 @@ sub new_response {
     my $self = shift;
     require Plack::Response;
     Plack::Response->new(@_);
+}
+
+sub _parse_request_body {
+    my $self = shift;
+
+    # Do not use ->content_type to get multipart boundary correctly
+    my $body = HTTP::Body->new($self->env->{CONTENT_TYPE}, $self->env->{CONTENT_LENGTH});
+    my $cl = $self->content_length;
+
+    my $fh;
+    unless ($self->env->{'plack.request.tempfile'}) {
+        $fh = IO::File->new_tmpfile;
+        binmode $fh;
+    }
+
+    my $spin = 0;
+    while ($cl) {
+        $self->input->read(my $buffer, $cl < 8192 ? $cl : 8192);
+        $cl -= length $buffer;
+        $body->add($buffer);
+        $fh->print($buffer) if $fh;
+
+        if ($spin++ > 2000) {
+            Carp::croak "Bad Content-Length: maybe client disconnect? ($cl bytes remaining)";
+        }
+    }
+
+    if ($fh) {
+        $self->env->{'plack.request.tempfile'} = $self->env->{'psgi.input'} = $fh;
+    }
+
+    $self->env->{'psgi.input'}->seek(0, 0);
+
+    $self->env->{'plack.request.body'}   = $self->_normalize_multi($body->param);
+    $self->env->{'plack.request.upload'} = $self->_normalize_multi($body->upload, sub { $self->_make_upload(@_) });
+
+    1;
+}
+
+sub _make_upload {
+    my($self, $upload) = @_;
+    Plack::Request::Upload->new(
+        headers => HTTP::Headers->new( %{delete $upload->{headers}} ),
+        %$upload,
+    );
+}
+
+sub _normalize_multi {
+    my($self, $hash, $cb) = @_;
+
+    my @new;
+    while (my($key, $val) = each %$hash) {
+        my @val = ref $val eq 'ARRAY' ? @$val : ($val);
+        for my $val (@val) {
+            $val = $cb->($val) if $cb;
+            push @new, $key, $val;
+        }
+    }
+
+    return Hash::MultiValue->new(@new);
 }
 
 1;

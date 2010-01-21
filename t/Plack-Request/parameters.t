@@ -1,21 +1,25 @@
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More;
 use Plack::Request;
+use Plack::Test;
+use HTTP::Request::Common;
 
-do {
-    my $req = Plack::Request->new({ 'psgi.input' => \*STDIN });
-    $req->body_parameters(foo => 'bar');
-    $req->body_parameters(hoge => 'one');
-    $req->query_parameters({bar => 'baz', hoge => 'two'});
-    is_deeply $req->parameters(), {foo => 'bar', 'bar' => 'baz', hoge => [qw/ two one /]};
+my $app = sub {
+    my $req = Plack::Request->new(shift);
+    my $b = $req->body_parameters;
+    is $b->{foo}, 'bar';
+    my $q = $req->query_parameters;
+    is $q->{bar}, 'baz';
+
+    is_deeply $req->parameters, { foo => 'bar', 'bar' => 'baz' };
+
+    $req->new_response(200)->finalize;
 };
 
-do {
-    my $req = Plack::Request->new({ 'psgi.input' => \*STDIN });
-    $req->body_parameters(foo => 'bar');
-    $req->body_parameters(hoge => 'one');
-    $req->query_parameters({bar => ['baz', 'bar'], hoge => 'two'});
-    is_deeply $req->parameters(), {foo => 'bar', 'bar' => ['baz', 'bar'], hoge => [qw/ two one /]};
+test_psgi $app, sub {
+    my $cb = shift;
+    $cb->(POST "/?bar=baz", { foo => "bar" });
 };
 
+done_testing;
