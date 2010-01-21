@@ -75,15 +75,7 @@ sub cookies {
 
 sub query_parameters {
     my $self = shift;
-    if (defined $_[0]) {
-        unless (ref($_[0]) eq 'HASH') {
-            Carp::croak "Attribute (query_parameters) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
-        }
-        $self->{query_parameters} = $_[0];
-    } elsif (!defined $self->{query_parameters}) {
-        $self->{query_parameters} = $self->uri->query_form_hash;
-    }
-    $self->{query_parameters};
+    $self->env->{'plack.request.query'} ||= Hash::MultiValue->new($self->uri->query_form);
 }
 
 sub body {
@@ -100,14 +92,15 @@ sub raw_body {
 sub content {
     my $self = shift;
 
-    if (my $fh = $self->env->{'plack.request.tempfile'}) {
-        $fh->read(my($content), $self->content_length);
-        $fh->seek(0, 0);
-        return $content;
+    unless ($self->env->{'plack.request.tempfile'}) {
+        $self->_parse_request_body;
     }
 
-    $self->_parse_request_body;
-    $self->content; # redo
+    my $fh = $self->env->{'plack.request.tempfile'};
+    $fh->read(my($content), $self->content_length);
+    $fh->seek(0, 0);
+
+    return $content;
 }
 
 sub headers {
@@ -135,47 +128,22 @@ sub user_agent       { shift->headers->user_agent(@_) }
 sub body_parameters {
     my $self = shift;
 
-    if ($self->env->{'plack.request.body'}) {
-        return $self->env->{'plack.request.body'};
+    unless ($self->env->{'plack.request.body'}) {
+        $self->_parse_request_body;
     }
 
-    $self->_parse_request_body;
-    $self->env->{'plack.request.body'};
+    return $self->env->{'plack.request.body'};
 }
 
 # contains body_params and query_params
 sub parameters {
     my $self = shift;
-    if (defined $_[0]) {
-        unless (ref($_[0]) eq 'HASH') {
-            Carp::croak "Attribute (parameters) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
-        }
-        $self->{parameters} = $_[0];
-    } elsif (!defined $self->{parameters}) {
-        $self->{parameters} = $self->_build_parameters;
-    }
-    $self->{parameters};
-}
-sub _build_parameters {
-    my $self = shift;
 
-    my $query = $self->query_parameters;
-    my $body  = $self->body_parameters;
-
-    my %merged;
-
-    foreach my $hash ( $query, $body ) {
-        foreach my $name ( keys %$hash ) {
-            my $param = $hash->{$name};
-            push( @{ $merged{$name} ||= [] }, ( ref $param ? @$param : $param ) );
-        }
-    }
-
-    foreach my $param ( values %merged ) {
-        $param = $param->[0] if @$param == 1;
-    }
-
-    return \%merged;
+    $self->env->{'plack.request.merged'} ||= do {
+        my $query = $self->query_parameters;
+        my $body  = $self->body_parameters;
+        Hash::MultiValue->new($query->flatten, $body->flatten);
+    };
 }
 
 sub uploads {
@@ -213,23 +181,9 @@ sub param {
 
     return keys %{ $self->parameters } if @_ == 0;
 
-    if (@_ == 1) {
-        my $param = shift;
-        return wantarray ? () : undef unless exists $self->parameters->{$param};
-
-        if ( ref $self->parameters->{$param} eq 'ARRAY' ) {
-            return (wantarray)
-              ? @{ $self->parameters->{$param} }
-                  : $self->parameters->{$param}->[0];
-        } else {
-            return (wantarray)
-              ? ( $self->parameters->{$param} )
-                  : $self->parameters->{$param};
-        }
-    } else {
-        my $field = shift;
-        $self->parameters->{$field} = [@_];
-    }
+    my $key = shift;
+    return $self->params->{$key} unless wantarray;
+    return $self->params->get_all($key);
 }
 
 sub upload {

@@ -1,38 +1,28 @@
 use strict;
 use warnings;
-use Test::Base;
+use Test::More;
 use Plack::Request;
 
-plan tests => 4*blocks;
+my $req = Plack::Request->new({ QUERY_STRING => "foo=bar" });
+is_deeply $req->parameters, { foo => "bar" };
+is $req->param('foo'), "bar";
+is_deeply [ $req->param ], [ 'foo' ];
 
-filters {
-    parameters => [qw/yaml/],
-    options    => [qw/yaml/],
-    expected   => [qw/yaml/],
-};
+$req = Plack::Request->new({ QUERY_STRING => "foo=bar&foo=baz" });
+is_deeply $req->parameters, { foo => "baz" };
+is $req->param('foo'), "baz";
+is_deeply [ $req->param('foo') ] , [ qw(bar baz) ];
+is_deeply [ $req->param ], [ 'foo' ];
 
-run {
-    my $block = shift;
-    my $req = Plack::Request->new({ 'psgi.input' => \*STDIN });
-    $req->parameters($block->parameters);
-    is_deeply $req->params, $block->parameters;
-    is scalar($req->param), scalar(keys %{  $block->parameters });
+$req = Plack::Request->new({ QUERY_STRING => "foo=bar&foo=baz&bar=baz" });
+is_deeply $req->parameters, { foo => "baz", bar => "baz" };
+is_deeply $req->query_parameters, { foo => "baz", bar => "baz" };
+is $req->param('foo'), "baz";
+is_deeply [ $req->param('foo') ] , [ qw(bar baz) ];
+is_deeply [ sort $req->param ], [ 'bar', 'foo' ];
 
-    my @options = $block->options;
-    @options = @{ $block->options } if ref $block->options;
 
-    my $ret = $req->param(@options);
-    if (@options > 1) {
-        is_deeply $ret, $block->expected;
-        return ok 1 
-    }
-    my $expected = $block->expected ? $block->expected->[0] : undef;
-    is $ret, $expected;
-
-    my @ret = $req->param(@options);
-    return ok 1 unless @ret && $block->expected;
-    is_deeply \@ret, $block->expected;
-}
+done_testing;
 
 __END__
 
