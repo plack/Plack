@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use parent qw(Plack::Component);
 use Plack::Util::Accessor qw(script _app);
+use CGI::Emulate::PSGI;
+use CGI::Compile;
 use Carp;
 
 sub prepare_app {

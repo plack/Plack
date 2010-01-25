@@ -2,8 +2,6 @@ package Plack::App::CGIBin;
 use strict;
 use warnings;
 use parent qw/Plack::App::File/;
-use CGI::Emulate::PSGI;
-use CGI::Compile;
 use Plack::App::WrapCGI;
 
 sub serve_path {
