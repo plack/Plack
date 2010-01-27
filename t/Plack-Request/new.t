@@ -22,6 +22,6 @@ is($req->method, 'GET', 'method');
 is($req->protocol, 'HTTP/1.1', 'protocol');
 is($req->uri, 'http://example.com/foo', 'uri');
 is($req->port, 80, 'port');
-is($req->url_scheme, 'http', 'url_scheme');
+is($req->scheme, 'http', 'url_scheme');
 
 done_testing();

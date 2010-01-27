@@ -10,6 +10,6 @@ my $path = "/Платежи";
 my $hreq = HTTP::Request->new(GET => "http://localhost" . $path);
 my $req = Plack::Request->new($hreq->to_psgi);
 
-is $req->path, '/%D0%9F%D0%BB%D0%B0%D1%82%D0%B5%D0%B6%D0%B8';
+is $req->uri->path, '/%D0%9F%D0%BB%D0%B0%D1%82%D0%B5%D0%B6%D0%B8';
 
 done_testing;

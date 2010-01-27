@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 6;
 use HTTP::Request;
 use Test::Requires qw(CGI::Simple::Cookie);
 use Plack::Test;
@@ -11,7 +11,6 @@ my $app = sub {
 
     is '2', $req->cookie;
     is $req->cookie('undef'), undef;
-    is $req->cookie('undef', 'undef'), undef;
     is $req->cookie('Foo')->value, 'Bar';
     is $req->cookie('Bar')->value, 'Baz';
     is_deeply $req->cookies, {Foo => 'Foo=Bar; path=/', Bar => 'Bar=Baz; path=/'};

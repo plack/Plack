@@ -38,40 +38,22 @@ sub user        { $_[0]->env->{REMOTE_USER} }
 sub request_uri { $_[0]->env->{REQUEST_URI} }
 sub path_info   { $_[0]->env->{PATH_INFO} }
 sub script_name { $_[0]->env->{SCRIPT_NAME} }
-sub url_scheme  { $_[0]->env->{'psgi.url_scheme'} }
+sub scheme      { $_[0]->env->{'psgi.url_scheme'} }
+sub secure      { $_[0]->scheme eq 'https' }
+sub body        { $_[0]->env->{'psgi.input'} }
+sub input       { $_[0]->env->{'psgi.input'} }
 
 sub session         { $_[0]->env->{'psgix.session'} }
 sub session_options { $_[0]->env->{'psgix.session.options'} }
 sub logger          { $_[0]->env->{'psgix.logger'} }
 
-sub hostname {
-    my $self = shift;
-    _deprecated;
-    $self->remote_host || $self->address;
-}
-
-sub secure {
-    $_[0]->url_scheme eq 'https';
-}
-
-# we need better cookie lib?
-# http://mark.stosberg.com/blog/2008/12/cookie-handling-in-titanium-catalyst-and-mojo.html
 sub cookies {
     my $self = shift;
-    if (defined $_[0]) {
-        unless (ref($_[0]) eq 'HASH') {
-            Carp::croak "Attribute (cookies) does not pass the type constraint because: Validation failed for 'HashRef' failed with value $_[0]";
-        }
-        $self->{cookies} = $_[0];
-    } elsif (!defined $self->{cookies}) {
-        require CGI::Simple::Cookie;
-        if (my $header = $self->header('Cookie')) {
-            $self->{cookies} = { CGI::Simple::Cookie->parse($header) };
-        } else {
-            $self->{cookies} = {};
-        }
-    }
-    $self->{cookies};
+
+    $self->env->{'plack.cookie.parsed'} ||= do {
+        my $header = $self->header('Cookie');
+        +{ CGI::Simple::Cookie->parse($header) };
+    };
 }
 
 sub query_parameters {
@@ -79,25 +61,14 @@ sub query_parameters {
     $self->env->{'plack.request.query'} ||= Hash::MultiValue->new($self->uri->query_form);
 }
 
-sub body {
-    my $self = shift;
-    $self->env->{'psgi.input'};
-}
-
-sub raw_body {
-    my $self = shift;
-    _deprecated;
-    $self->content;
-}
-
 sub content {
     my $self = shift;
 
-    unless ($self->env->{'plack.request.tempfile'}) {
+    unless ($self->env->{'plack.request.tempfh'}) {
         $self->_parse_request_body;
     }
 
-    my $fh = $self->env->{'plack.request.tempfile'};
+    my $fh = $self->env->{'plack.request.tempfh'};
     $fh->read(my($content), $self->content_length);
     $fh->seek(0, 0);
 
@@ -136,7 +107,7 @@ sub body_parameters {
     return $self->env->{'plack.request.body'};
 }
 
-# contains body_params and query_params
+# contains body + query
 sub parameters {
     my $self = shift;
 
@@ -158,23 +129,21 @@ sub uploads {
     return $self->env->{'plack.request.upload'};
 }
 
-# aliases
-sub body_params  { shift->body_parameters(@_) }
-sub input        { shift->body(@_) }
-sub params       { shift->parameters(@_) }
-sub query_params { shift->query_parameters(@_) }
+sub hostname     { _deprecated; $_[0]->remote_host || $_[0]->address }
+sub url_scheme   { _deprecated; $_[0]->scheme }
+sub raw_body     { _deprecated; $_[0]->content }
+sub params       { _deprecated; shift->parameters(@_) }
+sub query_params { _deprecated; shift->query_parameters(@_) }
+sub body_params  { _deprecated; shift->body_parameters(@_) }
 
 sub cookie {
     my $self = shift;
 
     return keys %{ $self->cookies } if @_ == 0;
 
-    if (@_ == 1) {
-        my $name = shift;
-        return undef unless exists $self->cookies->{$name}; ## no critic.
-        return $self->cookies->{$name};
-    }
-    return;
+    my $name = shift;
+    return undef unless exists $self->cookies->{$name}; ## no critic.
+    return $self->cookies->{$name};
 }
 
 sub param {
@@ -183,8 +152,8 @@ sub param {
     return keys %{ $self->parameters } if @_ == 0;
 
     my $key = shift;
-    return $self->params->{$key} unless wantarray;
-    return $self->params->get_all($key);
+    return $self->parameters->{$key} unless wantarray;
+    return $self->parameters->get_all($key);
 }
 
 sub upload {
@@ -225,22 +194,13 @@ sub base {
 
 sub uri {
     my $self = shift;
-    if (defined $_[0]) {
-        unless (eval { $_[0]->isa('URI') }) {
-            Carp::croak "Attribute (uri) does not pass the type constraint because: Validation failed for 'URI' failed with value $_[0]";
-        }
-        $self->{uri} = $_[0];
-    } elsif (!defined $self->{uri}) {
-        $self->{uri} = $self->_build_uri;
-    }
-    $self->{uri};
+    $self->env->{'plack.request.uri'} ||= $self->_build_uri;
 }
 
 sub _build_uri  {
-    my($self, ) = @_;
+    my $self = shift;
 
     my $env = $self->env;
-
     my $base_path = $env->{SCRIPT_NAME} || '/';
 
     my $path = $base_path . ($env->{PATH_INFO} || '');
@@ -257,7 +217,10 @@ sub _build_uri  {
     return URI->new($uri)->canonical;
 }
 
-sub path { shift->uri->path(@_) }
+sub path {
+    _deprecated;
+    shift->uri->path(@_);
+}
 
 sub new_response {
     my $self = shift;
@@ -272,31 +235,33 @@ sub _parse_request_body {
     my $body = HTTP::Body->new($self->env->{CONTENT_TYPE}, $self->env->{CONTENT_LENGTH});
     my $cl = $self->content_length;
 
+    my $input = $self->input;
+
     my $fh;
-    unless ($self->env->{'plack.request.tempfile'}) {
+    unless ($self->env->{'plack.request.tempfh'}) {
         $fh = IO::File->new_tmpfile;
         binmode $fh;
     }
 
     my $spin = 0;
     while ($cl) {
-        $self->input->read(my $buffer, $cl < 8192 ? $cl : 8192);
-        $cl -= length $buffer;
+        $input->read(my $buffer, $cl < 8192 ? $cl : 8192);
+        my $read = length $buffer;
+        $cl -= $read;
         $body->add($buffer);
         $fh->print($buffer) if $fh;
 
-        if ($spin++ > 2000) {
+        if ($read == 0 && $spin++ > 2000) {
             Carp::croak "Bad Content-Length: maybe client disconnect? ($cl bytes remaining)";
         }
     }
 
     if ($fh) {
-        $self->env->{'plack.request.tempfile'} = $self->env->{'psgi.input'} = $fh;
+        $fh->seek(0, 0);
+        $self->env->{'plack.request.tempfh'} = $self->env->{'psgi.input'} = $fh;
     }
 
-    $self->env->{'psgi.input'}->seek(0, 0);
-
-    $self->env->{'plack.request.body'}   = $self->_normalize_multi($body->param);
+    $self->env->{'plack.request.body'}   = Hash::MultiValue->from_mixed($body->param);
     $self->env->{'plack.request.upload'} = $self->_normalize_multi($body->upload, sub { $self->_make_upload(@_) });
 
     1;
@@ -395,7 +360,7 @@ Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
 
 =item request_uri
 
-Returns the request uri (like $ENV{REQUEST_URI})
+Returns the raw request URI.
 
 =item query_parameters
 
@@ -409,7 +374,7 @@ Returns true or false, indicating whether the connection is secure (https).
 
 =item uri
 
-Returns a URI object for the current request. Stringifies to the URI text.
+Returns an URI object for the current request. Stringifies to the URI text.
 
 =item user
 
@@ -478,16 +443,6 @@ is an alternative method for accessing parameters in $req->parameters.
     @values = $req->param( 'foo' );
     @params = $req->param;
 
-Like L<CGI>, and B<unlike> earlier versions of Catalyst, passing multiple
-arguments to this method, like this:
-
-    $req->param( 'foo', 'bar', 'gorch', 'quxx' );
-
-will set the parameter C<foo> to the multiple values C<bar>, C<gorch> and
-C<quxx>. Previously this would have added C<bar> as another value to C<foo>
-(creating it if it didn't exist before), and C<quxx> as another value for
-C<gorch>.
-
 =item path
 
 Returns the path, i.e. the part of the URI after $req->base, for the current request.
@@ -508,14 +463,16 @@ A convenient method to access $req->uploads.
 
   my $res = $req->new_response;
 
-Creates a new L<Plack::Response> by default. Handy to remove
-dependency on L<Plack::Response> in your code for easy subclassing and
-duck typing in web application frameworks, as well as overriding
-Response generation in middlewares.
+Creates a new L<Plack::Response> object. Handy to remove dependency on
+L<Plack::Response> in your code for easy subclassing and duck typing
+in web application frameworks, as well as overriding Response
+generation in middlewares.
 
 =back
 
 =head1 AUTHORS
+
+Tatsuhiko Miyagawa
 
 Kazuhiro Osawa
 
