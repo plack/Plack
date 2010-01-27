@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More tests => 5;
 use HTTP::Request;
 use Test::Requires qw(CGI::Simple::Cookie);
 use Plack::Test;
