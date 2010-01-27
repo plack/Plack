@@ -238,8 +238,8 @@ sub _build_uri  {
 }
 
 sub path {
-    _deprecated 'path_info';
-    shift->path_info(@_);
+    _deprecated 'uri->path';
+    shift->uri->path(@_);
 }
 
 sub new_response {
