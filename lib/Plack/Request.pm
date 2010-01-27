@@ -15,9 +15,9 @@ use URI;
 use URI::Escape ();
 
 sub _deprecated {
-    my $self = shift;
+    my $alt = shift;
     my $method = (caller(1))[3];
-    Carp::carp("$method is deprecated. Use Piglet::Request instead.");
+    Carp::carp("$method is deprecated. Use '$alt' instead.");
 }
 
 sub new {
@@ -149,20 +149,20 @@ sub uploads {
     return $self->env->{'plack.request.upload'};
 }
 
-sub hostname     { _deprecated; $_[0]->remote_host || $_[0]->address }
-sub url_scheme   { _deprecated; $_[0]->scheme }
-sub raw_body     { _deprecated; $_[0]->content }
-sub params       { _deprecated; shift->parameters(@_) }
-sub query_params { _deprecated; shift->query_parameters(@_) }
-sub body_params  { _deprecated; shift->body_parameters(@_) }
+sub hostname     { _deprecated 'remote_host';      $_[0]->remote_host || $_[0]->address }
+sub url_scheme   { _deprecated 'scheme';           $_[0]->scheme }
+sub raw_body     { _deprecated 'content';          $_[0]->content }
+sub params       { _deprecated 'parameters';       shift->parameters(@_) }
+sub query_params { _deprecated 'query_parameters'; shift->query_parameters(@_) }
+sub body_params  { _deprecated 'body_parameters';  shift->body_parameters(@_) }
 
 sub cookie {
     my $self = shift;
+    _deprecated 'cookies';
 
     return keys %{ $self->cookies } if @_ == 0;
 
     my $name = shift;
-    return undef unless exists $self->cookies->{$name}; ## no critic.
     return $self->cookies->{$name};
 }
 
@@ -238,8 +238,8 @@ sub _build_uri  {
 }
 
 sub path {
-    _deprecated;
-    shift->uri->path(@_);
+    _deprecated 'path_info';
+    shift->path_info(@_);
 }
 
 sub new_response {

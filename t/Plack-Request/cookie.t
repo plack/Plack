@@ -9,10 +9,9 @@ use Plack::Request;
 my $app = sub {
     my $req = Plack::Request->new(shift);
 
-    is '2', $req->cookie;
-    is $req->cookie('undef'), undef;
-    is $req->cookie('Foo'), 'Bar';
-    is $req->cookie('Bar'), 'Baz';
+    is $req->cookies->{undef}, undef;
+    is $req->cookies->{Foo}, 'Bar';
+    is $req->cookies->{Bar}, 'Baz';
     is_deeply $req->cookies, {Foo => 'Bar', Bar => 'Baz'};
 
     $req->new_response(200)->finalize;
