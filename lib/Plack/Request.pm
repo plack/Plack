@@ -70,7 +70,7 @@ sub cookies {
         my ($key, $value) = map URI::Escape::uri_unescape($_), split( "=", $pair, 2 );
 
         # Take the first one like CGI.pm or rack do
-        $results{$key} ||= $value;
+        $results{$key} = $value unless exists $results{$key};
     }
 
     $self->env->{'plack.cookie.parsed'} = \%results;
