@@ -186,7 +186,7 @@ sub upload {
     return $self->uploads->get_all($key);
 }
 
-sub raw_uri {
+sub base {
     my $self = shift;
 
     my $env    = $self->env;
@@ -200,16 +200,20 @@ sub raw_uri {
     };
 
     my $uri = "$scheme\://$host" . $env->{REQUEST_URI};
-    return URI->new($uri);
-}
-
-sub base {
-    my $self = shift;
-
-    my $uri = $self->raw_uri;
+    $uri = URI->new($uri);
     $uri->path_query($self->env->{SCRIPT_NAME} || "/");
 
     return $uri;
+}
+
+sub raw_uri {
+    my $self = shift;
+    _deprecated 'base';
+
+    my $base = $self->base;
+    $base->path_query($self->env->{REQUEST_URI});
+
+    $base;
 }
 
 sub uri {
