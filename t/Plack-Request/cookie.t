@@ -11,9 +11,9 @@ my $app = sub {
 
     is '2', $req->cookie;
     is $req->cookie('undef'), undef;
-    is $req->cookie('Foo')->value, 'Bar';
-    is $req->cookie('Bar')->value, 'Baz';
-    is_deeply $req->cookies, {Foo => 'Foo=Bar; path=/', Bar => 'Bar=Baz; path=/'};
+    is $req->cookie('Foo'), 'Bar';
+    is $req->cookie('Bar'), 'Baz';
+    is_deeply $req->cookies, {Foo => 'Bar', Bar => 'Baz'};
 
     $req->new_response(200)->finalize;
 };

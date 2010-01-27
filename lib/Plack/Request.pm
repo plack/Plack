@@ -12,6 +12,7 @@ use IO::File;
 
 use Plack::Request::Upload;
 use URI;
+use URI::Escape ();
 
 sub _deprecated {
     my $self = shift;
@@ -50,10 +51,29 @@ sub logger          { $_[0]->env->{'psgix.logger'} }
 sub cookies {
     my $self = shift;
 
-    $self->env->{'plack.cookie.parsed'} ||= do {
-        my $header = $self->header('Cookie');
-        +{ CGI::Simple::Cookie->parse($header) };
-    };
+    return {} unless $self->env->{HTTP_COOKIE};
+
+    # HTTP_COOKIE hasn't changed: reuse the parsed cookie
+    if (   $self->env->{'plack.cookie.parsed'}
+        && $self->env->{'plack.cookie.string'} eq $self->env->{HTTP_COOKIE}) {
+        return $self->env->{'plack.cookie.parsed'};
+    }
+
+    $self->env->{'plack.cookie.string'} = $self->env->{HTTP_COOKIE};
+
+    my %results;
+    my @pairs = split "[;,] ?", $self->env->{'plack.cookie.string'};
+    for my $pair ( @pairs ) {
+        # trim leading trailing whitespace
+        $pair =~ s/^\s+//; $pair =~ s/\s+$//;
+
+        my ($key, $value) = map URI::Escape::uri_unescape($_), split( "=", $pair, 2 );
+
+        # Take the first one like CGI.pm or rack do
+        $results{$key} ||= $value;
+    }
+
+    $self->env->{'plack.cookie.parsed'} = \%results;
 }
 
 sub query_parameters {

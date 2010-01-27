@@ -2,13 +2,12 @@ package Plack::Response;
 use strict;
 use warnings;
 our $VERSION = '0.01';
-use base qw/Class::Accessor::Fast/;
+use Plack::Util::Accessor qw(body status);
 use Carp ();
 use Scalar::Util ();
 use CGI::Simple::Cookie ();
 use HTTP::Headers;
 
-__PACKAGE__->mk_accessors(qw/body status/);
 sub code    { shift->status(@_) }
 sub content { shift->body(@_)   }
 
