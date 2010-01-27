@@ -88,7 +88,7 @@ sub content {
         $self->_parse_request_body;
     }
 
-    my $fh = $self->env->{'plack.request.tempfh'} or return ''; # no tempfh = no content body
+    my $fh = $self->env->{'plack.request.tempfh'} or return '';
     $fh->read(my($content), $self->content_length);
     $fh->seek(0, 0);
 
@@ -255,17 +255,17 @@ sub new_response {
 sub _parse_request_body {
     my $self = shift;
 
-    my $content_type = $self->env->{CONTENT_TYPE};
-    unless ($content_type) {
-        # This is GET/HEAD
-        $self->env->{'plack.request.body'} = {};
-        $self->env->{'plack.request.upload'} = {};
+    my $ct = $self->env->{CONTENT_TYPE};
+    my $cl = $self->env->{CONTENT_LENGTH};
+    if (!$ct && !$cl) {
+        # No Content-Type nor Content-Length -> GET/HEAD
+        $self->env->{'plack.request.body'}   = Hash::MultiValue->new;
+        $self->env->{'plack.request.upload'} = Hash::MultiValue->new;
         return;
     }
 
     # Do not use ->content_type to get multipart boundary correctly
-    my $body = HTTP::Body->new($content_type, $self->env->{CONTENT_LENGTH});
-    my $cl = $self->content_length;
+    my $body = HTTP::Body->new($ct, $cl);
 
     my $input = $self->input;
 
