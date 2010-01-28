@@ -1,7 +1,7 @@
 package Plack::Request::Upload;
 use strict;
 use warnings;
-BEGIN { require Carp }; # do not call Carp->import for performance
+use Carp ();
 
 sub new {
     my($class, %args) = @_;
@@ -18,14 +18,14 @@ sub filename { $_[0]->{filename} }
 sub headers  { $_[0]->{headers} }
 sub size     { $_[0]->{size} }
 sub tempname { $_[0]->{tempname} }
+sub path     { $_[0]->{tempname} }
 
-sub type { 
+sub content_type {
     my $self = shift;
-    unless ($self->{headers} && $self->{headers}->can('content_type')) {
-        Carp::croak 'Cannot delegate type to content_type because the value of headers is not defined';
-    }
     $self->{headers}->content_type(@_);
 }
+
+sub type { shift->content_type(@_) }
 
 sub basename {
     my $self = shift;
@@ -40,43 +40,6 @@ sub basename {
     $self->{basename};
 }
 
-sub fh {
-    my $self = shift;
-    unless (defined $self->{fh}) {
-        open my $fh, '<', $self->{tempname} or die "Can't open '@{[ $self->tempname ]}': '$!'";
-        $self->{fh} = $fh;
-    }
-    $self->{fh};
-}
-
-sub copy_to {
-    my $self = shift;
-    require File::Copy;
-    File::Copy::copy( $self->{tempname}, @_ );
-}
-
-sub link_to {
-    my ( $self, $target ) = @_;
-    CORE::link( $self->{tempname}, $target );
-}
-
-sub slurp {
-    my ( $self, $layer ) = @_;
-
-    $layer = ':raw' unless $layer;
-
-    my $content = undef;
-    my $handle  = $self->fh;
-
-    binmode( $handle, $layer );
-
-    while ( $handle->read( my $buffer, 8192 ) ) {
-        $content .= $buffer;
-    }
-
-    $content;
-}
-
 1;
 __END__
 
@@ -84,43 +47,44 @@ __END__
 
 Plack::Request::Upload - handles file upload requests
 
+=head1 SYNOPSIS
+
+  # $req is Plack::Request
+  my $upload = $req->uploads->{field};
+
+  $upload->size;
+  $upload->path;
+  $upload->content_type;
+  $upload->basename;
+
 =head1 METHODS
 
 =over 4
+
+=item size
+
+Returns the size of Uploaded file.
+
+=item path
+
+Returns the path to the temporary file where uploaded file is saved.
+
+=item content_type
+
+Returns the content type of the uploaded file.
 
 =item basename
 
 Returns basename for "filename".
 
-=item link_to
-
-Creates a hard link to the temporary file. Returns true for success,
-false for failure.
-
-    $upload->link_to('/path/to/target');
-
-=item slurp
-
-Returns a scalar containing the contents of the temporary file.
-
-=item copy_to
-
-Copies the temporary file using File::Copy. Returns true for success,
-false for failure.
-
-    $upload->copy_to('/path/to/targe')
-
-=back
-
 =head1 AUTHORS
 
-Kazuhiro Osawa and Plack authors.
+Kazuhiro Osawa
 
-=head1 THANKS TO
-
-the authors of L<Catalyst::Request::Upload>.
+Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<Plack>, L<Catalyst::Request::Upload>
+L<Plack::Request>, L<Catalyst::Request::Upload>
 
+=cut

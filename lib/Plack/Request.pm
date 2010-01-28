@@ -292,7 +292,14 @@ sub _parse_request_body {
     }
 
     $self->env->{'plack.request.body'}   = Hash::MultiValue->from_mixed($body->param);
-    $self->env->{'plack.request.upload'} = $self->_normalize_multi($body->upload, sub { $self->_make_upload(@_) });
+
+    my @uploads = Hash::MultiValue->from_mixed($body->upload)->flatten;
+    my @obj;
+    while (my($k, $v) = splice @uploads, 0, 2) {
+        push @obj, $k, $self->_make_upload($v);
+    }
+
+    $self->env->{'plack.request.upload'} = Hash::MultiValue->new(@obj);
 
     1;
 }
@@ -303,21 +310,6 @@ sub _make_upload {
         headers => HTTP::Headers->new( %{delete $upload->{headers}} ),
         %$upload,
     );
-}
-
-sub _normalize_multi {
-    my($self, $hash, $cb) = @_;
-
-    my @new;
-    while (my($key, $val) = each %$hash) {
-        my @val = ref $val eq 'ARRAY' ? @$val : ($val);
-        for my $val (@val) {
-            $val = $cb->($val) if $cb;
-            push @new, $key, $val;
-        }
-    }
-
-    return Hash::MultiValue->new(@new);
 }
 
 1;

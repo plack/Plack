@@ -13,6 +13,8 @@ sub flip_backend { $Plack::Test::Impl = shift @backends }
 my $app = sub {
     my $req = Plack::Request->new(shift);
     is $req->uploads->{image}->size, -s $file;
+    is $req->uploads->{image}->content_type, 'image/jpeg';
+    is $req->uploads->{image}->basename, 'kyoto.jpg';
     $req->new_response(200)->finalize;
 };
 

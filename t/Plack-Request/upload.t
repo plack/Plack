@@ -8,8 +8,8 @@ use HTTP::Request::Common;
 my $app = sub {
     my $req = Plack::Request->new(shift);
 
-    is ref($req->upload('foo')), 'Plack::Request::Upload';
-    is $req->upload('foo')->filename, 'foo2.txt';
+    isa_ok $req->uploads->{foo}, 'HASH';
+    is $req->uploads->{foo}->{filename}, 'foo2.txt';
 
     my @files = $req->upload('foo');
     is scalar(@files), 2;

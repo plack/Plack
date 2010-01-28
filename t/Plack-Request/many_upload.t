@@ -56,15 +56,21 @@ $content =~ s/\n/\r\n/g;
 
     my @uploads = $req->upload('test_upload_file');
 
-    like $uploads[0]->slurp, qr|^SHOGUN|;
-    like $uploads[1]->slurp, qr|^SHOGUN|;
-    is $req->upload('test_upload_file4')->slurp, 'SHOGUN4';
+    like slurp($uploads[0]), qr|^SHOGUN|;
+    like slurp($uploads[1]), qr|^SHOGUN|;
+    is slurp($req->upload('test_upload_file4')), 'SHOGUN4';
 
     my $test_upload_file3 = $req->upload('test_upload_file3');
-    is $test_upload_file3->slurp, 'SHOGUN3';
+    is slurp($test_upload_file3), 'SHOGUN3';
 
     my @test_upload_file6 = $req->upload('test_upload_file6');
-    is $test_upload_file6[0]->slurp, 'SHOGUN6';
+    is slurp($test_upload_file6[0]), 'SHOGUN6';
 }
 
 done_testing;
+
+sub slurp {
+    my $up = shift;
+    open my $fh, "<", $up->path or die;
+    join '', <$fh>;
+}
