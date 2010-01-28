@@ -8,9 +8,9 @@ use HTTP::Headers;
 use Carp ();
 use Hash::MultiValue;
 use HTTP::Body;
-use IO::File;
 
 use Plack::Request::Upload;
+use Plack::TempBuffer;
 use URI;
 use URI::Escape ();
 
@@ -269,28 +269,26 @@ sub _parse_request_body {
 
     my $input = $self->input;
 
-    my $fh;
+    my $buffer;
     unless ($self->env->{'plack.request.tempfh'}) {
-        $fh = IO::File->new_tmpfile;
-        binmode $fh;
+        $buffer = Plack::TempBuffer->new($cl);
     }
 
     my $spin = 0;
     while ($cl) {
-        $input->read(my $buffer, $cl < 8192 ? $cl : 8192);
-        my $read = length $buffer;
+        $input->read(my $chunk, $cl < 8192 ? $cl : 8192);
+        my $read = length $chunk;
         $cl -= $read;
-        $body->add($buffer);
-        $fh->print($buffer) if $fh;
+        $body->add($chunk);
+        $buffer->print($chunk) if $buffer;
 
         if ($read == 0 && $spin++ > 2000) {
             Carp::croak "Bad Content-Length: maybe client disconnect? ($cl bytes remaining)";
         }
     }
 
-    if ($fh) {
-        $fh->seek(0, 0);
-        $self->env->{'plack.request.tempfh'} = $self->env->{'psgi.input'} = $fh;
+    if ($buffer) {
+        $self->env->{'plack.request.tempfh'} = $self->env->{'psgi.input'} = $buffer->rewind;
     }
 
     $self->env->{'plack.request.body'}   = Hash::MultiValue->from_mixed($body->param);
