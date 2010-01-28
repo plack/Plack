@@ -25,13 +25,13 @@ is_deeply(
         cookies => +{
             'foo_sid' => +{
                 value => 'ASDFJKL:',
-                expires => 'Thursday, 25-Apr-1999 00:40:33 GMT',
+                expires => 'Thu, 25-Apr-1999 00:40:33 GMT',
                 domain  => 'example.com',
                 path => '/',
             },
             'poo_sid' => +{
                 value => 'QWERTYUI',
-                expires => 'Thursday, 25-Apr-1999 00:40:33 GMT',
+                expires => 'Thu, 25-Apr-1999 00:40:33 GMT',
                 domain  => 'example.com',
                 path => '/',
             },
@@ -41,8 +41,8 @@ is_deeply(
     [
         200,
         +[
-            'Set-Cookie' => 'poo_sid=QWERTYUI; domain=example.com; path=/; expires=Thursday, 25-Apr-1999 00:40:33 GMT',
-            'Set-Cookie' => 'foo_sid=ASDFJKL%3A; domain=example.com; path=/; expires=Thursday, 25-Apr-1999 00:40:33 GMT',
+            'Set-Cookie' => 'poo_sid=QWERTYUI; domain=example.com; path=/; expires=Thu, 25-Apr-1999 00:40:33 GMT',
+            'Set-Cookie' => 'foo_sid=ASDFJKL%3A; domain=example.com; path=/; expires=Thu, 25-Apr-1999 00:40:33 GMT',
         ],
         [ 'hello' ],
     ]

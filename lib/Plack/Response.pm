@@ -5,8 +5,8 @@ our $VERSION = '0.01';
 use Plack::Util::Accessor qw(body status);
 use Carp ();
 use Scalar::Util ();
-use CGI::Simple::Cookie ();
 use HTTP::Headers;
+use URI::Escape ();
 
 sub code    { shift->status(@_) }
 sub content { shift->body(@_)   }
@@ -42,7 +42,7 @@ sub headers {
 sub cookies {
     my $self = shift;
     if (@_) {
-        return $self->{cookies} = shift;
+        $self->{cookies} = shift;
     } else {
         return $self->{cookies} ||= +{ };
     }
@@ -81,7 +81,7 @@ sub redirect {
 
 sub finalize {
     my $self = shift;
-    die "missing status" unless $self->status();
+    Carp::croak "missing status" unless $self->status();
 
     $self->_finalize_cookies();
 
@@ -109,29 +109,40 @@ sub _body {
 }
 
 sub _finalize_cookies {
-    my ( $self ) = @_;
+    my $self = shift;
 
-    my $cookies = $self->cookies;
-    my @keys    = keys %$cookies;
-    if (@keys) {
-        for my $name (@keys) {
-            my $val    = $cookies->{$name};
-            my $cookie = (
-                Scalar::Util::blessed($val)
-                ? $val
-                : CGI::Simple::Cookie->new(
-                    -name    => $name,
-                    -value   => $val->{value},
-                    -expires => $val->{expires},
-                    -domain  => $val->{domain},
-                    -path    => $val->{path},
-                    -secure  => ( $val->{secure} || 0 )
-                )
-            );
-
-            $self->headers->push_header( 'Set-Cookie' => $cookie->as_string );
-        }
+    while (my($name, $val) = each %{$self->cookies}) {
+        my $cookie = $self->_bake_cookie($name, $val);
+        $self->headers->push_header( 'Set-Cookie' => $cookie );
     }
+}
+
+sub _bake_cookie {
+    my($self, $name, $val) = @_;
+
+    return '' unless defined $val;
+    $val = { value => $val } unless ref $val eq 'HASH';
+
+    my @cookie = ( URI::Escape::uri_escape($name) . "=" . URI::Escape::uri_escape($val->{value}) );
+    push @cookie, "domain=" . $val->{domain}   if $val->{domain};
+    push @cookie, "path=" . $val->{path}       if $val->{path};
+    push @cookie, "expires=" . $self->_date($val->{expires}) if $val->{expires};
+    push @cookie, "secure"                     if $val->{secure};
+    push @cookie, "HttpOnly"                   if $val->{httponly};
+
+    return join "; ", @cookie;
+}
+
+sub _date {
+    my($self, $expires) = @_;
+
+    if ($expires =~ /^\d+$/) {
+        # all numbers -> epoch date
+        require POSIX;
+        return POSIX::strftime("%a, %d-%b-%Y %H:%M:%S GMT", gmtime($expires));
+    }
+
+    return $expires;
 }
 
 1;
@@ -231,14 +242,19 @@ Gets and sets C<Location> header.
 
 Returns a hash reference containing cookies to be set in the
 response. The keys of the hash are the cookies' names, and their
-corresponding values are hash reference used to construct a
-CGI::Simple::Cookie object.
+corresponding values are hash reference that can contain keys such as
+C<value>, C<domain>, C<expires>, C<path>, C<httponly>, C<secure>.
+
+C<expires> can take a string or an integer (as an epoch time) and
+B<does not> convert string formats such as C<+3M>.
 
 =back
 
 =head1 AUTHOR
 
 Tokuhiro Matsuno
+
+Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
