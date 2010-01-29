@@ -636,9 +636,17 @@ L<Hash::MultiValue> for more about this change.
 
 Cookie handling is simplified, and doesn't use L<CGI::Simple::Cookie>
 anymore, which means you B<CAN NOT> set array reference or hash
-reference as a cookie value. You're always required to set string
-value, and encoding or decoding them is totally up to your application
-(or framework).
+reference as a cookie value and expect it be serialized. You're always
+required to set string value, and encoding or decoding them is totally
+up to your application or framework. Also, C<cookies> hash reference
+now returns I<strings> for the cookies rather than CGI::Simple::Cookie
+objects, which means you no longer have to write a wacky code such as:
+
+  $v = $req->cookie->{foo} ? $req->cookie->{foo}->value : undef;
+
+and instead, simply do:
+
+  $v = $req->cookie->{foo};
 
 =head1 AUTHORS
 
