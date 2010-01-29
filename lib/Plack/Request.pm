@@ -95,6 +95,8 @@ sub content {
     return $content;
 }
 
+# XXX you can mutate headers with ->headers but it's not written through to the env
+
 sub headers {
     my $self = shift;
     if (!defined $self->{headers}) {
@@ -195,6 +197,8 @@ sub raw_uri {
 
     $base;
 }
+
+# XXX when PATH_INFO/QUERY_STRING is updated, it should discard the cache
 
 sub uri {
     my $self = shift;
@@ -580,6 +584,40 @@ environment hash as well as in the temporary buffer, so you can call
 them multiple times and create Plack::Request objects multiple times
 in a request and they should work safely, and won't parse request body
 more than twice for the efficiency.
+
+=head1 DISPATCHING
+
+If your application or framework wants to dispatch (or route) actions
+based on request paths, be sure to use C<< $req->path_info >> not C<<
+$req->uri->path >> (or C<< $req->path >> which is now deprecated).
+
+It is because C<path_info> gives you the virtual path of the request,
+regardless of how your application is mounted. If your application is
+hosted with mod_perl or CGI scripts, or even multiplexed with tools
+like L<Plack::App::URLMap>, request's C<path_info> always gives you
+the action path.
+
+Note that C<path_info> might give you an empty string, in which case
+you should assume just like C</>.
+
+You will also like to use C<< $req->base >> as a base prefix when
+building URLs in your templates or in redirections. It's a good idea
+for you to subclass Plack::Request and define methods such as:
+
+  sub uri_for {
+      my($self, $path, $args) = @_;
+      my $uri = $self->base;
+      $uri->path($uri->path . $path);
+      $uri->query_form(@$args) if $args;
+      $uri;
+  }
+
+So you can say:
+
+  my $link = $req->uri_for('/logout', [ signoff => 1 ]);
+
+and if C<< $req->base >> is C</app> you'll get the full URI for
+C</app/logout?signoff=1>.
 
 =head1 INCOMPATIBILITIES
 
