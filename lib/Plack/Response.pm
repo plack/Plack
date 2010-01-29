@@ -139,7 +139,11 @@ sub _date {
     if ($expires =~ /^\d+$/) {
         # all numbers -> epoch date
         require POSIX;
-        return POSIX::strftime("%a, %d-%b-%Y %H:%M:%S GMT", gmtime($expires));
+        my $old = POSIX::setlocale(&POSIX::LC_ALL);
+        POSIX::setlocale(&POSIX::LC_ALL, 'en');
+        my $time = POSIX::strftime("%a, %d-%b-%Y %H:%M:%S GMT", gmtime($expires));
+        POSIX::setlocale(&POSIX::LC_ALL, $old);
+        return $time;
     }
 
     return $expires;
