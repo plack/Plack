@@ -443,14 +443,7 @@ strings that are sent by clients and are URI decoded.
 =item query_parameters
 
 Returns a reference to a hash containing query string (GET)
-parameters. This hash reference is L<Hash::MultiValue> object, which
-means you can use it as a plain hash where values are always scalars
-(B<NOT> array reference) but can call:
-
-  my @foo = $req->query_parameters->get_all('foo');
-
-to get multiple values with the same key. See L<Hash::MultiValue> for
-details.
+parameters. This hash reference is L<Hash::MultiValue> object.
 
 =item body_parameters
 
@@ -554,13 +547,39 @@ generation in middlewares.
 
 =back
 
+=head2 Hash::MultiValue parameters
+
+Parameters that can take one or multiple values i.e. C<parameters>,
+C<query_parameters>, C<body_parameters> and C<uploads> store those
+hash reference as a L<Hash::MultiValue> object. This means you can use
+the hash reference as a plain hash where values are B<always> scalars
+(B<NOT> array reference), so you don't need to code ugly and unsafe
+C<< ref ... eq 'ARRAY' >> anymore.
+
+And if you explicitly want to get multiple values of the same key, you
+can call the method on it, such as:
+
+  my @foo = $req->query_parameters->get_all('foo');
+
+You can also call C<get_one> to always get one parameter independent
+of the context (unlike C<param>), and eve call C<mixed> (with
+Hash::MultiValue 0.05 or later) to get the I<traditional> hash
+reference,
+
+  my $params = $req->prameters->mixed;
+
+where values are either a scalar or an array reference depending on
+input, so it might be useul if you already have the code to deal with
+that ugliness.
+
 =head2 PARSING POST BODY and MULTIPLE OBJECTS
 
-These methods (C<content>, C<body_parameters> and C<uploads>) are
-carefully coded to save the parsed body in the environment hash as
-well as in the temporary buffer, so you can call them multiple times
-and create Plack::Request objects multiple times in a request and they
-should work nicely.
+The methods to parse request body (C<content>, C<body_parameters> and
+C<uploads>) are carefully coded to save the parsed body in the
+environment hash as well as in the temporary buffer, so you can call
+them multiple times and create Plack::Request objects multiple times
+in a request and they should work safely, and won't parse request body
+more than twice for the efficiency.
 
 =head1 INCOMPATIBILITIES
 

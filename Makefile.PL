@@ -21,7 +21,7 @@ requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
 
 requires 'Filesys::Notify::Simple'; # plackup -r
 
-requires 'Hash::MultiValue'; # Plack::Request
+requires 'Hash::MultiValue', 0.05; # Plack::Request
 requires 'HTTP::Body'; # Plack::Request
 
 # TODO: they can go away once we create Plack-Middlewares dist
