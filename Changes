@@ -1,5 +1,43 @@
 Revision history for Perl extension Plack
 
+Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
+
+0.99_01 Fri Jan 29 14:02:04 PST 2010
+  Incompatible Changes
+        - Rename Standalone servers to HTTP::Server::PSGI
+        - Rename Plack::Server adapters to Plack::Handler. These changes should be transparnt
+          since we have a compatible code to work with the older names as well.
+        - Dropped sendfile(2) AIO support from Standalone server
+        - Plack::Request and Response are now in core, deprecating many methods.
+          Read `perldoc Plack::Request` and its INCOMPATIBILITIES section
+
+  New Features
+        - New middleware: WrapCGI to convert a single CGI script into a PSGI applciation
+        - Support psgix.logger and psgix.session in Plack::Request
+        - New logger middleware: NullLogger, SimpleLogger, Log4perl and LogDispatch
+        - Refactored Loader classes and added a new Shotgun loader (like rack's Shotgun)
+        - Added -l option to plackup which specifies the Loader backend
+        - New middleware: Refresh reloads modules in %INC in every N seconds
+        - Wraps -e code with 'builder { }' by default. You can also use with *.psgi to add middleware
+          components without editing the file!
+
+  Bug Fixes and Improvements
+        - Do not call ->canonical in HTTP::Message::PSGI to keep the URI encoded params in Plack::Test
+          tests (rafl, t0m)
+        - Fixed a bug in stupid corner case in HTTP::Message::PSGI where passed URI has UTF-8 encoded
+          strings *and* URI escaped UTF-8 bytes. (chmrr)
+        - Depend on new HTTP::Request::AsCGI that has better REQUEST_URI
+        - Plack::Runner/plackup does not autoload AccessLog in CGI mode anymore
+        - Added server_ready hook to PSGI servers so you can disable them in tests etc. (clkao, rafl)
+        - Escape user-supplied values in AccessLog to avoid control sequence injection (tokuhirom, kazuho)
+        - Support -foo (single dash) style option in Plack::Runner and plackup
+        - Relax the runtime.t check since it still fails on low-res time environments
+        - Now depends on Digest::MD5, HTTP::Body and Hash::MultiValue
+        - Revert the 'require' in load_psgi to do 'do'
+        - Delay load unnecessary modules in Plack::Runner
+        - Fixed psgi.multiprocess value on HTTP::Server::PSGI
+        - PSGI/1.1 support in Lint
+
 0.9031 Mon Jan 11 11:29:04 PST 2010
         - Fixed Plack::App::Directory directory listing by switching to Plack::MIME (tokuhirom)
           This has been broken since 0.9025
