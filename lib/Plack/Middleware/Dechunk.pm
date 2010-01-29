@@ -1,13 +1,13 @@
 package Plack::Middleware::Dechunk;
 use strict;
-no warnings;
 use parent qw(Plack::Middleware);
 
-use constant CHUNK_SIZE => 1024;# * 32;
+use Plack::TempBuffer;
+use constant CHUNK_SIZE => 1024 * 32;
 
 sub call {
     my($self, $env) = @_;
-
+    no warnings;
     if (   $env->{HTTP_TRANSFER_ENCODING} eq 'chunked'
         && ($env->{REQUEST_METHOD} eq 'POST' || $env->{REQUEST_METHOD} eq 'PUT')) {
         $self->dechunk_input($env);
@@ -19,18 +19,19 @@ sub call {
 sub dechunk_input {
     my($self, $env) = @_;
 
-    my $chunk_buffer = '';
-    my($body, $length);
+    my $buffer = Plack::TempBuffer->new;
+    my $chunk_buffer;
+    my $length;
 
  DECHUNK:
     while (1) {
-        my $read = $env->{'psgi.input'}->read($chunk_buffer, CHUNK_SIZE, length $chunk_buffer);
+        my $read = $env->{'psgi.input'}->read(my $chunk_buffer, CHUNK_SIZE, length $chunk_buffer);
 
         while ( $chunk_buffer =~ s/^([0-9a-fA-F]+).*\015\012// ) {
             my $chunk_len = hex $1;
             last DECHUNK if $chunk_len == 0;
 
-            $body .= substr $chunk_buffer, 0, $chunk_len, '';
+            $buffer->print(substr $chunk_buffer, 0, $chunk_len, '');
             $chunk_buffer =~ s/^\015\012//;
 
             $length += $chunk_len;
@@ -41,7 +42,7 @@ sub dechunk_input {
 
     delete $env->{HTTP_TRANSFER_ENCODING};
     $env->{CONTENT_LENGTH} = $length;
-    $env->{'psgi.input'}   = do { open my $input, "<", \$body; $input };
+    $env->{'psgi.input'}   = $buffer->rewind;
 }
 
 1;
