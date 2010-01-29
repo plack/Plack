@@ -133,17 +133,22 @@ sub _bake_cookie {
     return join "; ", @cookie;
 }
 
+my @MON  = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+my @WDAY = qw( Sun Mon Tue Wed Thu Fri Sat );
+
 sub _date {
     my($self, $expires) = @_;
 
     if ($expires =~ /^\d+$/) {
         # all numbers -> epoch date
-        require POSIX;
-        my $old = POSIX::setlocale(&POSIX::LC_ALL);
-        POSIX::setlocale(&POSIX::LC_ALL, 'en');
-        my $time = POSIX::strftime("%a, %d-%b-%Y %H:%M:%S GMT", gmtime($expires));
-        POSIX::setlocale(&POSIX::LC_ALL, $old);
-        return $time;
+        # (cookies use '-' as date separator, HTTP uses ' ')
+
+        my($sec, $min, $hour, $mday, $mon, $year, $wday) = gmtime($expires);
+        $year += 1900;
+
+        return sprintf("%s, %02d-%s-%04d %02d:%02d:%02d GMT",
+                       $WDAY[$wday], $mday, $MON[$mon], $year, $hour, $min, $sec);
+
     }
 
     return $expires;
