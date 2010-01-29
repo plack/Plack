@@ -38,6 +38,7 @@ sub port        { $_[0]->env->{SERVER_PORT} }
 sub user        { $_[0]->env->{REMOTE_USER} }
 sub request_uri { $_[0]->env->{REQUEST_URI} }
 sub path_info   { $_[0]->env->{PATH_INFO} }
+sub path        { $_[0]->env->{PATH_INFO} || '/' }
 sub script_name { $_[0]->env->{SCRIPT_NAME} }
 sub scheme      { $_[0]->env->{'psgi.url_scheme'} }
 sub secure      { $_[0]->scheme eq 'https' }
@@ -239,11 +240,6 @@ sub _uri {
     $uri->canonical;
 }
 
-sub path {
-    _deprecated 'uri->path';
-    shift->uri->path(@_);
-}
-
 sub new_response {
     my $self = shift;
     require Plack::Response;
@@ -405,6 +401,12 @@ want to use this to dispatch requests.
 
 Returns B<PATH_INFO> in the environment. Use this to get the local
 path for the requests.
+
+=item path
+
+Similar to C<path_info> but returns C</> in case it is empty. In other
+words, it returns the virtual path of the request URI after C<<
+$req->base >>. See L</"DISPATCHING"> for details.
 
 =item script_name
 
@@ -590,7 +592,7 @@ more than twice for the efficiency.
 
 If your application or framework wants to dispatch (or route) actions
 based on request paths, be sure to use C<< $req->path_info >> not C<<
-$req->uri->path >> (or C<< $req->path >> which is now deprecated).
+$req->uri->path >>.
 
 It is because C<path_info> gives you the virtual path of the request,
 regardless of how your application is mounted. If your application is
@@ -626,14 +628,21 @@ In version 1.0, many utility methods are removed or deprecated, and
 most methods are made read-only.
 
 The following methods are deprecated: C<hostname>, C<url_scheme>,
-C<params>, C<query_params>, C<body_params>, C<cookie>, C<raw_uri> and
-C<path>. They will be removed in the next major release.
+C<params>, C<query_params>, C<body_params>, C<cookie> and
+C<raw_uri>. They will be removed in the next major release.
 
 All parameter-related methods such as C<parameters>,
 C<body_parameters>, C<query_parameters> and C<uploads> now contains
 L<Hash::MultiValue> objects, rather than I<scalar or an array
 reference depending on the user input> which is unsecure. See
 L<Hash::MultiValue> for more about this change.
+
+C<< $req->path >> method had a bug, where the code and the document
+was mismatching. The document was suggesting it returns the sub
+request path after C<< $req->base >> but the code was always returning
+the absolute URI path. The code is now updated to be an alias of C<<
+$req->path_info >> but returns C</> in case it's empty. If you need
+the older behavior, just call C<< $req->uri->path >> instead.
 
 Cookie handling is simplified, and doesn't use L<CGI::Simple::Cookie>
 anymore, which means you B<CAN NOT> set array reference or hash
