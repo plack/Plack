@@ -316,13 +316,17 @@ Plack::Request - Portable HTTP request object from PSGI env hash
 
   use Plack::Request;
 
-  my $env = shift; # PSGI env
-  my $req = Plack::Request->new($env);
+  my $app_or_middleware = sub {
+      my $env = shift; # PSGI env
 
-  my $path_info = $req->path_info;
-  my $query     = $req->param('query');
+      my $req = Plack::Request->new($env);
 
-  my $res = $req->new_response(200); # new Plack::Response
+      my $path_info = $req->path_info;
+      my $query     = $req->param('query');
+
+      my $res = $req->new_response(200); # new Plack::Response
+      $res->finalize;
+  };
 
 =head1 DESCRIPTION
 
@@ -331,39 +335,53 @@ web server environments.
 
 =head1 CAVEAT
 
-Note that this module is intended to be used by web application
-framework developers rather than application developers (end
-users). Writing your web application directly using Plack::Request is
+Note that this module is intended to be used by Plack middleware
+developers and web application framework developers rather than
+application developers (end users).
+
+Writing your web application directly using Plack::Request is
 certainly possible but not recommended: it's like doing so with
 mod_perl's Apache::Request: yet too low level.
 
 If you're writing a web application, not a framework, then you're
 encouraged to use one of the web application frameworks that support
-PSGI, or use L<HTTP::Engine> if you want to write a micro web server
-application.
-
-Also, even if you're a framework developer, you probably want to
-handle Cookies and file uploads in your own way: Plack::Request gives
-you a simple API to deal with these things but ultimately you probably
-want to implement those in your own code.
+PSGI, or see L<Piglet> or L<HTTP::Engine> to provide higher level
+Request and Response API on top of PSGI.
 
 =head1 METHODS
 
+Some of the methods defined in the earlier versions are deprecated in
+version 1.00. Take a look at L</"INCOMPATIBILITIES">.
+
+Unless otherwise noted, all methods and attribtues are B<read-only>,
+and passing values to the method like an accessor doesn't work like
+you expect it to.
+
 =head2 new
 
-    Plack::Request->new( $psgi_env );
+    Plack::Request->new( $env );
+
+Creates a new request object.
 
 =head1 ATTRIBUTES
 
 =over 4
 
+=item env
+
+Returns the shared PSGI environment hash reference. This is a
+reference, so writing to this environment passes through during the
+whole PSGI request/response cycle.
+
 =item address
 
-Returns the IP address of the client.
+Returns the IP address of the client (C<REMOTE_ADDR>).
 
-=item cookies
+=item remote_host
 
-Returns a reference to a hash containing the cookies
+Returns the remote host (C<REMOTE_HOST>) of the client. It may be
+empty, in which case you have to get the IP address using C<address>
+method and resolve by your own.
 
 =item method
 
@@ -375,48 +393,109 @@ Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
 
 =item request_uri
 
-Returns the raw request URI.
+Returns the raw, undecoded request URI path. You probably do B<NOT>
+want to use this to dispatch requests.
 
-=item query_parameters
+=item path_info
 
-Returns a reference to a hash containing query string (GET)
-parameters. Values can be either a scalar or an arrayref containing
-scalars.
+Returns B<PATH_INFO> in the environment. Use this to get the local
+path for the requests.
+
+=item script_name
+
+Returns B<SCRIPT_NAME> in the environment. This is the absolute path
+where your application is hosted.
+
+=item scheme
+
+Returns the scheme (C<http> or C<https>) of the request.
 
 =item secure
 
 Returns true or false, indicating whether the connection is secure (https).
 
+=item body, input
+
+Returns C<psgi.input> handle.
+
+=item session
+
+Returns (optional) C<psgix.session> hash. When it exists, you can
+retrieve and store per-session data from and to this hash.
+
+=item session_options
+
+Returns (optional) C<psgix.session.options> hash.
+
+=item logger
+
+Returns (optional) C<psgix.logger> code reference. When it exists,
+your application is supposed to send the log message to this logger,
+using:
+
+  $req->logger->({ level => 'debug', message => "This is a debug message" });
+
+=item cookies
+
+Returns a reference to a hash containing the cookies. Values are
+strings that are sent by clients and are URI decoded.
+
+=item query_parameters
+
+Returns a reference to a hash containing query string (GET)
+parameters. This hash reference is L<Hash::MultiValue> object, which
+means you can use it as a plain hash where values are always scalars
+(B<NOT> array reference) but can call:
+
+  my @foo = $req->query_parameters->get_all('foo');
+
+to get multiple values with the same key. See L<Hash::MultiValue> for
+details.
+
+=item body_parameters
+
+Returns a reference to a hash containing posted parameters in the
+request body (POST). Similarly to C<query_parameters>, the hash
+reference is a L<Hash::MultiValue> object.
+
+=item parameters
+
+Returns a L<Hash::MultiValue> hash reference containing (merged) GET
+and POST parameters.
+
+=item content
+
+Returns the request content in an undecoded byte string.
+
 =item uri
 
-Returns an URI object for the current request. Stringifies to the URI text.
+Returns an URI object for the current request. The URI is constructed
+using various environment values such as C<SCRIPT_NAME>, C<PATH_INFO>,
+C<QUERY_STRING>, C<HTTP_HOST>, C<SERVER_NAME> and C<SERVER_PORT>.
+
+Every time this method is called it returns a new, cloned URI object.
+
+=item base
+
+Retutrns an URI object for the base path of current request. This is
+like C<uri> but only contains up to C<SCRIPT_NAME> where your
+application is hosted at.
+
+Every time this method is called it returns a new, cloned URI object.
 
 =item user
 
-Returns REMOTE_USER.
-
-=item raw_body
-
-Returns string containing body(POST).
+Returns C<REMOTE_USER> if it's set.
 
 =item headers
 
 Returns an L<HTTP::Headers> object containing the headers for the current request.
 
-=item hostname
-
-Returns the hostname of the client.
-
-=item parameters
-
-Returns a reference to a hash containing GET and POST parameters. Values can
-be either a scalar or an arrayref containing scalars.
-
 =item uploads
 
-Returns a reference to a hash containing uploads. Values can be either a
-L<Plack::Request::Upload> object, or an arrayref of
-L<Plack::Request::Upload> objects.
+Returns a reference to a hash containing uploads. The hash reference
+is L<Hash::MultiValue> object and values are L<Plack::Request::Upload>
+objects.
 
 =item content_encoding
 
@@ -442,25 +521,15 @@ Shortcut to $req->headers->referer.
 
 Shortcut to $req->headers->user_agent.
 
-=item cookie
-
-A convenient method to access $req->cookies.
-
-    $cookie  = $req->cookie('name');
-    @cookies = $req->cookie;
-
 =item param
 
-Returns GET and POST parameters with a CGI.pm-compatible param method. This 
-is an alternative method for accessing parameters in $req->parameters.
+Returns GET and POST parameters with a CGI.pm-compatible param
+method. This is an alternative method for accessing parameters in
+$req->parameters.
 
     $value  = $req->param( 'foo' );
     @values = $req->param( 'foo' );
     @params = $req->param;
-
-=item path
-
-Returns the path, i.e. the part of the URI after $req->base, for the current request.
 
 =item upload
 
@@ -484,6 +553,35 @@ in web application frameworks, as well as overriding Response
 generation in middlewares.
 
 =back
+
+=head2 PARSING POST BODY and MULTIPLE OBJECTS
+
+These methods (C<content>, C<body_parameters> and C<uploads>) are
+carefully coded to save the parsed body in the environment hash as
+well as in the temporary buffer, so you can call them multiple times
+and create Plack::Request objects multiple times in a request and they
+should work nicely.
+
+=head1 INCOMPATIBILITIES
+
+In version 1.0, many utility methods are removed or deprecated, and
+most methods are made read-only.
+
+The following methods are deprecated: C<hostname>, C<url_scheme>,
+C<raw_body>, C<params>, C<query_params>, C<body_params>, C<cookie>,
+C<raw_uri> and C<path>. They will be removed in the next major release.
+
+All parameter-related methods such as C<parameters>,
+C<body_parameters>, C<query_parameters> and C<uploads> now contains
+L<Hash::MultiValue> objects, rather than I<scalar or an array
+reference depending on the user input> which is unsecure. See
+L<Hash::MultiValue> for more about this change.
+
+Cookie handling is simplified, and doesn't use L<CGI::Simple::Cookie>
+anymore, which means you B<CAN NOT> set array reference or hash
+reference as a cookie value. You're always required to set string
+value, and encoding or decoding them is totally up to your application
+(or framework).
 
 =head1 AUTHORS
 

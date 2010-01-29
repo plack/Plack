@@ -73,6 +73,10 @@ Returns the path to the temporary file where uploaded file is saved.
 
 Returns the content type of the uploaded file.
 
+=item filename
+
+Returns the original filename in the client.
+
 =item basename
 
 Returns basename for "filename".
