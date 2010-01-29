@@ -2,7 +2,10 @@ use strict;
 use Plack::Test;
 use HTTP::Request;
 use Test::More;
+use Digest::MD5;
 use Plack::Middleware::Dechunk;
+
+my $file = "share/kyoto.jpg";
 
 my @backends = qw(Server MockHTTP); # Server should come first
 sub flip_backend { $Plack::Test::Impl = shift @backends }
@@ -24,16 +27,17 @@ $app = Plack::Middleware::Dechunk->wrap($app);
 test_psgi $app, sub {
     my $cb = shift;
 
-    my @chunks = ('0123456789') x 4;
-    my $content    = join '', @chunks;
+    open my $fh, "<:raw", $file;
+    local $/ = \1024;
 
     my $req = HTTP::Request->new(POST => "http://localhost/");
-    $req->content(sub { shift @chunks });
+    $req->content(sub { scalar <$fh> });
 
     my $res = $cb->($req);
 
-    is $res->header('X-Content-Length'), 40;
-    is $res->content, $content;
+    is $res->header('X-Content-Length'), 2397701;
+    is Digest::MD5::md5_hex($res->content), '9c6d7249a77204a88be72e9b2fe279e8';
+
 } while flip_backend;
 
 done_testing;

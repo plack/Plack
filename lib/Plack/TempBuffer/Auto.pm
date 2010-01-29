@@ -14,10 +14,11 @@ sub print {
     my $self = shift;
     $self->{_buffer}->print(@_);
 
-    if ($self->{_buffer}->size > $self->{_max}) {
+    if ($self->{_max} && $self->{_buffer}->size > $self->{_max}) {
         my $buf = $self->{_buffer}->{buffer};
         $self->{_buffer} = Plack::TempBuffer->create('File'),
         $self->{_buffer}->print($buf);
+        delete $self->{_max};
     }
 }
 

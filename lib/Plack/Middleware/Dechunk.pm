@@ -25,11 +25,18 @@ sub dechunk_input {
 
  DECHUNK:
     while (1) {
-        my $read = $env->{'psgi.input'}->read(my $chunk_buffer, CHUNK_SIZE, length $chunk_buffer);
+        my $read = $env->{'psgi.input'}->read($chunk_buffer, CHUNK_SIZE, length $chunk_buffer);
 
-        while ( $chunk_buffer =~ s/^([0-9a-fA-F]+).*\015\012// ) {
-            my $chunk_len = hex $1;
-            last DECHUNK if $chunk_len == 0;
+        while ( $chunk_buffer =~ s/^(([0-9a-fA-F]+).*\015\012)// ) {
+            my $trailer   = $1;
+            my $chunk_len = hex $2;
+
+            if ($chunk_len == 0) {
+                last DECHUNK;
+            } elsif (length $chunk_buffer < $chunk_len) {
+                $chunk_buffer = $trailer . $chunk_buffer;
+                last;
+            }
 
             $buffer->print(substr $chunk_buffer, 0, $chunk_len, '');
             $chunk_buffer =~ s/^\015\012//;
