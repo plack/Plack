@@ -7,9 +7,8 @@ use Plack::Request;
 plan tests => 2*blocks;
 
 filters {
-    args            => ['yaml'],
-    add_env         => ['yaml'],
-    expected_params => ['eval'],
+    add_env    => ['yaml'],
+    parameters => ['eval'],
 };
 
 run {
@@ -22,12 +21,8 @@ run {
     }
     my $req = Plack::Request->new($env);
 
-    if ($block->nullkey) {
-        $block->args->{$block->nullkey} = undef;
-    }
-
-    is $req->uri, $block->expected_uri;
-    is_deeply $req->query_parameters, $block->expected_params;
+    is $req->uri, $block->uri;
+    is_deeply $req->query_parameters, $block->parameters;
 };
 
 __END__
@@ -35,72 +30,80 @@ __END__
 ===
 --- add_env
   HTTP_HOST: example.com
-  SCRIPT_NAME: /
---- expected_uri: http://example.com/
---- expected: http://example.com/
---- expected_params: {}
+  SCRIPT_NAME: ""
+--- uri: http://example.com/
+--- parameters: {}
+
+===
+--- add_env
+  HTTP_HOST: example.com
+  SCRIPT_NAME: ""
+  PATH_INFO: "/foo bar"
+--- uri: http://example.com/foo%20bar
+--- parameters: {}
 
 ===
 --- add_env
   HTTP_HOST: example.com
   SCRIPT_NAME: /test.c
---- expected_uri: http://example.com/test.c
---- expected: http://example.com/test.c
---- expected_params: {}
+--- uri: http://example.com/test.c
+--- parameters: {}
 
 ===
 --- add_env
   HTTP_HOST: example.com
   SCRIPT_NAME: /test.c
   PATH_INFO: /info
---- expected_uri: http://example.com/test.c/info
---- expected: http://example.com/test.c/info
---- expected_params: {}
+--- uri: http://example.com/test.c/info
+--- parameters: {}
 
 ===
 --- add_env
   HTTP_HOST: example.com
   SCRIPT_NAME: /test
   QUERY_STRING: dynamic=daikuma
---- expected_uri: http://example.com/test?dynamic=daikuma
---- expected: http://example.com/test?dynamic=daikuma
---- expected_params: { dynamic => 'daikuma' }
+--- uri: http://example.com/test?dynamic=daikuma
+--- parameters: { dynamic => 'daikuma' }
 
 
 ===
 --- add_env
   HTTP_HOST: example.com
   SCRIPT_NAME: /exec/
---- expected_uri: http://example.com/exec/
---- expected: http://example.com/exec/
---- expected_params: {}
-
-===
---- add_env
-  HTTP_HOST: example.com
-  SCRIPT_NAME: /////exec/
---- expected_uri: http://example.com/exec/
---- expected: http://example.com/exec/
---- expected_params: {}
+--- uri: http://example.com/exec/
+--- parameters: {}
 
 ===
 --- add_env
   SERVER_NAME: example.com
---- expected_uri: http://example.com/
---- expected: http://example.com/
---- expected_params: {}
+--- uri: http://example.com/
+--- parameters: {}
 
 ===
 --- add_env
---- expected_uri: http:///
---- expected: http:///
---- expected_params: {}
+--- uri: http:///
+--- parameters: {}
 
 ===
 --- add_env
   HTTP_HOST: example.com
-  SCRIPT_NAME: /
+  SCRIPT_NAME: ""
   QUERY_STRING: aco=tie
---- expected: http://example.com/?aco=tie
---- expected_uri: http://example.com/?aco=tie
---- expected_params: { aco => 'tie' }
+--- uri: http://example.com/?aco=tie
+--- parameters: { aco => 'tie' }
+
+===
+--- add_env
+  HTTP_HOST: example.com
+  SCRIPT_NAME: ""
+  QUERY_STRING: 0
+--- uri: http://example.com/?0
+--- parameters: {}
+
+===
+--- add_env
+  HTTP_HOST: example.com
+  SCRIPT_NAME: "/foo bar"
+  PATH_INFO: "/baz quux"
+--- uri: http://example.com/foo%20bar/baz%20quux
+--- parameters: {}

@@ -186,26 +186,6 @@ sub upload {
     return $self->uploads->get_all($key);
 }
 
-sub base {
-    my $self = shift;
-
-    my $env    = $self->env;
-    my $scheme = $env->{'psgi.url_scheme'} || "http";
-
-    # Host header should contain port number as well
-    my $host = $env->{HTTP_HOST} || do {
-        my $port   = $env->{SERVER_PORT} || 80;
-        my $is_std_port = ($scheme eq 'http' && $port == 80) || ($scheme eq 'https' && $port == 443);
-        $env->{SERVER_NAME} . ($is_std_port ? "" : ":$port");
-    };
-
-    my $uri = "$scheme\://$host" . $env->{REQUEST_URI};
-    $uri = URI->new($uri);
-    $uri->path_query($self->env->{SCRIPT_NAME} || "/");
-
-    return $uri;
-}
-
 sub raw_uri {
     my $self = shift;
     _deprecated 'base';
@@ -218,27 +198,40 @@ sub raw_uri {
 
 sub uri {
     my $self = shift;
-    $self->env->{'plack.request.uri'} ||= $self->_build_uri;
+    ( $self->env->{'plack.request.uri'} ||= $self->_uri )->clone;
 }
 
-sub _build_uri  {
+sub base {
+    my $self = shift;
+    ( $self->env->{'plack.request.base'} ||= $self->_uri_base )->clone;
+}
+
+sub _uri_base {
     my $self = shift;
 
     my $env = $self->env;
-    my $base_path = $env->{SCRIPT_NAME} || '/';
-
-    my $path = $base_path . ($env->{PATH_INFO} || '');
-    $path =~ s{^/+}{};
 
     my $uri = ($env->{'psgi.url_scheme'} || "http") .
         "://" .
         ($env->{HTTP_HOST} || (($env->{SERVER_NAME} || "") . ":" . ($env->{SERVER_PORT} || 80))) .
-        "/" .
-        ($path || "") .
-        ($env->{QUERY_STRING} ? "?$env->{QUERY_STRING}" : "");
+        ($env->{SCRIPT_NAME} || '/');
 
-    # sanitize the URI
     return URI->new($uri)->canonical;
+}
+
+sub _uri {
+    my $self = shift;
+
+    my $uri = $self->base;
+
+    my $path = $uri->path;
+    $path .= $self->env->{PATH_INFO} || '';
+    $path =~ s{^/+}{};
+    $path .= '?' . $self->env->{QUERY_STRING}
+        if defined $self->env->{QUERY_STRING} && $self->env->{QUERY_STRING} ne '';
+
+    $uri->path_query("/" . $path);
+    $uri->canonical;
 }
 
 sub path {
