@@ -2,7 +2,8 @@ package Plack::Request;
 use strict;
 use warnings;
 use 5.008_001;
-our $VERSION = "0.09";
+our $VERSION = '0.99_01';
+$VERSION = eval $VERSION;
 
 use HTTP::Headers;
 use Carp ();
