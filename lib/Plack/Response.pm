@@ -133,7 +133,7 @@ sub _bake_cookie {
     return join "; ", @cookie;
 }
 
-my @MON  = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+my @MON  = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
 my @WDAY = qw( Sun Mon Tue Wed Thu Fri Sat );
 
 sub _date {
@@ -142,7 +142,6 @@ sub _date {
     if ($expires =~ /^\d+$/) {
         # all numbers -> epoch date
         # (cookies use '-' as date separator, HTTP uses ' ')
-
         my($sec, $min, $hour, $mday, $mon, $year, $wday) = gmtime($expires);
         $year += 1900;
 
