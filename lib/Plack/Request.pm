@@ -95,6 +95,8 @@ sub content {
     return $content;
 }
 
+sub raw_body { $_[0]->content }
+
 # XXX you can mutate headers with ->headers but it's not written through to the env
 
 sub headers {
@@ -153,7 +155,6 @@ sub uploads {
 
 sub hostname     { _deprecated 'remote_host';      $_[0]->remote_host || $_[0]->address }
 sub url_scheme   { _deprecated 'scheme';           $_[0]->scheme }
-sub raw_body     { _deprecated 'content';          $_[0]->content }
 sub params       { _deprecated 'parameters';       shift->parameters(@_) }
 sub query_params { _deprecated 'query_parameters'; shift->query_parameters(@_) }
 sub body_params  { _deprecated 'body_parameters';  shift->body_parameters(@_) }
@@ -460,9 +461,9 @@ reference is a L<Hash::MultiValue> object.
 Returns a L<Hash::MultiValue> hash reference containing (merged) GET
 and POST parameters.
 
-=item content
+=item content, raw_body
 
-Returns the request content in an undecoded byte string.
+Returns the request content in an undecoded byte string for POST requests.
 
 =item uri
 
@@ -625,8 +626,8 @@ In version 1.0, many utility methods are removed or deprecated, and
 most methods are made read-only.
 
 The following methods are deprecated: C<hostname>, C<url_scheme>,
-C<raw_body>, C<params>, C<query_params>, C<body_params>, C<cookie>,
-C<raw_uri> and C<path>. They will be removed in the next major release.
+C<params>, C<query_params>, C<body_params>, C<cookie>, C<raw_uri> and
+C<path>. They will be removed in the next major release.
 
 All parameter-related methods such as C<parameters>,
 C<body_parameters>, C<query_parameters> and C<uploads> now contains
