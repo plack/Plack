@@ -31,7 +31,14 @@ sub call {
 
     my $conn = FCGI::Client::Connection->new(sock => $sock);
     my $input = delete $env->{'psgi.input'};
-    $input->read(my $content_in, $env->{CONTENT_LENGTH});
+
+    my $content_in = '';
+    if (my $cl = $env->{CONTENT_LENGTH}) {
+        while ($cl > 0) {
+            my $read = $input->read($content_in, $cl, length $content_in);
+            $cl -= $read;
+        }
+    }
 
     for my $key (keys %$env) {
         delete $env->{$key} if $key =~ /^psgi\./;
