@@ -15,6 +15,7 @@ test_psgi $app, sub {
 
     my $req = HTTP::Request->new(POST => "/");
     $req->content("body");
+    $req->content_type('text/plain');
     $req->content_length(4);
     $cb->($req);
 };
