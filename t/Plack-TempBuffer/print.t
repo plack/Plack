@@ -7,6 +7,7 @@ use Plack::TempBuffer;
     $b->print("foo");
     my $fh = $b->rewind;
     is do { local $/; <$fh> }, 'foo';
+    $fh->seek(0, 0);
 }
 
 {

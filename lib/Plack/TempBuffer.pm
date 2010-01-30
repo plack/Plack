@@ -2,6 +2,7 @@ package Plack::TempBuffer;
 use strict;
 use warnings;
 use Plack::Util;
+use FileHandle; # for seek etc.
 
 our $MaxMemoryBufferSize = 1024 * 1024;
 
