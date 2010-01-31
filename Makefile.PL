@@ -24,9 +24,7 @@ requires 'Filesys::Notify::Simple'; # plackup -r
 requires 'Hash::MultiValue', 0.05; # Plack::Request
 requires 'HTTP::Body'; # Plack::Request
 
-# TODO: they can go away once we create Plack-Middlewares dist
-# Middleware::Static and App::File
-requires 'Path::Class';
+requires 'Path::Class'; # App::File
 
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
@@ -38,7 +36,6 @@ author_tests 'xt';
 install_share 'share';
 install_script 'scripts/plackup';
 
-use_test_base;
 auto_include;
 auto_install;
 auto_set_repository;

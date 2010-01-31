@@ -1,37 +1,22 @@
-use Test::Base;
+use strict;
+use Test::More;
 use Plack::Util;
 
-plan tests => 2 * blocks;
+{
+    open my $fh, "<", "/dev/null";
+    ok Plack::Util::is_real_fh($fh);
+}
 
-run {
-    my $block = shift;
-    my $res = Plack::Util::is_real_fh(eval $block->input);
+{
+    open my $fh, "<", \"foo";
+    ok ! Plack::Util::is_real_fh($fh);
+}
 
-    ok !$@;
-    ok $res == $block->ret;
-};
+{
+    use IO::File;
+    my $fh = IO::File->new("/dev/null");
+    ok Plack::Util::is_real_fh($fh);
+}
 
-
-__END__
-
-===
---- input
-open my $fh, "<", "/dev/null";
-$fh;
---- ret
-1
-
-===
---- input
-open my $fh, "<", \"foo"; $fh
---- ret
-0
-
-===
---- input
-use IO::File;
-IO::File->new("/dev/null");
---- ret
-1
-
+done_testing;
 
