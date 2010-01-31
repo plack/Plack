@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::Base;
-use IO::Scalar;
 use Plack::Request;
 
 plan tests => 2*blocks;
