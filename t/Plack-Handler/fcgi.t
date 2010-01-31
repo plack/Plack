@@ -4,9 +4,6 @@ use Test::More;
 use Test::Requires qw(FCGI FCGI::ProcManager);
 use Plack;
 use Plack::Handler::FCGI;
-use Test::TCP;
-use LWP::UserAgent;
-use FindBin;
 use Plack::Test::Suite;
 use t::FCGIUtils;
 
