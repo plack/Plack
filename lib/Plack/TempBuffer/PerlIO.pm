@@ -16,6 +16,7 @@ sub rewind {
     my $self = shift;
     my $buffer = $self->{buffer};
     open my $io, "<", \$buffer;
+    bless $io, 'FileHandle'; # This makes $io work as FileHandle under 5.8, .10 and .11 :/
     return $io;
 }
 
