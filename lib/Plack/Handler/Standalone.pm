@@ -7,7 +7,7 @@ use parent qw( HTTP::Server::PSGI );
 
 sub new {
     my($class, %args) = @_;
-    bless { args => \%args }, $class;
+    bless { %args }, $class;
 }
 
 sub run {
@@ -17,7 +17,7 @@ sub run {
 
 sub _server {
     my $self = shift;
-    HTTP::Server::PSGI->new(%{$self->{args}});
+    HTTP::Server::PSGI->new(%$self);
 }
 
 1;
