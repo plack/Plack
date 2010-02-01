@@ -53,9 +53,15 @@ sub call {
         next unless $location eq '' or $path =~ s!\Q$location\E!!;
         next unless $path eq '' or $path =~ m!/!;
 
-        local $env->{PATH_INFO}  = $path;
-        local $env->{SCRIPT_NAME} = $script_name . $location;
-        return $app->($env);
+        my $orig_path_info   = $env->{PATH_INFO};
+        my $orig_script_name = $env->{SCRIPT_NAME};
+
+        $env->{PATH_INFO}  = $path;
+        $env->{SCRIPT_NAME} = $script_name . $location;
+        return $self->response_cb($app->($env), sub {
+            $env->{PATH_INFO} = $orig_path_info;
+            $env->{SCRIPT_NAME} = $orig_script_name;
+        });
     }
 
     return [404, [ 'Content-Type' => 'text/plain' ], [ "Not Found" ]];

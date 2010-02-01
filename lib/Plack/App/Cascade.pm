@@ -19,14 +19,30 @@ sub prepare_app {
 sub call {
     my($self, $env) = @_;
 
-    my $res = [ 404, [ 'Content-Type' => 'text/html' ], [ '404 Not Found' ] ];
+    return sub {
+        my $respond = shift;
 
-    for my $app (@{$self->apps || []}) {
-        $res = $app->($env);
-        last unless ref $res eq 'ARRAY' && $self->codes->{$res->[0]};
-    }
+        my $res = [ 404, [ 'Content-Type' => 'text/html' ], [ '404 Not Found' ] ];
 
-    return $res;
+        for my $app (@{$self->apps || []}) {
+            $res = $app->($env);
+            if (ref $res eq 'CODE') {
+                my $done;
+                $res->(sub {
+                    my $res = shift;
+                    unless ($self->codes->{$res->[0]}) {
+                        $done = 1;
+                        return $respond->($res);
+                    }
+                });
+                return if $done;
+            } else {
+                last unless $self->codes->{$res->[0]};
+            }
+        }
+
+        return $respond->($res);
+    };
 }
 
 1;
