@@ -51,7 +51,7 @@ Plack::Middleware::SimpleLogger - Simple logger that prints to psgi.errors
 
   enable "SimpleLogger", level => "warn";
 
-=head1 DESCRIPTIOM
+=head1 DESCRIPTION
 
 SimpleLogger is a middleware component that formats the log message
 with information such as the time and PID and prints them to
