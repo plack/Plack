@@ -28,7 +28,6 @@ eg/dot-psgi/static/index.html
 eg/dot-psgi/static/test.css
 eg/dot-psgi/static/test.js
 eg/dot-psgi/twitter-stream.psgi
-inc/ExtUtils/MakeMaker.pm
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AuthorTests.pm
