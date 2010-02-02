@@ -201,16 +201,23 @@ sub raw_uri {
     $base;
 }
 
-# XXX when PATH_INFO/QUERY_STRING is updated, it should discard the cache
-
 sub uri {
     my $self = shift;
-    ( $self->env->{'plack.request.uri'} ||= $self->_uri )->clone;
+
+    my $base = $self->_uri_base;
+
+    my $path = $self->env->{PATH_INFO} || '';
+    $path .= '?' . $self->env->{QUERY_STRING}
+        if defined $self->env->{QUERY_STRING} && $self->env->{QUERY_STRING} ne '';
+
+    $base =~ s!/$!! if $path =~ m!^/!;
+
+    return URI->new($base . $path)->canonical;
 }
 
 sub base {
     my $self = shift;
-    ( $self->env->{'plack.request.base'} ||= $self->_uri_base )->clone;
+    URI->new($self->_uri_base)->canonical;
 }
 
 sub _uri_base {
@@ -223,22 +230,7 @@ sub _uri_base {
         ($env->{HTTP_HOST} || (($env->{SERVER_NAME} || "") . ":" . ($env->{SERVER_PORT} || 80))) .
         ($env->{SCRIPT_NAME} || '/');
 
-    return URI->new($uri)->canonical;
-}
-
-sub _uri {
-    my $self = shift;
-
-    my $uri = $self->base;
-
-    my $path = $uri->path;
-    $path .= $self->env->{PATH_INFO} || '';
-    $path =~ s{^/+}{};
-    $path .= '?' . $self->env->{QUERY_STRING}
-        if defined $self->env->{QUERY_STRING} && $self->env->{QUERY_STRING} ne '';
-
-    $uri->path_query("/" . $path);
-    $uri->canonical;
+    return $uri;
 }
 
 sub new_response {
