@@ -41,13 +41,13 @@ sub call {
             $res = $app->($env);
             if (ref $res eq 'CODE') {
                 $res->($respond_wrapper);
-                return if $done;
             } else {
-                last unless $self->codes->{$res->[0]};
+                $respond_wrapper->($res);
             }
+            return if $done;
         }
 
-        return $respond->($res);
+        $respond->($res);
     };
 }
 
