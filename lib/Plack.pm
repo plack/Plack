@@ -15,8 +15,9 @@ Plack - Perl Superglue for Web frameworks and Web Servers (PSGI toolkit)
 
 =head1 DESCRIPTION
 
-Plack is a set of PSGI reference server implementations and helper
-utilities for Web application frameworks, exactly like Ruby's Rack.
+Plack is a set of tools for using PSGI stack. It contains middleware
+components, a reference server and utilities for Web application
+frameworks. Plack is like Ruby's Rack or Python's Paste for WSGI.
 
 See L<PSGI> for the PSGI specification and L<PSGI::FAQ> to know what
 PSGI and Plack are and why we need them.
