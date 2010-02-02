@@ -8,7 +8,7 @@ use Plack::Util;
 use Plack::MIME;
 use HTTP::Date;
 
-use Plack::Util::Accessor qw( root encoding );
+use Plack::Util::Accessor qw( root file encoding );
 
 sub should_handle {
     my($self, $file) = @_;
@@ -18,6 +18,15 @@ sub should_handle {
 sub call {
     my $self = shift;
     my $env  = shift;
+
+    my $file = $self->file || $self->locate_file($env);
+    return $file if ref $file eq 'ARRAY';
+
+    return $self->serve_path($env, $file);
+}
+
+sub locate_file {
+    my($self, $env) = @_;
 
     my $path = $env->{PATH_INFO};
     if ($path =~ m!\.\.[/\\]!) {
@@ -42,11 +51,15 @@ sub call {
         return $self->return_403;
     }
 
-    return $self->serve_path($env, $file);
+    return $file;
 }
+
 
 sub serve_path {
     my($self, $env, $file) = @_;
+
+    $file = Path::Class::File->new($file)
+        unless ref $file;
 
     my $content_type = Plack::MIME->mime_type($file) || 'text/plain';
 
@@ -95,7 +108,13 @@ Plack::App::File - Serve static files from root directory
 =head1 SYNOPSIS
 
   use Plack::App::File;
-  my $app = Plack::App::File->new({ root => "/path/to/htdocs" })->to_app;
+  my $app = Plack::App::File->new(root => "/path/to/htdocs")->to_app;
+
+  # Or map the path to a specific file
+  use Plack::Builder;
+  builder {
+      mount "/favicon.ico" => Plack::App::File->new(file => '/path/to/favicon.ico');
+  };
 
 =head1 DESCRIPTION
 
@@ -112,6 +131,14 @@ as well.
 =item root
 
 Document root directory. Defaults to C<.> (current directory)
+
+=item file
+
+The file path to create responses from. Optional.
+
+If it's set the application would B<ALWAYS> create a response out of
+the file and there will be no security check etc. (hence fast). If
+it's not set, the application uses C<root> to find the matching file.
 
 =item encoding
 
