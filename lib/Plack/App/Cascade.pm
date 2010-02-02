@@ -80,9 +80,6 @@ Plack::App::Cascade is a Plack middleware component that compounds
 several apps and tries them to return the first response that is not
 404.
 
-Note that this application doesn't support I<psgi.streaming>
-interface.
-
 =head1 METHODS
 
 =over 4
