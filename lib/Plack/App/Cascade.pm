@@ -2,6 +2,7 @@ package Plack::App::Cascade;
 use strict;
 use base qw(Plack::Component);
 
+use Plack::Util;
 use Plack::Util::Accessor qw(apps catch codes);
 
 sub add {
@@ -30,7 +31,10 @@ sub call {
                 my $done;
                 $res->(sub {
                     my $res = shift;
-                    unless ($self->codes->{$res->[0]}) {
+                    if ($self->codes->{$res->[0]}) {
+                        return Plack::Util::inline_object
+                            write => sub { }, close => sub { };
+                    } else {
                         $done = 1;
                         return $respond->($res);
                     }
