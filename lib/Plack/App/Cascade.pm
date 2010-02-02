@@ -25,20 +25,22 @@ sub call {
 
         my $res = [ 404, [ 'Content-Type' => 'text/html' ], [ '404 Not Found' ] ];
 
+        my $done;
+        my $respond_wrapper = sub {
+            my $res = shift;
+            if ($self->codes->{$res->[0]}) {
+                return Plack::Util::inline_object
+                    write => sub { }, close => sub { };
+            } else {
+                $done = 1;
+                return $respond->($res);
+            }
+        };
+
         for my $app (@{$self->apps || []}) {
             $res = $app->($env);
             if (ref $res eq 'CODE') {
-                my $done;
-                $res->(sub {
-                    my $res = shift;
-                    if ($self->codes->{$res->[0]}) {
-                        return Plack::Util::inline_object
-                            write => sub { }, close => sub { };
-                    } else {
-                        $done = 1;
-                        return $respond->($res);
-                    }
-                });
+                $res->($respond_wrapper);
                 return if $done;
             } else {
                 last unless $self->codes->{$res->[0]};
