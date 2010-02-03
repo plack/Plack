@@ -37,14 +37,18 @@ sub call {
 sub locate_file {
     my($self, $env) = @_;
 
-    my $path = $env->{PATH_INFO};
+    my $path = $env->{PATH_INFO} || '';
     if ($path =~ m!\.\.[/\\]!) {
         return $self->return_403;
     }
 
     my $docroot = $self->root || ".";
     my @path = split '/', $path;
-    shift @path if $path[0] eq '';
+    if (@path) {
+        shift @path if $path[0] eq '';
+    } else {
+        @path = ('.');
+    }
 
     my($file, @path_info);
     while (@path) {
