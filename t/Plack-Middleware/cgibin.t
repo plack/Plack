@@ -29,7 +29,7 @@ test_psgi app => $app, client => sub {
 
     $res = $cb->(GET "http://localhost/hello3.cgi/foo%20bar/baz");
     is $res->code, 200;
-    my $env = eval $res->content || {};
+    $env = eval $res->content || {};
     is $env->{SCRIPT_NAME}, '/hello3.cgi';
     is $env->{PATH_INFO}, '/foo bar/baz';
     is $env->{REQUEST_URI}, '/hello3.cgi/foo%20bar/baz';
