@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use parent qw/Plack::Component/;
 use File::Spec::Unix;
-use Path::Class 'dir';
+use Cwd ();
 use Plack::Util;
 use Plack::MIME;
 use HTTP::Date;
@@ -19,8 +19,17 @@ sub call {
     my $self = shift;
     my $env  = shift;
 
-    my $file = $self->file || $self->locate_file($env);
+    my($file, $path_info) = $self->file || $self->locate_file($env);
     return $file if ref $file eq 'ARRAY';
+
+    if ($path_info) {
+        $env->{PATH_INFO}   =~ s/\Q$path_info\E$//;
+        $env->{SCRIPT_NAME} = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+        $env->{PATH_INFO }  = $path_info;
+    } else {
+        $env->{SCRIPT_NAME} = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+        $env->{PATH_INFO }  = '';
+    }
 
     return $self->serve_path($env, $file);
 }
@@ -33,33 +42,37 @@ sub locate_file {
         return $self->return_403;
     }
 
-    my $docroot = dir($self->root || ".");
-    my $file = $docroot->file(File::Spec::Unix->splitpath($path))->absolute;
+    my $docroot = $self->root || ".";
+    my @path = split '/', $path;
+    shift @path if $path[0] eq '';
 
-    # Is the requested path within the root?
-    if (!$docroot->subsumes($file)) {
-        return $self->return_403;
+    my($file, @path_info);
+    while (@path) {
+        my $try = File::Spec::Unix->catfile($docroot, @path);
+        if ($self->should_handle($try)) {
+            $file = $try;
+            last;
+        } elsif (!$self->allow_path_info) {
+            last;
+        }
+        unshift @path_info, pop @path;
     }
 
-    # Does the file actually exist?
-    if (!$self->should_handle($file)) {
+    if (!$file) {
         return $self->return_404;
     }
 
-    # If the requested file present but lacking the permission to read it?
     if (!-r $file) {
         return $self->return_403;
     }
 
-    return $file;
+    return $file, join("/", "", @path_info);
 }
 
+sub allow_path_info { 0 }
 
 sub serve_path {
     my($self, $env, $file) = @_;
-
-    $file = Path::Class::File->new($file)
-        unless ref $file;
 
     my $content_type = Plack::MIME->mime_type($file) || 'text/plain';
 
@@ -67,21 +80,19 @@ sub serve_path {
         $content_type .= "; charset=" . ($self->encoding || "utf-8");
     }
 
-    my $fh = $file->openr
+    open my $fh, "<:raw", $file
         or return $self->return_403;
 
-    my $path = $file->stringify;
-       $path =~ s!\\!/!g;
-    Plack::Util::set_io_path($fh, $path);
-    binmode $fh;
+    my @stat = stat $file;
 
-    my $stat = $file->stat;
+    Plack::Util::set_io_path($fh, Cwd::realpath($file));
+
     return [
         200,
         [
             'Content-Type'   => $content_type,
-            'Content-Length' => $stat->size,
-            'Last-Modified'  => HTTP::Date::time2str( $stat->mtime )
+            'Content-Length' => $stat[7],
+            'Last-Modified'  => HTTP::Date::time2str( $stat[9] )
         ],
         $fh,
     ];
