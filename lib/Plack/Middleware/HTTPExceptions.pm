@@ -31,8 +31,8 @@ sub transform_error {
         $code = 500;
     }
 
-    unless ($code >= 300 && $code <= 599) {
-        die "rethrow $e"; # rethrow
+    if ($code !~ /^[3-5]\d\d$/) {
+        die $e; # rethrow
     }
 
     $message ||= HTTP::Status::status_message($code);
