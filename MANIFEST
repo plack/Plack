@@ -142,8 +142,10 @@ t/Plack-Middleware/access_log_timed.t
 t/Plack-Middleware/auth_basic.t
 t/Plack-Middleware/auth_basic_simple.t
 t/Plack-Middleware/cascade.t
+t/Plack-Middleware/cascade_streaming.t
 t/Plack-Middleware/cgi-bin/hello.cgi
 t/Plack-Middleware/cgi-bin/hello2.cgi
+t/Plack-Middleware/cgi-bin/hello3.cgi
 t/Plack-Middleware/cgibin.t
 t/Plack-Middleware/chunked.t
 t/Plack-Middleware/conditional.t
@@ -152,6 +154,7 @@ t/Plack-Middleware/content_length.t
 t/Plack-Middleware/error_document.t
 t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html
+t/Plack-Middleware/file.t
 t/Plack-Middleware/htpasswd
 t/Plack-Middleware/jsonp.t
 t/Plack-Middleware/lint.t
