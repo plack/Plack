@@ -400,6 +400,27 @@ our @TEST = (
         },
     ],
     [
+        'Do not set $env->{COOKIE}',
+        sub {
+            my $cb  = shift;
+            my $req = HTTP::Request->new(
+                GET => "http://127.0.0.1/",
+            );
+            $req->push_header(Cookie => "foo=bar");
+            my $res = $cb->($req);
+            is($res->header('X-Cookie'), 0);
+            is $res->content, 'foo=bar';
+        },
+        sub {
+            my $env = shift;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', 'X-Cookie' => $env->{COOKIE} ? 1 : 0 ],
+                [ $env->{HTTP_COOKIE} ]
+            ];
+        },
+    ],
+    [
         'no entity headers on 304',
         sub {
             my $cb  = shift;
