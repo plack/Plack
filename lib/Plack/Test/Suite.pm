@@ -359,7 +359,7 @@ our @TEST = (
             $req->push_header(Foo => "bar");
             $req->push_header(Foo => "baz");
             my $res = $cb->($req);
-            is($res->content, "bar, baz");
+            like($res->content, qr/^bar,\s*baz$/);
         },
         sub {
             my $env = shift;
