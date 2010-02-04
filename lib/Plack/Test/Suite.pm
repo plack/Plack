@@ -64,6 +64,35 @@ our @TEST = (
         },
     ],
     [
+        'big POST',
+        sub {
+            my $cb = shift;
+            my $chunk = "abcdefgh" x 65535;
+            my $req = HTTP::Request->new(POST => "http://127.0.0.1");
+            $req->content_length(length $chunk);
+            $req->content_type('application/octet-stream');
+            $req->content($chunk);
+
+            my $res = $cb->($req);
+            is $res->code, 200;
+            is $res->header('Client-Content-Length'), length $chunk;
+            is $res->content, $chunk;
+        },
+        sub {
+            my $env = shift;
+            my $body;
+            $env->{'psgi.input'}->read($body, $env->{CONTENT_LENGTH});
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain',
+                  'Client-Content-Length' => $env->{CONTENT_LENGTH},
+                  'Client-Content-Type' => $env->{CONTENT_TYPE},
+              ],
+                [ $body ],
+            ];
+        },
+    ],
+    [
         'psgi.url_scheme',
         sub {
             my $cb = shift;
