@@ -67,7 +67,7 @@ our @TEST = (
         'big POST',
         sub {
             my $cb = shift;
-            my $chunk = "abcdefgh" x 65535;
+            my $chunk = "abcdefgh" x 12000;
             my $req = HTTP::Request->new(POST => "http://127.0.0.1");
             $req->content_length(length $chunk);
             $req->content_type('application/octet-stream');
@@ -76,12 +76,19 @@ our @TEST = (
             my $res = $cb->($req);
             is $res->code, 200;
             is $res->header('Client-Content-Length'), length $chunk;
-            is $res->content, $chunk;
+            is length $res->content, length $chunk;
+            is Digest::MD5::md5_hex($res->content), Digest::MD5::md5_hex($chunk);
         },
         sub {
             my $env = shift;
-            my $body;
-            $env->{'psgi.input'}->read($body, $env->{CONTENT_LENGTH});
+            my $len = $env->{CONTENT_LENGTH};
+            my $body = '';
+            my $spin;
+            while ($len > 0) {
+                my $rc = $env->{'psgi.input'}->read($body, $env->{CONTENT_LENGTH}, length $body);
+                $len -= $rc;
+                last if $spin++ > 2000;
+            }
             return [
                 200,
                 [ 'Content-Type' => 'text/plain',
