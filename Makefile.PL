@@ -10,7 +10,7 @@ all_from 'lib/Plack.pm';
 readme_from 'lib/Plack.pm';
 
 requires 'LWP', 5.814; # HTTP::Status, HTTP::Headers and HTTP::Request
-requires 'URI';
+requires 'URI', 1.36;
 requires 'Pod::Usage';  # plackup
 requires 'File::ShareDir', '1.00'; # Plack::Test::Suite
 requires 'Try::Tiny';
