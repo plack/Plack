@@ -379,7 +379,7 @@ our @TEST = (
         },
     ],
     [
-        'multi headers',
+        'multi headers (request)',
         sub {
             my $cb  = shift;
             my $req = HTTP::Request->new(
@@ -396,6 +396,23 @@ our @TEST = (
                 200,
                 [ 'Content-Type' => 'text/plain', ],
                 [ $env->{HTTP_FOO} ]
+            ];
+        },
+    ],
+    [
+        'multi headers (response)',
+        sub {
+            my $cb  = shift;
+            my $res = $cb->(HTTP::Request->new(GET => "http://127.0.0.1/"));
+            my $foo = $res->header('X-Foo');
+            like $foo, qr/foo,\s*bar,\s*baz/;
+        },
+        sub {
+            my $env = shift;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', 'X-Foo', 'foo', 'X-Foo', 'bar, baz' ],
+                [ 'hi' ]
             ];
         },
     ],
