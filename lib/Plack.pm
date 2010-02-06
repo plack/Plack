@@ -134,17 +134,45 @@ confuse people.
 
 Copyright 2009- Tatsuhiko Miyagawa
 
-=head1 AUTHORS
+=head1 AUTHOR
 
 Tatsuhiko Miyagawa
 
-Yuval Kogman
+=head1 CONTRIBUTORS
 
-Tokuhiro Matsuno
+Yuval Kogman (nothingmuch)
 
-Kazuhiro Osawa
+Tokuhiro Matsuno (tokuhirom)
 
-Kazuho Oku
+Kazuhiro Osawa (Yappo)
+
+Kzzuho Oku
+
+Florian Ragwitz (rafl)
+
+Chia-liang Kao (clkao)
+
+Masahiro Honma (hiratara)
+
+Daisuke Murase (typester)
+
+John Beppu
+
+Matt S Trout (mst)
+
+Shawn M Moore (Sartak)
+
+Stevan Little
+
+Hans Dieter Pearcey (confound)
+
+Tomas Doran (t0m)
+
+mala
+
+Mark Stosberg
+
+Aaron Trevena
 
 =head1 SEE ALSO
 
