@@ -7,22 +7,26 @@ sub new { bless {}, shift }
 
 sub run {
     my ($self, $app) = @_;
-    my %env;
-    while (my ($k, $v) = each %ENV) {
-        next unless $k =~ qr/^(?:REQUEST_METHOD|SCRIPT_NAME|PATH_INFO|QUERY_STRING|SERVER_NAME|SERVER_PORT|SERVER_PROTOCOL|CONTENT_LENGTH|CONTENT_TYPE|REMOTE_ADDR|REQUEST_URI)$|^HTTP_/;
-        $env{$k} = $v;
-    }
-    $env{'HTTP_COOKIE'}   ||= $ENV{COOKIE};
-    $env{'psgi.version'}    = [ 1, 1 ];
-    $env{'psgi.url_scheme'} = ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http';
-    $env{'psgi.input'}      = *STDIN;
-    $env{'psgi.errors'}     = *STDERR;
-    $env{'psgi.multithread'}  = 1==0;
-    $env{'psgi.multiprocess'} = 1==1;
-    $env{'psgi.run_once'}     = 1==1;
-    $env{'psgi.streaming'}    = 1==1;
-    $env{'psgi.nonblocking'}  = 1==0;
-    my $res = $app->(\%env);
+
+    my $env = {
+        %ENV,
+        'psgi.version'    => [ 1, 1 ],
+        'psgi.url_scheme' => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
+        'psgi.input'      => *STDIN,
+        'psgi.errors'     => *STDERR,
+        'psgi.multithread'  => 0,
+        'psgi.multiprocess' => 1,
+        'psgi.run_once'     => 1,
+        'psgi.streaming'    => 1,
+        'psgi.nonblocking'  => 1,
+    };
+
+    delete $env->{HTTP_CONTENT_TYPE};
+    delete $env->{HTTP_CONTENT_LENGTH};
+    $env->{SCRIPT_NAME}     = '' if $env->{SCRIPT_NAME} eq '/';
+    $env->{'HTTP_COOKIE'} ||= $ENV{COOKIE}; # O'Reilly server bug
+
+    my $res = $app->($env);
     if (ref $res eq 'ARRAY') {
         $self->_handle_response($res);
     }
@@ -74,16 +78,11 @@ sub _handle_response {
 }
 
 package Plack::Handler::CGI::Writer;
-
-sub new {
-    return bless \do { my $x }, $_[0];
-}
-
-sub write {
-    print $_[1];
-}
-
+sub new   { bless \do { my $x }, $_[0] }
+sub write { print STDOUT $_[1] }
 sub close { }
+
+package Plack::Handler::CGI;
 
 1;
 __END__
