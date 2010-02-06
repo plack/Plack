@@ -65,6 +65,7 @@ lib/Plack/Handler/Apache1.pm
 lib/Plack/Handler/Apache2.pm
 lib/Plack/Handler/CGI.pm
 lib/Plack/Handler/FCGI.pm
+lib/Plack/Handler/HTTP/Server/Simple.pm
 lib/Plack/Handler/Standalone.pm
 lib/Plack/HTTPParser.pm
 lib/Plack/HTTPParser/PP.pm
@@ -108,6 +109,7 @@ lib/Plack/Server/Apache2.pm
 lib/Plack/Server/CGI.pm
 lib/Plack/Server/FCGI.pm
 lib/Plack/Server/README
+lib/Plack/Server/ServerSimple.pm
 lib/Plack/Server/Standalone.pm
 lib/Plack/Server/Standalone/Prefork.pm
 lib/Plack/TempBuffer.pm
@@ -134,9 +136,11 @@ t/Plack-Handler/apache2.t
 t/Plack-Handler/cgi.t
 t/Plack-Handler/fcgi.t
 t/Plack-Handler/fcgi_client.t
+t/Plack-Handler/http_server_simple.t
 t/Plack-Handler/standalone-prefork.t
 t/Plack-Handler/standalone.t
 t/Plack-HTTPParser-PP/simple.t
+t/Plack-Loader/auto.t
 t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
 t/Plack-Middleware/auth_basic.t
