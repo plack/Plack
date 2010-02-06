@@ -16,7 +16,7 @@ sub new {
     $self->{detach}      ||= 0;
     $self->{nproc}       ||= 1;
     $self->{pidfile}     ||= undef;
-    $self->{listen}      ||= ":$self->{port}" if $self->{port};
+    $self->{listen}      ||= [ ":$self->{port}" ] if $self->{port}; # compatibility
     $self->{manager}     = 'FCGI::ProcManager' unless exists $self->{manager};
 
     $self;
@@ -31,7 +31,7 @@ sub run {
         unless ($self->{leave_umask}) {
             umask(0);
         }
-        $sock = FCGI::OpenSocket( $self->{listen}, 100 )
+        $sock = FCGI::OpenSocket( $self->{listen}->[0], 100 )
             or die "failed to open FastCGI socket: $!";
         unless ($self->{leave_umask}) {
             umask($old_umask);
