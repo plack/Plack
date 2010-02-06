@@ -71,7 +71,7 @@ a new child, compiles your code and runs the application.
 
 This should be an ultimate alternative solution when reloading with
 L<Plack::Middleware::Refresh> doesn't work, or plackup's default C<-r>
-filesystem watcher causes problems. I can imagine this is useulf for
+filesystem watcher causes problems. I can imagine this is useful for
 applications which expects their application is only evaluated once
 (like in-file templates) or on operating systems with broken fork
 implementation, etc.

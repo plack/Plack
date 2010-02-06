@@ -318,7 +318,7 @@ __END__
 
 =head1 NAME
 
-HTTP::Server::PSGI - Standalone PSGI compatiblle HTTP server
+HTTP::Server::PSGI - Standalone PSGI compatible HTTP server
 
 =head1 SYNOPSIS
 

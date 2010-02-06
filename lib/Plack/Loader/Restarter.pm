@@ -90,7 +90,7 @@ Plack::Loader::Restarter - Restarting loader
 
   plackup -r -R paths
 
-=head1 DESCRIPTIOM
+=head1 DESCRIPTION
 
 Plack::Loader::Restarter is a loader backend that implements C<-r> and
 C<-R> option for the L<plackup> script. It forks the server as a child
