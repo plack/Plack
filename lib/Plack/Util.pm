@@ -118,7 +118,7 @@ sub run_app($$) {
 
     return eval { $app->($env) } || do {
         my $body = "Internal Server Error";
-        $env->{'psgi.errors'}->print($_);
+        $env->{'psgi.errors'}->print($@);
         [ 500, [ 'Content-Type' => 'text/plain', 'Content-Length' => length($body) ], [ $body ] ];
     };
 }
