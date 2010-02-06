@@ -8,7 +8,6 @@ use Try::Tiny;
 sub new {
     my $class = shift;
     bless {
-        port => 5000,
         env  => 'development',
         loader   => 'Plack::Loader',
         includes => [],
@@ -32,13 +31,17 @@ sub parse_options {
     # From 'prove': Allow cuddling the paths with -I and -M
     @ARGV = map { /^(-[IM])(.+)/ ? ($1,$2) : $_ } @ARGV;
 
+    my($host, $port, $socket, @listen);
+
     require Getopt::Long;
     Getopt::Long::Configure("no_ignore_case", "pass_through");
     Getopt::Long::GetOptions(
         "a|app=s"      => \$self->{app},
-        "o|host=s"     => \$self->{host},
-        "p|port=i"     => \$self->{port},
+        "o|host=s"     => \$host,
+        "p|port=i"     => \$port,
         "s|server=s"   => \$self->{server},
+        "S|socket=s"   => \$socket,
+        'l|listen=s@'  => \@listen,
         "E|env=s"      => \$self->{env},
         "e=s"          => \$self->{eval},
         'I=s@'         => $self->{includes},
@@ -64,9 +67,34 @@ sub parse_options {
         }
     }
 
-    push @options, host => $self->{host}, port => $self->{port};
+    push @options, $self->mangle_host_port_socket($host, $port, $socket, @listen);
+
     $self->{options} = \@options;
     $self->{argv}    = \@argv;
+}
+
+sub mangle_host_port_socket {
+    my($self, $host, $port, $socket, @listen) = @_;
+
+    for my $listen (reverse @listen) {
+        if ($listen =~ /:\d+$/) {
+            ($host, $port) = split /:/, $listen, 2;
+            $host = undef if $host eq '';
+        } else {
+            $socket ||= $listen;
+        }
+    }
+
+    unless (@listen) {
+        if ($socket) {
+            @listen = ($socket);
+        } else {
+            $port ||= 5000;
+            @listen = ($host ? "$host:$port" : ":$port");
+        }
+    }
+
+    return host => $host, port => $port, listen => \@listen, socket => $socket;
 }
 
 sub setup {
