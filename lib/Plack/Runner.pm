@@ -45,7 +45,7 @@ sub parse_options {
         'M=s@'         => $self->{modules},
         'r|reload'     => sub { $self->{loader} = "Restarter" },
         'R|Reload=s'   => sub { $self->{loader} = "Restarter"; $self->loader->watch(split ",", $_[1]) },
-        'l|loader=s'   => \$self->{loader},
+        'L|loader=s'   => \$self->{loader},
         "h|help",      => \$self->{help},
     );
 

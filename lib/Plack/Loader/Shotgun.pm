@@ -61,7 +61,7 @@ Plack::Loader::Shotgun - forking implementation of plackup
 
 =head1 SYNOPSIS
 
-  plackup -l Shotgun
+  plackup -L Shotgun
 
 =head1 DESCRIPTIOM
 
@@ -81,7 +81,7 @@ server, and there's a benefit of preloading modules that are not
 likely to change. For instance if you develop a web application using
 Moose and DBIx::Class,
 
-  plackup -MMoose -MDBIx::Class -l Shotgun yourapp.psgi
+  plackup -MMoose -MDBIx::Class -L Shotgun yourapp.psgi
 
 would preload those modules and only re-evaluates your code in every
 request.
