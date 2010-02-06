@@ -42,6 +42,11 @@ sub load {
     }
 }
 
+sub preload_app {
+    my($self, $builder) = @_;
+    $self->{app} = $builder->();
+}
+
 sub guess {
     my $class = shift;
 
@@ -66,7 +71,7 @@ sub guess {
 
 sub run {
     my($self, $server, $builder) = @_;
-    $server->run($builder->());
+    $server->run($self->{app});
 }
 
 1;

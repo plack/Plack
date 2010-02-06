@@ -180,8 +180,10 @@ sub run {
     }
 
     my $loader = $self->loader;
+    $loader->preload_app($app);
+
     my $server = $self->load_server($loader);
-    $loader->run($server, $app);
+    $loader->run($server);
 }
 
 1;

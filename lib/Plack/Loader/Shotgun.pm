@@ -4,15 +4,15 @@ use parent qw(Plack::Loader);
 use Storable;
 use Try::Tiny;
 
-sub run {
-    my($self, $server, $builder) = @_;
-    $server->run($self->_app($builder));
+sub preload_app {
+    my($self, $builder) = @_;
+    $self->{builder} = $builder;
 }
 
-sub _app {
-    my($self, $builder) = @_;
+sub run {
+    my($self, $server) = @_;
 
-    return sub {
+    my $app = sub {
         my $env = shift;
 
         pipe my $read, my $write;
@@ -33,7 +33,7 @@ sub _app {
             # TODO buffer streaming
             my $res;
             try {
-                $res = $builder->()->($env);
+                $res = $self->{builder}->()->($env);
                 my @body;
                 Plack::Util::foreach($res->[2], sub { push @body, $_[0] });
                 $res->[2] = \@body;
@@ -47,6 +47,8 @@ sub _app {
             exit;
         }
     };
+
+    $server->run($app);
 }
 
 1;

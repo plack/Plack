@@ -10,18 +10,23 @@ sub new {
     bless { watch => [] }, $class;
 }
 
+sub preload_app {
+    my($self, $builder) = @_;
+    $self->{builder} = $builder;
+}
+
 sub watch {
     my($self, @dir) = @_;
     push @{$self->{watch}}, @dir;
 }
 
 sub _fork_and_start {
-    my($self, $server, $builder) = @_;
+    my($self, $server) = @_;
 
     my $pid = fork;
     die "Can't fork: $!" unless defined $pid;
 
-    return $server->run($builder->()) if $pid == 0; # child
+    return $server->run($self->{builder}->()) if $pid == 0; # child
 
     $self->{pid} = $pid;
 }
