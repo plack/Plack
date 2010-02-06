@@ -103,16 +103,43 @@ CONTRIBUTING
 COPYRIGHT
     Copyright 2009- Tatsuhiko Miyagawa
 
-AUTHORS
+AUTHOR
     Tatsuhiko Miyagawa
 
-    Yuval Kogman
+CONTRIBUTORS
+    Yuval Kogman (nothingmuch)
 
-    Tokuhiro Matsuno
+    Tokuhiro Matsuno (tokuhirom)
 
-    Kazuhiro Osawa
+    Kazuhiro Osawa (Yappo)
 
-    Kazuho Oku
+    Kzzuho Oku
+
+    Florian Ragwitz (rafl)
+
+    Chia-liang Kao (clkao)
+
+    Masahiro Honma (hiratara)
+
+    Daisuke Murase (typester)
+
+    John Beppu
+
+    Matt S Trout (mst)
+
+    Shawn M Moore (Sartak)
+
+    Stevan Little
+
+    Hans Dieter Pearcey (confound)
+
+    Tomas Doran (t0m)
+
+    mala
+
+    Mark Stosberg
+
+    Aaron Trevena
 
 SEE ALSO
     PSGI <http://plackperl.org/>
