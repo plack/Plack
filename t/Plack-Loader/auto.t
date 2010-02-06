@@ -17,7 +17,7 @@ eval {
     like ref $server, qr/AnyEvent/;
 };
 
-ok 1;
+ok 1 if $@;
 
 done_testing;
 
