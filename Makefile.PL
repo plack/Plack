@@ -22,7 +22,7 @@ requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
 requires 'Filesys::Notify::Simple'; # plackup -r
 
 requires 'Hash::MultiValue', 0.05; # Plack::Request
-requires 'HTTP::Body'; # Plack::Request
+requires 'HTTP::Body', 1.06; # Plack::Request
 
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
