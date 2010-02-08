@@ -16,10 +16,18 @@ sub watch {
 sub auto {
     my($class, @args) = @_;
 
-    my $server = $class->guess
-        or Carp::croak("Couldn't auto-guess server serverementation. Set it with PLACK_SERVER");
+    my $backend = $class->guess
+        or Carp::croak("Couldn't auto-guess server server implementation. Set it with PLACK_SERVER");
 
-    $class->load($server, @args);
+    my $server = try {
+        $class->load($backend, @args);
+    } catch {
+        warn "Autoloading '$backend' backend failed. Falling back to the Standalone. ",
+            "(You might need to install Plack::Handler::$backend from CPAN)\n";
+        $class->load('Standalone' => @args);
+    };
+
+    return $server;
 }
 
 sub load {

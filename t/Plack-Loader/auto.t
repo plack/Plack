@@ -9,6 +9,9 @@ my $builder = sub {
     };
 };
 
+$INC{"Plack/Server/AnyEvent.pm"} = __FILE__;
+sub Plack::Server::AnyEvent::new { bless {}, shift }
+
 eval {
     my $loader = Plack::Loader->new;
     $loader->preload_app($builder);
