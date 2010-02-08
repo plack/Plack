@@ -39,7 +39,7 @@ sub run {
                 Plack::Util::foreach($res->[2], sub { push @body, $_[0] });
                 $res->[2] = \@body;
             } catch {
-                warn $_;
+                $env->{'psgi.errors'}->print($_);
                 $res = [ 500, [ "Content-Type", "text/plain" ], [ "Internal Server Error" ] ];
             };
 
