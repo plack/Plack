@@ -3,10 +3,11 @@ use strict;
 use parent qw(Plack::Loader);
 use Storable;
 use Try::Tiny;
+use Plack::Middleware::Writer;
 
 sub preload_app {
     my($self, $builder) = @_;
-    $self->{builder} = $builder;
+    $self->{builder} = sub { Plack::Middleware::Writer->wrap($builder->()) };
 }
 
 sub run {
@@ -30,9 +31,9 @@ sub run {
             # child
             close $read;
 
-            # TODO buffer streaming
             my $res;
             try {
+                $env->{'psgi.streaming'} = 0;
                 $res = $self->{builder}->()->($env);
                 my @body;
                 Plack::Util::foreach($res->[2], sub { push @body, $_[0] });
