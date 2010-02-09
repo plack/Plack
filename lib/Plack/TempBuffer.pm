@@ -11,15 +11,30 @@ sub new {
 
     # $MaxMemoryBufferSize = 0  -> Always temp file
     # $MaxMemoryBufferSize = -1 -> Always PerlIO
-    if ($length && $MaxMemoryBufferSize >= 0 && $length > $MaxMemoryBufferSize) {
-        Plack::Util::load_class('File', $class)->new($length);
+    my $backend;
+    if ($MaxMemoryBufferSize < 0) {
+        $backend = "PerlIO";
+    } elsif ($MaxMemoryBufferSize == 0) {
+        $backend = "File";
+    } elsif (!$length) {
+        $backend = "Auto";
+    } elsif ($length > $MaxMemoryBufferSize) {
+        $backend = "File";
     } else {
-        Plack::Util::load_class('PerlIO', $class)->new;
+        $backend = "PerlIO";
     }
+
+    $class->create($backend, $length, $MaxMemoryBufferSize);
+}
+
+sub create {
+    my($class, $backend, $length, $max) = @_;
+    Plack::Util::load_class($backend, $class)->new($length, $max);
 }
 
 sub print;
 sub rewind;
+sub size;
 
 1;
 
@@ -33,7 +48,9 @@ Plack::TempBuffer - temporary buffer to save bytes
 
   my $buf = Plack::TempBuffer->new($length);
   $buf->print($bytes);
-  my $fh = $buf->rewind;
+
+  my $size = $buf->size;
+  my $fh   = $buf->rewind;
 
 =head1 DESCRIPTION
 

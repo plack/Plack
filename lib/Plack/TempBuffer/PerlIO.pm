@@ -12,6 +12,11 @@ sub print {
     $self->{buffer} .= "@_";
 }
 
+sub size {
+    my $self = shift;
+    length $self->{buffer};
+}
+
 sub rewind {
     my $self = shift;
     my $buffer = $self->{buffer};

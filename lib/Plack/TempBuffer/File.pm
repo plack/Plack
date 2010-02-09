@@ -18,6 +18,12 @@ sub print {
     $self->{fh}->print(@_);
 }
 
+sub size {
+    my $self = shift;
+    $self->{fh}->flush;
+    -s $self->{fh};
+}
+
 sub rewind {
     my $self = shift;
     $self->{fh}->seek(0, 0);
