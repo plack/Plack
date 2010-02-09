@@ -49,8 +49,26 @@ PSGI application is a code reference but it's not easy to pass code
 reference in the command line or configuration files, so Plack uses a
 convention that you need a file named C<app.psgi> or alike, which
 would be loaded (via perl's core function C<do>) to return the PSGI
-application code reference. See eg/dot-psgi directory for the example
-C<.psgi> files.
+application code reference.
+
+  # Hello.psgi
+  my $app = sub {
+      my $env = shift;
+      # ...
+      return [ $status, $headers, $body ];
+  };
+
+If you use a web framework, chances are that they provide a helper
+utility to automatically generate these C<.psgi> files for you, such
+as:
+
+  # MyApp.psgi
+  use MyApp;
+  my $app = sub { MyApp->run_psgi(@_) };
+
+It's important that the return value of C<.psgi> file is the code
+reference. See eg/dot-psgi directory for more examples of C<.psgi>
+files.
 
 =head2 plackup, Plack::Runner
 
