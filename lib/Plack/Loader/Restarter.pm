@@ -36,7 +36,7 @@ sub _kill_child {
 
     my $pid = $self->{pid} or return;
     warn "Killing the existing server (pid:$pid)\n";
-    kill INT => $pid;
+    kill 'TERM' => $pid;
     waitpid($pid, 0);
     warn "Successfully killed! Restarting the new server process.\n";
 }
@@ -50,6 +50,7 @@ sub run {
     my($self, $server, $builder) = @_;
 
     $self->_fork_and_start($server, $builder);
+    return unless $self->{pid};
 
     require Filesys::Notify::Simple;
     my $watcher = Filesys::Notify::Simple->new($self->{watch});
