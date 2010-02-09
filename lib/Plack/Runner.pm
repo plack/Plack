@@ -42,6 +42,7 @@ sub parse_options {
         "s|server=s"   => \$self->{server},
         "S|socket=s"   => \$socket,
         'l|listen=s@'  => \@listen,
+        'D|damonize'   => \$self->{daemonize},
         "E|env=s"      => \$self->{env},
         "e=s"          => \$self->{eval},
         'I=s@'         => $self->{includes},
@@ -68,6 +69,7 @@ sub parse_options {
     }
 
     push @options, $self->mangle_host_port_socket($host, $port, $socket, @listen);
+    push @options, daemonize => 1 if $self->{daemonize};
 
     $self->{options} = \@options;
     $self->{argv}    = \@argv;
