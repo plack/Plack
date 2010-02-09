@@ -578,6 +578,18 @@ our @TEST = (
             return [ 200, [ "Content-Type", "text/plain" ], [ "Foo: Bar\r\n\r\nHello World" ] ];
         },
      ],
+     [
+         'test 404',
+        sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/");
+            is $res->code, 404;
+            is $res->content, 'Not Found';
+        },
+        sub {
+            return [ 404, [ "Content-Type", "text/plain" ], [ "Not Found" ] ];
+        },
+     ],
 );
 
 sub runtests {
