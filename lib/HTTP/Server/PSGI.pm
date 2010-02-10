@@ -9,6 +9,7 @@ use HTTP::Date;
 use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
+use Plack::TempBuffer;
 use Plack::Middleware::ContentLength;
 use POSIX qw(EINTR);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
@@ -171,25 +172,24 @@ sub handle_connection {
                 }
             }
             $buf = substr $buf, $reqlen;
-
-            $env->{'psgi.input'} = Plack::Util::inline_object
-                read  => sub {
-                    my(undef, $length, $offset) = @_;
-                    my $read;
-                    if (my $buflen = length $buf) {
-                        $read = $length < $buflen ? $length : $buflen;
-                        $_[0] = substr $buf, 0, $read;
-                        $buf = substr $buf, $read;
-                        $length -= $read;
-                        $offset += $read;
+            if (my $cl = $env->{CONTENT_LENGTH}) {
+                my $buffer = Plack::TempBuffer->new($cl);
+                while ($cl > 0) {
+                    my $chunk;
+                    if (length $buf) {
+                        $chunk = $buf;
+                        $buf = '';
+                    } else {
+                        $self->read_timeout($conn, \$chunk, $cl, 0, $self->{timeout});
                     }
-                    if ($length > 0) {
-                        my $rlen = $self->read_timeout($conn, \$_[0], $length, $offset, $self->{timeout});
-                        $read += $rlen if $rlen;
-                    }
-                    return $read;
-                },
-                close => sub { };
+                    $buffer->print($chunk);
+                    $cl -= length $chunk;
+                }
+                $env->{'psgix.input.buffered'} = $env->{'psgi.input'} = $buffer->rewind;
+            } else {
+                open my $input, "<", \$buf;
+                $env->{'psgix.input.buffered'} = $env->{'psgi.input'} = $input;
+            }
 
             $res = Plack::Util::run_app $app, $env;
             last;
