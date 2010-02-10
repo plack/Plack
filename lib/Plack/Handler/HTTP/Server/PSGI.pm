@@ -80,8 +80,6 @@ Max requests per a keep-alive request. Defaults to 100.
 
 =item L<Plack> - provides overview and documents the .psgi file format.
 
-=item L<Plack::Handler> - defines this handler's API.
-
 =back
 
 =head1 AUTHOR

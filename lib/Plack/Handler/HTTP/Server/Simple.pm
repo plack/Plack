@@ -59,8 +59,6 @@ L<Plack>, L<HTTP::Server::Simple::PSGI>
 
 =item L<Plack> - provides overview and documents the .psgi file format.
 
-=item L<Plack::Handler> - defines this handler's API.
-
 =item L<HTTP::Server::Simple::PSGI> - a HTTP::Server::Simple based HTTP server that can run PSGI applications.
 
 =back

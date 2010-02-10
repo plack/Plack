@@ -142,8 +142,6 @@ If you want to run a PSGI application as a CGI script, see L<Plack::Handler::CGI
 
 =item L<Plack> - provides overview and documents the .psgi file format.
 
-=item L<Plack::Handler> - defines this handler's API.
-
 =item L<Plack::Handler::Apache1> - same idea, for Apache 1.3.x
 
 =back
