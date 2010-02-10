@@ -8,7 +8,6 @@ use Try::Tiny;
 sub new {
     my $class = shift;
     bless {
-        port => 5000,
         env  => 'development',
         loader   => 'Plack::Loader',
         includes => [],
@@ -32,20 +31,25 @@ sub parse_options {
     # From 'prove': Allow cuddling the paths with -I and -M
     @ARGV = map { /^(-[IM])(.+)/ ? ($1,$2) : $_ } @ARGV;
 
+    my($host, $port, $socket, @listen);
+
     require Getopt::Long;
     Getopt::Long::Configure("no_ignore_case", "pass_through");
     Getopt::Long::GetOptions(
         "a|app=s"      => \$self->{app},
-        "o|host=s"     => \$self->{host},
-        "p|port=i"     => \$self->{port},
+        "o|host=s"     => \$host,
+        "p|port=i"     => \$port,
         "s|server=s"   => \$self->{server},
+        "S|socket=s"   => \$socket,
+        'l|listen=s@'  => \@listen,
+        'D|daemonize'  => \$self->{daemonize},
         "E|env=s"      => \$self->{env},
         "e=s"          => \$self->{eval},
         'I=s@'         => $self->{includes},
         'M=s@'         => $self->{modules},
         'r|reload'     => sub { $self->{loader} = "Restarter" },
         'R|Reload=s'   => sub { $self->{loader} = "Restarter"; $self->loader->watch(split ",", $_[1]) },
-        'l|loader=s'   => \$self->{loader},
+        'L|loader=s'   => \$self->{loader},
         "h|help",      => \$self->{help},
     );
 
@@ -64,9 +68,40 @@ sub parse_options {
         }
     }
 
-    push @options, host => $self->{host}, port => $self->{port};
+    push @options, $self->mangle_host_port_socket($host, $port, $socket, @listen);
+    push @options, daemonize => 1 if $self->{daemonize};
+
     $self->{options} = \@options;
     $self->{argv}    = \@argv;
+}
+
+sub set_options {
+    my $self = shift;
+    push @{$self->{options}}, @_;
+}
+
+sub mangle_host_port_socket {
+    my($self, $host, $port, $socket, @listen) = @_;
+
+    for my $listen (reverse @listen) {
+        if ($listen =~ /:\d+$/) {
+            ($host, $port) = split /:/, $listen, 2;
+            $host = undef if $host eq '';
+        } else {
+            $socket ||= $listen;
+        }
+    }
+
+    unless (@listen) {
+        if ($socket) {
+            @listen = ($socket);
+        } else {
+            $port ||= 5000;
+            @listen = ($host ? "$host:$port" : ":$port");
+        }
+    }
+
+    return host => $host, port => $port, listen => \@listen, socket => $socket;
 }
 
 sub setup {
@@ -138,7 +173,8 @@ sub prepare_devel {
     push @{$self->{options}}, server_ready => sub {
         my($args) = @_;
         my $name = $args->{server_software} || ref($args); # $args is $server
-        print STDERR "$name: Accepting connections at http://$args->{host}:$args->{port}/\n";
+        my $host = $args->{host} || 0;
+        print STDERR "$name: Accepting connections at http://$host:$args->{port}/\n";
     };
 
     $app;
@@ -179,8 +215,10 @@ sub run {
     }
 
     my $loader = $self->loader;
+    $loader->preload_app($app);
+
     my $server = $self->load_server($loader);
-    $loader->run($server, $app);
+    $loader->run($server);
 }
 
 1;
@@ -219,7 +257,7 @@ automatically extracted from your own script using L<Pod::Usage>.
 =head1 NOTES
 
 Do not directly call this module from your C<.psgi>, since that makes
-your PSGI application unnecesarily depend on L<plackup> and won't run
+your PSGI application unnecessarily depend on L<plackup> and won't run
 other backends like L<Plack::Handler::Apache2> or mod_psgi.
 
 If you I<really> want to make your C<.psgi> runnable as a standalone

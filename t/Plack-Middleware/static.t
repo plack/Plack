@@ -10,11 +10,10 @@ use Cwd;
 use Plack::Test;
 
 my $base = cwd;
-chdir "t";
 
 my $handler = builder {
     enable "Plack::Middleware::Static",
-        path => sub { s!^/share/!!}, root => "$base/share";
+        path => sub { s!^/share/!!}, root => "share";
     enable "Plack::Middleware::Static",
         path => qr{\.(t|PL|txt)$}i, root => '.';
     sub {
@@ -27,7 +26,7 @@ my %test = (
         my $cb  = shift;
 
         {
-            my $path = "00_compile.t";
+            my $path = "t/00_compile.t";
             my $res = $cb->(GET "http://localhost/$path");
             is $res->content_type, 'text/troff', 'ok case';
             like $res->content, qr/use Test::More/;
@@ -58,7 +57,7 @@ my %test = (
         }
 
         {
-            my $res = $cb->(GET "http://localhost/Plack-Middleware/static.txt");
+            my $res = $cb->(GET "http://localhost/t/Plack-Middleware/static.txt");
             is $res->content_type, 'text/plain';
             my($ct, $charset) = $res->content_type;
             is $charset, 'charset=utf-8';

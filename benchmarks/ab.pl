@@ -16,12 +16,14 @@ my $url = 'http://127.0.0.1/';
 
 my @try = (
     [ 'AnyEvent' ],
+    [ 'AnyEvent::HTTPD' ],
     [ 'Standalone' ],
     [ 'Standalone', max_workers => 10 ],
-    [ 'ServerSimple' ],
+    [ 'HTTP::Server::Simple' ],
     [ 'Coro' ],
     [ 'Danga::Socket' ],
     [ 'POE' ],
+    [ 'Nomo' ],
 );
 
 my @backends;

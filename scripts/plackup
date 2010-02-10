@@ -22,7 +22,13 @@ plackup - Run PSGI application with Plack servers
   plackup hello.psgi
 
   # Switch server implementation with --server (or -s)
-  plackup --server Coro --port 9090 --host 127.0.0.1 test.psgi
+  plackup --server HTTP::Server::Simple --port 9090 --host 127.0.0.1 test.psgi
+
+  # Use UNIX socket to run FCGI daemon
+  plackup -s FCGI --listen /tmp/fcgi.sock myapp.psgi
+
+  # FCGI external server on port 9090
+  plackup -s FCGI --port 9090
 
 =head1 DESCRIPTION
 
@@ -77,19 +83,36 @@ option.
 
 The interface a TCP based server daemon binds to. Defauts to undef,
 which lets most server backends bind the any (*) interface. This
-opeion doesn't mean anything if the server is not TCP based.
+opeion doesn't mean anything if the server does not support TCP
+socket.
 
 =item -p, --port
 
 The port number a TCP based server daemon listens on. Defaults to
-5000. This option doesn't mean anything if the server is not TCP
-based.
+5000. This option doesn't mean anything if the server does not support
+TCP socket.
 
 =item -s, --server
 
 Select a specific implementation to run on using the C<PLACK_SERVER>
 environment variable or use the C<-s> or C<--server> flag which will
 be prefered over the environment variable if present.
+
+=item -S, --socket
+
+UNIX domain socket path to listen on. Defaults to undef. This option
+doesn't mean anything if the server doesn't support UNIX sockets.
+
+=item -l, --listen
+
+Addresses to listen on. It could be "HOST:PORT", ":PORT" or "PATH"
+(without colons). It could be multiple but it depends on the server
+implementations whether multiple interfaces are supported.
+
+=item -D, --daemonize
+
+Makes the process go background. It's up to the backend server/handler
+implementation whether this option is respected or not.
 
 =item -I
 
@@ -119,7 +142,7 @@ separated by comma (C<,>).
 
   plackup -R /path/to/project/lib,/path/to/project/templates
 
-=item -l, --loader
+=item -L, --loader
 
 Specify the server loading subclass that implements how to run the
 server. Available options are I<Plack::Loader> (default), I<Restarter>

@@ -9,6 +9,7 @@ use HTTP::Date;
 use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
+use Plack::TempBuffer;
 use Plack::Middleware::ContentLength;
 use POSIX qw(EINTR);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
@@ -133,6 +134,7 @@ sub accept_loop {
                     'psgi.multiprocess' => $self->{prefork},
                     'psgi.streaming'    => Plack::Util::TRUE,
                     'psgi.nonblocking'  => Plack::Util::FALSE,
+                    'psgix.input.buffered' => Plack::Util::TRUE,
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server
@@ -171,16 +173,25 @@ sub handle_connection {
                 }
             }
             $buf = substr $buf, $reqlen;
-            if ($env->{CONTENT_LENGTH}) {
-                # TODO can $conn seek to the begining of body and then set to 'psgi.input'?
-                while (length $buf < $env->{CONTENT_LENGTH}) {
-                    $self->read_timeout($conn, \$buf, $env->{CONTENT_LENGTH} - length($buf), length($buf), $self->{timeout})
-                        or return;
+            if (my $cl = $env->{CONTENT_LENGTH}) {
+                my $buffer = Plack::TempBuffer->new($cl);
+                while ($cl > 0) {
+                    my $chunk;
+                    if (length $buf) {
+                        $chunk = $buf;
+                        $buf = '';
+                    } else {
+                        $self->read_timeout($conn, \$chunk, $cl, 0, $self->{timeout});
+                    }
+                    $buffer->print($chunk);
+                    $cl -= length $chunk;
                 }
+                $env->{'psgi.input'} = $buffer->rewind;
+            } else {
+                open my $input, "<", \$buf;
+                $env->{'psgi.input'} = $input;
             }
 
-            open my $input, "<", \$buf;
-            $env->{'psgi.input'} = $input;
             $res = Plack::Util::run_app $app, $env;
             last;
         }
@@ -318,7 +329,7 @@ __END__
 
 =head1 NAME
 
-HTTP::Server::PSGI - Standalone PSGI compatiblle HTTP server
+HTTP::Server::PSGI - Standalone PSGI compatible HTTP server
 
 =head1 SYNOPSIS
 

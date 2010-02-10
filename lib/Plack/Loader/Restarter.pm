@@ -10,18 +10,23 @@ sub new {
     bless { watch => [] }, $class;
 }
 
+sub preload_app {
+    my($self, $builder) = @_;
+    $self->{builder} = $builder;
+}
+
 sub watch {
     my($self, @dir) = @_;
     push @{$self->{watch}}, @dir;
 }
 
 sub _fork_and_start {
-    my($self, $server, $builder) = @_;
+    my($self, $server) = @_;
 
     my $pid = fork;
     die "Can't fork: $!" unless defined $pid;
 
-    return $server->run($builder->()) if $pid == 0; # child
+    return $server->run($self->{builder}->()) if $pid == 0; # child
 
     $self->{pid} = $pid;
 }
@@ -31,7 +36,7 @@ sub _kill_child {
 
     my $pid = $self->{pid} or return;
     warn "Killing the existing server (pid:$pid)\n";
-    kill INT => $pid;
+    kill 'TERM' => $pid;
     waitpid($pid, 0);
     warn "Successfully killed! Restarting the new server process.\n";
 }
@@ -45,6 +50,7 @@ sub run {
     my($self, $server, $builder) = @_;
 
     $self->_fork_and_start($server, $builder);
+    return unless $self->{pid};
 
     require Filesys::Notify::Simple;
     my $watcher = Filesys::Notify::Simple->new($self->{watch});
@@ -85,7 +91,7 @@ Plack::Loader::Restarter - Restarting loader
 
   plackup -r -R paths
 
-=head1 DESCRIPTIOM
+=head1 DESCRIPTION
 
 Plack::Loader::Restarter is a loader backend that implements C<-r> and
 C<-R> option for the L<plackup> script. It forks the server as a child

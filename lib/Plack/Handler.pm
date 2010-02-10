@@ -36,6 +36,16 @@ It is an empty class, and as long as they implement the methods
 defined as an Server adapter interface, they do not need to inherit
 Plack::Handler.
 
+If you write a new handler for existing web servers, I recommend you
+to include the full name of the server module after I<Plack::Handler>
+prefix, like L<Plack::Handler::Net::Server::Coro> if you write a
+handler for L<Net::Server::Coro>. That way you'll be using plackup
+command line option like:
+
+  plackup -s Net::Server::Coro
+
+that makes it easy to figure out which web server you're going to use.
+
 =head1 METHODS
 
 =over 4

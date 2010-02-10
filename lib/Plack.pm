@@ -3,7 +3,8 @@ package Plack;
 use strict;
 use warnings;
 use 5.008_001;
-our $VERSION = '0.9031';
+our $VERSION = '0.99_05';
+$VERSION = eval $VERSION;
 
 1;
 __END__
@@ -14,8 +15,9 @@ Plack - Perl Superglue for Web frameworks and Web Servers (PSGI toolkit)
 
 =head1 DESCRIPTION
 
-Plack is a set of PSGI reference server implementations and helper
-utilities for Web application frameworks, exactly like Ruby's Rack.
+Plack is a set of tools for using PSGI stack. It contains middleware
+components, a reference server and utilities for Web application
+frameworks. Plack is like Ruby's Rack or Python's Paste for WSGI.
 
 See L<PSGI> for the PSGI specification and L<PSGI::FAQ> to know what
 PSGI and Plack are and why we need them.
@@ -47,8 +49,26 @@ PSGI application is a code reference but it's not easy to pass code
 reference in the command line or configuration files, so Plack uses a
 convention that you need a file named C<app.psgi> or alike, which
 would be loaded (via perl's core function C<do>) to return the PSGI
-application code reference. See eg/dot-psgi directory for the example
-C<.psgi> files.
+application code reference.
+
+  # Hello.psgi
+  my $app = sub {
+      my $env = shift;
+      # ...
+      return [ $status, $headers, $body ];
+  };
+
+If you use a web framework, chances are that they provide a helper
+utility to automatically generate these C<.psgi> files for you, such
+as:
+
+  # MyApp.psgi
+  use MyApp;
+  my $app = sub { MyApp->run_psgi(@_) };
+
+It's important that the return value of C<.psgi> file is the code
+reference. See eg/dot-psgi directory for more examples of C<.psgi>
+files.
 
 =head2 plackup, Plack::Runner
 
@@ -132,17 +152,45 @@ confuse people.
 
 Copyright 2009- Tatsuhiko Miyagawa
 
-=head1 AUTHORS
+=head1 AUTHOR
 
 Tatsuhiko Miyagawa
 
-Yuval Kogman
+=head1 CONTRIBUTORS
 
-Tokuhiro Matsuno
+Yuval Kogman (nothingmuch)
 
-Kazuhiro Osawa
+Tokuhiro Matsuno (tokuhirom)
 
-Kazuho Oku
+Kazuhiro Osawa (Yappo)
+
+Kzzuho Oku
+
+Florian Ragwitz (rafl)
+
+Chia-liang Kao (clkao)
+
+Masahiro Honma (hiratara)
+
+Daisuke Murase (typester)
+
+John Beppu
+
+Matt S Trout (mst)
+
+Shawn M Moore (Sartak)
+
+Stevan Little
+
+Hans Dieter Pearcey (confound)
+
+Tomas Doran (t0m)
+
+mala
+
+Mark Stosberg
+
+Aaron Trevena
 
 =head1 SEE ALSO
 

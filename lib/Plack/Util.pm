@@ -3,7 +3,6 @@ use strict;
 use Carp ();
 use Scalar::Util;
 use IO::Handle;
-use Try::Tiny;
 
 sub TRUE()  { 1==1 }
 sub FALSE() { !TRUE }
@@ -117,13 +116,11 @@ sub load_psgi {
 sub run_app($$) {
     my($app, $env) = @_;
 
-    return try {
-        $app->($env);
-    } catch {
+    return eval { $app->($env) } || do {
         my $body = "Internal Server Error";
-        $env->{'psgi.errors'}->print($_);
-        return [ 500, [ 'Content-Type' => 'text/plain', 'Content-Length' => length($body) ], [ $body ] ];
-    }
+        $env->{'psgi.errors'}->print($@);
+        [ 500, [ 'Content-Type' => 'text/plain', 'Content-Length' => length($body) ], [ $body ] ];
+    };
 }
 
 sub headers {
@@ -232,11 +229,11 @@ sub can {
 }
 
 sub AUTOLOAD {
-    my ($self, @args) = @_;
+    my $self = shift;
     my $attr = $AUTOLOAD;
     $attr =~ s/.*://;
     if (ref($self->{$attr}) eq 'CODE') {
-        $self->{$attr}->(@args);
+        $self->{$attr}->(@_);
     } else {
         Carp::croak(qq/Can't locate object method "$attr" via package "Plack::Util::Prototype"/);
     }

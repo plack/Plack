@@ -3,16 +3,17 @@ use strict;
 use parent qw(Plack::Loader);
 use Storable;
 use Try::Tiny;
+use Plack::Middleware::BufferedStreaming;
 
-sub run {
-    my($self, $server, $builder) = @_;
-    $server->run($self->_app($builder));
+sub preload_app {
+    my($self, $builder) = @_;
+    $self->{builder} = sub { Plack::Middleware::BufferedStreaming->wrap($builder->()) };
 }
 
-sub _app {
-    my($self, $builder) = @_;
+sub run {
+    my($self, $server) = @_;
 
-    return sub {
+    my $app = sub {
         my $env = shift;
 
         pipe my $read, my $write;
@@ -30,15 +31,15 @@ sub _app {
             # child
             close $read;
 
-            # TODO buffer streaming
             my $res;
             try {
-                $res = $builder->()->($env);
+                $env->{'psgi.streaming'} = 0;
+                $res = $self->{builder}->()->($env);
                 my @body;
                 Plack::Util::foreach($res->[2], sub { push @body, $_[0] });
                 $res->[2] = \@body;
             } catch {
-                warn $_;
+                $env->{'psgi.errors'}->print($_);
                 $res = [ 500, [ "Content-Type", "text/plain" ], [ "Internal Server Error" ] ];
             };
 
@@ -47,6 +48,8 @@ sub _app {
             exit;
         }
     };
+
+    $server->run($app);
 }
 
 1;
@@ -59,7 +62,7 @@ Plack::Loader::Shotgun - forking implementation of plackup
 
 =head1 SYNOPSIS
 
-  plackup -l Shotgun
+  plackup -L Shotgun
 
 =head1 DESCRIPTIOM
 
@@ -69,7 +72,7 @@ a new child, compiles your code and runs the application.
 
 This should be an ultimate alternative solution when reloading with
 L<Plack::Middleware::Refresh> doesn't work, or plackup's default C<-r>
-filesystem watcher causes problems. I can imagine this is useulf for
+filesystem watcher causes problems. I can imagine this is useful for
 applications which expects their application is only evaluated once
 (like in-file templates) or on operating systems with broken fork
 implementation, etc.
@@ -79,7 +82,7 @@ server, and there's a benefit of preloading modules that are not
 likely to change. For instance if you develop a web application using
 Moose and DBIx::Class,
 
-  plackup -MMoose -MDBIx::Class -l Shotgun yourapp.psgi
+  plackup -MMoose -MDBIx::Class -L Shotgun yourapp.psgi
 
 would preload those modules and only re-evaluates your code in every
 request.

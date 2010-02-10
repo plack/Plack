@@ -23,6 +23,18 @@ test_psgi app => $app, client => sub {
     is $res->content, "Hello foo counter=1";
 
     $res = $cb->(GET "http://localhost/hello3.cgi");
+    my $env = eval $res->content;
+    is $env->{SCRIPT_NAME}, '/hello3.cgi';
+    is $env->{REQUEST_URI}, '/hello3.cgi';
+
+    $res = $cb->(GET "http://localhost/hello3.cgi/foo%20bar/baz");
+    is $res->code, 200;
+    $env = eval $res->content || {};
+    is $env->{SCRIPT_NAME}, '/hello3.cgi';
+    is $env->{PATH_INFO}, '/foo bar/baz';
+    is $env->{REQUEST_URI}, '/hello3.cgi/foo%20bar/baz';
+
+    $res = $cb->(GET "http://localhost/hello4.cgi");
     is $res->code, 404;
 };
 

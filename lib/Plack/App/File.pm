@@ -3,12 +3,12 @@ use strict;
 use warnings;
 use parent qw/Plack::Component/;
 use File::Spec::Unix;
-use Path::Class 'dir';
+use Cwd ();
 use Plack::Util;
 use Plack::MIME;
 use HTTP::Date;
 
-use Plack::Util::Accessor qw( root encoding );
+use Plack::Util::Accessor qw( root file encoding );
 
 sub should_handle {
     my($self, $file) = @_;
@@ -19,31 +19,61 @@ sub call {
     my $self = shift;
     my $env  = shift;
 
-    my $path = $env->{PATH_INFO};
-    if ($path =~ m!\.\.[/\\]!) {
-        return $self->return_403;
-    }
+    my($file, $path_info) = $self->file || $self->locate_file($env);
+    return $file if ref $file eq 'ARRAY';
 
-    my $docroot = dir($self->root || ".");
-    my $file = $docroot->file(File::Spec::Unix->splitpath($path))->absolute;
-
-    # Is the requested path within the root?
-    if (!$docroot->subsumes($file)) {
-        return $self->return_403;
-    }
-
-    # Does the file actually exist?
-    if (!$self->should_handle($file)) {
-        return $self->return_404;
-    }
-
-    # If the requested file present but lacking the permission to read it?
-    if (!-r $file) {
-        return $self->return_403;
+    if ($path_info) {
+        $env->{PATH_INFO}   =~ s/\Q$path_info\E$//;
+        $env->{SCRIPT_NAME} = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+        $env->{PATH_INFO }  = $path_info;
+    } else {
+        $env->{SCRIPT_NAME} = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+        $env->{PATH_INFO }  = '';
     }
 
     return $self->serve_path($env, $file);
 }
+
+sub locate_file {
+    my($self, $env) = @_;
+
+    my $path = $env->{PATH_INFO} || '';
+    if ($path =~ m!\.\.[/\\]!) {
+        return $self->return_403;
+    }
+
+    my $docroot = $self->root || ".";
+    my @path = split '/', $path;
+    if (@path) {
+        shift @path if $path[0] eq '';
+    } else {
+        @path = ('.');
+    }
+
+    my($file, @path_info);
+    while (@path) {
+        my $try = File::Spec::Unix->catfile($docroot, @path);
+        if ($self->should_handle($try)) {
+            $file = $try;
+            last;
+        } elsif (!$self->allow_path_info) {
+            last;
+        }
+        unshift @path_info, pop @path;
+    }
+
+    if (!$file) {
+        return $self->return_404;
+    }
+
+    if (!-r $file) {
+        return $self->return_403;
+    }
+
+    return $file, join("/", "", @path_info);
+}
+
+sub allow_path_info { 0 }
 
 sub serve_path {
     my($self, $env, $file) = @_;
@@ -54,21 +84,19 @@ sub serve_path {
         $content_type .= "; charset=" . ($self->encoding || "utf-8");
     }
 
-    my $fh = $file->openr
+    open my $fh, "<:raw", $file
         or return $self->return_403;
 
-    my $path = $file->stringify;
-       $path =~ s!\\!/!g;
-    Plack::Util::set_io_path($fh, $path);
-    binmode $fh;
+    my @stat = stat $file;
 
-    my $stat = $file->stat;
+    Plack::Util::set_io_path($fh, Cwd::realpath($file));
+
     return [
         200,
         [
             'Content-Type'   => $content_type,
-            'Content-Length' => $stat->size,
-            'Last-Modified'  => HTTP::Date::time2str( $stat->mtime )
+            'Content-Length' => $stat[7],
+            'Last-Modified'  => HTTP::Date::time2str( $stat[9] )
         ],
         $fh,
     ];
@@ -95,7 +123,13 @@ Plack::App::File - Serve static files from root directory
 =head1 SYNOPSIS
 
   use Plack::App::File;
-  my $app = Plack::App::File->new({ root => "/path/to/htdocs" })->to_app;
+  my $app = Plack::App::File->new(root => "/path/to/htdocs")->to_app;
+
+  # Or map the path to a specific file
+  use Plack::Builder;
+  builder {
+      mount "/favicon.ico" => Plack::App::File->new(file => '/path/to/favicon.ico');
+  };
 
 =head1 DESCRIPTION
 
@@ -112,6 +146,14 @@ as well.
 =item root
 
 Document root directory. Defaults to C<.> (current directory)
+
+=item file
+
+The file path to create responses from. Optional.
+
+If it's set the application would B<ALWAYS> create a response out of
+the file and there will be no security check etc. (hence fast). If
+it's not set, the application uses C<root> to find the matching file.
 
 =item encoding
 

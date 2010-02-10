@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires qw( Path::Class );
 use HTTP::Request::Common;
 use Plack::Builder;
 use Plack::Test;

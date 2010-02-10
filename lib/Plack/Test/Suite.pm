@@ -64,6 +64,42 @@ our @TEST = (
         },
     ],
     [
+        'big POST',
+        sub {
+            my $cb = shift;
+            my $chunk = "abcdefgh" x 12000;
+            my $req = HTTP::Request->new(POST => "http://127.0.0.1");
+            $req->content_length(length $chunk);
+            $req->content_type('application/octet-stream');
+            $req->content($chunk);
+
+            my $res = $cb->($req);
+            is $res->code, 200;
+            is $res->header('Client-Content-Length'), length $chunk;
+            is length $res->content, length $chunk;
+            is Digest::MD5::md5_hex($res->content), Digest::MD5::md5_hex($chunk);
+        },
+        sub {
+            my $env = shift;
+            my $len = $env->{CONTENT_LENGTH};
+            my $body = '';
+            my $spin;
+            while ($len > 0) {
+                my $rc = $env->{'psgi.input'}->read($body, $env->{CONTENT_LENGTH}, length $body);
+                $len -= $rc;
+                last if $spin++ > 2000;
+            }
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain',
+                  'Client-Content-Length' => $env->{CONTENT_LENGTH},
+                  'Client-Content-Type' => $env->{CONTENT_TYPE},
+              ],
+                [ $body ],
+            ];
+        },
+    ],
+    [
         'psgi.url_scheme',
         sub {
             my $cb = shift;
@@ -350,7 +386,7 @@ our @TEST = (
         },
     ],
     [
-        'multi headers',
+        'multi headers (request)',
         sub {
             my $cb  = shift;
             my $req = HTTP::Request->new(
@@ -359,7 +395,7 @@ our @TEST = (
             $req->push_header(Foo => "bar");
             $req->push_header(Foo => "baz");
             my $res = $cb->($req);
-            is($res->content, "bar, baz");
+            like($res->content, qr/^bar,\s*baz$/);
         },
         sub {
             my $env = shift;
@@ -367,6 +403,44 @@ our @TEST = (
                 200,
                 [ 'Content-Type' => 'text/plain', ],
                 [ $env->{HTTP_FOO} ]
+            ];
+        },
+    ],
+    [
+        'multi headers (response)',
+        sub {
+            my $cb  = shift;
+            my $res = $cb->(HTTP::Request->new(GET => "http://127.0.0.1/"));
+            my $foo = $res->header('X-Foo');
+            like $foo, qr/foo,\s*bar,\s*baz/;
+        },
+        sub {
+            my $env = shift;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', 'X-Foo', 'foo', 'X-Foo', 'bar, baz' ],
+                [ 'hi' ]
+            ];
+        },
+    ],
+    [
+        'Do not set $env->{COOKIE}',
+        sub {
+            my $cb  = shift;
+            my $req = HTTP::Request->new(
+                GET => "http://127.0.0.1/",
+            );
+            $req->push_header(Cookie => "foo=bar");
+            my $res = $cb->($req);
+            is($res->header('X-Cookie'), 0);
+            is $res->content, 'foo=bar';
+        },
+        sub {
+            my $env = shift;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', 'X-Cookie' => $env->{COOKIE} ? 1 : 0 ],
+                [ $env->{HTTP_COOKIE} ]
             ];
         },
     ],
@@ -502,6 +576,18 @@ our @TEST = (
         },
         sub {
             return [ 200, [ "Content-Type", "text/plain" ], [ "Foo: Bar\r\n\r\nHello World" ] ];
+        },
+     ],
+     [
+         'test 404',
+        sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/");
+            is $res->code, 404;
+            is $res->content, 'Not Found';
+        },
+        sub {
+            return [ 404, [ "Content-Type", "text/plain" ], [ "Not Found" ] ];
         },
      ],
 );

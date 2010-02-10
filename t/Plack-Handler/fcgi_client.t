@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires { FCGI => 0, 'FCGI::Client' => 0.03 };
+use Test::Requires { FCGI => 0, 'FCGI::Client' => 0.04 };
 use Plack;
 use Plack::Handler::FCGI;
 use Test::TCP;
@@ -10,8 +10,8 @@ use FindBin;
 use Plack::Test::Suite;
 use t::FCGIUtils;
 
-
-use Data::Dumper;
+plan skip_all => "Set TEST_FCGI_CLIENT to test this"
+    unless $ENV{TEST_FCGI_CLIENT};
 
 my $http_port;
 my $fcgi_port;

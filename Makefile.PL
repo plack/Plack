@@ -10,7 +10,7 @@ all_from 'lib/Plack.pm';
 readme_from 'lib/Plack.pm';
 
 requires 'LWP', 5.814; # HTTP::Status, HTTP::Headers and HTTP::Request
-requires 'URI';
+requires 'URI', 1.36;
 requires 'Pod::Usage';  # plackup
 requires 'File::ShareDir', '1.00'; # Plack::Test::Suite
 requires 'Try::Tiny';
@@ -21,9 +21,8 @@ requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
 
 requires 'Filesys::Notify::Simple'; # plackup -r
 
-# TODO: they can go away once we create Plack-Middlewares dist
-# Middleware::Static and App::File
-requires 'Path::Class';
+requires 'Hash::MultiValue', 0.05; # Plack::Request
+requires 'HTTP::Body', 1.06; # Plack::Request
 
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
@@ -35,7 +34,6 @@ author_tests 'xt';
 install_share 'share';
 install_script 'scripts/plackup';
 
-use_test_base;
 auto_include;
 auto_install;
 auto_set_repository;

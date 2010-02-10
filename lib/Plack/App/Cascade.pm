@@ -2,6 +2,7 @@ package Plack::App::Cascade;
 use strict;
 use base qw(Plack::Component);
 
+use Plack::Util;
 use Plack::Util::Accessor qw(apps catch codes);
 
 sub add {
@@ -19,14 +20,35 @@ sub prepare_app {
 sub call {
     my($self, $env) = @_;
 
-    my $res = [ 404, [ 'Content-Type' => 'text/html' ], [ '404 Not Found' ] ];
+    return sub {
+        my $respond = shift;
 
-    for my $app (@{$self->apps || []}) {
-        $res = $app->($env);
-        last unless ref $res eq 'ARRAY' && $self->codes->{$res->[0]};
-    }
+        my $res = [ 404, [ 'Content-Type' => 'text/html' ], [ '404 Not Found' ] ];
 
-    return $res;
+        my $done;
+        my $respond_wrapper = sub {
+            my $res = shift;
+            if ($self->codes->{$res->[0]}) {
+                return Plack::Util::inline_object
+                    write => sub { }, close => sub { };
+            } else {
+                $done = 1;
+                return $respond->($res);
+            }
+        };
+
+        for my $app (@{$self->apps || []}) {
+            $res = $app->($env);
+            if (ref $res eq 'CODE') {
+                $res->($respond_wrapper);
+            } else {
+                $respond_wrapper->($res);
+            }
+            return if $done;
+        }
+
+        $respond->($res);
+    };
 }
 
 1;
@@ -57,9 +79,6 @@ Plack::App::Cascade - Cascadable compound application
 Plack::App::Cascade is a Plack middleware component that compounds
 several apps and tries them to return the first response that is not
 404.
-
-Note that this application doesn't support I<psgi.streaming>
-interface.
 
 =head1 METHODS
 

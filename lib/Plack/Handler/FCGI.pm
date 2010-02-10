@@ -13,10 +13,10 @@ sub new {
     $self->{leave_umask} ||= 0;
     $self->{keep_stderr} ||= 0;
     $self->{nointr}      ||= 0;
-    $self->{detach}      ||= 0;
+    $self->{daemonize}   ||= $self->{detach}; # compatibility
     $self->{nproc}       ||= 1;
-    $self->{pidfile}     ||= undef;
-    $self->{listen}      ||= ":$self->{port}" if $self->{port};
+    $self->{pid}         ||= $self->{pidfile}; # compatibility
+    $self->{listen}      ||= [ ":$self->{port}" ] if $self->{port}; # compatibility
     $self->{manager}     = 'FCGI::ProcManager' unless exists $self->{manager};
 
     $self;
@@ -31,7 +31,7 @@ sub run {
         unless ($self->{leave_umask}) {
             umask(0);
         }
-        $sock = FCGI::OpenSocket( $self->{listen}, 100 )
+        $sock = FCGI::OpenSocket( $self->{listen}->[0], 100 )
             or die "failed to open FastCGI socket: $!";
         unless ($self->{leave_umask}) {
             umask($old_umask);
@@ -58,15 +58,15 @@ sub run {
             Plack::Util::load_class($self->{manager});
             $proc_manager = $self->{manager}->new({
                 n_processes => $self->{nproc},
-                pid_fname   => $self->{pidfile},
+                pid_fname   => $self->{pid},
             });
 
             # detach *before* the ProcManager inits
-            $self->daemon_detach if $self->{detach};
+            $self->daemon_detach if $self->{daemonize};
 
             $proc_manager->pm_manage;
         }
-        elsif ($self->{detach}) {
+        elsif ($self->{daemonize}) {
             $self->daemon_detach;
         }
     }
@@ -163,15 +163,20 @@ __END__
 
 =head1 SYNOPSIS
 
-    my $server = Plack::Handler::FCGI->new(
-        nproc  => $num_proc,
-        listen => $listen,
-        detach => 1,
-    );
-    $server->run($app);
+  # Run as a standalone daemon
+  plackup -s FCGI --listen /tmp/fcgi.sock --daemonize --nproc 10
 
-Starts the FastCGI server.  If C<$listen> is set, then it specifies a
-location to listen for FastCGI requests;
+  # Run from your web server like mod_fastcgi
+  #!/usr/bin/env plackup -s FCGI
+  my $app = sub { ... };
+
+  # Roll your own
+  my $server = Plack::Handler::FCGI->new(
+      nproc  => $num_proc,
+      listen => $listen,
+      detach => 1,
+  );
+  $server->run($app);
 
 =head2 OPTIONS
 
@@ -200,7 +205,7 @@ Do not allow the listener to be interrupted by Ctrl+C
 
 Specify a number of processes for FCGI::ProcManager
 
-=item pidfile
+=item pid
 
 Specify a filename for the pid file
 
@@ -208,9 +213,9 @@ Specify a filename for the pid file
 
 Specify a FCGI::ProcManager sub-class
 
-=item detach
+=item daemonize
 
-Detach from console
+Daemonize the process.
 
 =item keep-stderr
 

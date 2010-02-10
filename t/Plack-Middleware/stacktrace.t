@@ -2,13 +2,19 @@ use strict;
 use warnings;
 use Test::More;
 use Plack::Middleware::StackTrace;
+use Plack::Test;
+use HTTP::Request::Common;
 
-my $handler = Plack::Middleware::StackTrace->wrap(sub { die "orz" });
-my $res = $handler->(+{});
-is scalar(@$res), 3;
-is $res->[0], 500;
-is_deeply $res->[1], ['Content-Type' => 'text/html; charset=utf-8'];
-like $res->[2]->[0], qr/orz/;
+my $app = Plack::Middleware::StackTrace->wrap(sub { die "orz" });
+
+test_psgi $app, sub {
+    my $cb = shift;
+    my $res = $cb->(GET "/");
+
+    ok $res->is_error;
+    is_deeply [ $res->content_type ], [ 'text/html', 'charset=utf-8' ];
+    like $res->content, qr/orz/;
+};
 
 done_testing;
 

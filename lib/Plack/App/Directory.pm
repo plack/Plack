@@ -3,9 +3,9 @@ use parent qw(Plack::App::File);
 use strict;
 use warnings;
 use Plack::Util;
-use Path::Class;
 use HTTP::Date;
 use Plack::MIME;
+use DirHandle;
 
 # Stolen from rack/directory.rb
 my $dir_file = "<tr><td class='name'><a href='%s'>%s</a></td><td class='size'>%s</td><td class='type'>%s</td><td class='mtime'>%s</td></tr>";
@@ -42,31 +42,34 @@ sub should_handle {
 }
 
 sub serve_path {
-    my($self, $env, $file, $fullpath) = @_;
+    my($self, $env, $dir, $fullpath) = @_;
 
-    if (-f $file) {
-        return $self->SUPER::serve_path($env, $file, $fullpath);
+    if (-f $dir) {
+        return $self->SUPER::serve_path($env, $dir, $fullpath);
     }
-
-    my $dir = dir($file);
 
     my @files = ([ "../", "Parent Directory", '', '', '' ]);
 
-    my @children = map { [ ($_->is_dir ? ($_->dir_list)[-1] : $_->basename), $_ ] } $dir->children;
+    my $dh = DirHandle->new($dir);
+    my @children;
+    while (defined(my $ent = $dh->read)) {
+        push @children, $ent;
+    }
 
-    for my $child (sort { $a->[0] cmp $b->[0] } @children) {
-        my($basename, $file) = @$child;
+    for my $basename (sort { $a cmp $b } @children) {
+        my $file = "$dir/$basename";
         my $url = $env->{SCRIPT_NAME} . $env->{PATH_INFO} . $basename;
 
-        if ($file->is_dir) {
+        my $is_dir = -d $file;
+        my @stat = stat _;
+
+        if ($is_dir) {
             $basename .= "/";
             $url      .= "/";
         }
 
-        my $mime_type = $file->is_dir ? 'directory' : ( Plack::MIME->mime_type($file) || 'text/plain' );
-        my $stat = $file->stat;
-
-        push @files, [ $url, $basename, $stat->size, $mime_type, HTTP::Date::time2str($stat->mtime) ];
+        my $mime_type = $is_dir ? 'directory' : ( Plack::MIME->mime_type($file) || 'text/plain' );
+        push @files, [ $url, $basename, $stat[7], $mime_type, HTTP::Date::time2str($stat[9]) ];
     }
 
     my $path  = Plack::Util::encode_html("Index of $env->{PATH_INFO}");

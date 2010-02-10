@@ -4,6 +4,8 @@ use warnings;
 use parent qw/Plack::App::File/;
 use Plack::Util;
 
+sub allow_path_info { 1 }
+
 sub serve_path {
     my($self, $env, $file) = @_;
 
