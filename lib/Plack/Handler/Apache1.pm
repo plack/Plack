@@ -126,6 +126,23 @@ Plack::Handler::Apache1 - Apache 1.3.x handlers to run PSGI application
   Plack::Handler::Apache1->preload("/path/to/app.psgi");
   </Perl>
 
+=head1 DESCRIPTION
+
+This is a handler module to run any PSGI application with mod_perl on Apache 1.3.x.
+If you want to run a PSGI application as a CGI script, see L<Plack::Handler::CGI> instead.
+
+=head1 SEE ALSO
+
+=over
+
+=item L<Plack> - provides overview and documents the .psgi file format.
+
+=item L<Plack::Handler> - defines this handler's API.
+
+=item L<Plack::Handler::Apache2> - same idea, for Apache 2.x
+
+=back
+
 =head1 AUTHOR
 
 Aaron Trevena

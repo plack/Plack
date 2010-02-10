@@ -117,7 +117,14 @@ This is a handler module to run any PSGI application as a CGI script.
 
 =head1 SEE ALSO
 
-L<Plack::Handler>
+=over
+
+=item L<Plack> - provides overview and documents the .psgi file format.
+
+=item L<Plack::Handler> - defines this handler's API.
+
+=back
+
 
 =cut
 

@@ -292,3 +292,19 @@ C<SCRIPT_NAME> and C<PATH_INFO> setting when you set I<check-local> to
 C<disable> so both configurations (root or non-root) should work fine.
 
 =cut
+
+=head1 DESCRIPTION
+
+This is a handler module to run any PSGI application with mod_perl on Apache 1.3.x.
+If you want to run a PSGI application as a CGI script, see L<Plack::Handler::CGI> instead.
+
+=head1 SEE ALSO
+
+=over
+
+=item L<Plack> - provides overview and documents the .psgi file format.
+
+=item L<Plack::Handler> - defines this handler's API.
+
+=back
+
