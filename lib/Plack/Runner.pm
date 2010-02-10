@@ -75,6 +75,11 @@ sub parse_options {
     $self->{argv}    = \@argv;
 }
 
+sub set_options {
+    my $self = shift;
+    push @{$self->{options}}, @_;
+}
+
 sub mangle_host_port_socket {
     my($self, $host, $port, $socket, @listen) = @_;
 
