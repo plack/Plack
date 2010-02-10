@@ -33,7 +33,7 @@ plan tests => 2 * @tests;
 
 for my $block (@tests) {
     my $handler = builder {
-        enable "Plack::Middleware::Writer";
+        enable "BufferedStreaming";
         $block->{app};
     };
     my $res = $handler->($block->{env});

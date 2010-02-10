@@ -3,11 +3,11 @@ use strict;
 use parent qw(Plack::Loader);
 use Storable;
 use Try::Tiny;
-use Plack::Middleware::Writer;
+use Plack::Middleware::BufferedStreaming;
 
 sub preload_app {
     my($self, $builder) = @_;
-    $self->{builder} = sub { Plack::Middleware::Writer->wrap($builder->()) };
+    $self->{builder} = sub { Plack::Middleware::BufferedStreaming->wrap($builder->()) };
 }
 
 sub run {
