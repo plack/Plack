@@ -134,6 +134,7 @@ sub accept_loop {
                     'psgi.multiprocess' => $self->{prefork},
                     'psgi.streaming'    => Plack::Util::TRUE,
                     'psgi.nonblocking'  => Plack::Util::FALSE,
+                    'psgix.input.buffered' => Plack::Util::TRUE,
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server
@@ -186,11 +187,9 @@ sub handle_connection {
                     $cl -= length $chunk;
                 }
                 $env->{'psgi.input'} = $buffer->rewind;
-                $env->{'psgix.input.buffered'} = 1;
             } else {
                 open my $input, "<", \$buf;
                 $env->{'psgi.input'} = $input;
-                $env->{'psgix.input.buffered'} = 1;
             }
 
             $res = Plack::Util::run_app $app, $env;
