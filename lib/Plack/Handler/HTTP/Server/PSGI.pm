@@ -74,18 +74,14 @@ Max requests per a keep-alive request. Defaults to 100.
 
 =back
 
-=head1 SEE ALSO
-
-=over
-
-=item L<Plack> - provides overview and documents the .psgi file format.
-
-=back
-
 =head1 AUTHOR
 
 Kazuho Oku
 
 Tatsuhiko Miyagawa
+
+=head1 SEE ALSO
+
+L<Plack> L<HTTP::Server::PSGI>
 
 =cut

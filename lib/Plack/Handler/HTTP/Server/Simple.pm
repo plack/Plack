@@ -53,17 +53,6 @@ applications on L<HTTP::Server::Simple>.
 
 L<Plack>, L<HTTP::Server::Simple::PSGI>
 
-=head1 SEE ALSO
-
-=over
-
-=item L<Plack> - provides overview and documents the .psgi file format.
-
-=item L<HTTP::Server::Simple::PSGI> - a HTTP::Server::Simple based HTTP server that can run PSGI applications.
-
-=back
-
-
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa

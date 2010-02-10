@@ -178,6 +178,12 @@ __END__
   );
   $server->run($app);
 
+
+=head1 DESCRIPTION
+
+This is a handler module to run any PSGI application as a standalone
+FastCGI daemon or a .fcgi script.
+
 =head2 OPTIONS
 
 =over 4
@@ -293,16 +299,9 @@ C<disable> so both configurations (root or non-root) should work fine.
 
 =cut
 
-=head1 DESCRIPTION
-
-This is a handler module to run any PSGI application with mod_perl on Apache 1.3.x.
-If you want to run a PSGI application as a CGI script, see L<Plack::Handler::CGI> instead.
-
 =head1 SEE ALSO
 
-=over
+L<Plack>
 
-=item L<Plack> - provides overview and documents the .psgi file format.
-
-=back
+=cut
 
