@@ -42,7 +42,7 @@ sub parse_options {
         "s|server=s"   => \$self->{server},
         "S|socket=s"   => \$socket,
         'l|listen=s@'  => \@listen,
-        'D|damonize'   => \$self->{daemonize},
+        'D|daemonize'  => \$self->{daemonize},
         "E|env=s"      => \$self->{env},
         "e=s"          => \$self->{eval},
         'I=s@'         => $self->{includes},
