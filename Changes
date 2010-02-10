@@ -12,7 +12,7 @@ Take a look at http://github.com/miyagawa/Plack/issues for the planned changes b
         - Support streaming apps in Shotgun loader
         - Falls back to Standalone handler when auto-detected backend is not available (hiratara)
         - Support chunked-input in HTTP::Request->to_psgi
-        - Make the Realoder work with preforked server (chiba)
+        - Make the Reloader work with preforked server (chiba)
         - Added 'Auto' backend in TempBuffer
         - Added Nomo backend to the benchmark script
         - Updated HTTP::Server::PSGI to support experimental psgix.input.buffered
