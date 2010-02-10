@@ -185,10 +185,12 @@ sub handle_connection {
                     $buffer->print($chunk);
                     $cl -= length $chunk;
                 }
-                $env->{'psgix.input.buffered'} = $env->{'psgi.input'} = $buffer->rewind;
+                $env->{'psgi.input'} = $buffer->rewind;
+                $env->{'psgix.input.buffered'} = 1;
             } else {
                 open my $input, "<", \$buf;
-                $env->{'psgix.input.buffered'} = $env->{'psgi.input'} = $input;
+                $env->{'psgi.input'} = $input;
+                $env->{'psgix.input.buffered'} = 1;
             }
 
             $res = Plack::Util::run_app $app, $env;

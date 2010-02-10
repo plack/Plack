@@ -86,12 +86,12 @@ sub query_parameters {
 sub content {
     my $self = shift;
 
-    unless ($self->env->{'plack.request.tempfh'}) {
+    unless ($self->env->{'psgix.input.buffered'}) {
         $self->_parse_request_body;
     }
 
-    my $fh = $self->env->{'plack.request.tempfh'} or return '';
-    $fh->read(my($content), $self->content_length);
+    my $fh = $self->input or return '';
+    $fh->read(my($content), $self->content_length || 0, 0);
     $fh->seek(0, 0);
 
     return $content;
@@ -257,7 +257,7 @@ sub _parse_request_body {
     my $input = $self->input;
 
     my $buffer;
-    unless ($self->env->{'plack.request.tempfh'}) {
+    unless ($self->env->{'psgix.input.buffered'}) {
         $buffer = Plack::TempBuffer->new($cl);
     }
 
@@ -275,7 +275,10 @@ sub _parse_request_body {
     }
 
     if ($buffer) {
-        $self->env->{'plack.request.tempfh'} = $self->env->{'psgi.input'} = $buffer->rewind;
+        $self->env->{'psgix.input.buffered'} = 1;
+        $self->env->{'psgi.input'} = $buffer->rewind;
+    } else {
+        $input->seek(0, 0);
     }
 
     $self->env->{'plack.request.body'}   = Hash::MultiValue->from_mixed($body->param);
