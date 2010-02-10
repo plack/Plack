@@ -109,6 +109,11 @@ Addresses to listen on. It could be "HOST:PORT", ":PORT" or "PATH"
 (without colons). It could be multiple but it depends on the server
 implementations whether multiple interfaces are supported.
 
+=item -D, --daemonize
+
+Makes the process go background. It's up to the backend server/handler
+implementation whether this option is respected or not.
+
 =item -I
 
 Specify perl library include path, like C<perl>'s -I option.
