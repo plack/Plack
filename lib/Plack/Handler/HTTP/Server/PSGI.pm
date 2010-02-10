@@ -25,7 +25,7 @@ __END__
 
 =head1 NAME
 
-Plack::Handler::HTTP::Server::PSGI - adapter for HTTP:::Server::PSGI
+Plack::Handler::HTTP::Server::PSGI - adapter for HTTP::Server::PSGI
 
 =head1 SYNOPSIS
 
@@ -71,6 +71,14 @@ Number of requests per worker to process. Defaults to 100.
 =item max-keepalive-reqs
 
 Max requests per a keep-alive request. Defaults to 100.
+
+=back
+
+=head1 SEE ALSO
+
+=over
+
+=item L<Plack> - provides overview and documents the .psgi file format.
 
 =back
 
