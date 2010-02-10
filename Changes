@@ -2,6 +2,24 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.99_05 Wed Feb 10 12:46:05 PST 2010
+        - Changed the Loader command line options to -L from -l
+        - Runner now folds --host, --port and --socket to --listen and vice verca
+        - Added -D and --daemonize to plackup/Runner standard options
+        - Fixed FCGI handler to work with the new --listen and --daemonize option
+        - Fixed a bug in static.t where it chdir's before loading modules
+        - Renamed Writer to BufferedStreaming middleware and added docs
+        - Support streaming apps in Shotgun loader
+        - Falls back to Standalone handler when auto-detected backend is not available (hiratara)
+        - Support chunked-input in HTTP::Request->to_psgi
+        - Make the Realoder work with preforked server (chiba)
+        - Added 'Auto' backend in TempBuffer
+        - Added Nomo backend to the benchmark script
+        - Updated HTTP::Server::PSGI to support experimental psgix.input.buffered
+        - Plack::Request now honors psgix.input.buffered to see psgi.input is seekable
+        - Renamed Standalone handler to HTTP::Server::PSGI for consistency while keeping
+          'Standalone' as a nickname
+
 0.99_04 Fri Feb  5 23:10:48 PST 2010
         - Updated Test suite for multiple request headers to relax a bit for AE::HTTPD
         - Added a test for large POST body which revealed FCGI::Client bug
