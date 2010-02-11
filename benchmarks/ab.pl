@@ -23,7 +23,7 @@ my @try = (
     [ 'Coro' ],
     [ 'Danga::Socket' ],
     [ 'POE' ],
-    [ 'Nomo' ],
+    [ 'Starman' ],
 );
 
 my @backends;
