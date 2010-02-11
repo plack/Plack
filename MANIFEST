@@ -71,7 +71,6 @@ lib/Plack/Handler/Standalone.pm
 lib/Plack/HTTPParser.pm
 lib/Plack/HTTPParser/PP.pm
 lib/Plack/Loader.pm
-lib/Plack/Loader/GatewayCGI.pm
 lib/Plack/Loader/Restarter.pm
 lib/Plack/Loader/Shotgun.pm
 lib/Plack/Middleware.pm
