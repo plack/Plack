@@ -95,7 +95,7 @@ change the shebang line like:
   #!/usr/bin/env plackup
   # rest of the file can be the same as other .psgi file
 
-You can alternatively create a file that contains something like:
+You can alternatively create a .cgi file that contains something like:
 
   #!/usr/bin/perl
   use Plack::Loader;
@@ -104,9 +104,9 @@ You can alternatively create a file that contains something like:
 
 This will auto-recognize the CGI environment variable to load this class.
 
-If you really want to explicitly load the CGI handler, for instance
-when you want to embed a PSGI application server built into
-CGI-compatible perl based web server:
+If you really want to explicitly load the CGI handler, you can. For instance
+you might do this when you want to embed a PSGI application server built into
+CGI-compatible perl-based web server:
 
   use Plack::Handler::CGI;
   Plack::Handler::CGI->new->run($app);
