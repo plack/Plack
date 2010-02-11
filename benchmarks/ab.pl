@@ -15,15 +15,15 @@ my $ab  = 'ab -t 1 -c 10 -k';
 my $url = 'http://127.0.0.1/';
 
 my @try = (
-    [ 'AnyEvent' ],
     [ 'AnyEvent::HTTPD' ],
-    [ 'Standalone' ],
-    [ 'Standalone', max_workers => 10 ],
+    [ 'HTTP::Server::PSGI' ],
+    [ 'HTTP::Server::PSGI', ' (workers=10)', max_workers => 10 ],
+    [ 'Twiggy' ],
     [ 'HTTP::Server::Simple' ],
     [ 'Coro' ],
     [ 'Danga::Socket' ],
     [ 'POE' ],
-    [ 'Starman' ],
+    [ 'Starman', ' (workers=10)', workers => 10 ],
 );
 
 my @backends;
@@ -56,8 +56,8 @@ EOF
 }
 
 sub run_one {
-    my($server_class, @args) = @_;
-    print "-- server: $server_class\n";
+    my($server_class, $how, @args) = @_;
+    print "-- server: $server_class ", ($how || ''), "\n";
 
     test_tcp(
         client => sub {
