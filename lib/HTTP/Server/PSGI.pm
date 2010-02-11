@@ -135,6 +135,7 @@ sub accept_loop {
                     'psgi.streaming'    => Plack::Util::TRUE,
                     'psgi.nonblocking'  => Plack::Util::FALSE,
                     'psgix.input.buffered' => Plack::Util::TRUE,
+                    'psgix.io'          => $conn,
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server
