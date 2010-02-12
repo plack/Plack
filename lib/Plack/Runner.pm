@@ -8,7 +8,7 @@ use Try::Tiny;
 sub new {
     my $class = shift;
     bless {
-        env  => 'development',
+        env      => $ENV{PLACK_ENV},
         loader   => 'Plack::Loader',
         includes => [],
         modules  => [],
@@ -210,7 +210,8 @@ sub run {
 
     my $app = $self->locate_app(@args);
 
-    if ($self->{env} eq 'development') {
+    $ENV{PLACK_ENV} ||= $self->{env} || 'development';
+    if ($ENV{PLACK_ENV} eq 'development') {
         $app = $self->prepare_devel($app);
     }
 

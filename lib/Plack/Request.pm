@@ -257,7 +257,10 @@ sub _parse_request_body {
     my $input = $self->input;
 
     my $buffer;
-    unless ($self->env->{'psgix.input.buffered'}) {
+    if ($self->env->{'psgix.input.buffered'}) {
+        # Just in case if input is read by middleware/apps beforehand
+        $input->seek(0, 0);
+    } else {
         $buffer = Plack::TempBuffer->new($cl);
     }
 

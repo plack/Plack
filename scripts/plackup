@@ -124,9 +124,21 @@ Specify modules to load before loading the app code.
 
 =item -E, --env
 
-Specify the environment option (default is C<development>). If it's
-set to C<development>, following middleware is enabled by default:
-L<AccessLog>, L<StackTrace>.
+Specify the environment option (default is C<development>). You can
+set this value by setting C<PLACK_ENV> environment variable as well,
+and specifying the value with the command line options writes back to
+C<PLACK_ENV> as well, so applications or frameworks can tell which
+environment setting the application is running on.
+
+  # These two are the same
+  plackup -E production
+  env PLACK_ENV=production plackup
+
+The value can be anything but commonly used ones are C<development>,
+C<production> and C<test>.
+
+If it's set to C<development>, following middleware is enabled by
+default: L<AccessLog>, L<StackTrace>.
 
 =item -r, --reload
 
