@@ -2,8 +2,6 @@ package Plack::Middleware::StackTrace;
 use strict;
 use warnings;
 use parent qw/Plack::Middleware/;
-use Plack;
-use Plack::Util;
 use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
 use Try::Tiny;
