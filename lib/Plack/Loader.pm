@@ -65,7 +65,7 @@ sub guess {
     } elsif ($ENV{GATEWAY_INTERFACE}) {
         return "CGI";
     } elsif (exists $INC{"AnyEvent.pm"}) {
-        return "AnyEvent";
+        return "Twiggy";
     } elsif (exists $INC{"Coro.pm"}) {
         return "Coro";
     } elsif (exists $INC{"POE.pm"}) {
