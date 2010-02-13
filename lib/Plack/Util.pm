@@ -3,6 +3,7 @@ use strict;
 use Carp ();
 use Scalar::Util;
 use IO::Handle;
+use overload ();
 
 sub TRUE()  { 1==1 }
 sub FALSE() { !TRUE }
