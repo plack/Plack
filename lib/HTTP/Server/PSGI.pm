@@ -350,12 +350,14 @@ HTTP::Server::PSGI is a standalone, single-process and PSGI compatible
 HTTP server implementations. It runs reasonably fast and HTTP/1.0 and
 Keep-Alive requests are supported.
 
-This server should be great for the development and testing, but not
-suitable for production. See L<HTTP::Server::PSGI::Prefork> if you
-want a multi-process prefork server.
+This server should be great for the development and testig, but might
+not be suitable for production.
 
 Some features in HTTP/1.1, notably chunked requests, responses and
 pipeline requests are B<NOT> supported yet.
+
+See L<Starman> if you want a multi-process prefork server with some
+HTTP/1.1 features support.
 
 =head1 AUTHOR
 
