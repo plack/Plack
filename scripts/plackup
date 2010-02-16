@@ -131,11 +131,11 @@ C<PLACK_ENV> as well, so applications or frameworks can tell which
 environment setting the application is running on.
 
   # These two are the same
-  plackup -E production
-  env PLACK_ENV=production plackup
+  plackup -E deployment
+  env PLACK_ENV=deployment plackup
 
 The value can be anything but commonly used ones are C<development>,
-C<production> and C<test>.
+C<deployment> and C<test>.
 
 If it's set to C<development>, following middleware is enabled by
 default: L<AccessLog>, L<StackTrace>.
