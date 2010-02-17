@@ -2,6 +2,7 @@ package Plack::Middleware::HTTPExceptions;
 use strict;
 use parent qw(Plack::Middleware);
 
+use Carp ();
 use Try::Tiny;
 use Scalar::Util 'blessed';
 use HTTP::Status ();
@@ -15,7 +16,24 @@ sub call {
         $self->transform_error($_);
     };
 
-    return $res;
+    return $res if ref $res eq 'ARRAY';
+
+    return sub {
+        my $respond = shift;
+
+        my $writer;
+        try {
+            $res->(sub { return $writer = $respond->(@_) });
+        } catch {
+            if ($writer) {
+                Carp::cluck $_;
+                $writer->close;
+            } else {
+                my $res = $self->transform_error($_);
+                $respond->($res);
+            }
+        };
+    };
 }
 
 sub transform_error {
