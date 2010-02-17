@@ -10,7 +10,7 @@ my $app = sub {
     my $env = shift;
 
     if ($env->{PATH_INFO} eq '/forwarded') {
-        is $env->{'plack.recursive.old_path_info'}, '/';
+        is_deeply $env->{'plack.recursive.old_path_info'}, [ '/' ];
         return [ 200, [ 'Content-Type', 'text/plain' ], [ "Hello $env->{QUERY_STRING}" ] ];
     }
 

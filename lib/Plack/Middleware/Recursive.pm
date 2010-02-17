@@ -10,21 +10,37 @@ open my $null_io, "<", \"";
 sub call {
     my($self, $env) = @_;
 
-    $env->{'plack.recursive.include'} = $self->recurse_callback($env);
+    $env->{'plack.recursive.include'} = $self->recurse_callback($env, 1);
 
     my $res = try {
         $self->app->($env);
     } catch {
         if (blessed $_ && $_->isa('Plack::Recursive::ForwardRequest')) {
-            return $env->{'plack.recursive.include'}->($_->path);
+            return $self->recurse_callback($env)->($_->path);
         }
     };
 
-    return $res;
+    return $res if ref $res eq 'ARRAY';
+
+    return sub {
+        my $respond = shift;
+
+        my $writer;
+        try {
+            $res->(sub { return $writer = $respond->(@_) });
+        } catch {
+            if (!$writer && blessed $_ && $_->isa('Plack::Recursive::ForwardRequest')) {
+                $res = $self->recurse_callback($env)->($_->path);
+                return ref $res eq 'CODE' ? $res->($respond) : $respond->($res);
+            } else {
+                die $_;
+            }
+        };
+    };
 }
 
 sub recurse_callback {
-    my($self, $env) = @_;
+    my($self, $env, $include) = @_;
 
     my $old_path_info = $env->{PATH_INFO};
 
@@ -40,9 +56,9 @@ sub recurse_callback {
         $env->{CONTENT_LENGTH} = 0;
         $env->{CONTENT_TYPE}   = '';
         $env->{'psgi.input'}   = $null_io;
-        $env->{'plack.recursive.old_path_info'} = $old_path_info;
+        push @{$env->{'plack.recursive.old_path_info'}}, $old_path_info;
 
-        $self->app->($env);
+        $include ? $self->app->($env) : $self->call($env);
     };
 }
 
