@@ -65,6 +65,7 @@ sub run_one {
             my $uri = URI->new($url);
             $uri->port($port);
             $uri = shell_quote($uri);
+            system "ab -n 20 $uri > /dev/null"; # warmup
             print `$ab $uri | grep 'Requests per '`;
         },
         server => sub {
