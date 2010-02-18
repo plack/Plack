@@ -5,6 +5,7 @@ use 5.008_001;
 our $VERSION = '0.99_05';
 $VERSION = eval $VERSION;
 
+use Encode;
 use HTTP::Headers;
 use Carp ();
 use Hash::MultiValue;
@@ -22,11 +23,61 @@ sub _deprecated {
 }
 
 sub new {
-    my($class, $env) = @_;
+    my($class, $env, %options) = @_;
     Carp::croak(q{$env is required})
         unless defined $env && ref($env) eq 'HASH';
 
-    bless { env => $env }, $class;
+    my $self = bless { env => $env }, $class;
+    $self->default_charset($options{default_charset})
+        if $options{default_charset};
+
+    $self;
+}
+
+sub default_charset {
+    my $self = shift;
+    if (@_) {
+        $self->{default_charset} = shift;
+        $self->_update_charset;
+    }
+    $self->{default_charset} ||= 'utf-8';
+}
+
+sub charset {
+    my $self = shift;
+    if (@_) {
+        $self->{charset} = shift;
+        $self->_update_charset;
+    } else {
+        $self->{charset} ||= $self->default_charset;
+    }
+    $self->{charset} eq 'none' ? undef : $self->{charset};
+}
+
+sub binary {
+    my $self = shift;
+    !defined $self->charset;
+}
+
+sub _update_charset {
+    my $self = shift;
+
+    for my $h (@{$self->env}{qw( plack.request.merged plack.request.body plack.request.query )}) {
+        if (defined $h) {
+            warn $self->charset;
+            my @p = $self->_decode($h->flatten); # TODO $h is already decoded
+            $h = Hash::MultiValue->new(@p);
+        }
+    }
+}
+
+sub _decode {
+    my $self = shift;
+    if ($self->binary) {
+        return @_;
+    } else {
+        return map Encode::decode($self->charset, $_), @_;
+    }
 }
 
 sub env { $_[0]->{env} }
@@ -80,7 +131,7 @@ sub cookies {
 
 sub query_parameters {
     my $self = shift;
-    $self->env->{'plack.request.query'} ||= Hash::MultiValue->new($self->uri->query_form);
+    $self->env->{'plack.request.query'} ||= Hash::MultiValue->new( $self->_decode($self->uri->query_form) );
 }
 
 sub content {
@@ -251,6 +302,10 @@ sub _parse_request_body {
         return;
     }
 
+    if (my $charset = $self->headers->content_type_charset) {
+        $self->charset($charset) unless $self->binary;
+    }
+
     # Do not use ->content_type to get multipart boundary correctly
     my $body = HTTP::Body->new($ct, $cl);
 
@@ -284,7 +339,8 @@ sub _parse_request_body {
         $input->seek(0, 0);
     }
 
-    $self->env->{'plack.request.body'}   = Hash::MultiValue->from_mixed($body->param);
+    my @param = Hash::MultiValue->from_mixed($body->param)->flatten;
+    $self->env->{'plack.request.body'} = Hash::MultiValue->new( $self->_decode(@param) );
 
     my @uploads = Hash::MultiValue->from_mixed($body->upload)->flatten;
     my @obj;
@@ -451,16 +507,37 @@ strings that are sent by clients and are URI decoded.
 Returns a reference to a hash containing query string (GET)
 parameters. This hash reference is L<Hash::MultiValue> object.
 
+Parameters are decoded based on I<charset> of the request. See
+L</"Handling parameter encodings"> for details.
+
 =item body_parameters
 
 Returns a reference to a hash containing posted parameters in the
 request body (POST). Similarly to C<query_parameters>, the hash
 reference is a L<Hash::MultiValue> object.
 
+Parameters are decoded based on I<charset> of the request. See
+L</"Handling parameter encodings"> for details.
+
 =item parameters
 
 Returns a L<Hash::MultiValue> hash reference containing (merged) GET
 and POST parameters.
+
+Parameters are decoded based on I<charset> of the request. See
+L</"Handling parameter encodings"> for details.
+
+=item charset, default_charset, binary
+
+  my $req = Plack::Request->new($env, default_charset => "none");
+  $req->default_charset("shift_jis");
+
+  my $charset = $req->charset;
+  my $binary  = $req->binary;
+
+Gets and sets current encoding of request parameters as well as the
+default character set. C<default_charset> defaults to I<utf-8>. See
+L</"Handling parameter encodings"> for details.
 
 =item content, raw_body
 
@@ -552,6 +629,39 @@ in web application frameworks, as well as overriding Response
 generation in middlewares.
 
 =back
+
+=head2 Handling parameter encodings
+
+Plack::Request by default automatically decodes query and body
+parameters. The default encodings (charsets) are determined with the
+following order:
+
+=over 4
+
+=item *
+
+If there's a request body and C<Content-Type> header has a C<charset>
+attribute in it, the value is parsed and used.
+
+=item *
+
+Use C<charset> attribute set in the Request object.
+
+=item *
+
+Finally falls back to C<default_charset> attribute in the request
+object, which defaults to I<utf-8>.
+
+=cut
+
+So, most of the cases Plack::Request automatically decodes query and
+body parameters as UTF-8. To suppress that, you can set the special
+value C<none> to C<default_charset> before parsing it.
+
+  my $req = Plack::Request->new($env, default_charset => 'none');
+  # Or $req->default_charset('none')
+
+And all parameters are returned in the raw encodings (bytes).
 
 =head2 Hash::MultiValue parameters
 
