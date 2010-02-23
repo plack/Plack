@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9911  Tue Feb 23 01:55:04 PST 2010
+        - Removed psgix.io extension to fix streaming choke issue on HTTP::Server::PSGI (tomyhero)
+
 0.9910  Mon Feb 22 19:03:17 PST 2010
         - This is the first non-dev release since 0.99. Read all the change logs below.
         - Support streaming in JSONP (hiratara)
