@@ -2,6 +2,18 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9910  Mon Feb 22 19:03:17 PST 2010
+        - This is the first non-dev release since 0.99. Read all the change logs below.
+        - Support streaming in JSONP (hiratara)
+        - Fixed various handler docs (markstos)
+        - Added Starman and Twiggy to benchmark script
+        - INCOMPATIBLE: Loader now prefers Twiggy when AnyEvent is loaded
+        - Implemented (experimental) psgix.io and psgix.input.buffered extensions
+        - Fixed Plack::Request POST parser to use psgix.input.buffered for better performance
+        - Added PLACK_ENV environment support in plackup #63
+        - Added HTTPExceptions middleware
+        - Added Recursive middleware
+
 0.99_05 Wed Feb 10 12:46:05 PST 2010
         - Changed the Loader command line options to -L from -l
         - Runner now folds --host, --port and --socket to --listen and vice verca

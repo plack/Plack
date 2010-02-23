@@ -84,6 +84,7 @@ lib/Plack/Middleware/ConditionalGET.pm
 lib/Plack/Middleware/ContentLength.pm
 lib/Plack/Middleware/ContentMD5.pm
 lib/Plack/Middleware/ErrorDocument.pm
+lib/Plack/Middleware/HTTPExceptions.pm
 lib/Plack/Middleware/JSONP.pm
 lib/Plack/Middleware/Lint.pm
 lib/Plack/Middleware/Log4perl.pm
@@ -91,6 +92,7 @@ lib/Plack/Middleware/LogDispatch.pm
 lib/Plack/Middleware/MethodOverride.pm
 lib/Plack/Middleware/NullLogger.pm
 lib/Plack/Middleware/RearrangeHeaders.pm
+lib/Plack/Middleware/Recursive.pm
 lib/Plack/Middleware/Refresh.pm
 lib/Plack/Middleware/Runtime.pm
 lib/Plack/Middleware/SimpleContentFilter.pm
@@ -166,6 +168,8 @@ t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html
 t/Plack-Middleware/file.t
 t/Plack-Middleware/htpasswd
+t/Plack-Middleware/httpexceptions.t
+t/Plack-Middleware/httpexceptions_streaming.t
 t/Plack-Middleware/jsonp.t
 t/Plack-Middleware/lint.t
 t/Plack-Middleware/log4perl.t
@@ -175,6 +179,10 @@ t/Plack-Middleware/order.t
 t/Plack-Middleware/prefix.t
 t/Plack-Middleware/psgibin.t
 t/Plack-Middleware/rearrange_headers.t
+t/Plack-Middleware/recursive/base.t
+t/Plack-Middleware/recursive/streaming.t
+t/Plack-Middleware/recursive/throw.t
+t/Plack-Middleware/recursive/throw_streaming.t
 t/Plack-Middleware/runtime.t
 t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/simple_logger.t
