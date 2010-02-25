@@ -160,6 +160,7 @@ t/Plack-Middleware/cgi-bin/hello2.cgi
 t/Plack-Middleware/cgi-bin/hello3.cgi
 t/Plack-Middleware/cgibin.t
 t/Plack-Middleware/chunked.t
+t/Plack-Middleware/component-leak.t
 t/Plack-Middleware/conditional.t
 t/Plack-Middleware/conditionalget.t
 t/Plack-Middleware/content_length.t

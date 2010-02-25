@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9912  Thu Feb 25 01:28:21 PST 2010
+        - Fixed the possible source of memory leak in middleware + streamer + HTTP::Server::PSGI
+          with perl 5.8.x (hiratara)
+
 0.9911  Tue Feb 23 01:55:04 PST 2010
         - Removed psgix.io extension to fix streaming choke issue on HTTP::Server::PSGI (tomyhero)
 
