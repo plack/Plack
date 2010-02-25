@@ -75,7 +75,7 @@ sub response_cb {
     } elsif (ref $res eq 'CODE') {
         return sub {
             my $respond = shift;
-            my $cb = $cb;  # To avoid the nested closure leek for 5.8.x
+            my $cb = $cb;  # To avoid the nested closure leak for 5.8.x
             $res->(sub {
                 my $res = shift;
                 my $filter_cb = $body_filter->($cb, $res);
