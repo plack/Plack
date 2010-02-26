@@ -6,27 +6,27 @@ use Scalar::Util qw/weaken/;
 use parent 'Plack::Component';
 
 sub call {
-	my $self = shift;
-	my $env = shift;
+    my $self = shift;
+    my $env = shift;
 
-	if( $env->{PATH_INFO} eq '/run_response_cb' ){
-		# Record $res and $cb
-		$self->{res} = [200, ['Content-Type' => 'text/plain'], ['OK']];
-		$self->{cb}  = sub { $env }; # Contain $env to be regard as a closure.
+    if( $env->{PATH_INFO} eq '/run_response_cb' ){
+        # Record $res and $cb
+        $self->{res} = [200, ['Content-Type' => 'text/plain'], ['OK']];
+        $self->{cb}  = sub { $env }; # Contain $env to be regard as a closure.
 
-		return $self->response_cb($self->{res}, $self->{cb});
-	}else{
-		# Decrease REFCNT
-		weaken $self->{res};
-		weaken $self->{cb};
+        return $self->response_cb($self->{res}, $self->{cb});
+    }else{
+        # Decrease REFCNT
+        weaken $self->{res};
+        weaken $self->{cb};
 
-		# Check if references are released.
-		return [ 200, [
-			'Content-Type' => 'text/plain',
-			'X-Res-Freed'  => ! $self->{res},
-			'X-Cb-Freed'   => ! $self->{cb},
-		], ['HELLO'] ];
-	}
+        # Check if references are released.
+        return [ 200, [
+            'Content-Type' => 'text/plain',
+            'X-Res-Freed'  => ! $self->{res},
+            'X-Cb-Freed'   => ! $self->{cb},
+        ], ['HELLO'] ];
+    }
 }
 
 
