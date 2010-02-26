@@ -10,9 +10,11 @@ sub call {
     my $env = shift;
 
     if( $env->{PATH_INFO} eq '/run_response_cb' ){
+        my $my;
+
         # Record $res and $cb
         $self->{res} = [200, ['Content-Type' => 'text/plain'], ['OK']];
-        $self->{cb}  = sub { $env }; # Contain $env to be regard as a closure.
+        $self->{cb}  = sub { $my }; # Contain $my to be regard as a closure.
 
         return $self->response_cb($self->{res}, $self->{cb});
     }else{
