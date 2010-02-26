@@ -44,9 +44,6 @@ inc/Module/Install/Scripts.pm
 inc/Module/Install/Share.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-inc/Test/More.pm
-inc/Test/Requires.pm
-inc/Test/TCP.pm
 lib/HTTP/Message/PSGI.pm
 lib/HTTP/Server/PSGI.pm
 lib/Plack.pm
