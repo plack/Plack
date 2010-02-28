@@ -147,6 +147,7 @@ sub accept_loop {
                     or last;
                 # TODO add special cases for clients with broken keep-alive support, as well as disabling keep-alive for HTTP/1.0 proxies
             }
+            $conn->close;
         }
     }
 }
