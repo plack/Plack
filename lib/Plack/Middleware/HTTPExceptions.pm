@@ -68,9 +68,11 @@ Plack::Middleware::HTTPExceptions - Catch HTTP exceptions
 
 =head1 SYNOPSIS
 
+  use HTTP::Exception;
+
   my $app = sub {
       # ...
-      MyHTTPError::BadGateway->throw;
+      HTTP::Exception::500->throw;
   };
 
   builder {
@@ -94,6 +96,10 @@ stringification, to represent the text of the error, which defaults to
 the status message of error codes, such as I<Service Unavailable> for
 C<503>.
 
+There's a CPAN module L<HTTP::Exception> and they are pefect to throw
+from your application to let this middleware catch and display, but
+you can also implement your own exception class to throw.
+
 All the other errors that can't be translated into HTTP errors are
 just rethrown to the outer frame.
 
@@ -103,6 +109,6 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-paste.httpexceptions
+paste.httpexceptions L<HTTP::Exception>
 
 =cut
