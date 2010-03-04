@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9914  Wed Mar  3 16:02:38 PST 2010
+        - Fixed psgix.io and nested closure for perl 5.8 (hiratara)
+        - Added an inheritance friendly Apache2 interface (frodwith)
+        - HTTP::Server::PSGI: Close client connection in the first run (hirose31)
+        - Fixed Loader/auto.t to reset env var (gugod)
+
 0.9913  Thu Feb 25 19:14:40 PST 2010
         - Revive psgix.io in HTTP::Server::PSGI (hiratara)
         - Fix packaging issue
