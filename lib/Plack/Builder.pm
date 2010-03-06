@@ -63,8 +63,10 @@ sub builder(&) {
 
     my $self = __PACKAGE__->new;
 
+    my $mount_is_called;
     my $urlmap = Plack::App::URLMap->new;
     local $_mount = sub {
+        $mount_is_called++;
         $urlmap->map(@_);
         $urlmap;
     };
@@ -76,6 +78,11 @@ sub builder(&) {
     };
 
     my $app = $block->();
+    if ($mount_is_called && $app ne $urlmap) {
+        Carp::carp("You used mount() in builder block but the last line (app) isn't using mount().\n" .
+                       "This causes all mount() mappings ignored. See perldoc Plack::Builder for details.");
+    }
+
     $self->to_app($app);
 }
 
@@ -152,6 +159,21 @@ Plack::Builder has a native support for L<Plack::App::URLMap> with C<mount> meth
 
 See L<Plack::App::URLMap>'s C<map> method to see what they mean. With
 builder you can't use C<map> as a DSL, for the obvious reason :)
+
+B<Note>: Once you use C<mount> in your builder code, you have to use
+C<mount> for all the paths, including the root path (C</>). You can't
+have the default app in the last line of C<builder> like:
+
+  builder {
+      mount "/foo" => sub { ... };
+      sub {
+          my $env = shift; # THIS DOESN'T WORK
+      };
+  };
+
+You'll get warnings saying that your mount configuration will be
+ignored.  Instead you should use C<< mount "/" => ... >> in the last
+line to set the default fallback app.
 
 =head1 SEE ALSO
 
