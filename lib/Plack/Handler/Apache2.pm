@@ -75,7 +75,7 @@ sub handler {
     my $class = __PACKAGE__;
     my $r     = shift;
     my $psgi  = $r->dir_config('psgi_app');
-    $class->call_app($class->load_app($psgi));
+    $class->call_app($r, $class->load_app($psgi));
 }
 
 sub _handle_response {
