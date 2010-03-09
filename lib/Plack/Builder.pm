@@ -105,6 +105,13 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
       enable "Plack::Middleware::Foo";
       enable "Plack::Middleware::Bar", opt => "val";
       enable "Plack::Middleware::Baz";
+      enable sub {
+          my $app = shift;
+          sub {
+              my $env = shift;
+              $app->($env);
+          };
+      };
       $app;
   };
 
@@ -143,6 +150,20 @@ is syntactically equal to:
   $app = Plack::Middleware::Foo->wrap($app);
 
 In other words, you're supposed to C<add> middleware from outer to inner.
+
+Additionally, you can call C<enable> with a coderef, which would take
+C<$app> and returns a another psgi-app which consumes C<$env> in runtime.  So:
+
+  my $mw = sub { my $app = shift;
+                 sub { my $env = shift; $app->($env) } };
+  builder {
+      enable $mw;
+      $app;
+  };
+
+is syntactically equal to:
+
+  $app = $mw->($app);
 
 =head1 URLMap support
 
