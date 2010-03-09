@@ -154,8 +154,11 @@ In other words, you're supposed to C<add> middleware from outer to inner.
 Additionally, you can call C<enable> with a coderef, which would take
 C<$app> and returns a another psgi-app which consumes C<$env> in runtime.  So:
 
-  my $mw = sub { my $app = shift;
-                 sub { my $env = shift; $app->($env) } };
+  my $mw = sub {
+      my $app = shift;
+      sub { my $env = shift; $app->($env) };
+  };
+
   builder {
       enable $mw;
       $app;
