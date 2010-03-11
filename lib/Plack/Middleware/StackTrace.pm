@@ -25,8 +25,11 @@ sub call {
     my $res = try { $self->app->($env) };
 
     if ($trace && (!$res or $res->[0] == 500)) {
-        my $body = $trace->as_html;
-        $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ $body ]];
+        if (($env->{HTTP_ACCEPT} || '*/*') =~ /html/) {
+            $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ $trace->as_html ]];
+        } else {
+            $res = [500, ['Content-Type' => 'text/plain; charset=utf-8'], [ $trace->as_string ]];
+        }
     }
 
     # break $trace here since $SIG{__DIE__} holds the ref to it, and
