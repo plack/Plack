@@ -20,7 +20,7 @@ my @try = (
     [ 'HTTP::Server::PSGI', ' (workers=10)', max_workers => 10 ],
     [ 'Twiggy' ],
     [ 'HTTP::Server::Simple' ],
-    [ 'Coro' ],
+    [ 'Corona' ],
     [ 'Danga::Socket' ],
     [ 'POE' ],
     [ 'Starman', ' (workers=10)', workers => 10 ],

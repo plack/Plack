@@ -68,7 +68,7 @@ sub guess {
     } elsif (exists $INC{"AnyEvent.pm"}) {
         return "Twiggy";
     } elsif (exists $INC{"Coro.pm"}) {
-        return "Coro";
+        return "Corona";
     } elsif (exists $INC{"POE.pm"}) {
         return "POE";
     } elsif (exists $INC{"Danga/Socket.pm"}) {
