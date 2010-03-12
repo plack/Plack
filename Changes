@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9916  Fri Mar 12 12:52:39 JST 2010
+        - Added support for a new (renamed) web server Corona
+        - Document enable coderef in Plack::Middleware (clkao)
+        - Middleware::StackTrace: Send plain text errors to clients that probably do
+          not understand HTML like curl
+
 0.9915  Mon Mar  8 18:22:33 JST 2010
         - Fixed a dumb bug in Plack::Handler::Apache2, broken in 0.9914 (hiratara)
         - Added a warning if you misuse mount()
