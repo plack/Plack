@@ -382,7 +382,7 @@ Returns the IP address of the client (C<REMOTE_ADDR>).
 
 Returns the remote host (C<REMOTE_HOST>) of the client. It may be
 empty, in which case you have to get the IP address using C<address>
-method and resolve by your own.
+method and resolve on your own.
 
 =item method
 
@@ -455,7 +455,7 @@ parameters. This hash reference is L<Hash::MultiValue> object.
 =item body_parameters
 
 Returns a reference to a hash containing posted parameters in the
-request body (POST). Similarly to C<query_parameters>, the hash
+request body (POST). As with C<query_parameters>, the hash
 reference is a L<Hash::MultiValue> object.
 
 =item parameters
@@ -494,7 +494,7 @@ Returns an L<HTTP::Headers> object containing the headers for the current reques
 =item uploads
 
 Returns a reference to a hash containing uploads. The hash reference
-is L<Hash::MultiValue> object and values are L<Plack::Request::Upload>
+is a L<Hash::MultiValue> object and values are L<Plack::Request::Upload>
 objects.
 
 =item content_encoding
@@ -556,24 +556,24 @@ generation in middlewares.
 
 =head2 Hash::MultiValue parameters
 
-Parameters that can take one or multiple values i.e. C<parameters>,
-C<query_parameters>, C<body_parameters> and C<uploads> store those
+Parameters that can take one or multiple values (i.e. C<parameters>,
+C<query_parameters>, C<body_parameters> and C<uploads>) store the
 hash reference as a L<Hash::MultiValue> object. This means you can use
 the hash reference as a plain hash where values are B<always> scalars
-(B<NOT> array reference), so you don't need to code ugly and unsafe
+(B<NOT> array references), so you don't need to code ugly and unsafe
 C<< ref ... eq 'ARRAY' >> anymore.
 
 And if you explicitly want to get multiple values of the same key, you
-can call the method on it, such as:
+can call the C<get_all> method on it, such as:
 
   my @foo = $req->query_parameters->get_all('foo');
 
 You can also call C<get_one> to always get one parameter independent
-of the context (unlike C<param>), and eve call C<mixed> (with
+of the context (unlike C<param>), and even call C<mixed> (with
 Hash::MultiValue 0.05 or later) to get the I<traditional> hash
 reference,
 
-  my $params = $req->prameters->mixed;
+  my $params = $req->parameters->mixed;
 
 where values are either a scalar or an array reference depending on
 input, so it might be useful if you already have the code to deal with
@@ -594,16 +594,16 @@ If your application or framework wants to dispatch (or route) actions
 based on request paths, be sure to use C<< $req->path_info >> not C<<
 $req->uri->path >>.
 
-It is because C<path_info> gives you the virtual path of the request,
+This is because C<path_info> gives you the virtual path of the request,
 regardless of how your application is mounted. If your application is
 hosted with mod_perl or CGI scripts, or even multiplexed with tools
 like L<Plack::App::URLMap>, request's C<path_info> always gives you
 the action path.
 
 Note that C<path_info> might give you an empty string, in which case
-you should assume just like C</>.
+you should assume that the path is C</>.
 
-You will also like to use C<< $req->base >> as a base prefix when
+You will also want to use C<< $req->base >> as a base prefix when
 building URLs in your templates or in redirections. It's a good idea
 for you to subclass Plack::Request and define methods such as:
 
