@@ -14,10 +14,10 @@ my $app = sub {
 test_psgi $app, sub {
     my $cb = shift;
     my $res = $cb->(GET "/");
-    ok $res->is_success;
+    ok $res->is_success or diag $res->content;
 
     $res = $cb->(HEAD "/");
-    ok $res->is_success;
+    ok $res->is_success or diag $res->content;
 };
 
 done_testing;
