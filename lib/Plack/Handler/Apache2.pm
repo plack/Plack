@@ -46,13 +46,7 @@ sub call_app {
         'psgi.nonblocking'    => Plack::Util::FALSE,
     };
 
-    my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
-    my $location = $r->location || "/";
-       $location =~ s{/$}{};
-    (my $path_info = $vpath) =~ s/^\Q$location\E//;
-
-    $env->{SCRIPT_NAME} = $location;
-    $env->{PATH_INFO}   = $path_info;
+    $class->_recalc_paths($r, $env);
 
     my $res = $app->($env);
 
@@ -76,6 +70,18 @@ sub handler {
     my $r     = shift;
     my $psgi  = $r->dir_config('psgi_app');
     $class->call_app($r, $class->load_app($psgi));
+}
+
+# The method for PH::Apache2::Regitsry to override.
+sub _recalc_paths {
+    my ($class, $r, $env) = @_;
+    my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+    my $location = $r->location || "/";
+       $location =~ s{/$}{};
+    (my $path_info = $vpath) =~ s/^\Q$location\E//;
+
+    $env->{SCRIPT_NAME} = $location;
+    $env->{PATH_INFO}   = $path_info;
 }
 
 sub _handle_response {
