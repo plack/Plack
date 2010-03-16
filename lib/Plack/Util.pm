@@ -102,6 +102,8 @@ sub class_to_file {
 sub load_psgi {
     my $stuff = shift;
 
+    local $ENV{PLACK_ENV} = $ENV{PLACK_ENV} || 'development';
+
     my $file = $stuff =~ /^[a-zA-Z0-9\_\:]+$/ ? class_to_file($stuff) : $stuff;
     my $app = do $file;
     return $app->to_app if $app and Scalar::Util::blessed($app) and $app->can('to_app');
