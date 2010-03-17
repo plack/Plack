@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9917  Wed Mar 17 15:33:43 PDT 2010
+        - Added Plack::Handler::Apache2::Registry (hiratara)
+        - Set default PLACK_ENV in Plack::Util::load_psgi
+
 0.9916  Fri Mar 12 12:52:39 JST 2010
         - Added support for a new (renamed) web server Corona
         - Document enable coderef in Plack::Middleware (clkao)
