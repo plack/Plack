@@ -235,6 +235,8 @@ t/Plack-Test/cookie.t
 t/Plack-Test/hello.t
 t/Plack-Test/hello_server.t
 t/Plack-Test/suite.t
+t/Plack-Util/bad.psgi
+t/Plack-Util/bad2.psgi
 t/Plack-Util/foreach.t
 t/Plack-Util/headers.t
 t/Plack-Util/headers_obj.t

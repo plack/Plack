@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9918  Wed Mar 17 22:35:00 PDT 2010
+        - Load .psgi file in a sandboxed package rather than Plack::Util gh-88
+
 0.9917  Wed Mar 17 15:33:43 PDT 2010
         - Added Plack::Handler::Apache2::Registry (hiratara)
         - Set default PLACK_ENV in Plack::Util::load_psgi
