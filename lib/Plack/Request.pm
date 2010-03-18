@@ -90,7 +90,8 @@ sub content {
         $self->_parse_request_body;
     }
 
-    my $fh = $self->input or return '';
+    my $fh = $self->input          or return '';
+    my $cl = $self->content_length or return '';
     $fh->read(my($content), $self->content_length || 0, 0);
     $fh->seek(0, 0);
 

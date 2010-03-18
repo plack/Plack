@@ -595,7 +595,7 @@ our @TEST = (
         'request->input seekable',
         sub {
             my $cb = shift;
-            my $req = HTTP::Request->new(POST => "http://localhost/");
+            my $req = HTTP::Request->new(POST => "http://127.0.0.1/");
             $req->content("body");
             $req->content_type('text/plain');
             $req->content_length(4);
@@ -605,6 +605,19 @@ our @TEST = (
         sub {
             my $req = Plack::Request->new(shift);
             return [ 200, [ "Content-Type", "text/plain" ], [ $req->content ] ];
+        },
+    ],
+    [
+        'request->content on GET',
+        sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/");
+            ok $res->is_success;
+        },
+        sub {
+            my $req = Plack::Request->new(shift);
+            $req->content;
+            return [ 200, [ "Content-Type", "text/plain" ], [ "OK" ] ];
         },
     ],
 );
