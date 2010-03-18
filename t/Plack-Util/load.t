@@ -14,6 +14,19 @@ use Test::More;
 }
 
 {
+    my $app = Plack::Util::load_psgi("t/Plack-Util/bad.psgi");
+    ok $app;
+    ok !$INC{"CGI.pm"};
+}
+
+{
+    my $app = Plack::Util::load_psgi("t/Plack-Util/bad2.psgi");
+    ok $app;
+    eval { Plack::Util::load_class("Plack") };
+    is $@, '';
+}
+
+{
     use lib "t/Plack-Util";
     my $app = Plack::Util::load_psgi("Hello");
     ok $app;
@@ -21,8 +34,5 @@ use Test::More;
         is $_[0]->(GET "/")->content, "Hello";
     };
 }
-
-
-
 
 done_testing;
