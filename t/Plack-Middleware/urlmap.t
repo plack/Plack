@@ -41,11 +41,17 @@ test_psgi app => $app, client => sub {
     $res = $cb->(GET "http://localhost/foox");
     is $res->content, 'app1||/foox';
 
+    $res = $cb->(GET "http://localhost/foox/bar");
+    is $res->content, 'app1||/foox/bar';
+
     $res = $cb->(GET "http://localhost/foobar");
     is $res->content, 'app3|/foobar|';
 
     $res = $cb->(GET "http://localhost/foobar/baz");
     is $res->content, 'app3|/foobar|/baz';
+
+    $res = $cb->(GET "http://localhost/bar/foo");
+    is $res->content, 'app1||/bar/foo';
 
     $res = $cb->(GET "http://bar.example.com/");
     is $res->content, 'app4||/';

@@ -50,8 +50,8 @@ sub call {
         next unless not defined $host     or
                     $http_host   eq $host or
                     $server_name eq $host;
-        next unless $location eq '' or $path =~ s!\Q$location\E!!;
-        next unless $path eq '' or $path =~ m!/!;
+        next unless $location eq '' or $path =~ s!^\Q$location\E!!;
+        next unless $path eq '' or $path =~ m!^/!;
 
         my $orig_path_info   = $env->{PATH_INFO};
         my $orig_script_name = $env->{SCRIPT_NAME};
