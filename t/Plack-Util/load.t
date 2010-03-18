@@ -35,4 +35,9 @@ use Test::More;
     };
 }
 
+{
+    eval { Plack::Util::load_psgi("t/Plack-Util/error.psgi") };
+    like $@, qr/Global symbol/;
+}
+
 done_testing;
