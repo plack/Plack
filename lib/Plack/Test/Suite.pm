@@ -11,6 +11,7 @@ use Test::TCP;
 use Plack::Loader;
 use Plack::Middleware::Lint;
 use Plack::Util;
+use Plack::Request;
 use Try::Tiny;
 
 my $share_dir = try { File::ShareDir::dist_dir('Plack') } || 'share';
@@ -535,7 +536,7 @@ our @TEST = (
                 ]);
             }
         },
-     ],
+    ],
     [
         'coderef streaming',
         sub {
@@ -564,9 +565,9 @@ our @TEST = (
                 $writer->close();
             }
         },
-     ],
-     [
-         'CRLF output and FCGI parse bug',
+    ],
+    [
+        'CRLF output and FCGI parse bug',
         sub {
             my $cb = shift;
             my $res = $cb->(GET "http://127.0.0.1/");
@@ -577,9 +578,9 @@ our @TEST = (
         sub {
             return [ 200, [ "Content-Type", "text/plain" ], [ "Foo: Bar\r\n\r\nHello World" ] ];
         },
-     ],
-     [
-         'test 404',
+    ],
+    [
+        'test 404',
         sub {
             my $cb = shift;
             my $res = $cb->(GET "http://127.0.0.1/");
@@ -589,7 +590,23 @@ our @TEST = (
         sub {
             return [ 404, [ "Content-Type", "text/plain" ], [ "Not Found" ] ];
         },
-     ],
+    ],
+    [
+        'request->input seekable',
+        sub {
+            my $cb = shift;
+            my $req = HTTP::Request->new(POST => "http://localhost/");
+            $req->content("body");
+            $req->content_type('text/plain');
+            $req->content_length(4);
+            my $res = $cb->($req);
+            is $res->content, 'body';
+        },
+        sub {
+            my $req = Plack::Request->new(shift);
+            return [ 200, [ "Content-Type", "text/plain" ], [ $req->content ] ];
+        },
+    ],
 );
 
 sub runtests {
