@@ -41,7 +41,7 @@ sub call {
     }
 
     for my $key (keys %$env) {
-        delete $env->{$key} if $key =~ /^psgi\./;
+        delete $env->{$key} if $key =~ /\./;
     }
 
     my ($stdout, $stderr) = $conn->request(
