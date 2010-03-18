@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9919  Wed Mar 17 22:50:09 PDT 2010
+        - Properly rethrow .psgi compilation errors
+
 0.9918  Wed Mar 17 22:35:00 PDT 2010
         - Load .psgi file in an unique package rather than Plack::Util to avoid
           namespace pollution gh-88
