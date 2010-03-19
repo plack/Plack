@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9920  Thu Mar 18 23:48:06 PDT 2010
+        - Fixed URL path prefix matching in URLMap (hiratara)
+        - Fixed Plack::Request->content on GET with FastCGI servers (sunnavy)
+        - Added new middleware Middleware::Head
+        - Fixed localization bug in Plack-Util/load.t
+
 0.9919  Wed Mar 17 22:50:09 PDT 2010
         - Properly rethrow .psgi compilation errors
 

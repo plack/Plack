@@ -82,6 +82,7 @@ lib/Plack/Middleware/ConditionalGET.pm
 lib/Plack/Middleware/ContentLength.pm
 lib/Plack/Middleware/ContentMD5.pm
 lib/Plack/Middleware/ErrorDocument.pm
+lib/Plack/Middleware/Head.pm
 lib/Plack/Middleware/HTTPExceptions.pm
 lib/Plack/Middleware/JSONP.pm
 lib/Plack/Middleware/Lint.pm
@@ -168,6 +169,7 @@ t/Plack-Middleware/error_document.t
 t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html
 t/Plack-Middleware/file.t
+t/Plack-Middleware/head.t
 t/Plack-Middleware/htpasswd
 t/Plack-Middleware/httpexceptions.t
 t/Plack-Middleware/httpexceptions_streaming.t
