@@ -43,7 +43,7 @@ use Test::More;
 
 {
     eval { Plack::Util::load_psgi("t/Plack-Util/nonexistent.psgi") };
-    like $@, qr/No such file/;
+    unlike $@, qr/Died/;
 }
 
 done_testing;
