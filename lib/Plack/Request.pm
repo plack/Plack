@@ -46,6 +46,9 @@ sub secure      { $_[0]->scheme eq 'https' }
 sub body        { $_[0]->env->{'psgi.input'} }
 sub input       { $_[0]->env->{'psgi.input'} }
 
+sub content_length   { $_[0]->env->{CONTENT_LENGTH} }
+sub content_type     { $_[0]->env->{CONTENT_TYPE} }
+
 sub session         { $_[0]->env->{'psgix.session'} }
 sub session_options { $_[0]->env->{'psgix.session.options'} }
 sub logger          { $_[0]->env->{'psgix.logger'} }
@@ -90,9 +93,9 @@ sub content {
         $self->_parse_request_body;
     }
 
-    my $fh = $self->input          or return '';
-    my $cl = $self->content_length or return '';
-    $fh->read(my($content), $self->content_length || 0, 0);
+    my $fh = $self->input                 or return '';
+    my $cl = $self->env->{CONTENT_LENGTH} or return'';
+    $fh->read(my($content), $cl, 0);
     $fh->seek(0, 0);
 
     return $content;
@@ -116,10 +119,8 @@ sub headers {
     }
     $self->{headers};
 }
-# shortcut
+
 sub content_encoding { shift->headers->content_encoding(@_) }
-sub content_length   { shift->headers->content_length(@_) }
-sub content_type     { shift->headers->content_type(@_) }
 sub header           { shift->headers->header(@_) }
 sub referer          { shift->headers->referer(@_) }
 sub user_agent       { shift->headers->user_agent(@_) }
@@ -252,7 +253,6 @@ sub _parse_request_body {
         return;
     }
 
-    # Do not use ->content_type to get multipart boundary correctly
     my $body = HTTP::Body->new($ct, $cl);
 
     my $input = $self->input;
