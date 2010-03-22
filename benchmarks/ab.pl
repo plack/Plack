@@ -22,7 +22,7 @@ my @try = (
     [ 'HTTP::Server::Simple' ],
     [ 'Corona' ],
     [ 'Danga::Socket' ],
-    [ 'POE' ],
+    [ '+POE::Component::Server::PSGI' ],
     [ 'Starman', ' (workers=10)', workers => 10 ],
 );
 
