@@ -13,7 +13,7 @@ sub call {
     my $res = try {
         $self->app->($env);
     } catch {
-        $self->transform_error($_);
+        $self->transform_error($_, $env);
     };
 
     return $res if ref $res eq 'ARRAY';
@@ -29,7 +29,7 @@ sub call {
                 Carp::cluck $_;
                 $writer->close;
             } else {
-                my $res = $self->transform_error($_);
+                my $res = $self->transform_error($_, $env);
                 $respond->($res);
             }
         };
@@ -37,7 +37,7 @@ sub call {
 }
 
 sub transform_error {
-    my($self, $e) = @_;
+    my($self, $e, $env) = @_;
 
     my($code, $message);
     if (blessed $e && $e->can('code')) {
@@ -47,6 +47,7 @@ sub transform_error {
             overload::Method($e, '""') ? "$e"          : undef;
     } else {
         $code = 500;
+        $env->{'psgi.errors'}->print($e);
     }
 
     if ($code !~ /^[3-5]\d\d$/) {
