@@ -85,6 +85,7 @@ lib/Plack/Middleware/ErrorDocument.pm
 lib/Plack/Middleware/Head.pm
 lib/Plack/Middleware/HTTPExceptions.pm
 lib/Plack/Middleware/JSONP.pm
+lib/Plack/Middleware/LighttpdScriptNameFix.pm
 lib/Plack/Middleware/Lint.pm
 lib/Plack/Middleware/Log4perl.pm
 lib/Plack/Middleware/LogDispatch.pm
