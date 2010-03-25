@@ -54,12 +54,13 @@ sub test_lighty_external (&@) {
         unless $lighttpd_bin && -x $lighttpd_bin;
 
     my $ver = (`$lighttpd_bin -v` =~ /lighttpd-1.(\d+\.\d+)/)[0];
+    diag "Testing with lighttpd 1.$ver";
 
     my $tmpdir = File::Temp::tempdir( CLEANUP => 1 );
 
     test_tcp(
         client => sub {
-            $callback->($lighty_port, $fcgi_port, $ver < 4.23);
+            $callback->($lighty_port, $fcgi_port, ($ver && $ver < 4.23));
             warn `cat $tmpdir/error.log` if $ENV{DEBUG};
         },
         server => sub {
