@@ -91,9 +91,15 @@ sub run {
         # If we're running under Lighttpd, swap PATH_INFO and SCRIPT_NAME if PATH_INFO is empty
         # http://lists.rawmode.org/pipermail/catalyst/2006-June/008361.html
         # Thanks to Mark Blythe for this fix
-        if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ /lighttpd/) {
-            $env->{PATH_INFO}   ||= delete $env->{SCRIPT_NAME};
-            $env->{SCRIPT_NAME} ||= '';
+        if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ m!lighttpd/1\.(\d+\.\d+)!) {
+            no warnings;
+            if ($ENV{PLACK_ENV} eq 'development' && $1 < 4.23 && $env->{PATH_INFO} eq '') {
+                warn "You're using lighttpd 1.$1 and appear to mount your FastCGI handler under the root ('/'). ",
+                     "It's known to be causing issues because of the lighttpd bug. You're recommended to enable ",
+                     "LighttpdScriptNameFix middleare, or upgrade lighttpd to 1.4.23 or later and include ",
+                     "'fix-root-scriptname' flag in 'fastcgi.server'. See perldoc Plack::Handler::FCGI for details. ",
+                     "This friendly warning will go away in the next major release of Plack.";
+            }
             $env->{SERVER_NAME} =~ s/:\d+$//; # cut off port number
         }
 
@@ -276,15 +282,22 @@ See L<http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html#FastCgiExternalSe
 
 =head3 lighttpd
 
-Host in the root path:
+To host the app in the root path, you're recommended to use lighttpd
+1.4.23 or newer with C<fix-root-scriptname> flag like below.
 
   fastcgi.server = ( "" =>
      ((
        "socket" => "/tmp/fcgi.sock",
        "check-local" => "disable"
+       "fix-root-scriptname" => "enable",
      ))
 
-Or in the non-root path over TCP:
+If you use lighttpd older than 1.4.22 where you don't have
+C<fix-root-scriptname>, mouting apps under the root causes wrong
+C<SCRIPT_NAME> and C<PATH_INFO> set, in which case you can use
+L<Plack::Middleware::LighttpdScriptNameFix> to fix it.
+
+To mount in the non-root path over TCP:
 
   fastcgi.server = ( "/foo" =>
      ((
@@ -293,9 +306,13 @@ Or in the non-root path over TCP:
        "check-local" => "disable"
      ))
 
-Plack::Handler::FCGI has a workaround for lighttpd's weird
-C<SCRIPT_NAME> and C<PATH_INFO> setting when you set I<check-local> to
-C<disable> so both configurations (root or non-root) should work fine.
+It's important that your mount path does B<NOT> have the trailing
+slash. If you have one it might cause issues where your handlers will
+get a wrong C<PATH_INFO> values.
+
+Plack::Handler::FCGI I<used to> have a workaround for this lighttpd's
+bug but has disabled it in favor of newer lighttpd with
+C<fix-root-scriptname> or the use of L<PLack::Middleware::LighttpdScriptNameFix>.
 
 =cut
 

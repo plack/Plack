@@ -53,11 +53,13 @@ sub test_lighty_external (&@) {
     plan skip_all => 'Please set LIGHTTPD_BIN to the path to lighttpd'
         unless $lighttpd_bin && -x $lighttpd_bin;
 
+    my $ver = (`$lighttpd_bin -v` =~ /lighttpd-1.(\d+\.\d+)/)[0];
+
     my $tmpdir = File::Temp::tempdir( CLEANUP => 1 );
 
     test_tcp(
         client => sub {
-            $callback->($lighty_port, $fcgi_port);
+            $callback->($lighty_port, $fcgi_port, $ver < 4.23);
             warn `cat $tmpdir/error.log` if $ENV{DEBUG};
         },
         server => sub {
@@ -103,6 +105,7 @@ fastcgi.server = (
             "host"            => "127.0.0.1",
             "port"            => $fcgiport,
             "idle-timeout"    => 20,
+            "fix-root-scriptname" => "enable", # for 1.4.23 or later
     ))
 )
 END
