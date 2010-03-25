@@ -23,7 +23,16 @@ Plack::Middleware::LighttpdScriptNameFix - fixes wrong SCRIPT_NAME and PATH_INFO
 
 =head1 SYNOPSIS
 
-  enable "LighttpdScriptNameFix";
+  # in your app.psgi
+  use Plack::Builder;
+
+  builder {
+    enable "LighttpdScriptNameFix";
+    $app;
+  };
+
+  # Or from the command line
+  plackup -s FCGI -e 'enable "LighttpdScriptNameFix"' /path/to/app.psgi
 
 =head1 DESCRIPTION
 
