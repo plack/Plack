@@ -88,9 +88,6 @@ sub run {
             'psgi.nonblocking'  => Plack::Util::FALSE,
         };
 
-        # If we're running under Lighttpd, swap PATH_INFO and SCRIPT_NAME if PATH_INFO is empty
-        # http://lists.rawmode.org/pipermail/catalyst/2006-June/008361.html
-        # Thanks to Mark Blythe for this fix
         if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ m!lighttpd/1\.(\d+\.\d+)!) {
             no warnings;
             if ($ENV{PLACK_ENV} eq 'development' && $1 < 4.23 && $env->{PATH_INFO} eq '') {
