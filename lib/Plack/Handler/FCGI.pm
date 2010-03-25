@@ -93,7 +93,7 @@ sub run {
             if ($ENV{PLACK_ENV} eq 'development' && $1 < 4.23 && $env->{PATH_INFO} eq '') {
                 warn "You're using lighttpd 1.$1 and appear to mount your FastCGI handler under the root ('/'). ",
                      "It's known to be causing issues because of the lighttpd bug. You're recommended to enable ",
-                     "LighttpdScriptNameFix middleare, or upgrade lighttpd to 1.4.23 or later and include ",
+                     "LighttpdScriptNameFix middleware, or upgrade lighttpd to 1.4.23 or later and include ",
                      "'fix-root-scriptname' flag in 'fastcgi.server'. See perldoc Plack::Handler::FCGI for details. ",
                      "This friendly warning will go away in the next major release of Plack.";
             }
