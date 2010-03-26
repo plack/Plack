@@ -2,6 +2,7 @@ package HTTP::Server::PSGI;
 use strict;
 use warnings;
 
+use Carp ();
 use Plack;
 use Plack::HTTPParser qw( parse_http_request );
 use IO::Socket::INET;
@@ -41,23 +42,13 @@ sub new {
         max_keepalive_reqs => $args{max_keepalive_reqs},
         server_software    => $args{server_software} || $class,
         server_ready       => $args{server_ready} || sub {},
-        max_workers        => $args{max_workers} || 1,
         max_reqs_per_child => $args{max_reqs_per_child} || 100,
+        max_keepalive_reqs => 1,
+        is_multiprocess    => Plack::Util::FALSE,
     }, $class;
 
-    if ($self->{max_workers} > 1) {
-        try {
-            require Parallel::Prefork;
-            $self->{prefork} = 1;
-            $self->{max_keepalive_reqs} ||= 100;
-            $self->{server_software} .= " (prefork)";
-        } catch {
-            die "You need to install Parallel::Prefork to run multi workers (max_workers=$self->{max_workers}): $_";
-        };
-    }
-
-    unless ($self->{prefork}) {
-        $self->{max_keepalive_reqs} ||= 1;
+    if ($args{max_workers} && $args{max_workers} > 1) {
+        Carp::croak("Preforking in $class is deprecated: use Starman or Starlet instead");
     }
 
     $self;
@@ -66,12 +57,7 @@ sub new {
 sub run {
     my($self, $app) = @_;
     $self->setup_listener();
-
-    if ($self->{prefork}) {
-        $self->run_prefork($app);
-    } else {
-        $self->accept_loop($app);
-    }
+    $self->accept_loop($app);
 }
 
 sub setup_listener {
@@ -85,24 +71,6 @@ sub setup_listener {
     ) or die "failed to listen to port $self->{port}:$!";
 
     $self->{server_ready}->($self);
-}
-
-sub run_prefork {
-    my($self, $app) = @_;
-
-    my $pm = Parallel::Prefork->new({
-        max_workers => $self->{max_workers},
-        trap_signals => {
-            TERM => 'TERM',
-            HUP  => 'TERM',
-        },
-    });
-    while ($pm->signal_received ne 'TERM') {
-        $pm->start and next;
-        $self->accept_loop($app, $self->{max_reqs_per_child});
-        $pm->finish;
-    }
-    $pm->wait_all_children;
 }
 
 sub accept_loop {
@@ -131,7 +99,7 @@ sub accept_loop {
                     'psgi.url_scheme' => 'http',
                     'psgi.run_once'     => Plack::Util::FALSE,
                     'psgi.multithread'  => Plack::Util::FALSE,
-                    'psgi.multiprocess' => $self->{prefork},
+                    'psgi.multiprocess' => $self->{is_multiprocess},
                     'psgi.streaming'    => Plack::Util::TRUE,
                     'psgi.nonblocking'  => Plack::Util::FALSE,
                     'psgix.input.buffered' => Plack::Util::TRUE,
@@ -357,8 +325,10 @@ not be suitable for production.
 Some features in HTTP/1.1, notably chunked requests, responses and
 pipeline requests are B<NOT> supported yet.
 
-See L<Starman> if you want a multi-process prefork server with some
-HTTP/1.1 features support.
+=head1 PREFORKING
+
+L<HTTP::Server::PSGI> does B<NOT> support preforking. See L<Starman>
+or L<Starlet> if you want a multi-process prefork web servers.
 
 =head1 AUTHOR
 
@@ -368,6 +338,6 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<Plack::Handler::Standalone>
+L<Plack::Handler::Standalone> L<Starman> L<Starlet>
 
 =cut

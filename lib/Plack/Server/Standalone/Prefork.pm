@@ -19,6 +19,10 @@ Plack::Server::Standalone::Prefork - DEPRECATED
 
 =head1 DESCRIPTION
 
-B<This module is deprecated>. See L<Plack::Handler::Standalone>.
+B<This module is deprecated>.
+
+=head1 SEE ALSO
+
+L<HTTP::Server::PSGI> L<Starman> L<Starlet>
 
 =cut
