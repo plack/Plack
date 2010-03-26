@@ -164,6 +164,10 @@ sub daemon_detach {
 
 __END__
 
+=head1 NAME
+
+Plack::Handle::FCGI - FastCGI handler for Plack
+
 =head1 SYNOPSIS
 
   # Run as a standalone daemon

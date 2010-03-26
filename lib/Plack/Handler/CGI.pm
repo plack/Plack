@@ -87,6 +87,10 @@ package Plack::Handler::CGI;
 1;
 __END__
 
+=head1 NAME
+
+Plack::Handler::CGI - CGI handler for Plack
+
 =head1 SYNOPSIS
 
 Want to run PSGI application as a CGI script? Rename .psgi to .cgi and
