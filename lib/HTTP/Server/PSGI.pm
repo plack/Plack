@@ -48,7 +48,10 @@ sub new {
     }, $class;
 
     if ($args{max_workers} && $args{max_workers} > 1) {
-        Carp::croak("Preforking in $class is deprecated: use Starman or Starlet instead");
+        Carp::carp(
+            "Preforking in $class is deprecated. Falling back to the non-forking mode. ",
+            "If you need preforking, use Starman or Starlet instead and run like `plackup -s Starlet`",
+        );
     }
 
     $self;
