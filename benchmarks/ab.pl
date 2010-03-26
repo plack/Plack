@@ -22,8 +22,8 @@ my @try = (
     [ 'Corona' ],
     [ 'Danga::Socket' ],
     [ '+POE::Component::Server::PSGI' ],
-    [ 'Starman', ' (workers=10)', workers => 10 ],
     [ 'Starlet', ' (workers=10)', max_workers => 10 ],
+    [ 'Starman', ' (workers=10)', workers => 10 ],
 );
 
 my @backends;
