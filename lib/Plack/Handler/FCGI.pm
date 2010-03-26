@@ -166,7 +166,7 @@ __END__
 
 =head1 NAME
 
-Plack::Handle::FCGI - FastCGI handler for Plack
+Plack::Handler::FCGI - FastCGI handler for Plack
 
 =head1 SYNOPSIS
 
