@@ -164,7 +164,7 @@ Tokuhiro Matsuno (tokuhirom)
 
 Kazuhiro Osawa (Yappo)
 
-Kzzuho Oku
+Kazuho Oku
 
 Florian Ragwitz (rafl)
 
