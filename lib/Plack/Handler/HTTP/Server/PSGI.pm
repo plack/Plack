@@ -54,21 +54,9 @@ Port number the server listens on. Defaults to 8080.
 
 Number of seconds a request times out. Defaults to 300.
 
-=item max-keepalive-reqs
-
-Max requests per a keep-alive request. Defaults to 1, which means Keep-alive is off.
-
-=item keepalive-timeout
-
-Number of seconds a keep-alive request times out. Defaults to 2.
-
 =item max-reqs-per-child
 
 Number of requests per worker to process. Defaults to 100.
-
-=item max-keepalive-reqs
-
-Max requests per a keep-alive request. Defaults to 100.
 
 =back
 
