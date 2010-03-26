@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.99_22 Thu Mar 25 19:48:08 PDT 2010
+        - INCOMPATIBLE: removed --max-workers option from the default standalone server.
+          Now it gives you warnings and falls back to the single process mode.
+
 0.99_21 Thu Mar 25 15:05:53 PDT 2010
         - INCOMPATIBLE: removed a workaround for lighttpd SCRIPT_NAME bug in FCGI handler
           See http://github.com/miyagawa/Plack/issues#issue/68 for details.

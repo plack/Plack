@@ -144,7 +144,6 @@ t/Plack-Handler/cgi.t
 t/Plack-Handler/fcgi.t
 t/Plack-Handler/fcgi_client.t
 t/Plack-Handler/http_server_simple.t
-t/Plack-Handler/standalone-prefork.t
 t/Plack-Handler/standalone.t
 t/Plack-HTTPParser-PP/simple.t
 t/Plack-Loader/auto.t
