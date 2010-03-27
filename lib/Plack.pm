@@ -120,8 +120,13 @@ L<Plack::Test::Suite> is a test suite to test a new PSGI server backend.
 =head2 Patches and Bug Fixes
 
 Small patches and bug fixes can be either submitted via nopaste on IRC
-L<irc://irc.perl.org/#plack> or email. You could also fork on github
-(http://github.com/miyagawa/Plack) to make larger fixes.
+L<irc://irc.perl.org/#plack> or L<the github issue
+tracker|http://github.com/miyagawa/Plack/issues>.  Forking on
+L<github|http://github.com/miyagawa/Plack> is another good way if you
+intend to make larger fixes.
+
+See also L<http://contributing.appspot.com/plack> when you think this
+document is terribly outdated.
 
 =head2 Module Namespaces
 
