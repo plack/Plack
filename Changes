@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.99_24 Sat Mar 27 13:31:51 PDT 2010
+        - Disable Devel::StackTrace::WithLexicals for now until PadWalker RT #55242 is fixed
+
 0.99_23 Sat Mar 27 01:02:24 PDT 2010
         - Dropped keep-alive code from HTTP::Server::PSGI now that Starlet clones the code
         - Special case --disable-* and --enable-* command line options in plackup and Plack::Runner
