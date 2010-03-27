@@ -122,11 +122,11 @@ CONTRIBUTING
     it's supposed to run on CGI and that is a really bad choice and confuse
     people.
 
-COPYRIGHT
-    Copyright 2009- Tatsuhiko Miyagawa
-
 AUTHOR
     Tatsuhiko Miyagawa
+
+COPYRIGHT
+    Copyright 2009-2010 Tatsuhiko Miyagawa
 
 CONTRIBUTORS
     Yuval Kogman (nothingmuch)
