@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.99_23 Sat Mar 27 01:02:24 PDT 2010
+        - Dropped keep-alive code from HTTP::Server::PSGI now that Starlet clones the code
+        - Special case --disable-* and --enable-* command line options in plackup and Plack::Runner
+
 0.99_22 Thu Mar 25 19:48:08 PDT 2010
         - INCOMPATIBLE: removed --max-workers option from the default standalone server.
           Now it gives you warnings and falls back to the single process mode.
