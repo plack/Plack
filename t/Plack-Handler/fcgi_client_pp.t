@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires { 'Net::FastCGI' => 0, 'FCGI::Client' => 0.04 };
+use Test::Requires { 'Net::FastCGI' => 0.08, 'FCGI::Client' => 0.04 };
 use Plack::Handler::FCGI::PP;
 use Test::TCP;
 use Plack::Test::Suite;
