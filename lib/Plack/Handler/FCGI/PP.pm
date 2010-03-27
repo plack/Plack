@@ -16,31 +16,29 @@ sub run {
     my ($self, $app) = @_;
     $self->{app} = $app;
 
-    unless ($self->{listen}) {
-        die "This handler doesn't run with STDIN. Run this as an external FCGI daemon";
-    }
-
     my $socket;
     my $proto;
+    my $port = $self->{listen}->[0]
+        or die "This handler doesn't run with STDIN. Run this as an external FCGI daemon";
 
-    if ($self->{listen}->[0] =~ s/^://) {
+    if ($port =~ s/^://) {
         $proto = 'tcp';
         $socket = IO::Socket::INET->new(
             Listen    => 5,
-            LocalPort => $self->{listen}->[0],
+            LocalPort => $port,
             Reuse     => 1
         ) or die "Couldn't create listener socket: $!";
     } else {
         $proto = 'unix';
         $socket = IO::Socket::UNIX->new(
             Listen    => 5,
-            Local     => $self->{listen}->[0],
+            Local     => $port,
         ) or die "Couldn't create UNIX listener socket: $!";
     }
 
     $self->{server_ready}->({
         host  => 'localhost',
-        port  => $self->{listen}->[0],
+        port  => $port,
         proto => $proto,
         server_software => 'Plack::Handler::FCGI::PP',
     }) if $self->{server_ready};
