@@ -60,8 +60,10 @@ sub parse_options {
             $v[0] =~ tr/-/_/;
             if (@v == 2) {
                 push @options, @v;
+            } elsif ($v[0] =~ s/^(disable|enable)_//) {
+                push @options, $v[0], $1 eq 'enable';
             } else {
-                push @options, @v, shift @ARGV;
+                push @options, $v[0], shift @ARGV;
             }
         } else {
             push @argv, $_;
