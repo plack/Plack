@@ -9,7 +9,7 @@ use Try::Tiny;
 our $StackTraceClass = "Devel::StackTrace";
 
 # Optional since it needs PadWalker
-if (try { require Devel::StackTrace::WithLexicals; 1 }) {
+if ($ENV{PLACK_STACKTRACE_LEXICALS} && try { require Devel::StackTrace::WithLexicals; 1 }) {
     $StackTraceClass = "Devel::StackTrace::WithLexicals";
 }
 
