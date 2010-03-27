@@ -172,9 +172,10 @@ sub prepare_devel {
 
     push @{$self->{options}}, server_ready => sub {
         my($args) = @_;
-        my $name = $args->{server_software} || ref($args); # $args is $server
-        my $host = $args->{host} || 0;
-        print STDERR "$name: Accepting connections at http://$host:$args->{port}/\n";
+        my $name  = $args->{server_software} || ref($args); # $args is $server
+        my $host  = $args->{host} || 0;
+        my $proto = $args->{proto} || 'http';
+        print STDERR "$name: Accepting connections at $proto://$host:$args->{port}/\n";
     };
 
     $app;
