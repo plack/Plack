@@ -263,7 +263,9 @@ Listen on a socket path, hostname:port, or :port.
 
 listen via TCP on port on all interfaces (Same as C<< listen => ":$port" >>)
 
-=item AUTHORS
+=back
+
+=head1 AUTHORS
 
 Christian Hansesn
 
