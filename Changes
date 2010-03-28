@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9926 Sun Mar 28 14:37:03 PDT 2010
+        - Added -v|--version option to plackup and the ability for Plack::Runner users to override
+
 0.9925  Sat Mar 27 19:03:57 PDT 2010
         - Make this a non-devel release
 
