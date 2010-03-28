@@ -50,7 +50,8 @@ sub parse_options {
         'r|reload'     => sub { $self->{loader} = "Restarter" },
         'R|Reload=s'   => sub { $self->{loader} = "Restarter"; $self->loader->watch(split ",", $_[1]) },
         'L|loader=s'   => \$self->{loader},
-        "h|help",      => \$self->{help},
+        "h|help"       => \$self->{help},
+        "v|version"    => \$self->{version},
     );
 
     my(@options, @argv);
@@ -106,12 +107,25 @@ sub mangle_host_port_socket {
     return host => $host, port => $port, listen => \@listen, socket => $socket;
 }
 
+sub version_cb {
+    my $self = shift;
+    $self->{version_cb} || sub {
+        require Plack;
+        print "Plack $Plack::VERSION\n";
+    };
+}
+
 sub setup {
     my $self = shift;
 
     if ($self->{help}) {
         require Pod::Usage;
         Pod::Usage::pod2usage(0);
+    }
+
+    if ($self->{version}) {
+        $self->version_cb->();
+        exit;
     }
 
     lib->import(@{$self->{includes}}) if @{$self->{includes}};
