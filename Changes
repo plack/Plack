@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9925  Sat Mar 27 19:03:57 PDT 2010
+        - Make this a non-devel release
+
 0.99_24 Sat Mar 27 13:31:51 PDT 2010
         - Disable Devel::StackTrace::WithLexicals for now until PadWalker RT #55242 is fixed
 
