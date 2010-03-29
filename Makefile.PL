@@ -9,20 +9,20 @@ name 'Plack';
 all_from 'lib/Plack.pm';
 readme_from 'lib/Plack.pm';
 
-requires 'LWP', 5.814; # HTTP::Status, HTTP::Headers and HTTP::Request
-requires 'URI', 1.36;
-requires 'Pod::Usage';  # plackup
-requires 'File::ShareDir', '1.00'; # Plack::Test::Suite
+requires 'LWP', 5.814;                      # HTTP::Status, HTTP::Headers and HTTP::Request
+requires 'URI', 1.36;                       # URI::Escape
+requires 'Pod::Usage';                      # plackup
+requires 'File::ShareDir', '1.00';          # Plack::Test::Suite
 requires 'Try::Tiny';
 requires 'parent';
 
-requires 'Devel::StackTrace'; # Middleware::StackTrace
-requires 'Devel::StackTrace::AsHTML', 0.08; # Middleware::StackTrace
+requires 'Devel::StackTrace';               # Middleware::StackTrace
+requires 'Devel::StackTrace::AsHTML', 0.09; # Middleware::StackTrace
 
-requires 'Filesys::Notify::Simple'; # plackup -r
+requires 'Filesys::Notify::Simple';         # plackup -r
 
-requires 'Hash::MultiValue', 0.05; # Plack::Request
-requires 'HTTP::Body', 1.06; # Plack::Request
+requires 'Hash::MultiValue', 0.05;          # Plack::Request
+requires 'HTTP::Body', 1.06;                # Plack::Request
 
 build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
