@@ -14,7 +14,7 @@ use Test::More;
 use Plack::Test;
 
 # Various kinds of PSGI responses.
-my @res = (
+sub generate_responses {
     [200, ['Content-Type' => 'text/plain'], ['Hello']],
     [200, ['Content-Type' => 'text/plain'], io_from_array ['Hello']],
     sub { $_[0]->([ 200, ['Content-Type' => 'text/plain'], ['Hello'] ]) },
@@ -23,10 +23,10 @@ my @res = (
         $writer->write( 'Hello' );
         $writer->close;
     },
-);
+}
 
 # $body filters can return undef with no warnings.
-for my $res (@res) {
+for my $res ( generate_responses ) {
     my @warns;
     local $SIG{__WARN__} = sub { push @warns, @_ };
 
@@ -36,6 +36,27 @@ for my $res (@res) {
     test_psgi( $app, sub { $_[0]->(GET '/') } );
 
     is_deeply \@warns, [];
+}
+
+for my $res ( generate_responses ) {
+    my $app = MyComponent->new(
+        res => $res, cb => sub {
+            my $done;
+            sub {
+                return if $done;
+                if (defined $_[0]) {
+                    return $_[0];
+                } else {
+                    $done = 1;
+                    return 'END';
+                }
+            },
+        },
+    );
+    test_psgi( $app, sub {
+        my $res = $_[0]->(GET '/');
+        is $res->content, 'HelloEND';
+    } );
 }
 
 done_testing;
