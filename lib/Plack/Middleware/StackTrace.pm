@@ -22,9 +22,10 @@ sub call {
         die @_;
     };
 
-    my $res = try { $self->app->($env) };
+    my $caught;
+    my $res = try { $self->app->($env) } catch { $caught = $_ };
 
-    if ($trace && (!$res or $res->[0] == 500)) {
+    if ($trace && $caught) {
         if (($env->{HTTP_ACCEPT} || '*/*') =~ /html/) {
             $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ utf8_safe($trace->as_html) ]];
         } else {
@@ -66,7 +67,7 @@ Plack::Middleware::StackTrace - Displays stack trace when your app dies
 
 =head1 SYNOPSIS
 
-  enable "Plack::Middleware::StackTrace";
+  enable "StackTrace";
 
 =head1 DESCRIPTION
 
@@ -74,7 +75,17 @@ This middleware catches exceptions (run-time errors) happening in your
 application and displays nice stack trace screen.
 
 This middleware is enabled by default when you run L<plackup> in the
-default development mode.
+default I<development> mode. If your framework catches all the
+exceptions before returning PSGI response, this middleware would never
+have a chance to display errors.
+
+You're recommended to use this middleware during the development and
+use L<Plack::Middleware::HTTPExceptions> in the deployment mode as a
+replacement, so that all the exceptions thrown from your application
+still get caught and rendered as a 500 error response, rather than
+crashing the web server.
+
+Catching errors in streaming response is not supported.
 
 =head1 CONFIGURATION
 
@@ -88,7 +99,7 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<Devel::StackTrace::AsHTML> L<Plack::Middleware>
+L<Devel::StackTrace::AsHTML> L<Plack::Middleware> L<Plack::Middleware::HTTPExceptions>
 
 =cut
 
