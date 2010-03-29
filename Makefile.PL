@@ -28,7 +28,7 @@ build_requires 'Test::More', 0.88;
 build_requires 'Test::TCP', 0.11;
 test_requires 'Test::Requires';
 
-tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t t/*/*/*/*/*.t';
+tests 't/*.t t/*/*.t';
 author_tests 'xt';
 
 install_share 'share';
