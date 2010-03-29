@@ -43,6 +43,10 @@ sub call {
 
     my($http_host, $server_name) = @{$env}{qw( HTTP_HOST SERVER_NAME )};
 
+    if ($http_host and my $port = $env->{SERVER_PORT}) {
+        $http_host =~ s/:$port$//;
+    }
+
     for my $map (@{ $self->{_sorted_mapping} }) {
         my($host, $location, $app) = @$map;
         my $path = $path_info; # copy
