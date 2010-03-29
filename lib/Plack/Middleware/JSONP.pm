@@ -21,9 +21,13 @@ sub call {
 
                 # The filter to transform the body into a JSONP response.
                 my $isnt_first = 0;
+                my $done = 0;
                 return sub {
-                    return ( $isnt_first++ ? ''    : "$cb(" )
-                         . ( defined $_[0] ? $_[0] : ')'    );
+                    my $chunk = shift;
+                    return undef if $done;
+                    do{ $done++; $chunk = ')' } unless defined $chunk;
+                    $chunk = "$cb($chunk"       unless $isnt_first++;
+                    $chunk;
                 };
             }
         }
