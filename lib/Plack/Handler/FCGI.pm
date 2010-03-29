@@ -88,7 +88,7 @@ sub run {
             'psgi.nonblocking'  => Plack::Util::FALSE,
         };
 
-        if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ m!lighttpd/1\.(\d+\.\d+)!) {
+        if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ m!lighttpd[-/]1\.(\d+\.\d+)!) {
             no warnings;
             if ($ENV{PLACK_ENV} eq 'development' && $1 < 4.23 && $env->{PATH_INFO} eq '') {
                 warn "You're using lighttpd 1.$1 and appear to mount your FastCGI handler under the root ('/'). ",
@@ -286,7 +286,7 @@ See L<http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html#FastCgiExternalSe
 To host the app in the root path, you're recommended to use lighttpd
 1.4.23 or newer with C<fix-root-scriptname> flag like below.
 
-  fastcgi.server = ( "" =>
+  fastcgi.server = ( "/" =>
      ((
        "socket" => "/tmp/fcgi.sock",
        "check-local" => "disable"

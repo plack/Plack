@@ -53,7 +53,7 @@ sub test_lighty_external (&@) {
     plan skip_all => 'Please set LIGHTTPD_BIN to the path to lighttpd'
         unless $lighttpd_bin && -x $lighttpd_bin;
 
-    my $ver = (`$lighttpd_bin -v` =~ /lighttpd-1.(\d+\.\d+)/)[0];
+    my $ver = (`$lighttpd_bin -v` =~ m!lighttpd[-/]1.(\d+\.\d+)!)[0];
     diag "Testing with lighttpd 1.$ver";
 
     my $tmpdir = File::Temp::tempdir( CLEANUP => 1 );
@@ -101,7 +101,7 @@ server.port = $port
 
 # HTTP::Engine app specific fcgi setup
 fastcgi.server = (
-    "" => ((
+    "/" => ((
             "check-local"     => "disable",
             "host"            => "127.0.0.1",
             "port"            => $fcgiport,

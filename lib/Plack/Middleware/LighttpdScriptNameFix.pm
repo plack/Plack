@@ -43,7 +43,7 @@ flag inside C<fastcgi.server> instead of using this middleware.
 
 =head1 AUTHORS
 
-tadam
+Yury Zavarin
 
 Tatsuhiko Miyagawa
 
