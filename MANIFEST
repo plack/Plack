@@ -162,6 +162,7 @@ t/Plack-Middleware/cgi-bin/hello3.cgi
 t/Plack-Middleware/cgibin.t
 t/Plack-Middleware/chunked.t
 t/Plack-Middleware/component-leak.t
+t/Plack-Middleware/component.t
 t/Plack-Middleware/conditional.t
 t/Plack-Middleware/conditionalget.t
 t/Plack-Middleware/content_length.t
@@ -190,12 +191,16 @@ t/Plack-Middleware/runtime.t
 t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/simple_logger.t
 t/Plack-Middleware/stacktrace.t
+t/Plack-Middleware/stacktrace_force.t
+t/Plack-Middleware/stacktrace_streaming.t
+t/Plack-Middleware/stacktrace_utf8.t
 t/Plack-Middleware/static.t
 t/Plack-Middleware/static.txt
 t/Plack-Middleware/static_env.t
 t/Plack-Middleware/urlmap.t
 t/Plack-Middleware/urlmap_builder.t
 t/Plack-Middleware/urlmap_env.t
+t/Plack-Middleware/urlmap_ports.t
 t/Plack-Middleware/wrapcgi.t
 t/Plack-Middleware/xframework.t
 t/Plack-Middleware/xsendfile.t
