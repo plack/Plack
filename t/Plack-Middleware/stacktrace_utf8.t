@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Requires { 'Devel::StackTrace::AsHTML' => 0.08 };
 use Plack::Middleware::StackTrace;
 use Plack::Test;
 use HTTP::Request::Common;

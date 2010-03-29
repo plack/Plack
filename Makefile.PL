@@ -17,7 +17,7 @@ requires 'Try::Tiny';
 requires 'parent';
 
 requires 'Devel::StackTrace'; # Middleware::StackTrace
-requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
+requires 'Devel::StackTrace::AsHTML', 0.08; # Middleware::StackTrace
 
 requires 'Filesys::Notify::Simple'; # plackup -r
 
