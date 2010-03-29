@@ -55,7 +55,8 @@ sub response_cb {
                         $line = $filter_cb->($line);
                     }
                     # Send EOF.
-                    push @{ $res->[2] }, $filter_cb->( undef );
+                    my $eof = $filter_cb->( undef );
+                    push @{ $res->[2] }, $eof if defined $eof;
                 } else {
                     my $body    = $res->[2];
                     my $getline = sub { $body->getline };
