@@ -47,7 +47,8 @@ sub utf8_safe {
     # because we're running someone else's code that we can't
     # guarnatee which encoding an exception is encoded, there's no
     # better way than doing this. The latest Devel::StackTrace::AsHTML
-    # which encodes high-bit in HTML, so this path is not executed.
+    # (0.08 or later) encodes high-bit chars as HTML entities, so this
+    # path won't be executed.
     if (utf8::is_utf8($str)) {
         utf8::encode($str);
     }
