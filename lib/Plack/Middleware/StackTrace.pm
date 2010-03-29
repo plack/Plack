@@ -5,6 +5,7 @@ use parent qw/Plack::Middleware/;
 use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
 use Try::Tiny;
+use Plack::Util::Accessor qw( force );
 
 our $StackTraceClass = "Devel::StackTrace";
 
@@ -25,7 +26,7 @@ sub call {
     my $caught;
     my $res = try { $self->app->($env) } catch { $caught = $_ };
 
-    if ($trace && $caught) {
+    if ($trace && ($caught || $self->{force} && ref $res eq 'ARRAY' && $res->[0] == 500) ) {
         if (($env->{HTTP_ACCEPT} || '*/*') =~ /html/) {
             $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ utf8_safe($trace->as_html) ]];
         } else {
@@ -75,9 +76,7 @@ This middleware catches exceptions (run-time errors) happening in your
 application and displays nice stack trace screen.
 
 This middleware is enabled by default when you run L<plackup> in the
-default I<development> mode. If your framework catches all the
-exceptions before returning PSGI response, this middleware would never
-have a chance to display errors.
+default I<development> mode.
 
 You're recommended to use this middleware during the development and
 use L<Plack::Middleware::HTTPExceptions> in the deployment mode as a
@@ -89,7 +88,25 @@ Catching errors in streaming response is not supported.
 
 =head1 CONFIGURATION
 
-No configuration option is available.
+=over 4
+
+=item force
+
+  enable "StackTrace", force => 1;
+
+Force display the stack trace when an error occurs within your
+application and the response code from your application is
+500. Defaults to off.
+
+The use case of this option is that when your framework catches all
+the exceptions in the main handler and returns all failures in your
+code as a normal 500 PSGI error response. In such cases, this
+middleware would never have a chance to display errors because it
+can't tell if it's an application error or just random C<eval> in your
+code. This option enforces the middleware to display stack trace even
+if it's not the direct error thrown by the application.
+
+=back
 
 =head1 AUTHOR
 
