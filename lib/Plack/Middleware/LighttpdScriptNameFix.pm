@@ -71,6 +71,10 @@ If you mount the app under C</something/>, you should set:
 and when a request for C</something/a/b?param=1> comes, C<SCRIPT_NAME>
 becomes C</something> and C<PATH_INFO> becomes C</a/b>.
 
+C<script_name> option is set to empty by default, which means all the
+request path is set to C<PATH_INFO> and it behaves like your fastcgi
+application is mounted in the root path.
+
 =back
 
 =head1 AUTHORS

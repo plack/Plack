@@ -295,8 +295,10 @@ To host the app in the root path, you're recommended to use lighttpd
 
 If you use lighttpd older than 1.4.22 where you don't have
 C<fix-root-scriptname>, mouting apps under the root causes wrong
-C<SCRIPT_NAME> and C<PATH_INFO> set, in which case you can use
-L<Plack::Middleware::LighttpdScriptNameFix> to fix it.
+C<SCRIPT_NAME> and C<PATH_INFO> set. Also, mouting under the empty
+root (C<"">) or a path that has a trailing slash would still cause
+weird values set even with C<fix-root-scriptname>. In such cases you
+can use L<Plack::Middleware::LighttpdScriptNameFix> to fix it.
 
 To mount in the non-root path over TCP:
 
@@ -307,13 +309,10 @@ To mount in the non-root path over TCP:
        "check-local" => "disable"
      ))
 
-It's important that your mount path does B<NOT> have the trailing
-slash. If you have one it might cause issues where your handlers will
-get a wrong C<PATH_INFO> values.
-
-Plack::Handler::FCGI I<used to> have a workaround for this lighttpd's
-bug but has disabled it in favor of newer lighttpd with
-C<fix-root-scriptname> or the use of L<PLack::Middleware::LighttpdScriptNameFix>.
+It's recommended that your mount path does B<NOT> have the trailing
+slash. If you I<really> need to have one, you should consider using
+L<Plack::Middleware::LighttpdScriptNameFix> to fix the wrong
+B<PATH_INFO> values set by lighttpd.
 
 =cut
 
