@@ -26,9 +26,9 @@ sub call {
 
     if ($trace && (!$res or $res->[0] == 500)) {
         if (($env->{HTTP_ACCEPT} || '*/*') =~ /html/) {
-            $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ $trace->as_html ]];
+            $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ utf8_safe($trace->as_html) ]];
         } else {
-            $res = [500, ['Content-Type' => 'text/plain; charset=utf-8'], [ $trace->as_string ]];
+            $res = [500, ['Content-Type' => 'text/plain; charset=utf-8'], [ utf8_safe($trace->as_string) ]];
         }
     }
 
@@ -38,6 +38,21 @@ sub call {
     undef $trace;
 
     return $res;
+}
+
+sub utf8_safe {
+    my $str = shift;
+
+    # NOTE: I know messing with utf8:: in the code is WRONG, but
+    # because we're running someone else's code that we can't
+    # guarnatee which encoding an exception is encoded, there's no
+    # better way than doing this. The latest Devel::StackTrace::AsHTML
+    # which encodes high-bit in HTML, so this path is not executed.
+    if (utf8::is_utf8($str)) {
+        utf8::encode($str);
+    }
+
+    $str;
 }
 
 1;
