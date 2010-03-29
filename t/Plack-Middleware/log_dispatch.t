@@ -1,6 +1,6 @@
 use strict;
 use Plack::Test;
-use Test::Requires qw(Log::Dispatch::Array);
+use Test::Requires { 'Log::Dispatch' => 2.25 };
 
 use Test::More;
 use Plack::Middleware::LogDispatch;
