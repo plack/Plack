@@ -27,6 +27,10 @@ my @app = (
             $writer->close;
         };
     },
+    sub {
+        open my $io, '<', \$json;
+        return [ 200, [ 'Content-Type' => 'application/json' ], $io ];
+    },
 );
 
 for my $app ( @app ) {
