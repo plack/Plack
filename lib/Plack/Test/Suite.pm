@@ -308,12 +308,7 @@ our @TEST = (
         },
     ],
     [
-        # PEP-333 says:
-        #    If the iterable returned by the application has a close() method,
-        #   the server or gateway must call that method upon completion of the
-        #   current request, whether the request was completed normally, or
-        #   terminated early due to an error. 
-        'call close after read file-like',
+        'call close after read IO::Handle-like',
         sub {
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/call_close");
@@ -322,14 +317,13 @@ our @TEST = (
         sub {
             my $env = shift;
             {
-                package CalledClose;
                 our $closed = -1;
-                sub new { $closed = 0; my $i=0; bless \$i, 'CalledClose' }
-                sub getline {
+                sub CalledClose::new { $closed = 0; my $i=0; bless \$i, 'CalledClose' }
+                sub CalledClose::getline {
                     my $self = shift;
                     return $$self++ < 4 ? $$self : undef;
                 }
-                sub close     { ::ok(1, 'closed') if defined &::ok }
+                sub CalledClose::close { ::ok(1, 'closed') if defined &::ok }
             }
             return [
                 200,
