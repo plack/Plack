@@ -9,26 +9,18 @@ sub call {
     my $res = $self->app->($env);
     $self->response_cb($res, sub {
         my $res = shift;
-
-        my $h = Plack::Util::headers($res->[1]);
-        if ($h->get('Content-Type') =~ m!/(?:json|javascript)! &&
+        if (defined $res->[2] && ref $res->[2] eq 'ARRAY' && @{$res->[2]} == 1) {
+            my $h = Plack::Util::headers($res->[1]);
+            if ($h->get('Content-Type') =~ m!/(?:json|javascript)! &&
                 $env->{QUERY_STRING} =~ /(?:^|&)callback=([^&]+)/) {
-            # TODO: support callback params other than 'callback'
-            my $cb = URI::Escape::uri_unescape($1);
-
-            if ($cb =~ /^[\w\.\[\]]+$/) {
-                $h->set('Content-Type', 'text/javascript');
-
-                # The filter to transform the body into a JSONP response.
-                my $isnt_first = 0;
-                my $done = 0;
-                return sub {
-                    my $chunk = shift;
-                    return undef if $done;
-                    do{ $done++; $chunk = ')' } unless defined $chunk;
-                    $chunk = "$cb($chunk"       unless $isnt_first++;
-                    $chunk;
-                };
+                # TODO: support callback params other than 'callback'
+                my $cb = URI::Escape::uri_unescape($1);
+                if ($cb =~ /^[\w\.\[\]]+$/) {
+                    my $jsonp = "$cb($res->[2][0])";
+                    $res->[2] = [ $jsonp ];
+                    $h->set('Content-Length', length $jsonp);
+                    $h->set('Content-Type', 'text/javascript');
+                }
             }
         }
     });
@@ -48,7 +40,8 @@ Plack::Middleware::JSONP wraps JSON response, which has Content-Type
 value either C<text/javascript> or C<application/json> as a JSONP
 response which is specified with the C<callback> query parameter.
 
-Since this middleware removes the Content-Length header to rewrite the content body, you may also want to enable Plack::Middleware::ContentLength.
+This middleware only works with the application response with content
+body set as an array ref and doesn't support IO::Handle-ish body
 
 =head1 AUTHOR
 
@@ -56,7 +49,7 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<Plack> L<Plack::Middleware::ContentLength>
+L<Plack>
 
 =cut
 

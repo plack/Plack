@@ -17,20 +17,6 @@ my @app = (
             );
         };
     },
-    sub {
-        return sub {
-            my $respond = shift;
-            my $writer = $respond->(
-                [ 200, [ 'Content-Type' => 'application/json' ] ],
-            );
-            $writer->write( $json );
-            $writer->close;
-        };
-    },
-    sub {
-        open my $io, '<', \$json;
-        return [ 200, [ 'Content-Type' => 'application/json' ], $io ];
-    },
 );
 
 for my $app ( @app ) {
