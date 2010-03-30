@@ -54,6 +54,10 @@ sub test_lighty_external (&@) {
         unless $lighttpd_bin && -x $lighttpd_bin;
 
     my $ver = (`$lighttpd_bin -v` =~ m!lighttpd[-/]1.(\d+\.\d+)!)[0];
+    if ($ver < 4.17) {
+        plan skip_all => "Too old lighttpd (1.$ver), known to be broken";
+    }
+
     diag "Testing with lighttpd 1.$ver";
 
     my $tmpdir = File::Temp::tempdir( CLEANUP => 1 );
