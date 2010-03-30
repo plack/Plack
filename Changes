@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9928  Mon Mar 29 17:02:42 PDT 2010
+        - log_dispatch.t: require Log::Dispatch::Array
+
 0.9927  Mon Mar 29 12:43:44 PDT 2010
         - require newer Log::Dispatch (confound)
         - StackTrace: Encode exceptions in utf-8 in case they include wide characters #95 (tokuhirom)
