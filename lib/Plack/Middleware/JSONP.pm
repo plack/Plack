@@ -40,8 +40,9 @@ Plack::Middleware::JSONP wraps JSON response, which has Content-Type
 value either C<text/javascript> or C<application/json> as a JSONP
 response which is specified with the C<callback> query parameter.
 
-This middleware only works with the application response with content
-body set as an array ref and doesn't support IO::Handle-ish body
+This middleware only works with an application response with content
+body set as a single element array ref and doesn't touch the response
+otherwise.
 
 =head1 AUTHOR
 
