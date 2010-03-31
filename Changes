@@ -2,7 +2,7 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
-0.9929
+0.9929  Wed Mar 31 00:33:10 PDT 2010
         - Middleware::JSONP: Simplified code and does not support IO response body type
         - fcgi.t: skip tests with lighttpd < 1.4.17 per CPAN Testers #7040400
 
