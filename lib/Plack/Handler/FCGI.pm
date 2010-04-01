@@ -52,7 +52,7 @@ sub run {
     my $proc_manager;
 
     if ($self->{listen}) {
-        $self->daemon_fork if $self->{detach};
+        $self->daemon_fork if $self->{daemonize};
 
         if ($self->{manager}) {
             Plack::Util::load_class($self->{manager});
