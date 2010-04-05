@@ -127,18 +127,25 @@ Plack::Middleware::Lint - Validate request and response
   my $app = sub { ... }; # your app or middleware
   $app = Plack::Middleware::Lint->wrap($app);
 
+  # Or from plackup
+  plackup -e 'enable "Lint"' myapp.psgi
+
 =head1 DESCRIPTION
 
 Plack::Middleware::Lint is a middleware component to validate request
-and response environment. You are strongly suggested to use enable
-this middleware when you develop a framework adapter or a new server
-that implements PSGI interface.
+and response environment formats. You are strongly suggested to use
+this middleware when you develop a new framework adapter or a new PSGI
+web server that implements the PSGI interface.
 
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
 
 Tokuhiro Matsuno
+
+=head1 SEE ALSO
+
+L<Plack>
 
 =cut
 
