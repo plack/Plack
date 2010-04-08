@@ -673,13 +673,29 @@ sub test_app_handler {
 1;
 __END__
 
+=head1 NAME
+
+Plack::Test::Suite - Test suite for Plack handlers
+
 =head1 SYNOPSIS
 
-  # TBD See t/Plack-Servet/*.t for now
+  use Test::More;
+  use Plack::Test::Suite;
+  Plack::Test::Suite->run_server_tests('Your::Handler');
+  done_testing;
 
 =head1 DESCRIPTION
 
-Plack::Test::Suite is a test suite to test a new PSGI server implementation.
+Plack::Test::Suite is a test suite to test a new PSGI server
+implementation. It automatically loads a new handler environment and
+uses LWP to send HTTP requests to the local server to make sure your
+handler implements the PSGI specification correctly.
+
+Note that the handler name doesn't include the C<Plack::Handler::>
+prefix, i.e. if you have a new Plack handler Plack::Handler::Foo, your
+test script would look like:
+
+  Plack::Test::Suite->run_server_tests('Foo');
 
 =head1 AUTHOR
 

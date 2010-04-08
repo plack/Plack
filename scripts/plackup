@@ -96,7 +96,7 @@ TCP socket.
 
 Select a specific implementation to run on using the C<PLACK_SERVER>
 environment variable or use the C<-s> or C<--server> flag which will
-be prefered over the environment variable if present.
+be preferred over the environment variable if present.
 
 =item -S, --socket
 
