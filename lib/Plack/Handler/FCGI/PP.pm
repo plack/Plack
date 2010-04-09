@@ -2,13 +2,20 @@ package Plack::Handler::FCGI::PP;
 use strict;
 use Plack::Util;
 use IO::Socket::INET;
-use Net::FastCGI::Constant qw[:all];
+use Net::FastCGI::Constant qw[:common :type :flag :role :protocol_status];
 use Net::FastCGI::Protocol qw[:all];
+
+sub DEBUG () { 0 }
 
 sub new {
     my $class = shift;
     my $self = bless { @_ }, $class;
     $self->{listen} ||= [ ":$self->{port}" ] if $self->{port};
+    $self->{values} ||= {
+        FCGI_MAX_CONNS   => 1,  # maximum number of concurrent transport connections this application will accept
+        FCGI_MAX_REQS    => 1,  # maximum number of concurrent requests this application will accept
+        FCGI_MPXS_CONNS  => 0,  # this implementation can't multiplex
+    };
     $self;
 }
 
@@ -49,14 +56,14 @@ sub run {
 }
 
 sub process_request {
-    my($self, $env, $stdin, $stdout) = @_;
+    my($self, $env, $stdin, $stdout, $stderr) = @_;
 
     $env = {
         %$env,
         'psgi.version'      => [1,1],
         'psgi.url_scheme'   => ($env->{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
         'psgi.input'        => $stdin,
-        'psgi.errors'       => *STDERR, # xxx
+        'psgi.errors'       => $stderr,
         'psgi.multithread'  => Plack::Util::FALSE,
         'psgi.multiprocess' => Plack::Util::FALSE, # xxx?
         'psgi.run_once'     => Plack::Util::FALSE,
@@ -103,14 +110,6 @@ sub _handle_response {
     }
 }
 
-
-# if the web-server asks for capabilities we respond with:
-our $VALUES = {
-    &FCGI_MAX_CONNS   => 1,     # we are single-threaded
-    &FCGI_MAX_REQS    => 1000,  # how many requests we are accepting per connection
-    &FCGI_MPXS_CONNS  => 0,     # this implementation can't multiplex
-};
-
 sub read_record {
     @_ == 1 || die(q/Usage: read_record(io)/);
     my ($io) = @_;
@@ -131,53 +130,49 @@ sub process_connection {
     my ( $current_id,  # id of the request we are currently processing
          $stdin,       # buffer for stdin
          $stdout,      # buffer for stdout
+         $stderr,      # buffer for stderr
          $params,      # buffer for params (environ)
+         $output,      # buffer for output
+         $done,        # done with connection?
          $keep_conn ); # more requests on this connection?
 
-    ($stdin, $stdout) = ('', '');
+    ($stdin, $stdout, $stderr) = ('', '', '');
 
-    #print "->";
+    while (!$done) {
+        my ($type, $request_id, $content) = read_record($socket)
+          or last;
 
-  RECORD:
-    while (my ($type, $request_id, $content) = read_record($socket)) {
+        if (DEBUG) {
+            warn '< ', dump_record($type, $request_id, $content), "\n";
+        }
 
         if ($request_id == FCGI_NULL_REQUEST_ID) {
-
-            my $record;
             if ($type == FCGI_GET_VALUES) {
-                my $values = parse_params($content);
-                my %params = map { $_ => $VALUES->{$_} }
-                            grep { exists $VALUES->{$_} }
-                            keys %{$values};
-                $record = build_record(FCGI_GET_VALUES_RESULT,
-                    FCGI_NULL_REQUEST_ID, build_params(\%params));
+                my $query = parse_params($content);
+                my %reply = map { $_ => $self->{values}->{$_} }
+                            grep { exists $self->{values}->{$_} }
+                            keys %$query;
+                $output = build_record(FCGI_GET_VALUES_RESULT,
+                    FCGI_NULL_REQUEST_ID, build_params(\%reply));
             }
             else {
-                $record = build_unknown_type_record($type);
+                $output = build_unknown_type_record($type);
             }
-
-            print {$socket} $record
-              || die(q/Couldn't write management record: '$!'/);
-
-            next RECORD;
         }
-
-        # ignore inactive requests (FastCGI Specification 3.3)
-        if ( $current_id 
-             && ($request_id != $current_id)
-             && $type != FCGI_BEGIN_REQUEST) {
-            next RECORD;
+        elsif ($current_id
+            && $request_id != $current_id
+            && $type != FCGI_BEGIN_REQUEST) {
+            # ignore inactive requests (FastCGI Specification 3.3)
         }
-
-        if ($type == FCGI_BEGIN_REQUEST) {
+        elsif ($type == FCGI_ABORT_REQUEST) {
+            $current_id = 0;
+            ($stdin, $stdout, $stderr, $params) = ('', '', '', '');
+        }
+        elsif ($type == FCGI_BEGIN_REQUEST) {
             my ($role, $flags) = parse_begin_request_body($content);
-
             if ($current_id || $role != FCGI_RESPONDER) {
-                my $status = $current_id ? FCGI_CANT_MPX_CONN : FCGI_UNKNOWN_ROLE;
-                my $record = build_end_request_record($request_id, 0, $status);
-
-                print {$socket} $record
-                  || die(q/Couldn't write end request record: '$!'/);
+                $output = build_end_request_record($request_id, 0, 
+                    $current_id ? FCGI_CANT_MPX_CONN : FCGI_UNKNOWN_ROLE);
             }
             else {
                 $current_id = $request_id;
@@ -191,43 +186,47 @@ sub process_connection {
             $stdin .= $content;
 
             unless (length $content) {
-                # process request
-
                 open(my $in, '<', \$stdin)
-                  || die(qq/Couldn't open scalar as fh: $!/);
+                  || die(qq/Couldn't open scalar as fh: '$!'/);
 
                 open(my $out, '>', \$stdout)
-                  || die(qq/Couldn't open scalar as fh: $!/);
+                  || die(qq/Couldn't open scalar as fh: '$!'/);
 
-                $self->process_request(parse_params($params), $in, $out);
+                open(my $err, '>', \$stderr)
+                  || die(qq/Couldn't open scalar as fh: '$!'/);
 
-                my $end = build_end_request($request_id, 0,
-                    FCGI_REQUEST_COMPLETE, $stdout);
+                $self->process_request(parse_params($params), $in, $out, $err);
 
-                print {$socket} $end
-                  || die(q/Couldn't write end request response: '$!'/);
-
-                last unless $keep_conn;
-
-                #print ".";
+                $done   = 1 unless $keep_conn;
+                $output = build_end_request($request_id, 0,
+                    FCGI_REQUEST_COMPLETE, $stdout, $stderr);
 
                 # prepare for next request
                 $current_id = 0;
-                $stdin      = '';
-                $stdout     = '';
-                $params     = '';
+                ($stdin, $stdout, $stderr, $params) = ('', '', '', '');
             }
         }
         else {
-            warn qq/Received an unknown record type '$type'/;
+            warn(qq/Received an unknown record type '$type'/);
+        }
+
+        if ($output) {
+            print {$socket} $output
+              || die(qq/Couldn't write: '$!'/);
+
+            if (DEBUG) {
+                while (length $output) {
+                    my ($type, $rid, $clen, $plen) = parse_header($output);
+                    my $content = substr($output, FCGI_HEADER_LEN, $clen);
+                    warn '> ', dump_record($type, $rid, $content), "\n";
+                    substr($output, 0, FCGI_HEADER_LEN + $clen + $plen, '');
+                }
+            }
+
+            $output = '';
         }
     }
-
-    #print "\n";
-    close($socket);
 }
-
-
 
 1;
 
