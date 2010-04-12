@@ -1,7 +1,7 @@
 package Plack::Handler::Net::FastCGI;
 use strict;
 use Plack::Util;
-use IO::Socket::INET;
+use IO::Socket             qw[];
 use Net::FastCGI::Constant qw[:common :type :flag :role :protocol_status];
 use Net::FastCGI::Protocol qw[:all];
 
@@ -23,7 +23,7 @@ sub run {
     my ($self, $app) = @_;
     $self->{app} = $app;
 
-    my $handle;
+    my $socket;
     my $proto;
     my $port;
 
@@ -31,14 +31,14 @@ sub run {
         $port = $self->{listen}->[0];
         if ($port =~ s/^://) {
             $proto = 'tcp';
-            $handle = IO::Socket::INET->new(
+            $socket = IO::Socket::INET->new(
                 Listen    => 5,
                 LocalPort => $port,
                 Reuse     => 1
             ) or die "Couldn't create listener socket: $!";
         } else {
             $proto = 'unix';
-            $handle = IO::Socket::UNIX->new(
+            $socket = IO::Socket::UNIX->new(
                 Listen    => 5,
                 Local     => $port,
             ) or die "Couldn't create UNIX listener socket: $!";
@@ -47,7 +47,8 @@ sub run {
     else {
         (-S STDIN)
           || die "Standard input is not a socket: specify a listen location";
-        $handle = \*STDIN;
+        $socket = \*STDIN;
+        $socket->autoflush(1);
     }
 
     $self->{server_ready}->({
@@ -57,7 +58,7 @@ sub run {
         server_software => 'Plack::Handler::Net::FastCGI',
     }) if $self->{server_ready} && $proto;
 
-    while (my $c = $handle->accept) {
+    while (my $c = $socket->accept) {
         $self->process_connection($c);
     }
 }
