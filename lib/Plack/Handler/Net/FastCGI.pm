@@ -45,9 +45,8 @@ sub run {
         }
     }
     else {
-        my $fd = fileno(STDIN);
-        (defined $fd && $fd >= 0 && (-S STDIN || -p _))
-          || die "STDIN is not a socket or a pipe: specify a listen location";
+        (-S STDIN)
+          || die "Standard input is not a socket: specify a listen location";
         $handle = \*STDIN;
     }
 
@@ -58,13 +57,8 @@ sub run {
         server_software => 'Plack::Handler::Net::FastCGI',
     }) if $self->{server_ready} && $proto;
 
-    if (-S $handle) {
-        while (my $c = $handle->accept) {
-            $self->process_connection($c);
-        }
-    }
-    else {
-        $self->process_connection($handle);
+    while (my $c = $handle->accept) {
+        $self->process_connection($c);
     }
 }
 
