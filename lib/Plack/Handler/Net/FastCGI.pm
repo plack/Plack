@@ -1,4 +1,4 @@
-package Plack::Handler::FCGI::PP;
+package Plack::Handler::Net::FastCGI;
 use strict;
 use Plack::Util;
 use IO::Socket::INET;
@@ -47,7 +47,7 @@ sub run {
         host  => 'localhost',
         port  => $port,
         proto => $proto,
-        server_software => 'Plack::Handler::FCGI::PP',
+        server_software => 'Plack::Handler::Net::FastCGI',
     }) if $self->{server_ready};
 
     while (my $c = $socket->accept) {
@@ -234,12 +234,12 @@ __END__
 
 =head1 NAME
 
-Plack::Handler::FCGI::PP - FastCGI handler for Plack using Net::FastCGI
+Plack::Handler::Net::FastCGI - FastCGI handler for Plack using Net::FastCGI
 
 =head1 SYNOPSIS
 
   # Run as a standalone daemon using TCP port
-  plackup -s FCGI::PP --listen :9090
+  plackup -s Net::FastCGI --listen :9090
 
 =head1 DESCRIPTION
 
