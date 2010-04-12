@@ -23,24 +23,32 @@ sub run {
     my ($self, $app) = @_;
     $self->{app} = $app;
 
-    my $socket;
+    my $handle;
     my $proto;
-    my $port = $self->{listen}->[0]
-        or die "This handler doesn't run with STDIN. Run this as an external FCGI daemon";
+    my $port;
 
-    if ($port =~ s/^://) {
-        $proto = 'tcp';
-        $socket = IO::Socket::INET->new(
-            Listen    => 5,
-            LocalPort => $port,
-            Reuse     => 1
-        ) or die "Couldn't create listener socket: $!";
-    } else {
-        $proto = 'unix';
-        $socket = IO::Socket::UNIX->new(
-            Listen    => 5,
-            Local     => $port,
-        ) or die "Couldn't create UNIX listener socket: $!";
+    if ($self->{listen}) {
+        $port = $self->{listen}->[0];
+        if ($port =~ s/^://) {
+            $proto = 'tcp';
+            $handle = IO::Socket::INET->new(
+                Listen    => 5,
+                LocalPort => $port,
+                Reuse     => 1
+            ) or die "Couldn't create listener socket: $!";
+        } else {
+            $proto = 'unix';
+            $handle = IO::Socket::UNIX->new(
+                Listen    => 5,
+                Local     => $port,
+            ) or die "Couldn't create UNIX listener socket: $!";
+        }
+    }
+    else {
+        my $fd = fileno(STDIN);
+        (defined $fd && $fd >= 0 && (-S STDIN || -p _))
+          || die "STDIN is not a socket or a pipe: specify a listen location";
+        $handle = \*STDIN;
     }
 
     $self->{server_ready}->({
@@ -48,10 +56,15 @@ sub run {
         port  => $port,
         proto => $proto,
         server_software => 'Plack::Handler::Net::FastCGI',
-    }) if $self->{server_ready};
+    }) if $self->{server_ready} && $proto;
 
-    while (my $c = $socket->accept) {
-        $self->process_connection($c);
+    if (-S $handle) {
+        while (my $c = $handle->accept) {
+            $self->process_connection($c);
+        }
+    }
+    else {
+        $self->process_connection($handle);
     }
 }
 
@@ -136,7 +149,7 @@ sub process_connection {
          $done,        # done with connection?
          $keep_conn ); # more requests on this connection?
 
-    ($stdin, $stdout, $stderr) = ('', '', '');
+    ($current_id, $stdin, $stdout, $stderr) = (0, '', '', '');
 
     while (!$done) {
         my ($type, $request_id, $content) = read_record($socket)
@@ -159,9 +172,7 @@ sub process_connection {
                 $output = build_unknown_type_record($type);
             }
         }
-        elsif ($current_id
-            && $request_id != $current_id
-            && $type != FCGI_BEGIN_REQUEST) {
+        elsif ($request_id != $current_id && $type != FCGI_BEGIN_REQUEST) {
             # ignore inactive requests (FastCGI Specification 3.3)
         }
         elsif ($type == FCGI_ABORT_REQUEST) {
@@ -225,6 +236,10 @@ sub process_connection {
 
             $output = '';
         }
+    }
+
+    if (DEBUG && !$done && $!) {
+        warn(qq/Request was prematurely aborted: '$!'/);
     }
 }
 
