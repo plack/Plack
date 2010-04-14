@@ -65,10 +65,12 @@ lib/Plack/Handler/CGI.pm
 lib/Plack/Handler/FCGI.pm
 lib/Plack/Handler/HTTP/Server/PSGI.pm
 lib/Plack/Handler/HTTP/Server/Simple.pm
+lib/Plack/Handler/Net/FastCGI.pm
 lib/Plack/Handler/Standalone.pm
 lib/Plack/HTTPParser.pm
 lib/Plack/HTTPParser/PP.pm
 lib/Plack/Loader.pm
+lib/Plack/Loader/Delayed.pm
 lib/Plack/Loader/Restarter.pm
 lib/Plack/Loader/Shotgun.pm
 lib/Plack/Middleware.pm
@@ -144,10 +146,12 @@ t/Plack-Handler/cgi.t
 t/Plack-Handler/fcgi.t
 t/Plack-Handler/fcgi_client.t
 t/Plack-Handler/http_server_simple.t
+t/Plack-Handler/net_fastcgi.t
 t/Plack-Handler/standalone.t
 t/Plack-HTTPParser-PP/simple.t
 t/Plack-Loader/auto.t
 t/Plack-Loader/auto_fallback.t
+t/Plack-Loader/delayed.t
 t/Plack-Loader/shotgun.t
 t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
