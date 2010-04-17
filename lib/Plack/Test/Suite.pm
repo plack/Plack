@@ -161,15 +161,15 @@ our @TEST = (
         'bigger file',
         sub {
             my $cb  = shift;
-            my $res = $cb->(GET "http://127.0.0.1/kyoto.jpg");
+            my $res = $cb->(GET "http://127.0.0.1/baybridge.jpg");
             is $res->code, 200;
             is $res->header('content_type'), 'image/jpeg';
-            is length $res->content, 2397701;
-            is Digest::MD5::md5_hex($res->content), '9c6d7249a77204a88be72e9b2fe279e8';
+            is length $res->content, 79838;
+            is Digest::MD5::md5_hex($res->content), '983726ae0e4ce5081bef5fb2b7216950';
         },
         sub {
             my $env = shift;
-            open my $fh, '<', "$share_dir/kyoto.jpg";
+            open my $fh, '<', "$share_dir/baybridge.jpg";
             binmode $fh;
             return [
                 200,

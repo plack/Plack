@@ -129,12 +129,12 @@ lib/Plack/Test/Suite.pm
 lib/Plack/Util.pm
 lib/Plack/Util/Accessor.pm
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 META.yml
 README
 scripts/plackup
+share/baybridge.jpg
 share/face.jpg
-share/kyoto.jpg
 t/00_compile.t
 t/FCGIUtils.pm
 t/HTTP-Message-PSGI/utf8_req.t
