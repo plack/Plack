@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9931  Fri Apr 16 23:52:27 PDT 2010
+        - replace kyoto.jpg test image file with smaller baybridge.jpg to strip down the tarball size
+          from 2.5MB to 212KB.
+
 0.9930  Tue Apr 13 20:18:06 PDT 2010
         - Added Plack::Handler::Net::FastCGI (chansen)
         - Made Test::TCP a hard dependency since Plack::Test needs it
