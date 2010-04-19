@@ -6,6 +6,16 @@ use parent qw(Plack::Middleware);
 use Scalar::Util qw(blessed);
 use Plack::Util;
 
+sub wrap {
+    my($self, $app) = @_;
+
+    unless (ref $app eq 'CODE' or overload::Method($app, '&{}')) {
+        Carp::croak("PSGI app should be a code reference: $app");
+    }
+
+    $self->SUPER::wrap($app);
+}
+
 sub call {
     my $self = shift;
     my $env = shift;
@@ -79,7 +89,7 @@ sub validate_res {
     my $croak = $streaming ? \&Carp::confess : \&Carp::croak;
 
     unless (ref($res) and ref($res) eq 'ARRAY' || ref($res) eq 'CODE') {
-        $croak->('response should be arrayref or coderef');
+        $croak->('response should be array ref or code ref');
     }
 
     if (ref $res eq 'CODE') {
