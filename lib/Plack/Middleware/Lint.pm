@@ -147,6 +147,9 @@ and response environment formats. You are strongly suggested to use
 this middleware when you develop a new framework adapter or a new PSGI
 web server that implements the PSGI interface.
 
+This middleware is enabled by default when you run plackup or other
+launcher tools with the default environment I<development> value.
+
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa

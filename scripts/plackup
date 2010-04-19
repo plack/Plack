@@ -137,8 +137,8 @@ environment setting the application is running on.
 The value can be anything but commonly used ones are C<development>,
 C<deployment> and C<test>.
 
-If it's set to C<development>, following middleware is enabled by
-default: L<AccessLog>, L<StackTrace>.
+If it's set to C<development>, following middleware components are
+enabled by default: I<AccessLog>, I<StackTrace> and I<Lint>.
 
 =item -r, --reload
 
