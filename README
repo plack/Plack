@@ -12,14 +12,17 @@ DESCRIPTION
 MODULES AND UTILITIES
   Plack::Handler
     Plack::Handler and its subclasses contains adapters for web servers. We
-    have adapters for Standalone, CGI, FCGI, Apache, AnyEvent, Coro,
-    Danga::Socket and many server environments that you can run PSGI
-    applications on.
+    have adapters for the built-in standalone web server HTTP::Server::PSGI,
+    CGI, FCGI, Apache1, Apache2, Net::FastCGI and HTTP::Server::Simple
+    included in the core Plack distribution.
+
+    There are also many HTTP server implementations on CPAN that has Plack
+    handlers.
 
     See Plack::Handler how to write your own adapters.
 
   Plack::Loader
-    Plack::Loader is a loader to load one of Plack::Server adapters and run
+    Plack::Loader is a loader to load one of Plack::Handler adapters and run
     PSGI application code reference with it.
 
   Plack::Util

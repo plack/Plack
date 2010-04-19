@@ -2,6 +2,11 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9932  Mon Apr 19 15:23:55 JST 2010
+        - Enable Lint middleware by default in the development env
+        - Lint middleware now validates $app on startup
+        - Fixed documentations on middleware and handlers
+
 0.9931  Fri Apr 16 23:52:27 PDT 2010
         - replace kyoto.jpg test image file with smaller baybridge.jpg to strip down the tarball size
           from 2.5MB to 212KB.
