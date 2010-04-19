@@ -176,14 +176,20 @@ sub watch {
         if $self->{loader} eq 'Restarter';
 }
 
+sub apply_middleware {
+    my($self, $app, $class, @args) = @_;
+
+    my $mw_class = Plack::Util::load_class($class, 'Plack::Middleware');
+    build { $mw_class->wrap($_[0], @args) } $app;
+}
+
 sub prepare_devel {
     my($self, $app) = @_;
 
-    require Plack::Middleware::StackTrace;
-    require Plack::Middleware::AccessLog;
-    $app = build { Plack::Middleware::StackTrace->wrap($_[0]) } $app;
+    $app = $self->apply_middleware($app, 'Lint');
+    $app = $self->apply_middleware($app, 'StackTrace');
     unless ($ENV{GATEWAY_INTERFACE}) {
-        $app = build { Plack::Middleware::AccessLog->wrap($_[0], logger => sub { print STDERR @_ }) } $app;
+        $app = $self->apply_middleware($app, 'AccessLog', logger => sub { print STDERR @_ });
     }
 
     push @{$self->{options}}, server_ready => sub {
