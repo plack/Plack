@@ -35,8 +35,8 @@ See L<Plack::Handler> how to write your own adapters.
 
 =head2 Plack::Loader
 
-L<Plack::Loader> is a loader to load one of Plack::Server adapters and
-run PSGI application code reference with it.
+L<Plack::Loader> is a loader to load one of L<Plack::Handler> adapters
+and run PSGI application code reference with it.
 
 =head2 Plack::Util
 

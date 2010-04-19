@@ -167,7 +167,7 @@ use those loader types.
 =back
 
 Other options that starts with C<--> are passed through to the backend
-server. See each Plack::Server backend documentations to see which
+server. See each Plack::Handler backend documentations to see which
 options are available.
 
 =head1 SEE ALSO
