@@ -158,7 +158,11 @@ separated by comma (C<,>).
 
 Specify the server loading subclass that implements how to run the
 server. Available options are I<Plack::Loader> (default), I<Restarter>
-(automatically set when C<-r> or C<-R> is used) and I<Shotgun>.
+(automatically set when C<-r> or C<-R> is used), I<Delayed> and
+I<Shotgun>.
+
+See L<Plack::Loader::Delayed> and L<Plack::Loader::Shotgun> when to
+use those loader types.
 
 =back
 
