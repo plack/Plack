@@ -27,9 +27,16 @@ PSGI and Plack are and why we need them.
 =head2 Plack::Handler
 
 L<Plack::Handler> and its subclasses contains adapters for web
-servers. We have adapters for Standalone, CGI, FCGI, Apache, AnyEvent,
-Coro, Danga::Socket and many server environments that you can run PSGI
-applications on.
+servers. We have adapters for the built-in standalone web server
+L<HTTP::Server::PSGI>, L<CGI|Plack::Handler::CGI>,
+L<FCGI|Plack::Handler::FCGI>, L<Apache1|Plack::Handler::Apache1>,
+L<Apache2|Plack::Handler::Apache2>,
+L<Net::FastCGI|Plack::Handler::Net::FastCGI> and
+L<HTTP::Server::Simple|Plack::Handler::HTTP::Server::Simple> included
+in the core Plack distribution.
+
+There are also many HTTP server implementations on CPAN that has Plack
+handlers.
 
 See L<Plack::Handler> how to write your own adapters.
 
