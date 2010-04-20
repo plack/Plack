@@ -127,9 +127,8 @@ sub load_psgi {
     return $app->to_app if $app and Scalar::Util::blessed($app) and $app->can('to_app');
     return $app if $app and (ref $app eq 'CODE' or overload::Method($app, '&{}'));
 
-    Carp::croak( "$file did not return a PSGI app handler code reference."
-                 . "\nInstead it returned: "
-                 . ( defined $app ? $app : '<undef>' ));
+    Carp::croak( "$file did not return a PSGI app handler code reference. Instead it returned: "
+                 . ( defined $app ? $app : 'undef' ));
 }
 
 sub run_app($$) {
