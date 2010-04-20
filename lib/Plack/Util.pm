@@ -125,10 +125,7 @@ sub load_psgi {
     die "Error while loading $file: $@" if $@;
 
     return $app->to_app if $app and Scalar::Util::blessed($app) and $app->can('to_app');
-    return $app if $app and (ref $app eq 'CODE' or overload::Method($app, '&{}'));
-
-    Carp::croak( "$file did not return a PSGI app handler code reference. Instead it returned: "
-                 . ( defined $app ? $app : 'undef' ));
+    return $app;
 }
 
 sub run_app($$) {

@@ -10,7 +10,7 @@ sub wrap {
     my($self, $app) = @_;
 
     unless (ref $app eq 'CODE' or overload::Method($app, '&{}')) {
-        Carp::croak("PSGI app should be a code reference: $app");
+        Carp::croak("PSGI app should be a code reference: ", (defined $app ? $app : "undef"));
     }
 
     $self->SUPER::wrap($app);
