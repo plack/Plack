@@ -98,7 +98,7 @@ Plack::Loader - (auto)load Plack Servers
   Plack::Loader->auto(%args)->run($app);
 
   # specify the implementation with a name
-  Plack::Loader->load('Standalone::Prefork', %args)->run($app);
+  Plack::Loader->load('FCGI', %args)->run($app);
 
 =head1 DESCRIPTION
 
