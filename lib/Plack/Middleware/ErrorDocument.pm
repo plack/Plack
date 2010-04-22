@@ -2,6 +2,8 @@ package Plack::Middleware::ErrorDocument;
 use strict;
 use warnings;
 use parent qw(Plack::Middleware);
+use Plack::MIME;
+use Plack::Util;
 use Plack::Util::Accessor qw( subrequest );
 
 use HTTP::Status qw(is_error);
@@ -42,6 +44,8 @@ sub call {
         } else {
             open my $fh, "<", $path or die "$path: $!";
             $r->[2] = $fh;
+            my $h = Plack::Util::headers($r->[1]);
+            $h->set('Content-Type', Plack::MIME->mime_type($path));
         }
     });
 }
