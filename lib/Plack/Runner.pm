@@ -28,8 +28,8 @@ sub parse_options {
 
     local @ARGV = @_;
 
-    # From 'prove': Allow cuddling the paths with -I and -M
-    @ARGV = map { /^(-[IM])(.+)/ ? ($1,$2) : $_ } @ARGV;
+    # From 'prove': Allow cuddling the paths with -I, -M and -e
+    @ARGV = map { /^(-[IMe])(.+)/ ? ($1,$2) : $_ } @ARGV;
 
     my($host, $port, $socket, @listen);
 
