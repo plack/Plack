@@ -7,6 +7,9 @@ use Test::TCP;
 use Plack::Test::Suite;
 use t::FCGIUtils;
 
+plan skip_all => "Set TEST_FCGI_CLIENT to test this"
+    unless $ENV{TEST_FCGI_CLIENT};
+
 my $http_port;
 my $fcgi_port;
 
