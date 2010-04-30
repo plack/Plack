@@ -15,7 +15,7 @@ __END__
 
 =head1 NAME
 
-Plack::Server::Standalone::Prefork - DEPRECATED
+Plack::Server::Standalone::Prefork - DEPRECATED use Starman or Starlet instead
 
 =head1 DESCRIPTION
 
