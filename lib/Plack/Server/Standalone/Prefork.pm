@@ -5,7 +5,7 @@ use Carp;
 
 sub new {
     my $class = shift;
-    Carp::carp "Use of $class is deprecated. Use Plack::Handler::Standalone or Plack::Loader to upgrade.";
+    Carp::carp "Use of $class is deprecated. Use Starman or Starlet for preforking servers.";
     $class->SUPER::new(@_);
 }
 
