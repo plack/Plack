@@ -7,6 +7,8 @@ use Plack::Util::Accessor qw(last cooldown);
 sub prepare_app {
     my $self = shift;
     $self->cooldown(10) unless defined $self->cooldown;
+
+    Module::Refresh->new;
     $self->last(time - $self->cooldown);
 }
 
