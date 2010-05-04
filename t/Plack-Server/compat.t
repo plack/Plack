@@ -14,6 +14,7 @@ my $app = sub {
 my $req = HTTP::Request->new(GET => "http://localhost/foo");
 my $cgi = HTTP::Request::AsCGI->new($req);
 my $c = $cgi->setup;
+$ENV{SCRIPT_NAME} = '/plack_test.cgi';
 
 my $stderr;
 {
