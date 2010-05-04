@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use Test::Requires qw(Module::Refresh);
 use File::Spec;
 use File::Temp;
 use HTTP::Request::Common;
