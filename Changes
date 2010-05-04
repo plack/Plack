@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9934  Tue May  4 15:47:33 PDT 2010
+        - Added a test in CGIBin where binmode ":utf8" causes bad content-length #110
+        - Doc fix for the deprecated servers
+        - Initialize Module::Refresh (hiratara)
+        - Added mime_type to ErorrDocument (kakuno)
+
 0.9933  Tue Apr 27 14:32:23 PDT 2010
         - refactored the app.psgi loading error handling
         - Enable type checking of the app in Lint->wrap

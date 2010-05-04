@@ -163,6 +163,7 @@ t/Plack-Middleware/cascade_streaming.t
 t/Plack-Middleware/cgi-bin/hello.cgi
 t/Plack-Middleware/cgi-bin/hello2.cgi
 t/Plack-Middleware/cgi-bin/hello3.cgi
+t/Plack-Middleware/cgi-bin/utf8.cgi
 t/Plack-Middleware/cgibin.t
 t/Plack-Middleware/chunked.t
 t/Plack-Middleware/component-leak.t
@@ -191,6 +192,7 @@ t/Plack-Middleware/recursive/base.t
 t/Plack-Middleware/recursive/streaming.t
 t/Plack-Middleware/recursive/throw.t
 t/Plack-Middleware/recursive/throw_streaming.t
+t/Plack-Middleware/refresh-init.t
 t/Plack-Middleware/runtime.t
 t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/simple_logger.t
