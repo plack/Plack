@@ -23,8 +23,16 @@ sub run {
 
     delete $env->{HTTP_CONTENT_TYPE};
     delete $env->{HTTP_CONTENT_LENGTH};
-    $env->{SCRIPT_NAME}     = '' if $env->{SCRIPT_NAME} eq '/';
     $env->{'HTTP_COOKIE'} ||= $ENV{COOKIE}; # O'Reilly server bug
+
+    if (!exists $env->{PATH_INFO}) {
+        $env->{PATH_INFO} = '';
+    }
+
+    if ($env->{SCRIPT_NAME} eq '/') {
+        $env->{SCRIPT_NAME} = '';
+        $env->{PATH_INFO}   = '/' . $env->{PATH_INFO};
+    }
 
     my $res = $app->($env);
     if (ref $res eq 'ARRAY') {

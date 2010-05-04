@@ -20,6 +20,7 @@ Plack::Test::Suite->runtests(sub {
 
         my $cgi = HTTP::Request::AsCGI->new($req);
         my $c = $cgi->setup;
+        $ENV{SCRIPT_NAME} = '/plack_test.cgi';
         eval { Plack::Handler::CGI->new->run($handler) };
         my $res = $c->response;
         $res->request($req);
