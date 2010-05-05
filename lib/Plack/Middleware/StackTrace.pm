@@ -123,6 +123,15 @@ can't tell if it's an application error or just random C<eval> in your
 code. This option enforces the middleware to display stack trace even
 if it's not the direct error thrown by the application.
 
+=item no_print_errors
+
+  enable "StackTrace", no_print_errors => 1;
+
+Skips printing the text stacktrace to console
+(C<psgi.errors>). Defaults to 0, which means the text version of the
+stack trace error is printed to the errors handle, which usually is a
+standard error.
+
 =back
 
 =head1 AUTHOR
