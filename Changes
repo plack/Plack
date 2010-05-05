@@ -2,6 +2,15 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9935  Wed May  5 15:17:06 PDT 2010
+        - Set an empty PATH_INFO if CGI environment doesn't set so (hachi) #109
+        - Fixed a possible weird combination of SCRIPT_NAME and PATH_INFO in CGI handlers
+        - localize PATH_INFO and SCRIPT_NAME in App::File and subclasses #100
+        - updated COPYRIGHT notice for Debian
+        - Middleware::StackTrace now displays text trace to psgi.errors like Rack::ShowExceptions
+          (castaway, theorbtwo)
+        - Middleware::StackTrace: Fixed the text stack trace format to be more readable
+
 0.9934  Tue May  4 15:47:33 PDT 2010
         - Added a test in CGIBin where binmode ":utf8" causes bad content-length #110
         - Doc fix for the deprecated servers
