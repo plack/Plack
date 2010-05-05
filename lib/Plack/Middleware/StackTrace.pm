@@ -27,10 +27,12 @@ sub call {
     my $res = try { $self->app->($env) } catch { $caught = $_ };
 
     if ($trace && ($caught || $self->{force} && ref $res eq 'ARRAY' && $res->[0] == 500) ) {
+        my $text = trace_as_string($trace);
+        $env->{'psgi.errors'}->print($text);
         if (($env->{HTTP_ACCEPT} || '*/*') =~ /html/) {
             $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ utf8_safe($trace->as_html) ]];
         } else {
-            $res = [500, ['Content-Type' => 'text/plain; charset=utf-8'], [ utf8_safe($trace->as_string) ]];
+            $res = [500, ['Content-Type' => 'text/plain; charset=utf-8'], [ utf8_safe($text) ]];
         }
     }
 
@@ -40,6 +42,21 @@ sub call {
     undef $trace;
 
     return $res;
+}
+
+sub trace_as_string {
+    my $trace = shift;
+
+    my $st = '';
+    my $first = 1;
+    foreach my $f ( $trace->frames() ) {
+        $st .= "\t" unless $first;
+        $st .= $f->as_string($first) . "\n";
+        $first = 0;
+    }
+
+    return $st;
+
 }
 
 sub utf8_safe {
