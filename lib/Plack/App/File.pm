@@ -22,13 +22,15 @@ sub call {
     my($file, $path_info) = $self->file || $self->locate_file($env);
     return $file if ref $file eq 'ARRAY';
 
+    local @{$env}{qw( SCRIPT_NAME PATH_INFO )} = @{$env}{qw( SCRIPT_NAME PATH_INFO )};
+
     if ($path_info) {
         $env->{PATH_INFO}   =~ s/\Q$path_info\E$//;
         $env->{SCRIPT_NAME} = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
-        $env->{PATH_INFO }  = $path_info;
+        $env->{PATH_INFO}   = $path_info;
     } else {
         $env->{SCRIPT_NAME} = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
-        $env->{PATH_INFO }  = '';
+        $env->{PATH_INFO}   = '';
     }
 
     return $self->serve_path($env, $file);
