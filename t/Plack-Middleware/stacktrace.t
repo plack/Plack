@@ -5,7 +5,7 @@ use Plack::Middleware::StackTrace;
 use Plack::Test;
 use HTTP::Request::Common;
 
-my $app = Plack::Middleware::StackTrace->wrap(sub { die "orz" });
+my $app = Plack::Middleware::StackTrace->wrap(sub { die "orz" }, no_print_errors => 1);
 
 test_psgi $app, sub {
     my $cb = shift;

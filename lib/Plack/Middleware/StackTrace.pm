@@ -5,7 +5,7 @@ use parent qw/Plack::Middleware/;
 use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
 use Try::Tiny;
-use Plack::Util::Accessor qw( force );
+use Plack::Util::Accessor qw( force no_print_errors );
 
 our $StackTraceClass = "Devel::StackTrace";
 
@@ -26,9 +26,9 @@ sub call {
     my $caught;
     my $res = try { $self->app->($env) } catch { $caught = $_ };
 
-    if ($trace && ($caught || $self->{force} && ref $res eq 'ARRAY' && $res->[0] == 500) ) {
+    if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
         my $text = trace_as_string($trace);
-        $env->{'psgi.errors'}->print($text);
+        $env->{'psgi.errors'}->print($text) unless $self->no_print_errors;
         if (($env->{HTTP_ACCEPT} || '*/*') =~ /html/) {
             $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ utf8_safe($trace->as_html) ]];
         } else {

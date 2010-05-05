@@ -11,7 +11,7 @@ my $app = sub {
     return [ 500, [ 'Content-Type', 'text/html' ], [ "Fancy Error" ] ];
 };
 
-my $default_app = Plack::Middleware::StackTrace->wrap($app);
+my $default_app = Plack::Middleware::StackTrace->wrap($app, no_print_errors => 1);
 
 test_psgi $default_app, sub {
     my $cb = shift;
@@ -23,7 +23,7 @@ test_psgi $default_app, sub {
     like $res->content, qr/Fancy Error/;
 };
 
-my $force_app = Plack::Middleware::StackTrace->wrap($app, force => 1);
+my $force_app = Plack::Middleware::StackTrace->wrap($app, force => 1, no_print_errors => 1);
 
 test_psgi $force_app, sub {
     my $cb = shift;

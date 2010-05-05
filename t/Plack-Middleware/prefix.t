@@ -10,7 +10,8 @@ my $handler = builder {
     };
 };
 
-my $res = $handler->(+{});
+open my $io, ">", \my $err;
+my $res = $handler->({ 'psgi.errors' => $io });
 is $res->[0], 500;
 
 my %hdrs = @{$res->[1]};

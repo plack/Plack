@@ -7,7 +7,7 @@ use Plack::Test;
 use HTTP::Request::Common;
 
 $Plack::Test::Impl = "Server";
-my $app = Plack::Middleware::StackTrace->wrap(sub { die "Foo \x{30c6}" });
+my $app = Plack::Middleware::StackTrace->wrap(sub { die "Foo \x{30c6}" }, no_print_errors => 1);
 
 test_psgi $app, sub {
     my $cb = shift;
