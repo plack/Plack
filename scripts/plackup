@@ -1,6 +1,5 @@
 #!perl
 use strict;
-use lib "lib";
 use Plack::Runner;
 
 my $runner = Plack::Runner->new;
