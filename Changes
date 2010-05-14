@@ -2,6 +2,11 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9936  Fri May 14 15:58:02 PDT 2010
+        - Remove 'use lib "lib"' from plackup
+        - Remove HTTP_CONTENT_* environment variables in FastCGI handlers to deal with buggy web servers.
+          (Justin Davis)
+
 0.9935  Wed May  5 15:17:06 PDT 2010
         - Set an empty PATH_INFO if CGI environment doesn't set so (hachi) #109
         - Fixed a possible weird combination of SCRIPT_NAME and PATH_INFO in CGI handlers
