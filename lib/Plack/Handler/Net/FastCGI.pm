@@ -79,6 +79,9 @@ sub process_request {
         'psgi.nonblocking'  => Plack::Util::FALSE,
     };
 
+    delete $env->{HTTP_CONTENT_TYPE};
+    delete $env->{HTTP_CONTENT_LENGTH};
+
     my $res = Plack::Util::run_app $self->{app}, $env;
 
     if (ref $res eq 'ARRAY') {

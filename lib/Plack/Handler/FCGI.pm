@@ -88,6 +88,9 @@ sub run {
             'psgi.nonblocking'  => Plack::Util::FALSE,
         };
 
+        delete $env->{HTTP_CONTENT_TYPE};
+        delete $env->{HTTP_CONTENT_LENGTH};
+
         if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ m!lighttpd[-/]1\.(\d+\.\d+)!) {
             no warnings;
             if ($ENV{PLACK_ENV} eq 'development' && $1 < 4.23 && $env->{PATH_INFO} eq '') {
