@@ -128,7 +128,10 @@ sub setup {
         exit;
     }
 
-    lib->import(@{$self->{includes}}) if @{$self->{includes}};
+    if (@{$self->{includes}}) {
+        require lib;
+        lib->import(@{$self->{includes}});
+    }
 
     if ($self->{eval}) {
         push @{$self->{modules}}, 'Plack::Builder';
