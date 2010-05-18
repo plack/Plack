@@ -106,13 +106,13 @@ sub serve_path {
 
 sub return_403 {
     my $self = shift;
-    return [403, ['Content-Type' => 'text/plain'], ['forbidden']];
+    return [403, ['Content-Type' => 'text/plain', 'Content-Length' => 9], ['forbidden']];
 }
 
 # Hint: subclasses can override this to return undef to pass through 404
 sub return_404 {
     my $self = shift;
-    return [404, ['Content-Type' => 'text/plain'], ['not found']];
+    return [404, ['Content-Type' => 'text/plain', 'Content-Length' => 9], ['not found']];
 }
 
 1;
