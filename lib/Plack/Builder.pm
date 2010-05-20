@@ -199,9 +199,15 @@ You'll get warnings saying that your mount configuration will be
 ignored.  Instead you should use C<< mount "/" => ... >> in the last
 line to set the default fallback app.
 
+=head1 CONDITIONAL MIDDLEWARE SUPPORT
+
+You can use C<enable_if> to conditionally enable middleware based on
+the runtime environment. See L<Plack::Middleware::Conditional> for
+details.
+
 =head1 SEE ALSO
 
-L<Plack::Middleware> L<Plack::App::URLMap>
+L<Plack::Middleware> L<Plack::App::URLMap> L<Plack::Middleware::Conditional>
 
 =cut
 
