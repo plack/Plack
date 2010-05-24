@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9938  Sun May 23 17:13:05 PDT 2010
+        - ErrorDocument: Added Content-Length to error responses (hachi)
+        - Improved docs about conditional middleware loading
+        - XSendfile: Updated (undocumented) environment key to switch frontend
+        - Auth::Basic: Added notes about how to use it with Apache (mod_perl and CGI) [RT #57436]
+
 0.9937  Fri May 14 23:11:27 PDT 2010
         - Fixed -I broken in 0.9936 (juster) #114
 
