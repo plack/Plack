@@ -288,10 +288,11 @@ HTTP::Server::PSGI is a standalone, single-process and PSGI compatible
 HTTP server implementations.
 
 This server should be great for the development and testig, but might
-not be suitable for production.
+not be suitable for a production use.
 
 Some features in HTTP/1.1, notably chunked requests, responses and
-pipeline requests are B<NOT> supported yet.
+pipeline requests are B<NOT> supported. See L<Starman> if you want
+those features.
 
 =head1 PREFORKING
 

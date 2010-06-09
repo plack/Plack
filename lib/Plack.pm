@@ -15,9 +15,10 @@ Plack - Perl Superglue for Web frameworks and Web Servers (PSGI toolkit)
 
 =head1 DESCRIPTION
 
-Plack is a set of tools for using PSGI stack. It contains middleware
-components, a reference server and utilities for Web application
-frameworks. Plack is like Ruby's Rack or Python's Paste for WSGI.
+Plack is a set of tools for using the PSGI stack. It contains
+middleware components, a reference server and utilities for Web
+application frameworks. Plack is like Ruby's Rack or Python's Paste
+for WSGI.
 
 See L<PSGI> for the PSGI specification and L<PSGI::FAQ> to know what
 PSGI and Plack are and why we need them.
@@ -74,7 +75,7 @@ as:
   my $app = sub { MyApp->run_psgi(@_) };
 
 It's important that the return value of C<.psgi> file is the code
-reference. See eg/dot-psgi directory for more examples of C<.psgi>
+reference. See C<eg/dot-psgi> directory for more examples of C<.psgi>
 files.
 
 =head2 plackup, Plack::Runner
@@ -158,7 +159,7 @@ types of modules.
 B<DO NOT USE> Plack:: namespace to build a new web application or a
 framework. It's like naming your application under CGI:: namespace if
 it's supposed to run on CGI and that is a really bad choice and
-confuse people.
+would confuse people badly.
 
 =head1 AUTHOR
 
