@@ -151,9 +151,9 @@ is syntactically equal to:
 
 In other words, you're supposed to C<add> middleware from outer to inner.
 
-=head2 INLINE MIDDLEWARE
+=head1 INLINE MIDDLEWARE
 
-Plack::Middleware allows you to code middleware inline using a nested
+Plack::Builder allows you to code middleware inline using a nested
 code reference.
 
 If the first argument to C<enable> is a code reference, it will be
