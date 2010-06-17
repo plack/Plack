@@ -19,12 +19,20 @@ use base qw(HTTP::Error);
 sub code { 403 }
 sub as_string { "blah blah blah" }
 
+package HTTP::Error::Redirect;
+use base qw(HTTP::Error);
+sub code { 302 }
+sub location { "http://somewhere/else" }
+
 package main;
 
 my $app = sub {
     my $env = shift;
     if ($env->{PATH_INFO} eq '/secret') {
         HTTP::Error::Forbidden->throw;
+    }
+    if ($env->{PATH_INFO} eq '/redirect') {
+        HTTP::Error::Redirect->throw;
     }
     HTTP::Error::InternalServerError->throw;
 };
@@ -42,6 +50,10 @@ test_psgi $app, sub {
     $res = $cb->(GET "/secret");
     is $res->code, 403;
     is $res->content, 'blah blah blah';
+
+    $res = $cb->(GET '/redirect');
+    is $res->code, 302;
+    is $res->header('Location'), 'http://somewhere/else';
 };
 
 done_testing;

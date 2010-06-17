@@ -54,9 +54,18 @@ sub transform_error {
         die $e; # rethrow
     }
 
+    my @headers = (
+         'Content-Type'   => 'text/plain',
+         'Content-Length' => length($message),
+    );
+
+    if ($code =~ /^3/ && (my $loc = eval { $e->location })) {
+        push(@headers, Location => $loc);
+    }
+
     $message ||= HTTP::Status::status_message($code);
 
-    return [ $code, [ 'Content-Type' => 'text/plain', 'Content-Length' => length($message) ], [ $message ] ];
+    return [ $code, \@headers, [ $message ] ];
 }
 
 1;
@@ -96,6 +105,10 @@ The exception object may also implement C<as_string>, or overload the
 stringification, to represent the text of the error, which defaults to
 the status message of error codes, such as I<Service Unavailable> for
 C<503>.
+
+If the code is in the 3xx range and the exception implements the 'location'
+method (HTTP::Exception::3xx does), the Location header will be set in the
+response, so you can do redirects this way.
 
 There's a CPAN module L<HTTP::Exception> and they are pefect to throw
 from your application to let this middleware catch and display, but
