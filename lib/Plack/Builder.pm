@@ -151,20 +151,30 @@ is syntactically equal to:
 
 In other words, you're supposed to C<add> middleware from outer to inner.
 
-Additionally, you can call C<enable> with a coderef, which would take
-C<$app> and returns a another psgi-app which consumes C<$env> in runtime.  So:
+=head2 INLINE MIDDLEWARE
 
-  my $mw = sub {
-      my $app = shift;
-      sub { my $env = shift; $app->($env) };
-  };
+Plack::Middleware allows you to code middleware inline using a nested
+code reference.
+
+If the first argument to C<enable> is adcode reference, it will be
+passed an C<$app> and is supposed to return another code reference
+which is PSGI application that consumes C<$env> in runtime. So:
 
   builder {
-      enable $mw;
+      enable sub {
+          my $app = shift;
+          sub { my $env = shift; $app->($env) };
+      };
       $app;
   };
 
-is syntactically equal to:
+is equal to:
+
+  my $mw = sub {
+      my $app = shift;
+          sub { my $env = shift; $app->($env) };
+      };
+  };
 
   $app = $mw->($app);
 
