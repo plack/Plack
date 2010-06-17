@@ -156,7 +156,7 @@ In other words, you're supposed to C<add> middleware from outer to inner.
 Plack::Middleware allows you to code middleware inline using a nested
 code reference.
 
-If the first argument to C<enable> is adcode reference, it will be
+If the first argument to C<enable> is a code reference, it will be
 passed an C<$app> and is supposed to return another code reference
 which is PSGI application that consumes C<$env> in runtime. So:
 
