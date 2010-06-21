@@ -73,7 +73,7 @@ Plack::Middleware::XSendfile - Sets X-Sendfile (or a like) header for frontends
 You should use L<IO::File::WithPath> or L<Plack::Util>'s
 C<set_io_path> to add C<path> method to an IO object in the body.
 
-See L<http://github.com/rtomayko/rack-contrib/blob/master/lib/rack/sendfile.rb>
+See L<http://github.com/rack/rack-contrib/blob/master/lib/rack/contrib/sendfile.rb>
 for the frontend configuration.
 
 =head1 AUTHOR
