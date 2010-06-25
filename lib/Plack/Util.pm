@@ -240,7 +240,7 @@ package Plack::Util::Prototype;
 
 our $AUTOLOAD;
 sub can {
-    exists $_[0]->{$_[1]};
+    $_[0]->{$_[1]};
 }
 
 sub AUTOLOAD {
