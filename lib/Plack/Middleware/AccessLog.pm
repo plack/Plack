@@ -68,7 +68,7 @@ sub log_line {
         s => sub { $status },
         b => sub { $opts->{content_length} || $h->get('Content-Length') || "-" },
         T => sub { $opts->{time} ? int($opts->{time}) : "-" },
-        D => sub { $opts->{time} || "-" },
+        D => sub { $opts->{time} ? $opts->{time} * 1000000 : "-" },
     );
 
     my $char_handler = sub {
