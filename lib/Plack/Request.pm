@@ -208,7 +208,16 @@ sub uri {
 
     my $base = $self->_uri_base;
 
-    my $path = $self->env->{PATH_INFO} || '';
+    # We have to escape back PATH_INFO in case they include stuff like
+    # ? or # so that the URI parser won't be tricked. However we should
+    # preserve '/' since encoding them into %2f doesn't make sense.
+    # This means when a request like /foo%2fbar comes in, we recognize
+    # it as /foo/bar which is not ideal, but that's how the PSGI PATH_INFO
+    # spec goes and we can't do anything about it. See PSGI::FAQ for details.
+    # http://github.com/miyagawa/Plack/issues#issue/118
+    my $path_escape_class = '^A-Za-z0-9\-\._~/';
+
+    my $path = URI::Escape::uri_escape($self->env->{PATH_INFO} || '', $path_escape_class);
     $path .= '?' . $self->env->{QUERY_STRING}
         if defined $self->env->{QUERY_STRING} && $self->env->{QUERY_STRING} ne '';
 
