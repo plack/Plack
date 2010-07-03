@@ -2,6 +2,15 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9939  Fri Jul  2 17:56:10 PDT 2010
+        - Improved middleware documentation (miyagawa, leedo, bobtfish)
+        - Added a test about Transfer-Encoding with Content-Length: 0 (chiba)
+        - Fixed NullLogger middleware (haarg)
+        - Fixed Plack::Util inline object's can() (haarg)
+        - Middleware::HTTPException now honors ->location method of the exception (frodwith)
+        - Middleware::AccessLog: Fixes %D to be microsec so it's compatible to Apache #119 (cho45)
+        - Fixed Plack::Request->uri when PATH_INFO conatins URI reserved characters #118 (leedo)
+
 0.9938  Sun May 23 17:13:05 PDT 2010
         - ErrorDocument: Added Content-Length to error responses (hachi)
         - Improved docs about conditional middleware loading

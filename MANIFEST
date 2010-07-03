@@ -28,7 +28,6 @@ eg/dot-psgi/static/index.html
 eg/dot-psgi/static/test.css
 eg/dot-psgi/static/test.js
 eg/dot-psgi/twitter-stream.psgi
-inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AuthorTests.pm
 inc/Module/Install/AutoInstall.pm
@@ -228,6 +227,7 @@ t/Plack-Request/new.t
 t/Plack-Request/parameters.t
 t/Plack-Request/params.t
 t/Plack-Request/path_info.t
+t/Plack-Request/path_info_escaped.t
 t/Plack-Request/readbody.t
 t/Plack-Request/request_uri.t
 t/Plack-Request/upload-basename.t
