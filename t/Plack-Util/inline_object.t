@@ -12,7 +12,7 @@ is $counter, 1, 'method call works';
 
 my $sub = $object->can('method1');
 ok $sub, 'can returns true value for method';
-try { $object->$sub };
+try { $sub->($object) };
 is $counter, 2, 'can returns sub ref for method';
 
 ok ! try { $object->method2; 1 }, 'croaks if nonexistant method called';
