@@ -128,7 +128,7 @@ sub validate_res {
 # print, so there's no need to give warnings about it.
 sub _is_really_utf8 {
     my $str = shift;
-    utf8::is_utf8($str) && $str =~ /[\x80-\xff]/;
+    utf8::is_utf8($str) && $str =~ /[^\x00-\x7f]/;
 }
 
 1;
