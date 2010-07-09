@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9941  Thu Jul  8 18:17:30 PDT 2010
+        - Makes Lint not warn about ASCII-only strings with UTF8 flag because they're safe
+
 0.9940  Fri Jul  2 23:37:51 PDT 2010
         - Fixed META.yml
 

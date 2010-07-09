@@ -181,6 +181,7 @@ t/Plack-Middleware/httpexceptions.t
 t/Plack-Middleware/httpexceptions_streaming.t
 t/Plack-Middleware/jsonp.t
 t/Plack-Middleware/lint.t
+t/Plack-Middleware/lint_utf8_false_alarm.t
 t/Plack-Middleware/log4perl.t
 t/Plack-Middleware/log_dispatch.t
 t/Plack-Middleware/method_override.t
@@ -257,6 +258,7 @@ t/Plack-Util/headers.t
 t/Plack-Util/headers_obj.t
 t/Plack-Util/Hello.pm
 t/Plack-Util/hello.psgi
+t/Plack-Util/inline_object.t
 t/Plack-Util/io_with_path.t
 t/Plack-Util/is_real_fh.t
 t/Plack-Util/load.t
