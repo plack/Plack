@@ -18,6 +18,16 @@ test_lighty_external(
     }
 );
 
+{
+    package Plack::Handler::FCGI::Manager;
+    use parent qw(FCGI::ProcManager);
+    sub pm_post_dispatch {
+        my $self = shift;
+        ${ $self->{dispatched} }++;
+        $self->SUPER::pm_post_dispatch(@_);
+    }
+}
+
 sub run_server_cb {
     my $needs_fix = shift;
 
@@ -30,13 +40,19 @@ sub run_server_cb {
 
         $| = 0; # Test::Builder autoflushes this. reset!
 
+        my $d;
+        my $manager = Plack::Handler::FCGI::Manager->new({
+            dispatched => \$d,
+        });
+
         my $server = Plack::Handler::FCGI->new(
             host        => '127.0.0.1',
             port        => $port,
-            manager     => '',
+            manager     => $manager,
             keep_stderr => 1,
         );
         $server->run($app);
+        ok($d > 0, "FCGI manager object state updated");
     };
 }
 

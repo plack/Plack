@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use constant RUNNING_IN_HELL => $^O eq 'MSWin32';
 
+use Scalar::Util qw(blessed);
 use Plack::Util;
 use FCGI;
 
@@ -14,7 +15,7 @@ sub new {
     $self->{keep_stderr} ||= 0;
     $self->{nointr}      ||= 0;
     $self->{daemonize}   ||= $self->{detach}; # compatibility
-    $self->{nproc}       ||= 1;
+    $self->{nproc}       ||= 1 unless blessed $self->{manager};
     $self->{pid}         ||= $self->{pidfile}; # compatibility
     $self->{listen}      ||= [ ":$self->{port}" ] if $self->{port}; # compatibility
     $self->{manager}     = 'FCGI::ProcManager' unless exists $self->{manager};
@@ -55,11 +56,19 @@ sub run {
         $self->daemon_fork if $self->{daemonize};
 
         if ($self->{manager}) {
-            Plack::Util::load_class($self->{manager});
-            $proc_manager = $self->{manager}->new({
-                n_processes => $self->{nproc},
-                pid_fname   => $self->{pid},
-            });
+            if (blessed $self->{manager}) {
+                for (qw(nproc pid)) {
+                    die "Don't use '$_' when passing in a 'manager' object"
+                        if $self->{$_};
+                }
+                $proc_manager = $self->{manager};
+            } else {
+                Plack::Util::load_class($self->{manager});
+                $proc_manager = $self->{manager}->new({
+                    n_processes => $self->{nproc},
+                    pid_fname   => $self->{pid},
+                });
+            }
 
             # detach *before* the ProcManager inits
             $self->daemon_detach if $self->{daemonize};
