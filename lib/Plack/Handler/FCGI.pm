@@ -126,6 +126,10 @@ sub run {
             die "Bad response $res";
         }
 
+        # give pm_post_dispatch the chance to do things after the client thinks
+        # the request is done
+        $request->Finish;
+
         $proc_manager && $proc_manager->pm_post_dispatch();
     }
 }
