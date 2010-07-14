@@ -236,6 +236,63 @@ sub inline_object {
     bless {%args}, 'Plack::Util::Prototype';
 }
 
+sub response_cb {
+    my($res, $cb) = @_;
+
+    my $body_filter = sub {
+        my($cb, $res) = @_;
+        my $filter_cb = $cb->($res);
+        # If response_cb returns a callback, treat it as a $body filter
+        if (defined $filter_cb && ref $filter_cb eq 'CODE') {
+            Plack::Util::header_remove($res->[1], 'Content-Length');
+            if (defined $res->[2]) {
+                if (ref $res->[2] eq 'ARRAY') {
+                    for my $line (@{$res->[2]}) {
+                        $line = $filter_cb->($line);
+                    }
+                    # Send EOF.
+                    my $eof = $filter_cb->( undef );
+                    push @{ $res->[2] }, $eof if defined $eof;
+                } else {
+                    my $body    = $res->[2];
+                    my $getline = sub { $body->getline };
+                    $res->[2] = Plack::Util::inline_object
+                        getline => sub { $filter_cb->($getline->()) },
+                        close => sub { $body->close };
+                }
+            } else {
+                return $filter_cb;
+            }
+        }
+    };
+
+    if (ref $res eq 'ARRAY') {
+        $body_filter->($cb, $res);
+        return $res;
+    } elsif (ref $res eq 'CODE') {
+        return sub {
+            my $respond = shift;
+            my $cb = $cb;  # To avoid the nested closure leak for 5.8.x
+            $res->(sub {
+                my $res = shift;
+                my $filter_cb = $body_filter->($cb, $res);
+                if ($filter_cb) {
+                    my $writer = $respond->($res);
+                    if ($writer) {
+                        return Plack::Util::inline_object
+                            write => sub { $writer->write($filter_cb->(@_)) },
+                            close => sub { $writer->write($filter_cb->(undef)); $writer->close };
+                    }
+                } else {
+                    return $respond->($res);
+                }
+            });
+        };
+    }
+
+    return $res;
+}
+
 package Plack::Util::Prototype;
 
 our $AUTOLOAD;
