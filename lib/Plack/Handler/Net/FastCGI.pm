@@ -30,6 +30,12 @@ sub new {
     $self;
 }
 
+BEGIN {
+    require Socket;
+    my $HAS_AF_UNIX = eval { Socket->import('AF_UNIX'); defined(my $v = &AF_UNIX) } && !$@;
+    *HAS_AF_UNIX = sub () { $HAS_AF_UNIX };
+}
+
 sub run {
     my ($self, $app) = @_;
     $self->{app} = $app;
@@ -58,7 +64,19 @@ sub run {
     else {
         (-S STDIN)
           || die "Standard input is not a socket: specify a listen location";
-        $socket = \*STDIN;
+
+        my $class = 'IO::Socket::INET';
+
+        if (HAS_AF_UNIX) {
+            my $sockaddr = getsockname(*STDIN);
+            if (unpack('S', $sockaddr)  == &Socket::AF_UNIX) {
+                $class = 'IO::Socket::UNIX';
+            }
+        }
+
+        $socket = $class->new;
+        $socket->fdopen(fileno(STDIN), 'w')
+          or die "$class->fdopen: $!";
         $socket->autoflush(1);
     }
 
