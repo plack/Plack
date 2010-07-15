@@ -24,11 +24,14 @@ sub load_app {
 }
 
 sub handler {
-    my $r = shift;
-    my $apr = Apache::Request->new($r);
+    my $class = __PACKAGE__;
+    my $r     = shift;
+    my $psgi  = $r->dir_config('psgi_app');
+    $class->call_app($r, $class->load_app($psgi));
+}
 
-    my $psgi = $r->dir_config('psgi_app');
-    my $app = __PACKAGE__->load_app($psgi);
+sub call_app {
+    my ($class, $r, $app) = @_;
 
     $r->subprocess_env; # let Apache create %ENV for us :)
 
