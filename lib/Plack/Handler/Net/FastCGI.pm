@@ -2,8 +2,19 @@ package Plack::Handler::Net::FastCGI;
 use strict;
 use Plack::Util;
 use IO::Socket             qw[];
+use Net::FastCGI           0.12;
 use Net::FastCGI::Constant qw[:common :type :flag :role :protocol_status];
+use Net::FastCGI::IO       qw[:all];
 use Net::FastCGI::Protocol qw[:all];
+use Plack::TempBuffer      qw[];
+
+BEGIN {
+    eval {
+        require PerlIO::code;
+    };
+    my $mode = $@ ? ">:via(@{[__PACKAGE__]})" : '>:Code';
+    *PERLIO_MODE = sub () { $mode };
+}
 
 sub DEBUG () { 0 }
 
@@ -121,19 +132,10 @@ sub _handle_response {
     }
 }
 
-sub read_record {
-    @_ == 1 || die(q/Usage: read_record(io)/);
-    my ($io) = @_;
-    no warnings 'uninitialized';
-    read($io, my $header, FCGI_HEADER_LEN) == FCGI_HEADER_LEN
-      || return;
-    my ($type, $request_id, $clen, $plen) = parse_header($header);
-       (!$clen || read($io, my $content, $clen) == $clen)
-    && (!$plen || read($io, my $padding, $plen) == $plen)
-      || return;
-    $content = '' if !$clen;
-    return ($type, $request_id, $content);
-}
+our $STDOUT_BUFFER_SIZE = 8192;
+our $STDERR_BUFFER_SIZE = 0;
+
+use warnings FATAL => 'Net::FastCGI::IO';
 
 sub process_connection {
     my($self, $socket) = @_;
@@ -143,11 +145,10 @@ sub process_connection {
          $stdout,      # buffer for stdout
          $stderr,      # buffer for stderr
          $params,      # buffer for params (environ)
-         $output,      # buffer for output
          $done,        # done with connection?
          $keep_conn ); # more requests on this connection?
 
-    ($current_id, $stdin, $stdout, $stderr) = (0, '', '', '');
+    ($current_id, $stdin, $stdout, $stderr) = (0, undef, '', '');
 
     while (!$done) {
         my ($type, $request_id, $content) = read_record($socket)
@@ -163,11 +164,12 @@ sub process_connection {
                 my %reply = map { $_ => $self->{values}->{$_} }
                             grep { exists $self->{values}->{$_} }
                             keys %$query;
-                $output = build_record(FCGI_GET_VALUES_RESULT,
+                write_record($socket, FCGI_GET_VALUES_RESULT,
                     FCGI_NULL_REQUEST_ID, build_params(\%reply));
             }
             else {
-                $output = build_unknown_type_record($type);
+                write_record($socket, FCGI_UNKNOWN_TYPE,
+                    FCGI_NULL_REQUEST_ID, build_unknown_type($type));
             }
         }
         elsif ($request_id != $current_id && $type != FCGI_BEGIN_REQUEST) {
@@ -175,16 +177,18 @@ sub process_connection {
         }
         elsif ($type == FCGI_ABORT_REQUEST) {
             $current_id = 0;
-            ($stdin, $stdout, $stderr, $params) = ('', '', '', '');
+            ($stdin, $stdout, $stderr, $params) = (undef, '', '', '');
         }
         elsif ($type == FCGI_BEGIN_REQUEST) {
             my ($role, $flags) = parse_begin_request_body($content);
             if ($current_id || $role != FCGI_RESPONDER) {
-                $output = build_end_request_record($request_id, 0, 
-                    $current_id ? FCGI_CANT_MPX_CONN : FCGI_UNKNOWN_ROLE);
+                my $status = $current_id ? FCGI_CANT_MPX_CONN : FCGI_UNKNOWN_ROLE;
+                write_record($socket, FCGI_END_REQUEST, $request_id,
+                    build_end_request_body(0, $status));
             }
             else {
                 $current_id = $request_id;
+                $stdin      = Plack::TempBuffer->new;
                 $keep_conn  = ($flags & FCGI_KEEP_CONN);
             }
         }
@@ -192,53 +196,65 @@ sub process_connection {
             $params .= $content;
         }
         elsif ($type == FCGI_STDIN) {
-            $stdin .= $content;
+            $stdin->print($content);
 
             unless (length $content) {
-                open(my $in, '<', \$stdin)
-                  || die(qq/Couldn't open scalar as fh: '$!'/);
+                my $in = $stdin->rewind;
 
-                open(my $out, '>', \$stdout)
-                  || die(qq/Couldn't open scalar as fh: '$!'/);
+                my $stdout_cb = sub {
+                    $stdout .= $_[0];
+                    if (length $stdout >= $STDOUT_BUFFER_SIZE) {
+                        write_stream($socket, FCGI_STDOUT, $current_id, $stdout, 0);
+                        $stdout = '';
+                    }
+                };
 
-                open(my $err, '>', \$stderr)
-                  || die(qq/Couldn't open scalar as fh: '$!'/);
+                open(my $out, PERLIO_MODE, $stdout_cb)
+                  || die(qq/Couldn't open sub as fh: $!/);
+
+                my $stderr_cb = sub {
+                    $stderr .= $_[0];
+                    if (length $stderr >= $STDERR_BUFFER_SIZE) {
+                        write_stream($socket, FCGI_STDERR, $current_id, $stderr, 0);
+                        $stderr = '';
+                    }
+                };
+
+                open(my $err, PERLIO_MODE, $stderr_cb)
+                  || die(qq/Couldn't open sub as fh: $!/);
 
                 $self->process_request(parse_params($params), $in, $out, $err);
 
-                $done   = 1 unless $keep_conn;
-                $output = build_end_request($request_id, 0,
-                    FCGI_REQUEST_COMPLETE, $stdout, $stderr);
+                write_stream($socket, FCGI_STDOUT, $current_id, $stdout, 1);
+                write_stream($socket, FCGI_STDERR, $current_id, $stderr, 1);
+                write_record($socket, FCGI_END_REQUEST, $current_id,
+                    build_end_request_body(0, FCGI_REQUEST_COMPLETE));
 
                 # prepare for next request
                 $current_id = 0;
-                ($stdin, $stdout, $stderr, $params) = ('', '', '', '');
+                ($stdin, $stdout, $stderr, $params) = (undef, '', '', '');
             }
         }
         else {
             warn(qq/Received an unknown record type '$type'/);
         }
-
-        if ($output) {
-            print {$socket} $output
-              || die(qq/Couldn't write: '$!'/);
-
-            if (DEBUG) {
-                while (length $output) {
-                    my ($type, $rid, $clen, $plen) = parse_header($output);
-                    my $content = substr($output, FCGI_HEADER_LEN, $clen);
-                    warn '> ', dump_record($type, $rid, $content), "\n";
-                    substr($output, 0, FCGI_HEADER_LEN + $clen + $plen, '');
-                }
-            }
-
-            $output = '';
-        }
     }
+}
 
-    if (DEBUG && !$done && $!) {
-        warn(qq/Request was prematurely aborted: '$!'/);
-    }
+sub PUSHED {
+    my ($class) = @_;
+    return bless \(my $self), $class;
+}
+
+sub OPEN {
+    my ($self, $sub) = @_;
+    $$self = $sub;
+}
+
+sub WRITE {
+    my ($self) = @_;
+    $$self->($_[1]);
+    return length $_[1];
 }
 
 1;
