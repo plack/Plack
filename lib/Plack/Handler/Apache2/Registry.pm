@@ -6,8 +6,6 @@ use Apache2::Const;
 use Apache2::Log;
 use parent qw/Plack::Handler::Apache2/;
 
-sub new { bless {}, shift }
-
 sub handler {
     my $class = __PACKAGE__;
     my ($r) = @_;
