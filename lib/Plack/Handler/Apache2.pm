@@ -13,6 +13,8 @@ use Scalar::Util;
 
 my %apps; # psgi file to $app mapping
 
+sub new { bless {}, shift }
+
 sub preload {
     my $class = shift;
     for my $app (@_) {
