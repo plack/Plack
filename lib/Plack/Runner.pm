@@ -50,6 +50,7 @@ sub parse_options {
         'r|reload'     => sub { $self->{loader} = "Restarter" },
         'R|Reload=s'   => sub { $self->{loader} = "Restarter"; $self->loader->watch(split ",", $_[1]) },
         'L|loader=s'   => \$self->{loader},
+        "access-log=s" => \$self->{access_log},
         "h|help"       => \$self->{help},
         "v|version"    => \$self->{version},
     );
@@ -191,7 +192,7 @@ sub prepare_devel {
 
     $app = $self->apply_middleware($app, 'Lint');
     $app = $self->apply_middleware($app, 'StackTrace');
-    unless ($ENV{GATEWAY_INTERFACE}) {
+    if (!$ENV{GATEWAY_INTERFACE} and !$self->{access_log}) {
         $app = $self->apply_middleware($app, 'AccessLog', logger => sub { print STDERR @_ });
     }
 
@@ -239,6 +240,13 @@ sub run {
     $ENV{PLACK_ENV} ||= $self->{env} || 'development';
     if ($ENV{PLACK_ENV} eq 'development') {
         $app = $self->prepare_devel($app);
+    }
+
+    if ($self->{access_log}) {
+        open my $logfh, ">>", $self->{access_log}
+            or die "open($self->{access_log}): $!";
+        $logfh->autoflush(1);
+        $app = $self->apply_middleware($app, 'AccessLog', logger => sub { $logfh->print( @_ ) });
     }
 
     my $loader = $self->loader;

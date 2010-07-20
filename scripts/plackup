@@ -163,6 +163,11 @@ I<Shotgun>.
 See L<Plack::Loader::Delayed> and L<Plack::Loader::Shotgun> when to
 use those loader types.
 
+=item --access-log
+
+Specify the pathname of a file where the access log should be written.
+By default, in the development environment access logs will go to STDERR.
+
 =back
 
 Other options that starts with C<--> are passed through to the backend
