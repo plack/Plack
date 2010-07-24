@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9942  Fri Jul 23 23:42:43 PDT 2010
+        - Allow passing FCGI manager object to Handler::FCGI (confound)
+        - Call FCGI::Request::Finish() before pm_post_dispatch (confound)
+        - Moved response_cb() to Plack::Util (confound)
+        - re-enable WithLexicals now that PadWalker segfaults with 5.12 is fixed #98
+
 0.9941  Thu Jul  8 18:17:30 PDT 2010
         - Makes Lint not warn about ASCII-only strings with UTF8 flag because they're safe
 
