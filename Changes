@@ -2,6 +2,11 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9943  Fri Jul 30 13:24:15 PDT 2010
+        - Updated Apache* handler so it could duck type on Loader (jnap)
+        - Added --access-log to plackup (grantm)
+        - Added support for streaming stdio in Net::FastCGI handler (chansen)
+
 0.9942  Fri Jul 23 23:42:43 PDT 2010
         - Allow passing FCGI manager object to Handler::FCGI (confound)
         - Call FCGI::Request::Finish() before pm_post_dispatch (confound)
