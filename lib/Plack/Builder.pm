@@ -79,8 +79,8 @@ sub builder(&) {
 
     my $app = $block->();
     if ($mount_is_called && $app ne $urlmap) {
-        Carp::carp("You used mount() in builder block but the last line (app) isn't using mount().\n" .
-                       "This causes all mount() mappings ignored. See perldoc Plack::Builder for details.");
+        Carp::carp("You used mount() in a builder block, but the last line (app) isn't using mount().\n" .
+                       "This causes all mount() mappings to be ignored. See perldoc Plack::Builder for details.");
     }
 
     $self->to_app($app);
