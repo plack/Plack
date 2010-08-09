@@ -194,20 +194,28 @@ Plack::Builder has a native support for L<Plack::App::URLMap> with C<mount> meth
 See L<Plack::App::URLMap>'s C<map> method to see what they mean. With
 builder you can't use C<map> as a DSL, for the obvious reason :)
 
-B<Note>: Once you use C<mount> in your builder code, you have to use
+B<NOTE>: Once you use C<mount> in your builder code, you have to use
 C<mount> for all the paths, including the root path (C</>). You can't
 have the default app in the last line of C<builder> like:
 
+  my $app = sub {
+      my $env = shift;
+      ...
+  };
+
   builder {
       mount "/foo" => sub { ... };
-      sub {
-          my $env = shift; # THIS DOESN'T WORK
-      };
+      $app; # THIS DOESN'T WORK
   };
 
 You'll get warnings saying that your mount configuration will be
-ignored.  Instead you should use C<< mount "/" => ... >> in the last
+ignored. Instead you should use C<< mount "/" => ... >> in the last
 line to set the default fallback app.
+
+  builder {
+      mount "/foo" => sub { ... };
+      mount "/" => $app;
+  }
 
 =head1 CONDITIONAL MIDDLEWARE SUPPORT
 
