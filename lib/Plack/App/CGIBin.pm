@@ -107,13 +107,13 @@ You can customize this behavior by passing C<exec_cb> callback, which
 takes a file path to its first argument.
 
 For example, if your perl-based CGI script uses lots of global
-variables and such and are not ready to run on a persisten
+variables and such and are not ready to run on a persistent
 environment, you can do:
 
   my $app = Plack::App::CGIBin->new(
       root => "/path/to/cgi-bin",
       exec_cb => sub { 1 },
-  );
+  )->to_app;
 
 to always force the execute option for any files.
 
