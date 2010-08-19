@@ -3,6 +3,8 @@ use Plack::Test;
 use Test::More;
 use HTTP::Request::Common;
 
+plan skip_all => "Skipping on $^O platform" if $^O eq 'MSWin32';
+
 use Plack::Builder;
 
 my $app = builder {
