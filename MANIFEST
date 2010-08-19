@@ -161,10 +161,12 @@ t/Plack-Middleware/bufferedstreaming.t
 t/Plack-Middleware/cascade.t
 t/Plack-Middleware/cascade_streaming.t
 t/Plack-Middleware/cgi-bin/hello.cgi
+t/Plack-Middleware/cgi-bin/hello.py
 t/Plack-Middleware/cgi-bin/hello2.cgi
 t/Plack-Middleware/cgi-bin/hello3.cgi
 t/Plack-Middleware/cgi-bin/utf8.cgi
 t/Plack-Middleware/cgibin.t
+t/Plack-Middleware/cgibin_exec.t
 t/Plack-Middleware/chunked.t
 t/Plack-Middleware/component-leak.t
 t/Plack-Middleware/component.t

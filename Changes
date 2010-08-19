@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9945  Thu Aug 19 16:24:30 PDT 2010
+        - Support executing (non-perl) CGI scripts in CGIBin and WrapCGI
+        - Fixed tests for win32
+
 0.9944  Sun Aug  8 23:35:52 PDT 2010
         - Fixed Restarter for Starlet where SIGTERM doesn't quit the process (chiba)
 
