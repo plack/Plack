@@ -58,7 +58,9 @@ sub serve_path {
 
     for my $basename (sort { $a cmp $b } @children) {
         my $file = "$dir/$basename";
-        my $url = $env->{SCRIPT_NAME} . $env->{PATH_INFO} . $basename;
+        my $url = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+        $url .= '/' unless $url =~ m{/$};
+        $url .= $basename;
 
         my $is_dir = -d $file;
         my @stat = stat _;
