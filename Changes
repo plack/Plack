@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9946  Sat Aug 28 22:32:16 PDT 2010
+        - Fixes UUV warnings in Apache2 handler RT:60472
+        - Fixed various test failures due to dependencies
+
 0.9945  Thu Aug 19 16:24:30 PDT 2010
         - Support executing (non-perl) CGI scripts in CGIBin and WrapCGI
         - Fixed tests for win32
