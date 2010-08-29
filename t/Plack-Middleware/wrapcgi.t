@@ -1,6 +1,6 @@
 use strict;
 use Test::More;
-use Test::Requires { 'CGI::Emulate::PSGI' => 0, 'CGI::Compile' => 0.03 };
+use Test::Requires { 'CGI::Emulate::PSGI' => 0.06, 'CGI::Compile' => 0.03 };
 use Plack::Test;
 use HTTP::Request::Common;
 use Plack::App::WrapCGI;
