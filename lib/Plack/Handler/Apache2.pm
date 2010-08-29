@@ -48,7 +48,7 @@ sub call_app {
         'psgi.nonblocking'    => Plack::Util::FALSE,
     };
 
-    $class->_recalc_paths($r, $env);
+    $class->fixup_path($r, $env);
 
     my $res = $app->($env);
 
@@ -75,9 +75,9 @@ sub handler {
 }
 
 # The method for PH::Apache2::Regitsry to override.
-sub _recalc_paths {
+sub fixup_path {
     my ($class, $r, $env) = @_;
-    my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+    my $vpath    = $env->{SCRIPT_NAME} . ($env->{PATH_INFO} || '');
     my $location = $r->location || "/";
        $location =~ s{/$}{};
     (my $path_info = $vpath) =~ s/^\Q$location\E//;

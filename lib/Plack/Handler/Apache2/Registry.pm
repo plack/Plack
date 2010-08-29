@@ -25,7 +25,7 @@ sub handler {
 }
 
 # Overriding
-sub _recalc_paths {}
+sub fixup_path {}
 
 1;
 
