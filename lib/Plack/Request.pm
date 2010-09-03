@@ -264,6 +264,14 @@ sub _parse_request_body {
 
     my $body = HTTP::Body->new($ct, $cl);
 
+    # HTTP::Body will create temporary files in case there was an upload.
+    # Those temporary files can be cleaned up by telling HTTP::Body to do
+    # so. It will run the cleanup in a DESTROY block. That the object will
+    # not go out of scope by the end of this sub we will store a reference
+    # here.
+    $self->{_body} = $body;
+    $body->cleanup(1);
+
     my $input = $self->input;
 
     my $buffer;

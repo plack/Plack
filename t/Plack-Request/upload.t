@@ -5,6 +5,8 @@ use Plack::Request;
 use Plack::Test;
 use HTTP::Request::Common;
 
+my @temp_files = ();
+
 my $app = sub {
     my $req = Plack::Request->new(shift);
 
@@ -18,6 +20,12 @@ my $app = sub {
 
     is join(', ', sort { $a cmp $b } $req->upload()), 'bar, foo';
 
+    for (qw(foo bar)) {
+        my $temp_file = $req->upload($_)->path;
+        ok -f $temp_file;
+        push @temp_files, $temp_file;
+    }
+
     $req->new_response(200)->finalize;
 };
 
@@ -30,6 +38,9 @@ test_psgi $app, sub {
              bar => [ "t/Plack-Request/foo1.txt" ],
          ]);
 };
+
+# Check if the temp files got cleaned up properly
+ok !-f $_ for @temp_files;
 
 done_testing;
 
