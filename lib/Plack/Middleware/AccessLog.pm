@@ -46,7 +46,8 @@ sub log_line {
         my($block, $type) = @_;
         if ($type eq 'i') {
             $block =~ s/-/_/;
-            return _safe($env->{"HTTP_" . uc($block)}) || "-";
+            my $val = _safe($env->{"HTTP_" . uc($block)});
+            return defined $val ? $val : "-";
         } elsif ($type eq 'o') {
             return scalar $h->get($block) || "-";
         } elsif ($type eq 't') {
