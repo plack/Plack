@@ -24,7 +24,7 @@ sub auto {
     } catch {
         warn "Autoloading '$backend' backend failed. Falling back to the Standalone. ",
             "(You might need to install Plack::Handler::$backend from CPAN.  Caught error was: $_)\n"
-                if $ENV{PLACK_DEV} && $ENV{PLACK_DEV} eq 'development';
+                if $ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'development';
         $class->load('Standalone' => @args);
     };
 
