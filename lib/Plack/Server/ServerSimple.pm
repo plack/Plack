@@ -1,6 +1,6 @@
 package Plack::Server::ServerSimple;
 use strict;
-our $VERSION = '0.9946';
+our $VERSION = '0.9947';
 $VERSION = eval $VERSION;
 
 use parent qw(Plack::Handler::HTTP::Server::Simple);

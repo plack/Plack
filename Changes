@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9947  Thu Sep  9 02:26:14 PDT 2010
+        - Plack::Loader: Fixed a typo in ENV that prevents warnings messages in development
+        - Added flymake temporary file in Restarter (hirose31)
+        - Plack::Request: Fixed a bug that HTTP::Body temporary files were not cleaned up (plu)
+        - Middleware::AccessLog: Fixed a bug where %{key}i ignores the value '0' (nekoya)
+
 0.9946  Sat Aug 28 22:32:16 PDT 2010
         - Fixes UUV warnings in Apache2 handler RT:60472
         - Fixed various test failures due to dependencies
