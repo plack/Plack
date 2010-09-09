@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9948  Thu Sep  9 16:01:53 PDT 2010
+        - Fixed a bug introduced in 0.9947 where $req->upload loses the temporary files when
+          Plack::Request object is instantiated multiple times. It could happen if one of the
+          pre-processing middleware uses Plack::Request and then again in the application or
+          frameworks.
+
 0.9947  Thu Sep  9 02:26:14 PDT 2010
         - Plack::Loader: Fixed a typo in ENV that prevents warnings messages in development
         - Added flymake temporary file in Restarter (hirose31)
