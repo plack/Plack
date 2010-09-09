@@ -8,7 +8,8 @@ use HTTP::Request::Common;
 my @temp_files = ();
 
 my $app = sub {
-    my $req = Plack::Request->new(shift);
+    my $env = shift;
+    my $req = Plack::Request->new($env);
 
     isa_ok $req->uploads->{foo}, 'HASH';
     is $req->uploads->{foo}->{filename}, 'foo2.txt';
@@ -17,6 +18,7 @@ my $app = sub {
     is scalar(@files), 2;
     is $files[0]->filename, 'foo1.txt';
     is $files[1]->filename, 'foo2.txt';
+    ok -e $files[0]->tempname;
 
     is join(', ', sort { $a cmp $b } $req->upload()), 'bar, foo';
 
@@ -26,7 +28,18 @@ my $app = sub {
         push @temp_files, $temp_file;
     }
 
-    $req->new_response(200)->finalize;
+    my $res = $req->new_response(200);
+
+    undef $req; # Simulate when we instantiate Plack::Request multiple times
+
+    # redo the test with the same $env
+    $req = Plack::Request->new($env);
+    @files = $req->upload('foo');
+    is scalar(@files), 2;
+    is $files[0]->filename, 'foo1.txt';
+    ok -e $files[0]->tempname;
+
+    $res->finalize;
 };
 
 test_psgi $app, sub {
