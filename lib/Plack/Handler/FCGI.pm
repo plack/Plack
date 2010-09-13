@@ -196,7 +196,7 @@ Plack::Handler::FCGI - FastCGI handler for Plack
   # Roll your own
   my $server = Plack::Handler::FCGI->new(
       nproc  => $num_proc,
-      listen => $listen,
+      listen => [ $port_or_socket ],
       detach => 1,
   );
   $server->run($app);
@@ -213,8 +213,8 @@ FastCGI daemon or a .fcgi script.
 
 =item listen
 
-    listen => '/path/to/socket'
-    listen => ':8080'
+    listen => [ '/path/to/socket' ]
+    listen => [ ':8080' ]
 
 Listen on a socket path, hostname:port, or :port.
 
