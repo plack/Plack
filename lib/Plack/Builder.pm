@@ -134,7 +134,7 @@ wrap your application with Plack::Middleware subclasses. The
 middleware you're trying to use should use L<Plack::Middleware> as a
 base class to use this DSL, inspired by Rack::Builder.
 
-Whenever you call C<add> on any middleware, the middleware app is
+Whenever you call C<enable> on any middleware, the middleware app is
 pushed to the stack inside the builder, and then reversed when it
 actually creates a wrapped application handler, so:
 
@@ -149,7 +149,7 @@ is syntactically equal to:
   $app = Plack::Middleware::Bar->wrap($app, opt => "val");
   $app = Plack::Middleware::Foo->wrap($app);
 
-In other words, you're supposed to C<add> middleware from outer to inner.
+In other words, you're supposed to C<enable> middleware from outer to inner.
 
 =head1 INLINE MIDDLEWARE
 
