@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9949  Tue Sep 14 11:59:36 PDT 2010
+        - Fixed FCGI handler docs
+        - Auth::Basic: PAss $env to the callback so .htpasswd based auth can be implemented with PATH_INFO (doy)
+
 0.9948  Thu Sep  9 16:01:53 PDT 2010
         - Fixed a bug introduced in 0.9947 where $req->upload loses the temporary files when
           Plack::Request object is instantiated multiple times. It could happen if one of the

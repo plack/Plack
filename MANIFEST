@@ -157,6 +157,7 @@ t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
 t/Plack-Middleware/access_log_value_zero.t
 t/Plack-Middleware/auth_basic.t
+t/Plack-Middleware/auth_basic_env.t
 t/Plack-Middleware/auth_basic_simple.t
 t/Plack-Middleware/bufferedstreaming.t
 t/Plack-Middleware/cascade.t
