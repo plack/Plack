@@ -25,7 +25,7 @@ sub call {
     if ($auth =~ /^Basic (.*)$/) {
         my($user, $pass) = split /:/, (MIME::Base64::decode($1) || ":");
         $pass = '' unless defined $pass;
-        if ($self->authenticator->($user, $pass)) {
+        if ($self->authenticator->($user, $pass, $env)) {
             $env->{REMOTE_USER} = $user;
             return $self->app->($env);
         }
