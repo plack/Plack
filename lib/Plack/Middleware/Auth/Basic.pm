@@ -10,7 +10,7 @@ sub prepare_app {
 
     my $auth = $self->authenticator or die 'authenticator is not set';
     if (Scalar::Util::blessed($auth) && $auth->can('authenticate')) {
-        $self->authenticator(sub { $auth->authenticate(@_) });
+        $self->authenticator(sub { $auth->authenticate(@_[0,1]) }); # because Authen::Simple barfs on 3 params
     } elsif (ref $auth ne 'CODE') {
         die 'authenticator should be a code reference or an object that responds to authenticate()';
     }
