@@ -449,7 +449,7 @@ reference. The methods that read existent header value handles header
 name as case insensitive.
 
   my $hdrs = [ 'Content-Type' => 'text/plain' ];
-  my $v = Plack::Util::header_get('content-type'); # 'text/plain'
+  my $v = Plack::Util::header_get($hdrs, 'content-type'); # 'text/plain'
 
 =item headers
 
