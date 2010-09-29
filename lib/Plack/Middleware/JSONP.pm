@@ -13,7 +13,7 @@ sub call {
         my $res = shift;
         if (defined $res->[2] && ref $res->[2] eq 'ARRAY' && @{$res->[2]} == 1) {
             my $h = Plack::Util::headers($res->[1]);
-            my $callback_key = $self->callback_key || 'callback';
+            my $callback_key = quotemeta($self->callback_key) || 'callback';
             if ($h->get('Content-Type') =~ m!/(?:json|javascript)! &&
                 $env->{QUERY_STRING} =~ /(?:^|&)$callback_key=([^&]+)/) {
                 my $cb = URI::Escape::uri_unescape($1);

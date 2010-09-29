@@ -7,7 +7,7 @@ my $json = '{"foo":"bar"}';
 
 my @tests = (
     {
-        callback_key => 'jsonp',
+        callback_key => 'json.p',
         app          => sub {
             return [ 200, [ 'Content-Type' => 'application/json' ], [$json] ];
         },
