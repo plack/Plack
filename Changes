@@ -2,6 +2,11 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9950  Thu Sep 30 14:11:33 PDT 2010
+        - Fixed typos in middleware docs (miyagawa, theory, tokuhirom)
+        - App::Directory: fixed URL generation escape bug (chiba)
+        - Middleware::JSONP: support callback parameter name (franck)
+
 0.9949  Tue Sep 14 11:59:36 PDT 2010
         - Fixed FCGI handler docs
         - Auth::Basic: PAss $env to the callback so .htpasswd based auth can be implemented with PATH_INFO (doy)

@@ -133,6 +133,7 @@ MANIFEST			This list of files
 META.yml
 README
 scripts/plackup
+share/#foo
 share/baybridge.jpg
 share/face.jpg
 t/00_compile.t
@@ -175,6 +176,7 @@ t/Plack-Middleware/component.t
 t/Plack-Middleware/conditional.t
 t/Plack-Middleware/conditionalget.t
 t/Plack-Middleware/content_length.t
+t/Plack-Middleware/directory.t
 t/Plack-Middleware/error_document.t
 t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html
