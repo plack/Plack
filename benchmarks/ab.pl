@@ -24,6 +24,7 @@ my @try = (
     [ '+POE::Component::Server::PSGI' ],
     [ 'Starlet', ' (workers=10)', max_workers => 10 ],
     [ 'Starman', ' (workers=10)', workers => 10 ],
+    [ 'Feersum' ],
 );
 
 my @backends;
