@@ -11,7 +11,7 @@ use URI;
 use String::ShellQuote;
 
 my $app = 'eg/dot-psgi/Hello.psgi';
-my $ab  = 'ab -t 1 -c 10 -k';
+my $ab  = 'ab -t 1 -c 10 -k -q';
 my $url = 'http://127.0.0.1/';
 
 my @try = (
