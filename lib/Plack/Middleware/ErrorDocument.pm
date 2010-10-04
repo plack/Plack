@@ -45,6 +45,7 @@ sub call {
             open my $fh, "<", $path or die "$path: $!";
             $r->[2] = $fh;
             my $h = Plack::Util::headers($r->[1]);
+            $h->remove('Content-Length');
             $h->set('Content-Type', Plack::MIME->mime_type($path));
         }
     });
