@@ -54,6 +54,8 @@ sub transform_error {
         die $e; # rethrow
     }
 
+    $message ||= HTTP::Status::status_message($code);
+
     my @headers = (
          'Content-Type'   => 'text/plain',
          'Content-Length' => length($message),
@@ -62,8 +64,6 @@ sub transform_error {
     if ($code =~ /^3/ && (my $loc = eval { $e->location })) {
         push(@headers, Location => $loc);
     }
-
-    $message ||= HTTP::Status::status_message($code);
 
     return [ $code, \@headers, [ $message ] ];
 }
