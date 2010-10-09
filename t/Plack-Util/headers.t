@@ -59,5 +59,17 @@ use Plack::Util;
     is_deeply $headers, [ Foo => 'quox' ];
 }
 
+{
+  my $headers = [];
+  Plack::Util::header_set($headers, a_b_c => 'x');
+  is_deeply $headers, [ 'a-b-c' => 'x' ];
+  is Plack::Util::header_exists($headers, 'A-B-C'), 1;
+  is Plack::Util::header_get($headers, 'A-B-C'), 'x';
+  Plack::Util::header_push($headers, a_b_c => 'y');
+  is_deeply $headers, [ 'a-b-c' => 'x', 'a-b-c' => 'y' ];
+  Plack::Util::header_remove($headers, 'a-b-c');
+  is_deeply $headers, [];
+}
+
 done_testing;
 
