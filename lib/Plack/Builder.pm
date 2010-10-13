@@ -38,6 +38,17 @@ sub add_middleware_if {
 
 # do you want remove_middleware() etc.?
 
+sub _mount {
+    my ($self, $location, $app) = @_;
+
+    if (!$self->{_urlmap}) {
+        $self->{_urlmap} = Plack::App::URLMap->new;
+    }
+
+    $self->{_urlmap}->map($location => $app);
+    $self->{_urlmap};
+}
+
 sub to_app {
     my($self, $app) = @_;
 
@@ -56,7 +67,15 @@ our $_add = our $_add_if = our $_mount = sub {
 sub add      { Carp::carp("add is deprecated. Use 'enable'"); $_add->(@_) }
 sub enable         { $_add->(@_) }
 sub enable_if(&$@) { $_add_if->(@_) }
-sub mount          { $_mount->(@_) }
+
+sub mount {
+    my $self = shift;
+    if (Scalar::Util::blessed($self)) {
+        $self->_mount(@_);
+    }else{
+        $_mount->($self, @_);
+    }
+}
 
 sub builder(&) {
     my $block = shift;
@@ -126,6 +145,13 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
       mount "/bar" => $app2;
       mount "http://example.com/" => builder { $app3 };
   };
+
+  # using OO interface
+
+  my $builder = Plack::Builder->new();
+  $builder->add_middleware('Foo', opt => 1);
+  $app = $builder->mount('/app' => $app);
+  $app = $builder->to_app($app);
 
 =head1 DESCRIPTION
 
