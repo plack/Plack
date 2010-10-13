@@ -172,8 +172,7 @@ is equal to:
 
   my $mw = sub {
       my $app = shift;
-          sub { my $env = shift; $app->($env) };
-      };
+      sub { my $env = shift; $app->($env) };
   };
 
   $app = $mw->($app);
