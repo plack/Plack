@@ -103,7 +103,7 @@ sub _body {
     my $self = shift;
     my $body = $self->body;
        $body = [] unless defined $body;
-    if (!ref $body or Scalar::Util::blessed($body) && overload::Method($body, q(""))) {
+    if (!ref $body or Scalar::Util::blessed($body) && overload::Method($body, q("")) && !$body->can('getline')) {
         return [ $body ];
     } else {
         return $body;

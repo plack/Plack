@@ -4,6 +4,7 @@ use FindBin;
 use Test::More;
 use Plack::Response;
 use URI;
+use File::Temp;
 
 sub r($) {
     my $res = Plack::Response->new(200);
@@ -28,6 +29,11 @@ is_deeply r [ "Hello", "World" ], [ "Hello", "World" ];
 {
     my $uri = URI->new("foo"); # stringified object
     is_deeply r $uri, [ $uri ];
+}
+
+{
+    my $tmp = File::Temp->new("baz"); # File::Temp has stringify method, but it is-a IO::Handle.
+    is_deeply r $tmp, $tmp;
 }
 
 done_testing;
