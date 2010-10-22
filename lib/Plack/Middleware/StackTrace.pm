@@ -28,6 +28,7 @@ sub call {
 
     if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
         my $text = trace_as_string($trace);
+        $env->{'psgix.trace'} = $text;
         $env->{'psgi.errors'}->print($text) unless $self->no_print_errors;
         if (($env->{HTTP_ACCEPT} || '*/*') =~ /html/) {
             $res = [500, ['Content-Type' => 'text/html; charset=utf-8'], [ utf8_safe($trace->as_html) ]];
@@ -90,7 +91,9 @@ Plack::Middleware::StackTrace - Displays stack trace when your app dies
 =head1 DESCRIPTION
 
 This middleware catches exceptions (run-time errors) happening in your
-application and displays nice stack trace screen.
+application and displays nice stack trace screen. The stack trace is
+also stored in the environment under the key C<psgix.trace> so that
+middleware futher up the stack can reference it.
 
 This middleware is enabled by default when you run L<plackup> in the
 default I<development> mode.
