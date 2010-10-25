@@ -9,7 +9,7 @@ my $traceapp = Plack::Middleware::StackTrace->wrap(sub { die "orz" }, no_print_e
 my $app = sub {
     my $env = shift;
     my $ret = $traceapp->($env);
-    like $env->{'plack.stacktrace'}->as_string, qr/orz/;
+    like $env->{'plack.stacktrace.text'}, qr/orz/;
     return $ret;
 };
 
