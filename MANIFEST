@@ -140,6 +140,7 @@ t/00_compile.t
 t/FCGIUtils.pm
 t/HTTP-Message-PSGI/utf8_req.t
 t/Plack-Builder/mount.t
+t/Plack-Builder/oo_interface.t
 t/Plack-Handler/apache1.t
 t/Plack-Handler/apache2-registry.t
 t/Plack-Handler/apache2.t

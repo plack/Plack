@@ -2,6 +2,14 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9951  Mon Oct 25 13:50:33 PDT 2010
+        - Added Feersum to the benchmark script (stash)
+        - Lint: fixed the body handle check to see if the file has getline() method (tokuhirom)
+        - StackTrace: store the stacktrace in $env->{'plack.stacktrace.text'} and $env->{'plack.stacktrace.html'} (theory)
+        - Added ->mount method to the Plack::Builder OO interface (franckcuny)
+        - HTTPExceptions: Don't set an invalid Content-Length when the exception is not an object (ask)
+        - ErrorDocument: Fixed wrong Content-Length header be set (ask)
+
 0.9950  Thu Sep 30 14:11:33 PDT 2010
         - Fixed typos in middleware docs (miyagawa, theory, tokuhirom)
         - App::Directory: fixed URL generation escape bug (chiba)
