@@ -5,6 +5,7 @@ use parent qw/Plack::Middleware/;
 use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
 use Try::Tiny;
+require Scalar::Util;
 use Plack::Util::Accessor qw( force no_print_errors );
 
 our $StackTraceClass = "Devel::StackTrace";
@@ -19,7 +20,9 @@ sub call {
 
     my $trace;
     local $SIG{__DIE__} = sub {
-        $trace = $StackTraceClass->new;
+        $trace = Scalar::Util::blessed($_[0]) && $_[0]->can('trace')
+            ? $_[0]->trace
+            : $StackTraceClass->new;
         die @_;
     };
 
@@ -27,7 +30,7 @@ sub call {
     my $res = try { $self->app->($env) } catch { $caught = $_ };
 
     if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
-        my $text = trace_as_string($trace);
+        my $text = $caught . "\n" . $trace->as_string;
         my $html = $trace->as_html;
         $env->{'plack.stacktrace.text'} = $text;
         $env->{'plack.stacktrace.html'} = $html;
@@ -45,21 +48,6 @@ sub call {
     undef $trace;
 
     return $res;
-}
-
-sub trace_as_string {
-    my $trace = shift;
-
-    my $st = '';
-    my $first = 1;
-    foreach my $f ( $trace->frames() ) {
-        $st .= "\t" unless $first;
-        $st .= $f->as_string($first) . "\n";
-        $first = 0;
-    }
-
-    return $st;
-
 }
 
 sub utf8_safe {
