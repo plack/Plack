@@ -5,7 +5,7 @@ use parent qw/Plack::Middleware/;
 use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
 use Try::Tiny;
-require Scalar::Util;
+use Scalar::Util ();
 use Plack::Util::Accessor qw( force no_print_errors );
 
 our $StackTraceClass = "Devel::StackTrace";
