@@ -33,7 +33,7 @@ sub call {
     my $res = try { $self->app->($env) } catch { $caught = $_ };
 
     if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
-        my $text = $caught . "\n" . $trace->as_string;
+        my $text = (defined $caught ? "$caught\n" : '') . $trace->as_string;
         my $html = $trace->as_html;
         $env->{'plack.stacktrace.text'} = $text;
         $env->{'plack.stacktrace.html'} = $html;
