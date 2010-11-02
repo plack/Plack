@@ -20,9 +20,12 @@ sub call {
 
     my $trace;
     local $SIG{__DIE__} = sub {
-        $trace = Scalar::Util::blessed($_[0]) && $_[0]->can('trace')
-            ? $_[0]->trace
-            : $StackTraceClass->new;
+        if (Scalar::Util::blessed($_[0])) {
+            my $meth = $_[0]->can('trace') || $_[0]->can('stack_trace');
+            $trace = $meth ? $_[0]->$meth : $StackTraceClass->new;
+        } else {
+            $trace = $StackTraceClass->new;
+        }
         die @_;
     };
 
