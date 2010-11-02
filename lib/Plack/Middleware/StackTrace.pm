@@ -89,6 +89,11 @@ also stored in the environment as a plaintext and HTML under the key
 C<plack.stacktrace.text> and C<plack.stacktrace.html> respectively, so
 that middleware futher up the stack can reference it.
 
+If the exception is an object with a C<trace> or C<stack_trace> method (as
+offered by L<Exception::Class> and L<Throwable::X>, respectively), that method
+will be used to fetch the trace. Otherwise, a trace will be created at the
+time of the exception.
+
 This middleware is enabled by default when you run L<plackup> in the
 default I<development> mode.
 
