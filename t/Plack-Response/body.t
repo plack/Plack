@@ -32,7 +32,7 @@ is_deeply r [ "Hello", "World" ], [ "Hello", "World" ];
 }
 
 {
-    my $tmp = File::Temp->new("baz"); # File::Temp has stringify method, but it is-a IO::Handle.
+    my $tmp = File::Temp->new; # File::Temp has stringify method, but it is-a IO::Handle.
     is_deeply r $tmp, $tmp;
 }
 
