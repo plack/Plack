@@ -6,6 +6,7 @@ use Plack::Util::Accessor qw(script execute _app);
 use CGI::Emulate::PSGI;
 use CGI::Compile;
 use Carp;
+use POSIX ":sys_wait_h";
 
 sub prepare_app {
     my $self = shift;
@@ -54,9 +55,14 @@ sub prepare_app {
                 <$fh>;
             });
 
-            1 while waitpid( $pid, 0 ) <= 0;
+            my $res = '';
+            while (waitpid($pid, WNOHANG) <= 0) {
+                $res .= do { local $/; <$stdoutr> };
+            }
+            $res .= do { local $/; <$stdoutr> };
+
             if (POSIX::WIFEXITED($?)) {
-                return CGI::Parse::PSGI::parse_cgi_output($stdoutr);
+                return CGI::Parse::PSGI::parse_cgi_output(\$res);
             } else {
                 Carp::croak("Error at run_on_shell CGI: $!");
             }
