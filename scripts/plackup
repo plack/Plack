@@ -78,6 +78,24 @@ non-option argument. (See above)
 Evaluate the given perl code as a PSGI app, much like perl's C<-e>
 option.
 
+  plackup -e 'sub { my $env = shift; return [ ... ] }'
+
+You can also specify C<-e> option with C<.psgi> file path to wrap the
+application with middleware configuration from the command line. You
+can also use L<Plack::Builder> DSL syntax inside C<-e> code.
+
+  plackup -e 'enable "Auth::Basic", authenticator => ...;' myapp.psgi
+
+equals to run the following PSGI application:
+
+  use Plack::Builder;
+  use Plack::Util;
+  
+  builder {
+      enable "Auth::Basic", authenticator => ...;
+      Plack::Util::load_psgi("myapp.psgi");
+  };
+
 =item -o, --host
 
 The interface a TCP based server daemon binds to. Defauts to undef,
