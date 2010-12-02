@@ -5,7 +5,6 @@ use parent qw/Plack::Middleware/;
 use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
 use Try::Tiny;
-use Scalar::Util ();
 use Plack::Util::Accessor qw( force no_print_errors );
 
 our $StackTraceClass = "Devel::StackTrace";
@@ -20,12 +19,7 @@ sub call {
 
     my $trace;
     local $SIG{__DIE__} = sub {
-        if (Scalar::Util::blessed($_[0])) {
-            my $meth = $_[0]->can('trace') || $_[0]->can('stack_trace');
-            $trace = $meth ? $_[0]->$meth : $StackTraceClass->new;
-        } else {
-            $trace = $StackTraceClass->new;
-        }
+        $trace = $StackTraceClass->new;
         die @_;
     };
 
@@ -33,7 +27,7 @@ sub call {
     my $res = try { $self->app->($env) } catch { $caught = $_ };
 
     if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
-        my $text = (defined $caught ? "$caught\n" : '') . $trace->as_string;
+        my $text = trace_as_string($trace);
         my $html = $trace->as_html;
         $env->{'plack.stacktrace.text'} = $text;
         $env->{'plack.stacktrace.html'} = $html;
@@ -51,6 +45,21 @@ sub call {
     undef $trace;
 
     return $res;
+}
+
+sub trace_as_string {
+    my $trace = shift;
+
+    my $st = '';
+    my $first = 1;
+    foreach my $f ( $trace->frames() ) {
+        $st .= "\t" unless $first;
+        $st .= $f->as_string($first) . "\n";
+        $first = 0;
+    }
+
+    return $st;
+
 }
 
 sub utf8_safe {
@@ -88,11 +97,6 @@ application and displays nice stack trace screen. The stack trace is
 also stored in the environment as a plaintext and HTML under the key
 C<plack.stacktrace.text> and C<plack.stacktrace.html> respectively, so
 that middleware futher up the stack can reference it.
-
-If the exception is an object with a C<trace> or C<stack_trace> method (as
-offered by L<Exception::Class> and L<Throwable::X>, respectively), that method
-will be used to fetch the trace. Otherwise, a trace will be created at the
-time of the exception.
 
 This middleware is enabled by default when you run L<plackup> in the
 default I<development> mode.
