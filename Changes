@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9952  Thu Dec  2 14:03:48 PST 2010
+        - Fixed the potential deadlocks in WrapCGI's read/write pipe (typester)
+        - Improved documentations on plackup -e
+        - Fixed a potential DoS vulnerability in HTTP::Server::PSGI (kazuho)
+        - Allows setting names of FCGI process with proc_title option (rafl)
+
 0.9951  Mon Oct 25 13:50:33 PDT 2010
         - Added Feersum to the benchmark script (stash)
         - Lint: fixed the body handle check to see if the file has getline() method (tokuhirom)
