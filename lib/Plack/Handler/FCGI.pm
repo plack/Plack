@@ -67,6 +67,8 @@ sub run {
                 $proc_manager = $self->{manager}->new({
                     n_processes => $self->{nproc},
                     pid_fname   => $self->{pid},
+                    (exists $self->{proc_title}
+                         ? (pm_title => $self->{proc_title}) : ()),
                 });
             }
 
