@@ -2,6 +2,11 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9953  Fri Dec  3 14:50:09 PST 2010
+        - Include the original error message in the StackTrace text output on console.
+          This requires Devel::StackTrace 1.23 and Devel::StackTrace::WithLexicals 0.08 (optional)
+        - Fixed AccessLog middleware to handle multiple dashes in %{} (Jiro)
+
 0.9952  Thu Dec  2 14:03:48 PST 2010
         - Fixed the potential deadlocks in WrapCGI's read/write pipe (typester)
         - Improved documentations on plackup -e
