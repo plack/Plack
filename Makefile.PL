@@ -16,7 +16,7 @@ requires 'File::ShareDir', '1.00';          # Plack::Test::Suite
 requires 'Try::Tiny';
 requires 'parent';
 
-requires 'Devel::StackTrace';               # Middleware::StackTrace
+requires 'Devel::StackTrace', 1.23;         # Middleware::StackTrace
 requires 'Devel::StackTrace::AsHTML', 0.09; # Middleware::StackTrace
 
 requires 'Filesys::Notify::Simple';         # plackup -r
