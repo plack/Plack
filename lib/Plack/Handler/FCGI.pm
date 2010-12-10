@@ -114,6 +114,11 @@ sub run {
             $env->{SERVER_NAME} =~ s/:\d+$//; # cut off port number
         }
 
+        # root access for mod_fastcgi
+        if (!exists $env->{PATH_INFO}) {
+            $env->{PATH_INFO} = '';
+        }
+
         my $res = Plack::Util::run_app $app, $env;
 
         if (ref $res eq 'ARRAY') {
