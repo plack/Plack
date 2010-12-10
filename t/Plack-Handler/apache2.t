@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::Requires qw(Apache2::Const);
 use Plack;
 use Test::TCP;
 use LWP::UserAgent;
