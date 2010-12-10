@@ -40,9 +40,6 @@ sub locate_file {
     my($self, $env) = @_;
 
     my $path = $env->{PATH_INFO} || '';
-    if ($path =~ m!\.\.[/\\]!) {
-        return $self->return_403;
-    }
 
     my $docroot = $self->root || ".";
     my @path = split '/', $path;
@@ -50,6 +47,10 @@ sub locate_file {
         shift @path if $path[0] eq '';
     } else {
         @path = ('.');
+    }
+
+    if (grep $_ eq '..', @path) {
+        return $self->return_403;
     }
 
     my($file, @path_info);

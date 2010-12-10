@@ -13,13 +13,18 @@ my %test = (
     client => sub {
         my $cb  = shift;
 
-        {
-            # URI-escape
-            my $res = $cb->(GET "http://localhost/");
-            my($ct, $charset) = $res->content_type;
-            ok $res->content =~ m{/%23foo};
-        }
-},
+        # URI-escape
+        my $res = $cb->(GET "http://localhost/");
+        my($ct, $charset) = $res->content_type;
+        ok $res->content =~ m{/%23foo};
+
+        $res = $cb->(GET "/..");
+        is $res->code, 403;
+
+        $res = $cb->(GET "/stuff../Hello.txt");
+        is $res->code, 200;
+        is $res->content, "Hello\n";
+    },
     app => $handler,
 );
 
