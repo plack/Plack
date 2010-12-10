@@ -2,6 +2,15 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9956  Thu Dec  9 19:32:46 PST 2010
+        - FastCGI: Fixed an empty PATH_INFO with mod_fastcgi (and possibly others)
+        - FastCGI: Improved the automatic detection of the case when invoked from web server. #141
+          (reported by LeoNerd)
+        - plackup: Document that -e 'enable ...' doesn't assume app.psgi when there's no argument. #106 (clkao)
+        - Plack::App::FCGIDispatcher: Remove the Status: header #123 (reported by Htbaa)
+        - Apache2: Work around issues where SCRIPT_NAME gets wrong when LocationMatch is used. #136
+          (reported by atiking)
+
 0.9955  Thu Dec  9 18:02:50 PST 2010
         - More fixes to a possible directory traversal
 
