@@ -63,8 +63,9 @@ sub call {
         return [ 500, [ 'Content-Type' => 'text/plain' ], [ 'Bad HTTP headers returned' ] ];
     }
 
-    my $status = $res->header('Status') || 200;
-       $status =~ s/\s+.*$//; # remove ' OK' in '200 OK'
+    my($status) = $res->remove_header('Status');
+    $status ||= "200";
+    $status =~ s/\s+.*$//; # remove ' OK' in '200 OK'
 
     my $headers = [
         map {
