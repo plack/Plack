@@ -10,6 +10,7 @@ use APR::Table;
 use IO::Handle;
 use Plack::Util;
 use Scalar::Util;
+use URI;
 
 my %apps; # psgi file to $app mapping
 
@@ -78,11 +79,20 @@ sub handler {
 sub fixup_path {
     my ($class, $r, $env) = @_;
     my $vpath    = $env->{SCRIPT_NAME} . ($env->{PATH_INFO} || '');
+    my $path_info = $vpath;
+
     my $location = $r->location || "/";
        $location =~ s{/$}{};
-    (my $path_info = $vpath) =~ s/^\Q$location\E//;
 
-    $env->{SCRIPT_NAME} = $location;
+    # Let's *guess* if we're in a LocationMatch block
+    if ($location =~ /[^$URI::uric]/o) {
+        $path_info =~ s/($location)//;
+        $env->{SCRIPT_NAME} = $1 || '';
+    } else {
+        $path_info =~ s/^\Q$location\E//;
+        $env->{SCRIPT_NAME} = $location;
+    }
+
     $env->{PATH_INFO}   = $path_info;
 }
 
