@@ -27,7 +27,9 @@ sub run {
     my ($self, $app) = @_;
 
     my $sock = 0;
-    if ($self->{listen}) {
+    if (!RUNNING_IN_HELL && -S STDIN) {
+        # running from web server. Do nothing
+    } elsif ($self->{listen}) {
         my $old_umask = umask;
         unless ($self->{leave_umask}) {
             umask(0);
@@ -37,10 +39,8 @@ sub run {
         unless ($self->{leave_umask}) {
             umask($old_umask);
         }
-    }
-    elsif (!RUNNING_IN_HELL) {
-        -S STDIN
-            or die "STDIN is not a socket: specify a listen location";
+    } else {
+        die "STDIN is not a socket: specify a listen location";
     }
 
     my %env;
