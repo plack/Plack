@@ -21,6 +21,9 @@ my %test = (
         $res = $cb->(GET "/..");
         is $res->code, 403;
 
+        $res = $cb->(GET "/..%00foo");
+        is $res->code, 400;
+
         $res = $cb->(GET "/stuff../Hello.txt");
         is $res->code, 200;
         is $res->content, "Hello\n";

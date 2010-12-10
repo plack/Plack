@@ -41,6 +41,10 @@ sub locate_file {
 
     my $path = $env->{PATH_INFO} || '';
 
+    if ($path =~ /\0/) {
+        return $self->return_400;
+    }
+
     my $docroot = $self->root || ".";
     my @path = split '/', $path;
     if (@path) {
@@ -108,6 +112,11 @@ sub serve_path {
 sub return_403 {
     my $self = shift;
     return [403, ['Content-Type' => 'text/plain', 'Content-Length' => 9], ['forbidden']];
+}
+
+sub return_400 {
+    my $self = shift;
+    return [400, ['Content-Type' => 'text/plain', 'Content-Length' => 11], ['Bad Request']];
 }
 
 # Hint: subclasses can override this to return undef to pass through 404
