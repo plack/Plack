@@ -136,6 +136,7 @@ scripts/plackup
 share/#foo
 share/baybridge.jpg
 share/face.jpg
+share/stuff../Hello.txt
 t/00_compile.t
 t/FCGIUtils.pm
 t/HTTP-Message-PSGI/utf8_req.t

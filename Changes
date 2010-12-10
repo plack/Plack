@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9954  Thu Dec  9 17:45:59 PST 2010
+        - Fixed a directory traversal bug in Plack::App::File etc. RT:63020
+
 0.9953  Fri Dec  3 14:50:09 PST 2010
         - Include the original error message in the StackTrace text output on console.
           This requires Devel::StackTrace 1.23 and Devel::StackTrace::WithLexicals 0.08 (optional)
