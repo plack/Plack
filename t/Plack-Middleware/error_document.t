@@ -34,6 +34,7 @@ test_psgi app => $handler, client => sub {
 
         $res = $cb->(GET "http://localhost/status/404");
         is $res->code, 404;
+        like $res->header('content_type'), qr!text/html!;
         like $res->content, qr/fancy 404/;
     }
 };

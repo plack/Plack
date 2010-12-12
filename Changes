@@ -2,6 +2,247 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9956  Thu Dec  9 19:32:46 PST 2010
+        - FastCGI: Fixed an empty PATH_INFO with mod_fastcgi (and possibly others)
+        - FastCGI: Improved the automatic detection of the case when invoked from web server. #141
+          (reported by LeoNerd)
+        - plackup: Document that -e 'enable ...' doesn't assume app.psgi when there's no argument. #106 (clkao)
+        - Plack::App::FCGIDispatcher: Remove the Status: header #123 (reported by Htbaa)
+        - Apache2: Work around issues where SCRIPT_NAME gets wrong when LocationMatch is used. #136
+          (reported by atiking)
+
+0.9955  Thu Dec  9 18:02:50 PST 2010
+        - More fixes to a possible directory traversal
+
+0.9954  Thu Dec  9 17:45:59 PST 2010
+        - Fixed a directory traversal bug in Plack::App::File etc. RT:63020
+
+0.9953  Fri Dec  3 14:50:09 PST 2010
+        - Include the original error message in the StackTrace text output on console.
+          This requires Devel::StackTrace 1.23 and Devel::StackTrace::WithLexicals 0.08 (optional)
+        - Fixed AccessLog middleware to handle multiple dashes in %{} (Jiro)
+
+0.9952  Thu Dec  2 14:03:48 PST 2010
+        - Fixed the potential deadlocks in WrapCGI's read/write pipe (typester)
+        - Improved documentations on plackup -e
+        - Fixed a potential DoS vulnerability in HTTP::Server::PSGI (kazuho)
+        - Allows setting names of FCGI process with proc_title option (rafl)
+
+0.9951  Mon Oct 25 13:50:33 PDT 2010
+        - Added Feersum to the benchmark script (stash)
+        - Lint: fixed the body handle check to see if the file has getline() method (tokuhirom)
+        - StackTrace: store the stacktrace in $env->{'plack.stacktrace.text'} and $env->{'plack.stacktrace.html'} (theory)
+        - Added ->mount method to the Plack::Builder OO interface (franckcuny)
+        - HTTPExceptions: Don't set an invalid Content-Length when the exception is not an object (ask)
+        - ErrorDocument: Fixed wrong Content-Length header be set (ask)
+
+0.9950  Thu Sep 30 14:11:33 PDT 2010
+        - Fixed typos in middleware docs (miyagawa, theory, tokuhirom)
+        - App::Directory: fixed URL generation escape bug (chiba)
+        - Middleware::JSONP: support callback parameter name (franck)
+
+0.9949  Tue Sep 14 11:59:36 PDT 2010
+        - Fixed FCGI handler docs
+        - Auth::Basic: Pass $env to the callback so .htpasswd based auth can be implemented with PATH_INFO (doy)
+
+0.9948  Thu Sep  9 16:01:53 PDT 2010
+        - Fixed a bug introduced in 0.9947 where $req->upload loses the temporary files when
+          Plack::Request object is instantiated multiple times. It could happen if one of the
+          pre-processing middleware uses Plack::Request and then again in the application or
+          frameworks.
+
+0.9947  Thu Sep  9 02:26:14 PDT 2010
+        - Plack::Loader: Fixed a typo in ENV that prevents warnings messages in development
+        - Added flymake temporary file in Restarter (hirose31)
+        - Plack::Request: Fixed a bug that HTTP::Body temporary files were not cleaned up (plu)
+        - Middleware::AccessLog: Fixed a bug where %{key}i ignores the value '0' (nekoya)
+
+0.9946  Sat Aug 28 22:32:16 PDT 2010
+        - Fixes UUV warnings in Apache2 handler RT:60472
+        - Fixed various test failures due to dependencies
+
+0.9945  Thu Aug 19 16:24:30 PDT 2010
+        - Support executing (non-perl) CGI scripts in CGIBin and WrapCGI
+        - Fixed tests for win32
+
+0.9944  Sun Aug  8 23:35:52 PDT 2010
+        - Fixed Restarter for Starlet where SIGTERM doesn't quit the process (chiba)
+
+0.9943  Fri Jul 30 13:24:15 PDT 2010
+        - Updated Apache* handler so it could duck type on Loader (jnap)
+        - Added --access-log to plackup (grantm)
+        - Added support for streaming stdio in Net::FastCGI handler (chansen)
+
+0.9942  Fri Jul 23 23:42:43 PDT 2010
+        - Allow passing FCGI manager object to Handler::FCGI (confound)
+        - Call FCGI::Request::Finish() before pm_post_dispatch (confound)
+        - Moved response_cb() to Plack::Util (confound)
+        - re-enable WithLexicals now that PadWalker segfaults with 5.12 is fixed #98
+
+0.9941  Thu Jul  8 18:17:30 PDT 2010
+        - Makes Lint not warn about ASCII-only strings with UTF8 flag because they're safe
+
+0.9940  Fri Jul  2 23:37:51 PDT 2010
+        - Fixed META.yml
+
+0.9939  Fri Jul  2 17:56:10 PDT 2010
+        - Improved middleware documentation (miyagawa, leedo, bobtfish)
+        - Added a test about Transfer-Encoding with Content-Length: 0 (chiba)
+        - Fixed NullLogger middleware (haarg)
+        - Fixed Plack::Util inline object's can() (haarg)
+        - Middleware::HTTPException now honors ->location method of the exception (frodwith)
+        - Middleware::AccessLog: Fixes %D to be microsec so it's compatible to Apache #119 (cho45)
+        - Fixed Plack::Request->uri when PATH_INFO conatins URI reserved characters #118 (leedo)
+
+0.9938  Sun May 23 17:13:05 PDT 2010
+        - ErrorDocument: Added Content-Length to error responses (hachi)
+        - Improved docs about conditional middleware loading
+        - XSendfile: Updated (undocumented) environment key to switch frontend
+        - Auth::Basic: Added notes about how to use it with Apache (mod_perl and CGI) [RT #57436]
+
+0.9937  Fri May 14 23:11:27 PDT 2010
+        - Fixed -I broken in 0.9936 (juster) #114
+
+0.9936  Fri May 14 15:58:02 PDT 2010
+        - Remove 'use lib "lib"' from plackup
+        - Remove HTTP_CONTENT_* environment variables in FastCGI handlers to deal with buggy web servers.
+          (Justin Davis)
+
+0.9935  Wed May  5 15:17:06 PDT 2010
+        - Set an empty PATH_INFO if CGI environment doesn't set so (hachi) #109
+        - Fixed a possible weird combination of SCRIPT_NAME and PATH_INFO in CGI handlers
+        - localize PATH_INFO and SCRIPT_NAME in App::File and subclasses #100
+        - updated COPYRIGHT notice for Debian
+        - Middleware::StackTrace now displays text trace to psgi.errors like Rack::ShowExceptions
+          (castaway, theorbtwo)
+        - Middleware::StackTrace: Fixed the text stack trace format to be more readable
+
+0.9934  Tue May  4 15:47:33 PDT 2010
+        - Added a test in CGIBin where binmode ":utf8" causes bad content-length #110
+        - Doc fix for the deprecated servers
+        - Initialize Module::Refresh (hiratara)
+        - Added mime_type to ErorrDocument (kakuno)
+
+0.9933  Tue Apr 27 14:32:23 PDT 2010
+        - refactored the app.psgi loading error handling
+        - Enable type checking of the app in Lint->wrap
+        - allow plackup -e'...'
+        - Disable FCGI::Client/Net::FastCGI test by default
+
+0.9932  Mon Apr 19 15:23:55 JST 2010
+        - Enable Lint middleware by default in the development env
+        - Lint middleware now validates $app on startup
+        - Fixed documentations on middleware and handlers
+
+0.9931  Fri Apr 16 23:52:27 PDT 2010
+        - replace kyoto.jpg test image file with smaller baybridge.jpg to strip down the tarball size
+          from 2.5MB to 212KB.
+
+0.9930  Tue Apr 13 20:18:06 PDT 2010
+        - Added Plack::Handler::Net::FastCGI (chansen)
+        - Made Test::TCP a hard dependency since Plack::Test needs it
+        - Added Delayed loader for Starlet and Starman (clkao)
+        - Hide logger middleware from log4perl's caller stack (haarg)
+
+0.9929  Wed Mar 31 00:33:10 PDT 2010
+        - Middleware::JSONP: Simplified code and does not support IO response body type
+        - fcgi.t: skip tests with lighttpd < 1.4.17 per CPAN Testers #7040400
+
+0.9928  Mon Mar 29 17:02:42 PDT 2010
+        - log_dispatch.t: require Log::Dispatch::Array
+
+0.9927  Mon Mar 29 12:43:44 PDT 2010
+        - require newer Log::Dispatch (confound)
+        - StackTrace: Encode exceptions in utf-8 in case they include wide characters #95 (tokuhirom)
+        - StackTrace: Depends on a new Devel::StackTrace::AsHTML that escapes wide characters
+        - StackTrace: Display stacktrace only if the thrown exception is a direct error #91 (frodwith)
+        - StackTrace: Added 'force' option to force stacktrace in 500 errors
+        - Avoid warnings when response_cb filter returns undef in ARRAY response body #92 (hiratara)
+        - URLMap: Ignore port number if it matches with SERVER_PORT #90 (omega)
+        - URLMap: Enable debug print with PLACK_URLMAP_DEBUG=1 #94
+        - JSONP: Fixed possible infinite-loop when using with IO response body (hiratara)
+        - Fixed the compatiblity issues with FastCGI docs and tests with lighttpd 1.4.26 (tadam)
+        - LighttpdScriptNameFix: Added 'script_name' option (tadam)
+
+0.9926  Sun Mar 28 14:37:03 PDT 2010
+        - Added -v|--version option to plackup and the ability for Plack::Runner users to override
+
+0.9925  Sat Mar 27 19:03:57 PDT 2010
+        - Make this a non-devel release
+
+0.99_24 Sat Mar 27 13:31:51 PDT 2010
+        - Disable Devel::StackTrace::WithLexicals for now until PadWalker RT #55242 is fixed
+
+0.99_23 Sat Mar 27 01:02:24 PDT 2010
+        - Dropped keep-alive code from HTTP::Server::PSGI now that Starlet clones the code
+        - Special case --disable-* and --enable-* command line options in plackup and Plack::Runner
+
+0.99_22 Thu Mar 25 19:48:08 PDT 2010
+        - INCOMPATIBLE: removed --max-workers option from the default standalone server.
+          Now it gives you warnings and falls back to the single process mode.
+
+0.99_21 Thu Mar 25 15:05:53 PDT 2010
+        - INCOMPATIBLE: removed a workaround for lighttpd SCRIPT_NAME bug in FCGI handler
+          See http://github.com/miyagawa/Plack/issues#issue/68 for details.
+        - HTTPException now logs standard exceptions to psgi.errors
+        - micro optimization for Plack::Request content() method
+
+0.9920  Thu Mar 18 23:48:06 PDT 2010
+        - Fixed URL path prefix matching in URLMap (hiratara)
+        - Fixed Plack::Request->content on GET with FastCGI servers (sunnavy)
+        - Added new middleware Middleware::Head
+        - Fixed localization bug in Plack-Util/load.t
+
+0.9919  Wed Mar 17 22:50:09 PDT 2010
+        - Properly rethrow .psgi compilation errors
+
+0.9918  Wed Mar 17 22:35:00 PDT 2010
+        - Load .psgi file in an unique package rather than Plack::Util to avoid
+          namespace pollution gh-88
+
+0.9917  Wed Mar 17 15:33:43 PDT 2010
+        - Added Plack::Handler::Apache2::Registry (hiratara)
+        - Set default PLACK_ENV in Plack::Util::load_psgi
+
+0.9916  Fri Mar 12 12:52:39 JST 2010
+        - Added support for a new (renamed) web server Corona
+        - Document enable coderef in Plack::Middleware (clkao)
+        - Middleware::StackTrace: Send plain text errors to clients that probably do
+          not understand HTML like curl
+
+0.9915  Mon Mar  8 18:22:33 JST 2010
+        - Fixed a dumb bug in Plack::Handler::Apache2, broken in 0.9914 (hiratara)
+        - Added a warning if you misuse mount()
+
+0.9914  Wed Mar  3 16:02:38 PST 2010
+        - Fixed psgix.io and nested closure for perl 5.8 (hiratara)
+        - Added an inheritance friendly Apache2 interface (frodwith)
+        - HTTP::Server::PSGI: Close client connection in the first run (hirose31)
+        - Fixed Loader/auto.t to reset env var (gugod)
+
+0.9913  Thu Feb 25 19:14:40 PST 2010
+        - Revive psgix.io in HTTP::Server::PSGI (hiratara)
+        - Fix packaging issue
+
+0.9912  Thu Feb 25 01:28:21 PST 2010
+        - Fixed the possible source of memory leak in middleware + streamer + HTTP::Server::PSGI
+          with perl 5.8.x (hiratara)
+
+0.9911  Tue Feb 23 01:55:04 PST 2010
+        - Removed psgix.io extension to fix streaming choke issue on HTTP::Server::PSGI (tomyhero)
+
+0.9910  Mon Feb 22 19:03:17 PST 2010
+        - This is the first non-dev release since 0.99. Read all the change logs below.
+        - Support streaming in JSONP (hiratara)
+        - Fixed various handler docs (markstos)
+        - Added Starman and Twiggy to benchmark script
+        - INCOMPATIBLE: Loader now prefers Twiggy when AnyEvent is loaded
+        - Implemented (experimental) psgix.io and psgix.input.buffered extensions
+        - Fixed Plack::Request POST parser to use psgix.input.buffered for better performance
+        - Added PLACK_ENV environment support in plackup #63
+        - Added HTTPExceptions middleware
+        - Added Recursive middleware
+
 0.99_05 Wed Feb 10 12:46:05 PST 2010
         - Changed the Loader command line options to -L from -l
         - Runner now folds --host, --port and --socket to --listen and vice verca
@@ -42,7 +283,7 @@ Take a look at http://github.com/miyagawa/Plack/issues for the planned changes b
           It's now 300% faster!
 
 0.99_02 Sat Jan 30 22:10:45 PST 2010
-        - Fixed PerlIO::TempBuffer to work with 5.8 and 5.11.3
+        - Fixed Plack::TempBuffer to work with 5.8 and 5.11.3
         - Do not use <$input> in FCGIDispatcher
         - Skip fcgi_client.t unless explicitly stated (clkao)
         - clarify and drop some CPAN dependencies (andk)

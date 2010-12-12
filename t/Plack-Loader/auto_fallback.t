@@ -1,4 +1,5 @@
 use strict;
+no warnings 'redefine';
 use Test::More;
 use Plack::Loader;
 

@@ -41,7 +41,7 @@ sub call {
     }
 
     for my $key (keys %$env) {
-        delete $env->{$key} if $key =~ /^psgi\./;
+        delete $env->{$key} if $key =~ /\./;
     }
 
     my ($stdout, $stderr) = $conn->request(
@@ -63,8 +63,9 @@ sub call {
         return [ 500, [ 'Content-Type' => 'text/plain' ], [ 'Bad HTTP headers returned' ] ];
     }
 
-    my $status = $res->header('Status') || 200;
-       $status =~ s/\s+.*$//; # remove ' OK' in '200 OK'
+    my($status) = $res->remove_header('Status');
+    $status ||= "200";
+    $status =~ s/\s+.*$//; # remove ' OK' in '200 OK'
 
     my $headers = [
         map {
@@ -94,8 +95,16 @@ Plack::App::FCGIDispatcher - Dispatch requests to FCGI servers
 
 =head1 DESCRIPTION
 
-Plack::App::FCGIDispatcher is not really a middleware but it's
-a PSGI application to dispatch requests to external FCGI servers.
+Plack::App::FCGIDispatcher is a PSGI application to dispatch requests
+to external FastCGI servers listening on TCP or UNIX sockets.
+
+Since external FastCGI servers can be written in any language such as
+Ruby or PHP, this could be useful to route requests to Rails
+applications for instance from your Plack-based web server, or apply
+one of Plack middleware to PHP applications.
+
+See also L<Plack::App::Proxy> which uses HTTP instead of FastCGI and
+has more configuration options.
 
 =head1 CONFIGURATION
 

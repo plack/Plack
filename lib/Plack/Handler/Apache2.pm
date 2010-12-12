@@ -10,8 +10,11 @@ use APR::Table;
 use IO::Handle;
 use Plack::Util;
 use Scalar::Util;
+use URI;
 
 my %apps; # psgi file to $app mapping
+
+sub new { bless {}, shift }
 
 sub preload {
     my $class = shift;
@@ -28,11 +31,8 @@ sub load_app {
     };
 }
 
-sub handler {
-    my $r = shift;
-
-    my $psgi = $r->dir_config('psgi_app');
-    my $app = __PACKAGE__->load_app($psgi);
+sub call_app {
+    my ($class, $r, $app) = @_;
 
     $r->subprocess_env; # let Apache create %ENV for us :)
 
@@ -49,13 +49,7 @@ sub handler {
         'psgi.nonblocking'    => Plack::Util::FALSE,
     };
 
-    my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
-    my $location = $r->location || "/";
-       $location =~ s{/$}{};
-    (my $path_info = $vpath) =~ s/^\Q$location\E//;
-
-    $env->{SCRIPT_NAME} = $location;
-    $env->{PATH_INFO}   = $path_info;
+    $class->fixup_path($r, $env);
 
     my $res = $app->($env);
 
@@ -72,6 +66,34 @@ sub handler {
     }
 
     return Apache2::Const::OK;
+}
+
+sub handler {
+    my $class = __PACKAGE__;
+    my $r     = shift;
+    my $psgi  = $r->dir_config('psgi_app');
+    $class->call_app($r, $class->load_app($psgi));
+}
+
+# The method for PH::Apache2::Regitsry to override.
+sub fixup_path {
+    my ($class, $r, $env) = @_;
+    my $vpath    = $env->{SCRIPT_NAME} . ($env->{PATH_INFO} || '');
+    my $path_info = $vpath;
+
+    my $location = $r->location || "/";
+       $location =~ s{/$}{};
+
+    # Let's *guess* if we're in a LocationMatch block
+    if ($location =~ /[^$URI::uric]/o) {
+        $path_info =~ s/($location)//;
+        $env->{SCRIPT_NAME} = $1 || '';
+    } else {
+        $path_info =~ s/^\Q$location\E//;
+        $env->{SCRIPT_NAME} = $location;
+    }
+
+    $env->{PATH_INFO}   = $path_info;
 }
 
 sub _handle_response {
@@ -126,6 +148,7 @@ Plack::Handler::Apache2 - Apache 2.0 handlers to run PSGI application
   PerlSetVar psgi_app /path/to/app.psgi
   </Location>
 
+  # Optional, preload the application in the parent like startup.pl
   <Perl>
   use Plack::Handler::Apache2;
   Plack::Handler::Apache2->preload("/path/to/app.psgi");
@@ -135,9 +158,33 @@ Plack::Handler::Apache2 - Apache 2.0 handlers to run PSGI application
 
 This is a handler module to run any PSGI application with mod_perl on Apache 2.x.
 
+=head1 CREATING CUSTOM HANDLER
+
+If you want to create a custom handler that loads or creates PSGI
+applications using other means than loading from C<.psgi> files, you
+can create your own handler class and use C<call_app> class method to
+run your application.
+
+  package My::ModPerl::Handler;
+  use Plack::Handler::Apache2;
+
+  sub get_app {
+    # magic!
+  }
+
+  sub handler {
+    my $r = shift;
+    my $app = get_app();
+    Plack::Handler::Apache2->call_app($r, $app);
+  }
+
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
+
+=head1 CONTRIBUTORS
+
+Paul Driver
 
 =head1 SEE ALSO
 

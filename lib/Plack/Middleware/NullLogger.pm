@@ -1,5 +1,6 @@
 package Plack::Middleware::NullLogger;
 use strict;
+use parent qw/Plack::Middleware/;
 
 sub call {
     my($self, $env) = @_;

@@ -22,13 +22,15 @@ sub call {
     my($file, $path_info) = $self->file || $self->locate_file($env);
     return $file if ref $file eq 'ARRAY';
 
+    local @{$env}{qw( SCRIPT_NAME PATH_INFO )} = @{$env}{qw( SCRIPT_NAME PATH_INFO )};
+
     if ($path_info) {
         $env->{PATH_INFO}   =~ s/\Q$path_info\E$//;
         $env->{SCRIPT_NAME} = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
-        $env->{PATH_INFO }  = $path_info;
+        $env->{PATH_INFO}   = $path_info;
     } else {
         $env->{SCRIPT_NAME} = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
-        $env->{PATH_INFO }  = '';
+        $env->{PATH_INFO}   = '';
     }
 
     return $self->serve_path($env, $file);
@@ -38,8 +40,9 @@ sub locate_file {
     my($self, $env) = @_;
 
     my $path = $env->{PATH_INFO} || '';
-    if ($path =~ m!\.\.[/\\]!) {
-        return $self->return_403;
+
+    if ($path =~ /\0/) {
+        return $self->return_400;
     }
 
     my $docroot = $self->root || ".";
@@ -48,6 +51,10 @@ sub locate_file {
         shift @path if $path[0] eq '';
     } else {
         @path = ('.');
+    }
+
+    if (grep $_ eq '..', @path) {
+        return $self->return_403;
     }
 
     my($file, @path_info);
@@ -104,13 +111,18 @@ sub serve_path {
 
 sub return_403 {
     my $self = shift;
-    return [403, ['Content-Type' => 'text/plain'], ['forbidden']];
+    return [403, ['Content-Type' => 'text/plain', 'Content-Length' => 9], ['forbidden']];
+}
+
+sub return_400 {
+    my $self = shift;
+    return [400, ['Content-Type' => 'text/plain', 'Content-Length' => 11], ['Bad Request']];
 }
 
 # Hint: subclasses can override this to return undef to pass through 404
 sub return_404 {
     my $self = shift;
-    return [404, ['Content-Type' => 'text/plain'], ['not found']];
+    return [404, ['Content-Type' => 'text/plain', 'Content-Length' => 9], ['not found']];
 }
 
 1;

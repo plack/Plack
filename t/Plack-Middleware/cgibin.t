@@ -1,6 +1,6 @@
 use strict;
 use Test::More;
-use Test::Requires { 'CGI::Emulate::PSGI' => 0, 'CGI::Compile' => 0.03 };
+use Test::Requires { 'CGI::Emulate::PSGI' => 0.10, 'CGI::Compile' => 0.03 };
 use Plack::Test;
 use HTTP::Request::Common;
 use Plack::App::CGIBin;
@@ -36,6 +36,11 @@ test_psgi app => $app, client => sub {
 
     $res = $cb->(GET "http://localhost/hello4.cgi");
     is $res->code, 404;
+
+    $res = $cb->(GET "http://localhost/utf8.cgi");
+    is $res->code, 200;
+    is length $res->content, 4;
+    is $res->content, "\xe1\x83\xb7\n";
 };
 
 done_testing;

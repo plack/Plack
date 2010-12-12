@@ -32,11 +32,13 @@ Plack::Handler::HTTP::Server::PSGI - adapter for HTTP::Server::PSGI
   % plackup -s HTTP::Server::PSGI \
       --host 127.0.0.1 --port 9091 --timeout 120
 
-=head1 CONFIGURATIONS
+=head1 BACKWARD COMPATIBLITY
 
-This adapter automatically loads Prefork implementation when
-C<max-workers> is set, but otherwise the default HTTP::Server::PSGI
-which is single process.
+Since Plack 0.99_22 this handler doesn't support preforking
+configuration i.e. C<--max-workers>. Use L<Starman> or L<Starlet> if
+you need preforking PSGI web server.
+
+=head1 CONFIGURATIONS
 
 =over 4
 
@@ -52,25 +54,9 @@ Port number the server listens on. Defaults to 8080.
 
 Number of seconds a request times out. Defaults to 300.
 
-=item max-keepalive-reqs
-
-Max requests per a keep-alive request. Defaults to 1, which means Keep-alive is off.
-
-=item keepalive-timeout
-
-Number of seconds a keep-alive request times out. Defaults to 2.
-
-=item max-workers
-
-Number of prefork workers. Defaults to 10.
-
 =item max-reqs-per-child
 
 Number of requests per worker to process. Defaults to 100.
-
-=item max-keepalive-reqs
-
-Max requests per a keep-alive request. Defaults to 100.
 
 =back
 

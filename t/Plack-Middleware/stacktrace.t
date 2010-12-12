@@ -5,11 +5,20 @@ use Plack::Middleware::StackTrace;
 use Plack::Test;
 use HTTP::Request::Common;
 
-my $app = Plack::Middleware::StackTrace->wrap(sub { die "orz" });
+my $traceapp = Plack::Middleware::StackTrace->wrap(sub { die "orz" }, no_print_errors => 1);
+my $app = sub {
+    my $env = shift;
+    my $ret = $traceapp->($env);
+    like $env->{'plack.stacktrace.text'}, qr/orz/;
+    return $ret;
+};
 
 test_psgi $app, sub {
     my $cb = shift;
-    my $res = $cb->(GET "/");
+
+    my $req = GET "/";
+    $req->header(Accept => "text/html,*/*");
+    my $res = $cb->($req);
 
     ok $res->is_error;
     is_deeply [ $res->content_type ], [ 'text/html', 'charset=utf-8' ];

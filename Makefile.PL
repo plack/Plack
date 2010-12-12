@@ -9,32 +9,31 @@ name 'Plack';
 all_from 'lib/Plack.pm';
 readme_from 'lib/Plack.pm';
 
-requires 'LWP', 5.814; # HTTP::Status, HTTP::Headers and HTTP::Request
-requires 'URI', 1.36;
-requires 'Pod::Usage';  # plackup
-requires 'File::ShareDir', '1.00'; # Plack::Test::Suite
+requires 'LWP', 5.814;                      # HTTP::Status, HTTP::Headers and HTTP::Request
+requires 'URI', 1.36;                       # URI::Escape
+requires 'Pod::Usage';                      # plackup
+requires 'File::ShareDir', '1.00';          # Plack::Test::Suite
 requires 'Try::Tiny';
 requires 'parent';
 
-requires 'Devel::StackTrace'; # Middleware::StackTrace
-requires 'Devel::StackTrace::AsHTML'; # Middleware::StackTrace
+requires 'Devel::StackTrace', 1.23;         # Middleware::StackTrace
+requires 'Devel::StackTrace::AsHTML', 0.09; # Middleware::StackTrace
 
-requires 'Filesys::Notify::Simple'; # plackup -r
+requires 'Filesys::Notify::Simple';         # plackup -r
 
-requires 'Hash::MultiValue', 0.05; # Plack::Request
-requires 'HTTP::Body', 1.06; # Plack::Request
+requires 'Hash::MultiValue', 0.05;          # Plack::Request
+requires 'HTTP::Body', 1.06;                # Plack::Request
+requires 'Test::TCP', 0.11;                 # Plack::Test needs to be installed
 
 build_requires 'Test::More', 0.88;
-build_requires 'Test::TCP', 0.11;
 test_requires 'Test::Requires';
 
-tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t t/*/*/*/*/*.t';
+tests 't/*.t t/*/*.t';
 author_tests 'xt';
 
 install_share 'share';
 install_script 'scripts/plackup';
 
-auto_include;
 auto_install;
 auto_set_repository;
 WriteAll;

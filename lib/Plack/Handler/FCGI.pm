@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use constant RUNNING_IN_HELL => $^O eq 'MSWin32';
 
+use Scalar::Util qw(blessed);
 use Plack::Util;
 use FCGI;
 
@@ -14,7 +15,7 @@ sub new {
     $self->{keep_stderr} ||= 0;
     $self->{nointr}      ||= 0;
     $self->{daemonize}   ||= $self->{detach}; # compatibility
-    $self->{nproc}       ||= 1;
+    $self->{nproc}       ||= 1 unless blessed $self->{manager};
     $self->{pid}         ||= $self->{pidfile}; # compatibility
     $self->{listen}      ||= [ ":$self->{port}" ] if $self->{port}; # compatibility
     $self->{manager}     = 'FCGI::ProcManager' unless exists $self->{manager};
@@ -26,7 +27,9 @@ sub run {
     my ($self, $app) = @_;
 
     my $sock = 0;
-    if ($self->{listen}) {
+    if (!RUNNING_IN_HELL && -S STDIN) {
+        # running from web server. Do nothing
+    } elsif ($self->{listen}) {
         my $old_umask = umask;
         unless ($self->{leave_umask}) {
             umask(0);
@@ -36,10 +39,8 @@ sub run {
         unless ($self->{leave_umask}) {
             umask($old_umask);
         }
-    }
-    elsif (!RUNNING_IN_HELL) {
-        -S STDIN
-            or die "STDIN is not a socket: specify a listen location";
+    } else {
+        die "STDIN is not a socket: specify a listen location";
     }
 
     my %env;
@@ -52,14 +53,24 @@ sub run {
     my $proc_manager;
 
     if ($self->{listen}) {
-        $self->daemon_fork if $self->{detach};
+        $self->daemon_fork if $self->{daemonize};
 
         if ($self->{manager}) {
-            Plack::Util::load_class($self->{manager});
-            $proc_manager = $self->{manager}->new({
-                n_processes => $self->{nproc},
-                pid_fname   => $self->{pid},
-            });
+            if (blessed $self->{manager}) {
+                for (qw(nproc pid)) {
+                    die "Don't use '$_' when passing in a 'manager' object"
+                        if $self->{$_};
+                }
+                $proc_manager = $self->{manager};
+            } else {
+                Plack::Util::load_class($self->{manager});
+                $proc_manager = $self->{manager}->new({
+                    n_processes => $self->{nproc},
+                    pid_fname   => $self->{pid},
+                    (exists $self->{proc_title}
+                         ? (pm_title => $self->{proc_title}) : ()),
+                });
+            }
 
             # detach *before* the ProcManager inits
             $self->daemon_detach if $self->{daemonize};
@@ -88,13 +99,24 @@ sub run {
             'psgi.nonblocking'  => Plack::Util::FALSE,
         };
 
-        # If we're running under Lighttpd, swap PATH_INFO and SCRIPT_NAME if PATH_INFO is empty
-        # http://lists.rawmode.org/pipermail/catalyst/2006-June/008361.html
-        # Thanks to Mark Blythe for this fix
-        if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ /lighttpd/) {
-            $env->{PATH_INFO}   ||= delete $env->{SCRIPT_NAME};
-            $env->{SCRIPT_NAME} ||= '';
+        delete $env->{HTTP_CONTENT_TYPE};
+        delete $env->{HTTP_CONTENT_LENGTH};
+
+        if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ m!lighttpd[-/]1\.(\d+\.\d+)!) {
+            no warnings;
+            if ($ENV{PLACK_ENV} eq 'development' && $1 < 4.23 && $env->{PATH_INFO} eq '') {
+                warn "You're using lighttpd 1.$1 and appear to mount your FastCGI handler under the root ('/'). ",
+                     "It's known to be causing issues because of the lighttpd bug. You're recommended to enable ",
+                     "LighttpdScriptNameFix middleware, or upgrade lighttpd to 1.4.23 or later and include ",
+                     "'fix-root-scriptname' flag in 'fastcgi.server'. See perldoc Plack::Handler::FCGI for details. ",
+                     "This friendly warning will go away in the next major release of Plack.";
+            }
             $env->{SERVER_NAME} =~ s/:\d+$//; # cut off port number
+        }
+
+        # root access for mod_fastcgi
+        if (!exists $env->{PATH_INFO}) {
+            $env->{PATH_INFO} = '';
         }
 
         my $res = Plack::Util::run_app $app, $env;
@@ -110,6 +132,10 @@ sub run {
         else {
             die "Bad response $res";
         }
+
+        # give pm_post_dispatch the chance to do things after the client thinks
+        # the request is done
+        $request->Finish;
 
         $proc_manager && $proc_manager->pm_post_dispatch();
     }
@@ -161,6 +187,10 @@ sub daemon_detach {
 
 __END__
 
+=head1 NAME
+
+Plack::Handler::FCGI - FastCGI handler for Plack
+
 =head1 SYNOPSIS
 
   # Run as a standalone daemon
@@ -173,7 +203,7 @@ __END__
   # Roll your own
   my $server = Plack::Handler::FCGI->new(
       nproc  => $num_proc,
-      listen => $listen,
+      listen => [ $port_or_socket ],
       detach => 1,
   );
   $server->run($app);
@@ -190,8 +220,8 @@ FastCGI daemon or a .fcgi script.
 
 =item listen
 
-    listen => '/path/to/socket'
-    listen => ':8080'
+    listen => [ '/path/to/socket' ]
+    listen => [ ':8080' ]
 
 Listen on a socket path, hostname:port, or :port.
 
@@ -276,15 +306,24 @@ See L<http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html#FastCgiExternalSe
 
 =head3 lighttpd
 
-Host in the root path:
+To host the app in the root path, you're recommended to use lighttpd
+1.4.23 or newer with C<fix-root-scriptname> flag like below.
 
-  fastcgi.server = ( "" =>
+  fastcgi.server = ( "/" =>
      ((
        "socket" => "/tmp/fcgi.sock",
        "check-local" => "disable"
+       "fix-root-scriptname" => "enable",
      ))
 
-Or in the non-root path over TCP:
+If you use lighttpd older than 1.4.22 where you don't have
+C<fix-root-scriptname>, mouting apps under the root causes wrong
+C<SCRIPT_NAME> and C<PATH_INFO> set. Also, mouting under the empty
+root (C<"">) or a path that has a trailing slash would still cause
+weird values set even with C<fix-root-scriptname>. In such cases you
+can use L<Plack::Middleware::LighttpdScriptNameFix> to fix it.
+
+To mount in the non-root path over TCP:
 
   fastcgi.server = ( "/foo" =>
      ((
@@ -293,9 +332,10 @@ Or in the non-root path over TCP:
        "check-local" => "disable"
      ))
 
-Plack::Handler::FCGI has a workaround for lighttpd's weird
-C<SCRIPT_NAME> and C<PATH_INFO> setting when you set I<check-local> to
-C<disable> so both configurations (root or non-root) should work fine.
+It's recommended that your mount path does B<NOT> have the trailing
+slash. If you I<really> need to have one, you should consider using
+L<Plack::Middleware::LighttpdScriptNameFix> to fix the wrong
+B<PATH_INFO> values set by lighttpd.
 
 =cut
 

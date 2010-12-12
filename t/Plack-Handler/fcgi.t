@@ -12,24 +12,48 @@ my $fcgi_port;
 
 test_lighty_external(
    sub {
-       ($lighty_port, $fcgi_port) = @_;
-       Plack::Test::Suite->run_server_tests(\&run_server, $fcgi_port, $lighty_port);
+       ($lighty_port, $fcgi_port, my $needs_fix) = @_;
+       Plack::Test::Suite->run_server_tests(run_server_cb($needs_fix), $fcgi_port, $lighty_port);
        done_testing();
     }
 );
 
-sub run_server {
-    my($port, $app) = @_;
+{
+    package Plack::Handler::FCGI::Manager;
+    use parent qw(FCGI::ProcManager);
+    sub pm_post_dispatch {
+        my $self = shift;
+        ${ $self->{dispatched} }++;
+        $self->SUPER::pm_post_dispatch(@_);
+    }
+}
 
-    $| = 0; # Test::Builder autoflushes this. reset!
+sub run_server_cb {
+    my $needs_fix = shift;
 
-    my $server = Plack::Handler::FCGI->new(
-        host        => '127.0.0.1',
-        port        => $port,
-        manager     => '',
-        keep_stderr => 1,
-    );
-    $server->run($app);
+    require Plack::Middleware::LighttpdScriptNameFix;
+    return sub {
+        my($port, $app) = @_;
+
+        note "Applying LighttpdScriptNameFix" if $needs_fix;
+        $app = Plack::Middleware::LighttpdScriptNameFix->wrap($app) if $needs_fix;
+
+        $| = 0; # Test::Builder autoflushes this. reset!
+
+        my $d;
+        my $manager = Plack::Handler::FCGI::Manager->new({
+            dispatched => \$d,
+        });
+
+        my $server = Plack::Handler::FCGI->new(
+            host        => '127.0.0.1',
+            port        => $port,
+            manager     => $manager,
+            keep_stderr => 1,
+        );
+        $server->run($app);
+        ok($d > 0, "FCGI manager object state updated");
+    };
 }
 
 

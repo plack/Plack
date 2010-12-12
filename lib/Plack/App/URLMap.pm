@@ -2,6 +2,7 @@ package Plack::App::URLMap;
 use strict;
 use warnings;
 use parent qw(Plack::Component);
+use constant DEBUG => $ENV{PLACK_URLMAP_DEBUG};
 
 use Carp ();
 
@@ -43,15 +44,21 @@ sub call {
 
     my($http_host, $server_name) = @{$env}{qw( HTTP_HOST SERVER_NAME )};
 
+    if ($http_host and my $port = $env->{SERVER_PORT}) {
+        $http_host =~ s/:$port$//;
+    }
+
     for my $map (@{ $self->{_sorted_mapping} }) {
         my($host, $location, $app) = @$map;
         my $path = $path_info; # copy
         no warnings 'uninitialized';
+        DEBUG && warn "Matching request (Host=$http_host Path=$path) and the map (Host=$host Path=$location)\n";
         next unless not defined $host     or
                     $http_host   eq $host or
                     $server_name eq $host;
-        next unless $location eq '' or $path =~ s!\Q$location\E!!;
-        next unless $path eq '' or $path =~ m!/!;
+        next unless $location eq '' or $path =~ s!^\Q$location\E!!;
+        next unless $path eq '' or $path =~ m!^/!;
+        DEBUG && warn "-> Matched!\n";
 
         my $orig_path_info   = $env->{PATH_INFO};
         my $orig_script_name = $env->{SCRIPT_NAME};
@@ -63,6 +70,8 @@ sub call {
             $env->{SCRIPT_NAME} = $orig_script_name;
         });
     }
+
+    DEBUG && warn "All matching failed.\n";
 
     return [404, [ 'Content-Type' => 'text/plain' ], [ "Not Found" ]];
 }
@@ -131,6 +140,12 @@ dereference), so returning the object itself as a PSGI application
 should also work.
 
 =back
+
+=head1 DEBUGGING
+
+You can set the environment variable C<PLACK_URLMAP_DEBUG> to see how
+this application matches with the incoming request host names and
+paths.
 
 =head1 AUTHOR
 

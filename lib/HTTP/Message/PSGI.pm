@@ -113,7 +113,7 @@ sub _res_from_psgi {
         $res->headers->header(@$headers) if @$headers;
 
         if (ref $body eq 'ARRAY') {
-            $res->content(join '', @$body);
+            $res->content(join '', grep defined, @$body);
         } else {
             local $/ = \4096;
             my $content;

@@ -23,12 +23,16 @@ sub watch {
 sub _fork_and_start {
     my($self, $server) = @_;
 
+    delete $self->{pid}; # re-init in case it's a restart
+
     my $pid = fork;
     die "Can't fork: $!" unless defined $pid;
 
-    return $server->run($self->{builder}->()) if $pid == 0; # child
-
-    $self->{pid} = $pid;
+    if ($pid == 0) { # child
+        return $server->run($self->{builder}->());
+    } else {
+        $self->{pid} = $pid;
+    }
 }
 
 sub _kill_child {
@@ -43,7 +47,7 @@ sub _kill_child {
 
 sub valid_file {
     my($self, $file) = @_;
-    $file->{path} !~ m![/\\][\._]|\.bak$|~$!;
+    $file->{path} !~ m![/\\][\._]|\.bak$|~$|_flymake\.p[lm]!;
 }
 
 sub run {
@@ -76,6 +80,7 @@ sub run {
 
         $self->_kill_child;
         $self->_fork_and_start($server, $builder);
+        return unless $self->{pid};
     }
 }
 

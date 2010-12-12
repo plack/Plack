@@ -66,7 +66,7 @@ the explanation and might not exist.
   # Transcode Jpeg on the fly for mobile clients
   builder {
       enable 'MobileDetector';
-      enable_if { $_[0]->{'psgix.mobile_detected'} }
+      enable_if { $_[0]->{'plack.mobile_detected'} }
         'TranscodeJpeg', max_size => 30_000;
       $app;
   };

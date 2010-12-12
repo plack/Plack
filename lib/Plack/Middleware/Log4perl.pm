@@ -21,6 +21,8 @@ sub call {
     $env->{'psgix.logger'} = sub {
         my $args = shift;
         my $level = $args->{level};
+        local $Log::Log4perl::caller_depth
+            = $Log::Log4perl::caller_depth + 1;
         $self->logger->$level($args->{message});
     };
 

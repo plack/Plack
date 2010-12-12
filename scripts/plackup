@@ -1,6 +1,5 @@
-#!/usr/bin/perl
+#!perl
 use strict;
-use lib "lib";
 use Plack::Runner;
 
 my $runner = Plack::Runner->new;
@@ -79,6 +78,32 @@ non-option argument. (See above)
 Evaluate the given perl code as a PSGI app, much like perl's C<-e>
 option.
 
+  plackup -e 'sub { my $env = shift; return [ ... ] }'
+
+You can also specify C<-e> option with C<.psgi> file path to wrap the
+application with middleware configuration from the command line. You
+can also use L<Plack::Builder> DSL syntax inside C<-e> code.
+
+  plackup -e 'enable "Auth::Basic", authenticator => ...;' myapp.psgi
+
+equals to run the following PSGI application:
+
+  use Plack::Builder;
+  use Plack::Util;
+  
+  builder {
+      enable "Auth::Basic", authenticator => ...;
+      Plack::Util::load_psgi("myapp.psgi");
+  };
+
+Note that when you use C<-e> option to enable middleware, plackup
+doesn't assume the implicit C<app.psgi> path. You should always pass
+C<.psgi> path in the command line arguments.
+
+  plackup                             # Runs app.psgi
+  plackup -e 'enable "Foo"'           # Doesn't work!
+  plackup -e 'enable "Foo"' app.psgi  # Works
+
 =item -o, --host
 
 The interface a TCP based server daemon binds to. Defauts to undef,
@@ -96,7 +121,7 @@ TCP socket.
 
 Select a specific implementation to run on using the C<PLACK_SERVER>
 environment variable or use the C<-s> or C<--server> flag which will
-be prefered over the environment variable if present.
+be preferred over the environment variable if present.
 
 =item -S, --socket
 
@@ -131,14 +156,14 @@ C<PLACK_ENV> as well, so applications or frameworks can tell which
 environment setting the application is running on.
 
   # These two are the same
-  plackup -E production
-  env PLACK_ENV=production plackup
+  plackup -E deployment
+  env PLACK_ENV=deployment plackup
 
 The value can be anything but commonly used ones are C<development>,
-C<production> and C<test>.
+C<deployment> and C<test>.
 
-If it's set to C<development>, following middleware is enabled by
-default: L<AccessLog>, L<StackTrace>.
+If it's set to C<development>, following middleware components are
+enabled by default: I<AccessLog>, I<StackTrace> and I<Lint>.
 
 =item -r, --reload
 
@@ -158,12 +183,21 @@ separated by comma (C<,>).
 
 Specify the server loading subclass that implements how to run the
 server. Available options are I<Plack::Loader> (default), I<Restarter>
-(automatically set when C<-r> or C<-R> is used) and I<Shotgun>.
+(automatically set when C<-r> or C<-R> is used), I<Delayed> and
+I<Shotgun>.
+
+See L<Plack::Loader::Delayed> and L<Plack::Loader::Shotgun> when to
+use those loader types.
+
+=item --access-log
+
+Specify the pathname of a file where the access log should be written.
+By default, in the development environment access logs will go to STDERR.
 
 =back
 
 Other options that starts with C<--> are passed through to the backend
-server. See each Plack::Server backend documentations to see which
+server. See each Plack::Handler backend documentations to see which
 options are available.
 
 =head1 SEE ALSO

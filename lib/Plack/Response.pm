@@ -1,7 +1,7 @@
 package Plack::Response;
 use strict;
 use warnings;
-our $VERSION = '0.99_05';
+our $VERSION = '0.9956';
 $VERSION = eval $VERSION;
 
 use Plack::Util::Accessor qw(body status);
@@ -103,7 +103,7 @@ sub _body {
     my $self = shift;
     my $body = $self->body;
        $body = [] unless defined $body;
-    if (!ref $body or Scalar::Util::blessed($body) && overload::Method($body, q(""))) {
+    if (!ref $body or Scalar::Util::blessed($body) && overload::Method($body, q("")) && !$body->can('getline')) {
         return [ $body ];
     } else {
         return $body;

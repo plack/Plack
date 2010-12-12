@@ -5,7 +5,7 @@ use Carp;
 
 sub new {
     my $class = shift;
-    Carp::carp "Use of $class is deprecated. Use Plack::Handler::Standalone or Plack::Loader to upgrade.";
+    Carp::carp "Use of $class is deprecated. Use Starman or Starlet for preforking servers.";
     $class->SUPER::new(@_);
 }
 
@@ -15,10 +15,14 @@ __END__
 
 =head1 NAME
 
-Plack::Server::Standalone::Prefork - DEPRECATED
+Plack::Server::Standalone::Prefork - DEPRECATED use Starman or Starlet instead
 
 =head1 DESCRIPTION
 
-B<This module is deprecated>. See L<Plack::Handler::Standalone>.
+B<This module is deprecated>.
+
+=head1 SEE ALSO
+
+L<HTTP::Server::PSGI> L<Starman> L<Starlet>
 
 =cut

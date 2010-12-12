@@ -28,8 +28,8 @@ sub parse_options {
 
     local @ARGV = @_;
 
-    # From 'prove': Allow cuddling the paths with -I and -M
-    @ARGV = map { /^(-[IM])(.+)/ ? ($1,$2) : $_ } @ARGV;
+    # From 'prove': Allow cuddling the paths with -I, -M and -e
+    @ARGV = map { /^(-[IMe])(.+)/ ? ($1,$2) : $_ } @ARGV;
 
     my($host, $port, $socket, @listen);
 
@@ -50,7 +50,9 @@ sub parse_options {
         'r|reload'     => sub { $self->{loader} = "Restarter" },
         'R|Reload=s'   => sub { $self->{loader} = "Restarter"; $self->loader->watch(split ",", $_[1]) },
         'L|loader=s'   => \$self->{loader},
-        "h|help",      => \$self->{help},
+        "access-log=s" => \$self->{access_log},
+        "h|help"       => \$self->{help},
+        "v|version"    => \$self->{version},
     );
 
     my(@options, @argv);
@@ -60,8 +62,10 @@ sub parse_options {
             $v[0] =~ tr/-/_/;
             if (@v == 2) {
                 push @options, @v;
+            } elsif ($v[0] =~ s/^(disable|enable)_//) {
+                push @options, $v[0], $1 eq 'enable';
             } else {
-                push @options, @v, shift @ARGV;
+                push @options, $v[0], shift @ARGV;
             }
         } else {
             push @argv, $_;
@@ -104,6 +108,14 @@ sub mangle_host_port_socket {
     return host => $host, port => $port, listen => \@listen, socket => $socket;
 }
 
+sub version_cb {
+    my $self = shift;
+    $self->{version_cb} || sub {
+        require Plack;
+        print "Plack $Plack::VERSION\n";
+    };
+}
+
 sub setup {
     my $self = shift;
 
@@ -112,7 +124,15 @@ sub setup {
         Pod::Usage::pod2usage(0);
     }
 
-    lib->import(@{$self->{includes}}) if @{$self->{includes}};
+    if ($self->{version}) {
+        $self->version_cb->();
+        exit;
+    }
+
+    if (@{$self->{includes}}) {
+        require lib;
+        lib->import(@{$self->{includes}});
+    }
 
     if ($self->{eval}) {
         push @{$self->{modules}}, 'Plack::Builder';
@@ -160,21 +180,28 @@ sub watch {
         if $self->{loader} eq 'Restarter';
 }
 
+sub apply_middleware {
+    my($self, $app, $class, @args) = @_;
+
+    my $mw_class = Plack::Util::load_class($class, 'Plack::Middleware');
+    build { $mw_class->wrap($_[0], @args) } $app;
+}
+
 sub prepare_devel {
     my($self, $app) = @_;
 
-    require Plack::Middleware::StackTrace;
-    require Plack::Middleware::AccessLog;
-    $app = build { Plack::Middleware::StackTrace->wrap($_[0]) } $app;
-    unless ($ENV{GATEWAY_INTERFACE}) {
-        $app = build { Plack::Middleware::AccessLog->wrap($_[0], logger => sub { print STDERR @_ }) } $app;
+    $app = $self->apply_middleware($app, 'Lint');
+    $app = $self->apply_middleware($app, 'StackTrace');
+    if (!$ENV{GATEWAY_INTERFACE} and !$self->{access_log}) {
+        $app = $self->apply_middleware($app, 'AccessLog', logger => sub { print STDERR @_ });
     }
 
     push @{$self->{options}}, server_ready => sub {
         my($args) = @_;
-        my $name = $args->{server_software} || ref($args); # $args is $server
-        my $host = $args->{host} || 0;
-        print STDERR "$name: Accepting connections at http://$host:$args->{port}/\n";
+        my $name  = $args->{server_software} || ref($args); # $args is $server
+        my $host  = $args->{host} || 0;
+        my $proto = $args->{proto} || 'http';
+        print STDERR "$name: Accepting connections at $proto://$host:$args->{port}/\n";
     };
 
     $app;
@@ -213,6 +240,13 @@ sub run {
     $ENV{PLACK_ENV} ||= $self->{env} || 'development';
     if ($ENV{PLACK_ENV} eq 'development') {
         $app = $self->prepare_devel($app);
+    }
+
+    if ($self->{access_log}) {
+        open my $logfh, ">>", $self->{access_log}
+            or die "open($self->{access_log}): $!";
+        $logfh->autoflush(1);
+        $app = $self->apply_middleware($app, 'AccessLog', logger => sub { $logfh->print( @_ ) });
     }
 
     my $loader = $self->loader;

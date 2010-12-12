@@ -10,11 +10,11 @@ my @tests = (
     },
     {
         app => sub {
-            open my $fh, "<", "share/kyoto.jpg";
+            open my $fh, "<", "share/baybridge.jpg";
             [ 200, [ 'Content-Type' => 'image/jpeg' ], $fh ];
         },
         env => { REQUEST_METHOD => 'GET' },
-        headers => [ 'Content-Type' => 'image/jpeg', 'Content-Length' => 2397701 ],
+        headers => [ 'Content-Type' => 'image/jpeg', 'Content-Length' => 79838 ],
     },
     {
         app => sub {

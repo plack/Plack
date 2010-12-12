@@ -11,19 +11,20 @@ use URI;
 use String::ShellQuote;
 
 my $app = 'eg/dot-psgi/Hello.psgi';
-my $ab  = 'ab -t 1 -c 10 -k';
+my $ab  = 'ab -t 1 -c 10 -k -q';
 my $url = 'http://127.0.0.1/';
 
 my @try = (
     [ 'AnyEvent::HTTPD' ],
     [ 'HTTP::Server::PSGI' ],
-    [ 'HTTP::Server::PSGI', ' (workers=10)', max_workers => 10 ],
     [ 'Twiggy' ],
     [ 'HTTP::Server::Simple' ],
-    [ 'Coro' ],
+    [ 'Corona' ],
     [ 'Danga::Socket' ],
-    [ 'POE' ],
+    [ '+POE::Component::Server::PSGI' ],
+    [ 'Starlet', ' (workers=10)', max_workers => 10 ],
     [ 'Starman', ' (workers=10)', workers => 10 ],
+    [ 'Feersum' ],
 );
 
 my @backends;
@@ -65,6 +66,7 @@ sub run_one {
             my $uri = URI->new($url);
             $uri->port($port);
             $uri = shell_quote($uri);
+            system "ab -n 20 $uri > /dev/null"; # warmup
             print `$ab $uri | grep 'Requests per '`;
         },
         server => sub {

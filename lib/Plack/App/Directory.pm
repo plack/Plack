@@ -6,6 +6,7 @@ use Plack::Util;
 use HTTP::Date;
 use Plack::MIME;
 use DirHandle;
+use URI::Escape;
 
 # Stolen from rack/directory.rb
 my $dir_file = "<tr><td class='name'><a href='%s'>%s</a></td><td class='size'>%s</td><td class='type'>%s</td><td class='mtime'>%s</td></tr>";
@@ -58,7 +59,9 @@ sub serve_path {
 
     for my $basename (sort { $a cmp $b } @children) {
         my $file = "$dir/$basename";
-        my $url = $env->{SCRIPT_NAME} . $env->{PATH_INFO} . $basename;
+        my $url = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+        $url .= '/' unless $url =~ m{/$};
+        $url .= $basename;
 
         my $is_dir = -d $file;
         my @stat = stat _;
@@ -67,6 +70,8 @@ sub serve_path {
             $basename .= "/";
             $url      .= "/";
         }
+
+        $url = join '/', map {uri_escape($_)} split m{/}, $url;
 
         my $mime_type = $is_dir ? 'directory' : ( Plack::MIME->mime_type($file) || 'text/plain' );
         push @files, [ $url, $basename, $stat[7], $mime_type, HTTP::Date::time2str($stat[9]) ];
