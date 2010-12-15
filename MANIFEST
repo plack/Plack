@@ -91,7 +91,6 @@ lib/Plack/Middleware/LighttpdScriptNameFix.pm
 lib/Plack/Middleware/Lint.pm
 lib/Plack/Middleware/Log4perl.pm
 lib/Plack/Middleware/LogDispatch.pm
-lib/Plack/Middleware/MethodOverride.pm
 lib/Plack/Middleware/NullLogger.pm
 lib/Plack/Middleware/RearrangeHeaders.pm
 lib/Plack/Middleware/Recursive.pm
