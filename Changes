@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9957  Thu Dec 16 11:27:29 PST 2010
+        - Fixed warnings in Plack::Request cookie parsing (typester)
+        - removed MethodOverride middleware. Now it is a standalone distribution on CPAN (theory)
+
 0.9956  Thu Dec  9 19:32:46 PST 2010
         - FastCGI: Fixed an empty PATH_INFO with mod_fastcgi (and possibly others)
         - FastCGI: Improved the automatic detection of the case when invoked from web server. #141

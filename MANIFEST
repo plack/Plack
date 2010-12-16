@@ -192,7 +192,6 @@ t/Plack-Middleware/lint.t
 t/Plack-Middleware/lint_utf8_false_alarm.t
 t/Plack-Middleware/log4perl.t
 t/Plack-Middleware/log_dispatch.t
-t/Plack-Middleware/method_override.t
 t/Plack-Middleware/order.t
 t/Plack-Middleware/prefix.t
 t/Plack-Middleware/psgibin.t
