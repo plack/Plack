@@ -49,6 +49,10 @@ sub call_app {
         'psgi.nonblocking'    => Plack::Util::FALSE,
     };
 
+    if (defined(my $HTTP_AUTHORIZATION = $r->headers_in->{Authorization})) {
+        $env->{HTTP_AUTHORIZATION} = $HTTP_AUTHORIZATION;
+    }
+
     $class->fixup_path($r, $env);
 
     my $res = $app->($env);
