@@ -102,7 +102,7 @@ configuration options.
 
 =item pass_through
 
-By turning on this option on, this middleware will pass the request
+By turning on this option, this middleware will pass the request
 back to the application for further processing, if the incoming
 request path matches with the C<path> but the requested file is not
 found on the file system.
