@@ -103,13 +103,15 @@ with standalone Perl PSGI web servers such as L<Starman> or
 L<HTTP::Server::Simple::PSGI>.
 
 However, in a web server configuration where you can't achieve this
-(i.e. using your application via mod_perl, CGI or FastCGI), this
-middleware does not work since your application can't know the value
-of C<Authorization:> header.
+(i.e. using your application via Apache's mod_cgi), this middleware
+does not work since your application can't know the value of
+C<Authorization:> header.
 
-If you use Apache as a web server and CGI or mod_perl to run your PSGI
-application, you can use mod_rewrite to pass the Authorization header
-to the application with the rewrite rule like following.
+If you use Apache as a web server and CGI to run your PSGI
+application, you can either a) compile Apache with
+C<-DSECURITY_HOLE_PASS_AUTHORIZATION> option, or b) use mod_rewrite to
+pass the Authorization header to the application with the rewrite rule
+like following.
 
   RewriteEngine on
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
