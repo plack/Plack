@@ -51,9 +51,9 @@ sub call_app {
     };
 
     # Actually, we can not trust PATH_INFO from mod_perl because mod_perl squeezes multiple slashes into one slash.
-    my $uri = URI->new(uri_unescape($r->unparsed_uri));
+    my $uri = URI->new($r->unparsed_uri);
 
-    $env->{PATH_INFO} = $uri->path;
+    $env->{PATH_INFO} = uri_unescape($uri->path);
 
     $class->fixup_path($r, $env);
 
