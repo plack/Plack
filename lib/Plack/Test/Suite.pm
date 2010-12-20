@@ -664,7 +664,25 @@ our @TEST = (
             return [
                 200,
                 [ 'Content-Type' => 'text/plain', 'X-AUTHORIZATION' => exists($env->{HTTP_AUTHORIZATION}) ? 1 : 0 ],
-                [ $env->{HTTP_AUTHORIZATION} ]
+                [ $env->{HTTP_AUTHORIZATION} ],
+            ];
+        },
+    ],
+    [
+        'repeated slashes',
+        sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo///bar/baz");
+            is $res->code, 200;
+            is $res->header('content_type'), 'text/plain';
+            is $res->content, '/foo///bar/baz';
+        },
+        sub {
+            my $env = shift;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', ],
+                [ $env->{PATH_INFO} ],
             ];
         },
     ],

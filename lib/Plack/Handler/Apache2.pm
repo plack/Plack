@@ -11,6 +11,7 @@ use IO::Handle;
 use Plack::Util;
 use Scalar::Util;
 use URI;
+use URI::Escape;
 
 my %apps; # psgi file to $app mapping
 
@@ -52,6 +53,11 @@ sub call_app {
     if (defined(my $HTTP_AUTHORIZATION = $r->headers_in->{Authorization})) {
         $env->{HTTP_AUTHORIZATION} = $HTTP_AUTHORIZATION;
     }
+
+    # Actually, we can not trust PATH_INFO from mod_perl because mod_perl squeezes multiple slashes into one slash.
+    my $uri = URI->new($r->unparsed_uri);
+
+    $env->{PATH_INFO} = uri_unescape($uri->path);
 
     $class->fixup_path($r, $env);
 
