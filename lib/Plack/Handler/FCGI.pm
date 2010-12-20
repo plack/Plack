@@ -6,6 +6,8 @@ use constant RUNNING_IN_HELL => $^O eq 'MSWin32';
 use Scalar::Util qw(blessed);
 use Plack::Util;
 use FCGI;
+use URI;
+use URI::Escape;
 
 sub new {
     my $class = shift;
@@ -101,6 +103,10 @@ sub run {
 
         delete $env->{HTTP_CONTENT_TYPE};
         delete $env->{HTTP_CONTENT_LENGTH};
+
+        # recover multiple slashes
+        my $uri = URI->new($env->{REQUEST_URI});
+        $env->{PATH_INFO} = uri_unescape($uri->path);
 
         if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ m!lighttpd[-/]1\.(\d+\.\d+)!) {
             no warnings;
