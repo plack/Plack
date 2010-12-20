@@ -15,6 +15,8 @@ my $handler = builder {
     enable "Plack::Middleware::Static",
         path => sub { s!^/share/!!}, root => "share";
     enable "Plack::Middleware::Static",
+        path => sub { s!^/share-pass/!!}, root => "share", pass_through => 1;
+    enable "Plack::Middleware::Static",
         path => qr{\.(t|PL|txt)$}i, root => '.';
     sub {
         [200, ['Content-Type' => 'text/plain', 'Content-Length' => 2], ['ok']]
@@ -54,6 +56,12 @@ my %test = (
         {
             my $res = $cb->(GET "http://localhost/share/face.jpg");
             is $res->content_type, 'image/jpeg';
+        }
+
+        {
+            my $res = $cb->(GET "http://localhost/share-pass/faceX.jpg");
+            is $res->code, 200, 'pass through';
+            is $res->content, 'ok';
         }
 
         {
