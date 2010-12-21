@@ -27,6 +27,9 @@ sub run_httpd {
 
         write_file("$tmpdir/app.psgi", _render_psgi());
         write_file("$tmpdir/httpd.conf", $render_conf->($tmpdir, $port, "$tmpdir/app.psgi"));
+
+        # This is required for failing tests.
+        # Apache2 peep real filesystem to make SCRIPT_NAME and PATH_INFO.
         mkdir "$tmpdir/foo";
 
         exec "httpd -X -D FOREGROUND -f $tmpdir/httpd.conf";

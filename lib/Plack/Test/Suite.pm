@@ -16,6 +16,8 @@ use Try::Tiny;
 
 my $share_dir = try { File::ShareDir::dist_dir('Plack') } || 'share';
 
+$ENV{PLACK_TEST_PATH_PREFIX} = '';
+
 # 0: test name
 # 1: request generator coderef.
 # 2: request handler
