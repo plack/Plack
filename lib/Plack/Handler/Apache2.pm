@@ -88,15 +88,16 @@ sub handler {
 # The method for PH::Apache2::Regitsry to override.
 sub fixup_path {
     my ($class, $r, $env) = @_;
-    my $vpath    = $env->{SCRIPT_NAME} . ($env->{PATH_INFO} || '');
-    my $path_info = $vpath;
 
-    my $location = $r->location || "/";
-       $location =~ s{/$}{};
+    # $env->{PATH_INFO} is created from unparsed_uri so it is raw.
+    my $path_info = $env->{PATH_INFO} || '';
+
+    # Get argument of <Location> or <LocationMatch> directive
+    # This may be string or regexp and we can't know either.
+    my $location = $r->location;
 
     # Let's *guess* if we're in a LocationMatch block
-    if ($location =~ /[^$URI::uric]/o) {
-        $path_info =~ s/($location)//;
+    if ($path_info =~ s{($location)/?}{/}) {
         $env->{SCRIPT_NAME} = $1 || '';
     } else {
         $path_info =~ s/^\Q$location\E//;
