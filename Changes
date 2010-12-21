@@ -5,7 +5,7 @@ Take a look at http://github.com/miyagawa/Plack/issues for the planned changes b
 0.9958  Mon Dec 20 15:18:54 PST 2010
         - Plack::Handler::Apache[12] now handles Authorization: header automatically, no need for
           mod_rewrite workaround anymore (cho45)
-        - FastCGI: Fixed Apache[12] and lighttpd munging multiple forward slashes (cho45)
+        - Fixed Apache[12] and FCGI where multiple forward slashes were munged (cho45)
         - Static: Added pass_through option to pass non-existent paths to the app. Fixing the
           docs to match with the code (beanz) #154
 
