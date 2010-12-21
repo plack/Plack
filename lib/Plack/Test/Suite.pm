@@ -460,7 +460,7 @@ our @TEST = (
         sub {
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/foo/bar%20baz%73?x=a");
-            is $res->content, "$ENV{PLACK_TEST_PATH_PREFIX}/foo/bar%20baz%73?x=a";
+            is $res->content, ($ENV{PLACK_TEST_PATH_PREFIX} || '') . "/foo/bar%20baz%73?x=a";
         },
         sub {
             my $env = shift;
