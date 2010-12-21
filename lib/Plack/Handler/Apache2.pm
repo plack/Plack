@@ -102,6 +102,10 @@ sub fixup_path {
     } else {
         # Apache's <Location> is matched but here is not.
         # This is something wrong. We can only respect original.
+        $r->log_error(
+            "Your request path is '$path_info' and it doesn't match your Location(Match) '$location'. " .
+            "This should be due to the configuration error. See perldoc Plack::Handler::Apache2 for details."
+        );
     }
 
     $env->{PATH_INFO}   = $path_info;
