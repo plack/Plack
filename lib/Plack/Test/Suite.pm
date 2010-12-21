@@ -275,6 +275,22 @@ our @TEST = (
         },
     ],
     [
+        '% encoding in PATH_INFO (outside of URI characters)',
+        sub {
+            my $cb  = shift;
+            my $res = $cb->(GET "http://127.0.0.1/foo%E3%81%82");
+            is $res->content, "/foo\x{e3}\x{81}\x{82}";
+        },
+        sub {
+            my $env = shift;
+            return [
+                200,
+                [ 'Content-Type' => 'text/plain', ],
+                [ $env->{PATH_INFO} ],
+            ];
+        },
+    ],
+    [
         'SERVER_PROTOCOL is required',
         sub {
             my $cb  = shift;
