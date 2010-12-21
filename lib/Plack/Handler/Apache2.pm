@@ -85,7 +85,7 @@ sub handler {
     $class->call_app($r, $class->load_app($psgi));
 }
 
-# The method for PH::Apache2::Regitsry to override.
+# The method for PH::Apache2::Registry to override.
 sub fixup_path {
     my ($class, $r, $env) = @_;
 
@@ -100,8 +100,8 @@ sub fixup_path {
     if ($path_info =~ s{^($location)/?}{/}) {
         $env->{SCRIPT_NAME} = $1 || '';
     } else {
-        $path_info =~ s/^\Q$location\E//;
-        $env->{SCRIPT_NAME} = $location;
+        # Apache's <Location> is matched but here is not.
+        # This is something wrong. We can only respect original.
     }
 
     $env->{PATH_INFO}   = $path_info;
