@@ -104,9 +104,10 @@ sub run {
         delete $env->{HTTP_CONTENT_TYPE};
         delete $env->{HTTP_CONTENT_LENGTH};
 
-        # recover multiple slashes
+        # lighttpd munges multiple slashes in PATH_INFO into one. Try recovering it
         my $uri = URI->new($env->{REQUEST_URI});
         $env->{PATH_INFO} = uri_unescape($uri->path);
+        $env->{PATH_INFO} =~ s/^\Q$env->{SCRIPT_NAME}\E//;
 
         if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ m!lighttpd[-/]1\.(\d+\.\d+)!) {
             no warnings;
