@@ -32,8 +32,6 @@ our @TEST = (
         },
         sub {
             my $env = shift;
-            use Data::Dumper;
-            warn Dumper $env;
             return [ 200, ["Content-Type", "text/plain"], [ $env->{SCRIPT_NAME} ] ];
         },
     ],
