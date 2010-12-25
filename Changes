@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9960  Sat Dec 25 11:16:08 PST 2010
+        - FCGI: Fixed the bug introduced in 0.9958 where PATH_INFO contains the SCRIPT_NAME value (ambs)
+        - Improved the FastCGI and Apache2 test infrastructure to test SCRIPT_NAME values
+
 0.9959  Tue Dec 21 11:38:08 PST 2010
         - Apache2: Fixed the regression bug around LocationMatch caused by fixes in 0.9958 (cho45)
 
