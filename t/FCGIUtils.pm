@@ -13,11 +13,6 @@ use parent qw/Exporter/;
 
 our @EXPORT = qw/ test_lighty_external test_fcgi_standalone /;
 
-# TODO: tesst for .fcgi 
-sub test_lighty_fcgi {
-
-}
-
 # test using FCGI::Client + FCGI External Server
 sub test_fcgi_standalone {
     my ($callback, $http_port, $fcgi_port) = @_;
