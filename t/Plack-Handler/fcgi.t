@@ -35,8 +35,10 @@ sub run_server_cb {
     return sub {
         my($port, $app) = @_;
 
-        note "Applying LighttpdScriptNameFix" if $needs_fix;
-        $app = Plack::Middleware::LighttpdScriptNameFix->wrap($app) if $needs_fix;
+        if ($needs_fix) {
+            note "Applying LighttpdScriptNameFix";
+            $app = Plack::Middleware::LighttpdScriptNameFix->wrap($app);
+        }
 
         $| = 0; # Test::Builder autoflushes this. reset!
 
