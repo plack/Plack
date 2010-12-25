@@ -4,14 +4,16 @@ use warnings;
 use parent qw/Plack::Middleware/;
 use Plack::App::File;
 
-use Plack::Util::Accessor qw( path root encoding );
+use Plack::Util::Accessor qw( path root encoding pass_through );
 
 sub call {
     my $self = shift;
     my $env  = shift;
 
     my $res = $self->_handle_static($env);
-    return $res if $res;
+    if ($res && not ($self->pass_through and $res->[0] == 404)) {
+        return $res;
+    }
 
     return $self->app->($env);
 }
@@ -51,14 +53,17 @@ Plack::Middleware::Static - serve static files with Plack
 
 =head1 DESCRIPTION
 
-Enable this middleware to allow your Plack-based application to serve static
-files. If a static file exists for the requested path, it will be served.
-Otherwise, the request will be passed on to the application for further
-processing.
+Enable this middleware to allow your Plack-based application to serve
+static files.
+
+If the given request matches with the pattern defined in C<path>, this
+middleware will try to locate the file in C<root>. If the file exists
+it will be served but otherwise C<404> response will be returned. See
+C<pass_through> option below to change this behavior.
 
 If the requested document is not within the C<root> (i.e. directory
-traversal) or the file is there but not readable, this middleware will
-return a 403 Forbidden response.
+traversal) or the file is there but not readable, a 403 Forbidden
+response will be returned.
 
 The content type returned will be determined from the file extension
 based on L<Plack::MIME>.
@@ -94,6 +99,13 @@ matches, so it will pass through when C</static/> doesn't match.
 If you want to map multiple static directories from different root,
 simply add "this", middleware multiple times with different
 configuration options.
+
+=item pass_through
+
+By turning on this option, this middleware will pass the request
+back to the application for further processing, if the incoming
+request path matches with the C<path> but the requested file is not
+found on the file system.
 
 =back
 

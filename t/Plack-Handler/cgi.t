@@ -13,6 +13,7 @@ use Plack::Test::Suite;
 
 Plack::Test::Suite->runtests(sub {
     my ($name, $test, $handler) = @_;
+    local $ENV{PLACK_TEST_HANDLER} = 'CGI';
 
     note $name;
     my $cb = sub {
@@ -21,6 +22,9 @@ Plack::Test::Suite->runtests(sub {
         my $cgi = HTTP::Request::AsCGI->new($req);
         my $c = $cgi->setup;
         $ENV{SCRIPT_NAME} = '/plack_test.cgi';
+        # Apache's CGI implementation does not pass "Authorization" header by untrusted ENV.
+        # We bow down to it under this test.
+        delete $ENV{HTTP_AUTHORIZATION};
         eval { Plack::Handler::CGI->new->run($handler) };
         my $res = $c->response;
         $res->request($req);

@@ -35,4 +35,23 @@ test_psgi $app, sub {
     $cb->(HTTP::Request->new(GET => "/"));
 };
 
+$app = sub {
+    my $warn = 0;
+    local $SIG{__WARN__} = sub { $warn++ };
+
+    my $req = Plack::Request->new(shift);
+
+    is $req->cookies->{Foo}, 'Bar';
+    is $warn, 0;
+
+    $req->new_response(200)->finalize;
+};
+
+test_psgi $app, sub {
+    my $cb  = shift;
+    my $req = HTTP::Request->new(GET => "/");
+    $req->header(Cookie => 'Foo=Bar,; Bar=Baz;');
+    $cb->($req);
+};
+
 done_testing;

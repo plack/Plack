@@ -12,18 +12,28 @@ plan skip_all => "TEST_APACHE2 is not set"
 
 # Note: you need to load 64bit lib to test Apache2 on OS X 10.5 or later
 
-Plack::Test::Suite->run_server_tests(\&run_httpd);
+Plack::Test::Suite->run_server_tests(run_httpd(\&_render_conf));
+local $ENV{PLACK_TEST_PATH_PREFIX} = '/foo/bar/baz';
+Plack::Test::Suite->run_server_tests( run_httpd(\&_render_conf_location),);
+Plack::Test::Suite->run_server_tests( run_httpd(\&_render_conf_location_match),);
 done_testing();
 
 sub run_httpd {
-    my $port = shift;
+    my $render_conf = shift;
+    sub {
+        my $port = shift;
 
-    my $tmpdir = $ENV{APACHE2_TMP_DIR} || File::Temp::tempdir( CLEANUP => 1 );
+        my $tmpdir = $ENV{APACHE2_TMP_DIR} || File::Temp::tempdir( CLEANUP => 1 );
 
-    write_file("$tmpdir/app.psgi", _render_psgi());
-    write_file("$tmpdir/httpd.conf", _render_conf($tmpdir, $port, "$tmpdir/app.psgi"));
+        write_file("$tmpdir/app.psgi", _render_psgi());
+        write_file("$tmpdir/httpd.conf", $render_conf->($tmpdir, $port, "$tmpdir/app.psgi"));
 
-    exec "httpd -X -D FOREGROUND -f $tmpdir/httpd.conf";
+        # This is required for failing tests.
+        # Apache2 peep real filesystem to make SCRIPT_NAME and PATH_INFO.
+        mkdir "$tmpdir/foo";
+
+        exec "httpd -X -D FOREGROUND -f $tmpdir/httpd.conf";
+    };
 }
 
 sub write_file {
@@ -47,6 +57,7 @@ sub _render_conf {
     <<"END";
 LoadModule perl_module libexec/apache2/mod_perl.so
 ServerRoot $tmpdir
+DocumentRoot $tmpdir
 PidFile $tmpdir/httpd.pid
 LockFile $tmpdir/httpd.lock
 ErrorLog $tmpdir/error_log
@@ -62,5 +73,53 @@ SetHandler perl-script
 PerlHandler Plack::Handler::Apache2
 PerlSetVar psgi_app $tmpdir/app.psgi
 </Location>
+END
+}
+
+sub _render_conf_location {
+    my ($tmpdir, $port, $psgi_path) = @_;
+    <<"END";
+LoadModule perl_module libexec/apache2/mod_perl.so
+ServerRoot $tmpdir
+DocumentRoot $tmpdir
+PidFile $tmpdir/httpd.pid
+LockFile $tmpdir/httpd.lock
+ErrorLog $tmpdir/error_log
+Listen $port
+
+<Perl>
+use Plack::Handler::Apache2;
+Plack::Handler::Apache2->preload("$tmpdir/app.psgi");
+</Perl>
+
+<Location /foo/bar/baz>
+SetHandler perl-script
+PerlHandler Plack::Handler::Apache2
+PerlSetVar psgi_app $tmpdir/app.psgi
+</Location>
+END
+}
+
+sub _render_conf_location_match {
+    my ($tmpdir, $port, $psgi_path) = @_;
+    <<"END";
+LoadModule perl_module libexec/apache2/mod_perl.so
+ServerRoot $tmpdir
+DocumentRoot $tmpdir
+PidFile $tmpdir/httpd.pid
+LockFile $tmpdir/httpd.lock
+ErrorLog $tmpdir/error_log
+Listen $port
+
+<Perl>
+use Plack::Handler::Apache2;
+Plack::Handler::Apache2->preload("$tmpdir/app.psgi");
+</Perl>
+
+<LocationMatch /foo/bar/(baz)>
+SetHandler perl-script
+PerlHandler Plack::Handler::Apache2
+PerlSetVar psgi_app $tmpdir/app.psgi
+</LocationMatch>
 END
 }

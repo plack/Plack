@@ -11,6 +11,7 @@ use IO::Handle;
 use Plack::Util;
 use Scalar::Util;
 use URI;
+use URI::Escape;
 
 my %apps; # psgi file to $app mapping
 
@@ -49,6 +50,15 @@ sub call_app {
         'psgi.nonblocking'    => Plack::Util::FALSE,
     };
 
+    if (defined(my $HTTP_AUTHORIZATION = $r->headers_in->{Authorization})) {
+        $env->{HTTP_AUTHORIZATION} = $HTTP_AUTHORIZATION;
+    }
+
+    # Actually, we can not trust PATH_INFO from mod_perl because mod_perl squeezes multiple slashes into one slash.
+    my $uri = URI->new($r->unparsed_uri);
+
+    $env->{PATH_INFO} = uri_unescape($uri->path);
+
     $class->fixup_path($r, $env);
 
     my $res = $app->($env);
@@ -75,22 +85,27 @@ sub handler {
     $class->call_app($r, $class->load_app($psgi));
 }
 
-# The method for PH::Apache2::Regitsry to override.
+# The method for PH::Apache2::Registry to override.
 sub fixup_path {
     my ($class, $r, $env) = @_;
-    my $vpath    = $env->{SCRIPT_NAME} . ($env->{PATH_INFO} || '');
-    my $path_info = $vpath;
 
-    my $location = $r->location || "/";
-       $location =~ s{/$}{};
+    # $env->{PATH_INFO} is created from unparsed_uri so it is raw.
+    my $path_info = $env->{PATH_INFO} || '';
 
-    # Let's *guess* if we're in a LocationMatch block
-    if ($location =~ /[^$URI::uric]/o) {
-        $path_info =~ s/($location)//;
+    # Get argument of <Location> or <LocationMatch> directive
+    # This may be string or regexp and we can't know either.
+    my $location = $r->location;
+
+    # Let's *guess* if we're in a LocationMatch directive
+    if ($path_info =~ s{^($location)/?}{/}) {
         $env->{SCRIPT_NAME} = $1 || '';
     } else {
-        $path_info =~ s/^\Q$location\E//;
-        $env->{SCRIPT_NAME} = $location;
+        # Apache's <Location> is matched but here is not.
+        # This is something wrong. We can only respect original.
+        $r->log_error(
+            "Your request path is '$path_info' and it doesn't match your Location(Match) '$location'. " .
+            "This should be due to the configuration error. See perldoc Plack::Handler::Apache2 for details."
+        );
     }
 
     $env->{PATH_INFO}   = $path_info;

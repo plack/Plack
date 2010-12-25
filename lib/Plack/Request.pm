@@ -2,7 +2,7 @@ package Plack::Request;
 use strict;
 use warnings;
 use 5.008_001;
-our $VERSION = '0.9956';
+our $VERSION = '0.9959';
 $VERSION = eval $VERSION;
 
 use HTTP::Headers;
@@ -67,7 +67,7 @@ sub cookies {
     $self->env->{'plack.cookie.string'} = $self->env->{HTTP_COOKIE};
 
     my %results;
-    my @pairs = split "[;,] ?", $self->env->{'plack.cookie.string'};
+    my @pairs = grep /=/, split "[;,] ?", $self->env->{'plack.cookie.string'};
     for my $pair ( @pairs ) {
         # trim leading trailing whitespace
         $pair =~ s/^\s+//; $pair =~ s/\s+$//;
