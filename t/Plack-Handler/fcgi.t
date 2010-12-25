@@ -10,13 +10,17 @@ use t::FCGIUtils;
 my $lighty_port;
 my $fcgi_port;
 
-test_lighty_external(
-   sub {
-       ($lighty_port, $fcgi_port, my $needs_fix) = @_;
-       Plack::Test::Suite->run_server_tests(run_server_cb($needs_fix), $fcgi_port, $lighty_port);
-       done_testing();
-    }
-);
+for ('', '/fastcgi') {
+    $ENV{PLACK_TEST_SCRIPT_NAME} = $_;
+    test_lighty_external(
+        sub {
+            ($lighty_port, $fcgi_port, my $needs_fix) = @_;
+            Plack::Test::Suite->run_server_tests(run_server_cb($needs_fix), $fcgi_port, $lighty_port);
+        }
+    );
+}
+
+done_testing();
 
 {
     package Plack::Handler::FCGI::Manager;

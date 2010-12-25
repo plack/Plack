@@ -89,6 +89,7 @@ sub _write_file {
 
 sub _render_conf {
     my ($tmpdir, $port, $fcgiport) = @_;
+    my $script_name = $ENV{PLACK_TEST_SCRIPT_NAME} || '/';
     <<"END";
 # basic lighttpd config file for testing fcgi(external server)+Plack
 server.modules += ("mod_fastcgi")
@@ -100,7 +101,7 @@ server.port = $port
 
 # HTTP::Engine app specific fcgi setup
 fastcgi.server = (
-    "/" => ((
+    "$script_name" => ((
             "check-local"     => "disable",
             "host"            => "127.0.0.1",
             "port"            => $fcgiport,
