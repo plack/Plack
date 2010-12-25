@@ -97,7 +97,11 @@ sub fixup_path {
     my $location = $r->location;
 
     # Let's *guess* if we're in a LocationMatch directive
-    if ($path_info =~ s{^($location)/?}{/}) {
+    if ($location eq '/') {
+        # <Location /> could be handled as a 'root' case where we make
+        # everything PATH_INFO and empty SCRIPT_NAME as in the PSGI spec
+        $env->{SCRIPT_NAME} = '';
+    } elsif ($path_info =~ s{^($location)/?}{/}) {
         $env->{SCRIPT_NAME} = $1 || '';
     } else {
         # Apache's <Location> is matched but here is not.

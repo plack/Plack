@@ -16,13 +16,27 @@ use Try::Tiny;
 
 my $share_dir = try { File::ShareDir::dist_dir('Plack') } || 'share';
 
-$ENV{PLACK_TEST_PATH_PREFIX} = '';
+$ENV{PLACK_TEST_SCRIPT_NAME} = '';
 
 # 0: test name
 # 1: request generator coderef.
 # 2: request handler
 # 3: test case for response
 our @TEST = (
+    [
+        'SCRIPT_NAME',
+        sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/");
+            is $res->content, $ENV{PLACK_TEST_SCRIPT_NAME};
+        },
+        sub {
+            my $env = shift;
+            use Data::Dumper;
+            warn Dumper $env;
+            return [ 200, ["Content-Type", "text/plain"], [ $env->{SCRIPT_NAME} ] ];
+        },
+    ],
     [
         'GET',
         sub {
@@ -478,7 +492,7 @@ our @TEST = (
         sub {
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/foo/bar%20baz%73?x=a");
-            is $res->content, ($ENV{PLACK_TEST_PATH_PREFIX} || '') . "/foo/bar%20baz%73?x=a";
+            is $res->content, $ENV{PLACK_TEST_SCRIPT_NAME} . "/foo/bar%20baz%73?x=a";
         },
         sub {
             my $env = shift;
@@ -737,8 +751,8 @@ sub run_server_tests {
                 my $cb = sub {
                     my $req = shift;
                     $req->uri->port($http_port || $port);
-                    if ($ENV{PLACK_TEST_PATH_PREFIX}) {
-                        $req->uri->path($ENV{PLACK_TEST_PATH_PREFIX} . $req->uri->path);
+                    if ($ENV{PLACK_TEST_SCRIPT_NAME}) {
+                        $req->uri->path($ENV{PLACK_TEST_SCRIPT_NAME} . $req->uri->path);
                     }
                     $req->header('X-Plack-Test' => $i);
                     return $ua->request($req);

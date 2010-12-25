@@ -13,7 +13,7 @@ plan skip_all => "TEST_APACHE2 is not set"
 # Note: you need to load 64bit lib to test Apache2 on OS X 10.5 or later
 
 Plack::Test::Suite->run_server_tests(run_httpd(\&_render_conf));
-local $ENV{PLACK_TEST_PATH_PREFIX} = '/foo/bar/baz';
+local $ENV{PLACK_TEST_SCRIPT_NAME} = '/foo/bar/baz';
 Plack::Test::Suite->run_server_tests( run_httpd(\&_render_conf_location),);
 Plack::Test::Suite->run_server_tests( run_httpd(\&_render_conf_location_match),);
 done_testing();
