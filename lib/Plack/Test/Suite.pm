@@ -694,7 +694,7 @@ our @TEST = (
             return [
                 200,
                 [ 'Content-Type' => 'text/plain', 'X-AUTHORIZATION' => exists($env->{HTTP_AUTHORIZATION}) ? 1 : 0 ],
-                [ $env->{HTTP_AUTHORIZATION} ],
+                [ $env->{HTTP_AUTHORIZATION} || '' ],
             ];
         },
     ],
