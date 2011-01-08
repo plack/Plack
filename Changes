@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9961  Fri Jan  7 21:54:04 PST 2011
+        - Skip directory.t on win32 since the directory "stuff.." can't be created [RT:64545]
+
 0.9960  Sat Dec 25 11:16:08 PST 2010
         - FCGI: Fixed the regression in 0.9958 where PATH_INFO gets wrong value when hosted under a
           non-root path (ambs)
