@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9962  Sat Jan  8 21:07:30 PST 2011
+        - Same fix as 0.9961 but works around the issues with Strawberry unarchiver
+
 0.9961  Fri Jan  7 21:54:04 PST 2011
         - Skip directory.t on win32 since the directory "stuff.." can't be created [RT:64545]
 
