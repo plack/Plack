@@ -26,9 +26,18 @@ my %test = (
 
     SKIP: {
             skip "Filenames can't end with . on windows", 2 if $^O eq "MSWin32";
+
+            mkdir "share/stuff..", 0777;
+            open my $out, ">", "share/stuff../Hello.txt" or die $!;
+            print $out "Hello\n";
+            close $out;
+
             $res = $cb->(GET "/stuff../Hello.txt");
             is $res->code, 200;
             is $res->content, "Hello\n";
+
+            unlink "share/stuff../Hello.txt";
+            rmdir "share/stuff..";
         }
     },
     app => $handler,
