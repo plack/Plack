@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9963  Mon Jan 10 16:46:33 PST 2011
+        - Fixed fcgi.t for lighttpd < 1.4.23 (confound)
+
 0.9962  Sat Jan  8 21:07:30 PST 2011
         - Same fix as 0.9961 but works around the issues with Strawberry unarchiver
 
