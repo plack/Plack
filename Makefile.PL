@@ -36,6 +36,11 @@ install_script 'scripts/plackup';
 
 auto_install;
 auto_set_repository;
+
+resources
+  homepage      => "http://plackperl.org",
+  bugtracker    => "https://github.com/miyagawa/plack/issues";
+
 WriteAll;
 
 warn <<RECOMMENDS;
