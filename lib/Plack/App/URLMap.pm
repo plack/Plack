@@ -154,7 +154,7 @@ paths.
 
 =head1 HOW THIS WORKS
 
-This application works by I<fixing> C>SCRIPT_NAME> and C<PATH_INFO>
+This application works by I<fixing> C<SCRIPT_NAME> and C<PATH_INFO>
 before dispatching the incoming request to the relocated
 applications.
 
