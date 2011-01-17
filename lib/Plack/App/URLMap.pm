@@ -158,7 +158,7 @@ This application works by I<fixing> C<SCRIPT_NAME> and C<PATH_INFO>
 before dispatching the incoming request to the relocated
 applications.
 
-So if you have a Wiki application that takes C</index> and C</page/*>
+Say you have a Wiki application that takes C</index> and C</page/*>
 and makes a PSGI application C<$wiki_app> out of it, using one of
 supported web frameworks, you can put the whole application under
 C</wiki> by:
@@ -177,8 +177,7 @@ C<PATH_INFO> and B<appends> that to C<SCRIPT_NAME>.
 That way, if the C<$app> is mounted under the root
 (i.e. C<SCRIPT_NAME> is C<"">) with standalone web servers like
 L<Starman>, C<SCRIPT_NAME> is now locally set to C</wiki> and
-C<PATH_INFO> is changed to C</page/foo> when C<$wiki_app> is being
-called.
+C<PATH_INFO> is changed to C</page/foo> when C<$wiki_app> gets called.
 
 =head1 AUTHOR
 
