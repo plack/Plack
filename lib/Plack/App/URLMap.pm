@@ -126,6 +126,9 @@ C</foo/> or C</foo/bar> but it B<won't> match with C</foox>.
 Mapping URL with host names is also possible, and in that case the URL
 mapping works like a virtual host.
 
+Mappings will nest.  If $app is already mapped to C</baz> it will
+match a request for C</foo/baz> but not C</foo>.
+
 =item mount
 
 Alias for C<map>.
