@@ -242,6 +242,33 @@ line to set the default fallback app.
       mount "/" => $app;
   }
 
+Note that the C<builder> DSL returns a whole new PSGI application, which means
+
+=over 4
+
+=item *
+
+C<builder { ... }> should normally the last statement of a C<.psgi>
+file, because the return value of C<builder> is the application that
+actually is executed.
+
+=item *
+
+You can nest your C<builder> block, mixed with C<mount> (see URLMap
+support above):
+
+  builder {
+      mount "/foo" => builder {
+          mount "/bar" => $app;
+      }
+  }
+
+will locate the C<$app> under C</foo/bar> since the inner C<builder>
+block puts it under C</bar> and it results a new PSGI application
+which is located under C</foo> becuase of the outer C<builder> block.
+
+=back
+
 =head1 CONDITIONAL MIDDLEWARE SUPPORT
 
 You can use C<enable_if> to conditionally enable middleware based on
