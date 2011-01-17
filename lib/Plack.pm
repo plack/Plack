@@ -211,7 +211,13 @@ Aaron Trevena
 
 =head1 SEE ALSO
 
-L<PSGI> L<http://plackperl.org/> L<https://github.com/miyagawa/Plack/wiki>
+The L<PSGI> specification upon which Plack is based.
+
+L<http://plackperl.org/>
+
+The Plack wiki: L<https://github.com/miyagawa/Plack/wiki>
+
+The Plack FAQ: L<https://github.com/miyagawa/Plack/wiki/Faq>
 
 =head1 LICENSE
 
