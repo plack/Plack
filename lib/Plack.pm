@@ -211,7 +211,7 @@ Aaron Trevena
 
 =head1 SEE ALSO
 
-L<PSGI> L<http://plackperl.org/>
+L<PSGI> L<http://plackperl.org/> L<https://github.com/miyagawa/Plack/wiki>
 
 =head1 LICENSE
 
