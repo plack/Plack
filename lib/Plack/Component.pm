@@ -117,10 +117,10 @@ Objects for the derived classes (Plack::App::* or
 Plack::Middleware::*) are created at the PSGI application compile
 phase using C<new>, C<prepare_app> and C<to_app>, and the created
 object persists during the web server lifecycle, unless it is running
-on the non-persisten environment like CGI. C<call> is invoked against
+on the non-persistent environment like CGI. C<call> is invoked against
 the same object whenever a new request comes in.
 
-You can check if it is running in a persisten environment by checking
+You can check if it is running in a persistent environment by checking
 C<psgi.run_once> key in the C<$env> being true (non-persistent) or
 false (persistent), but it is best for you to write your middleware
 safe in the persistent environment. To accomplish that, you should
