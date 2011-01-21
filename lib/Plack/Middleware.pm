@@ -77,6 +77,11 @@ with a middleware:
   $app = Plack::Middleware::Foo->wrap($app, %options);
   $app = Plack::Middleware::Bar->wrap($app, %options);
 
+=head1 CAVEATS
+
+A new object is B<not> allocated per request.  Don't try to cache the
+request or environment in the object.
+
 =head1 SEE ALSO
 
 L<Plack> L<Plack::Builder>
