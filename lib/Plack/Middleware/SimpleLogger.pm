@@ -15,11 +15,12 @@ sub call {
     my $min = $level_numbers{ $self->level || "debug" };
 
     my $env_ref = $env;
+    Scalar::Util::weaken($env_ref);
+
     $env->{'psgix.logger'} = sub {
         my $args = shift;
 
         if ($level_numbers{$args->{level}} >= $min) {
-            Scalar::Util::weaken($env_ref);
             $env_ref->{'psgi.errors'}->print($self->format_message($args->{level}, $args->{message}));
         }
     };
