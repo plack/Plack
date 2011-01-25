@@ -47,7 +47,7 @@ sub req_to_psgi {
     }
 
     my $env = {
-        PATH_INFO         => URI::Escape::uri_unescape($uri->path),
+        PATH_INFO         => URI::Escape::uri_unescape($uri->path || '/'),
         QUERY_STRING      => $uri->query || '',
         SCRIPT_NAME       => '',
         SERVER_NAME       => $uri->host,
@@ -56,7 +56,7 @@ sub req_to_psgi {
         REMOTE_ADDR       => '127.0.0.1',
         REMOTE_HOST       => 'localhost',
         REMOTE_PORT       => int( rand(64000) + 1000 ),                   # not in RFC 3875
-        REQUEST_URI       => $uri->path_query,                            # not in RFC 3875
+        REQUEST_URI       => $uri->path_query || '/',                     # not in RFC 3875
         REQUEST_METHOD    => $req->method,
         'psgi.version'      => [ 1, 1 ],
         'psgi.url_scheme'   => $uri->scheme eq 'https' ? 'https' : 'http',
