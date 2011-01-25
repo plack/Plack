@@ -19,7 +19,10 @@ sub call {
 
     my $trace;
     local $SIG{__DIE__} = sub {
-        $trace = $StackTraceClass->new(indent => 1, message => $_[0], ignore_package => __PACKAGE__);
+        $trace = $StackTraceClass->new(
+            indent => 1, message => munge_error($_[0], [ caller ]),
+            ignore_package => __PACKAGE__,
+        );
         die @_;
     };
 
@@ -45,6 +48,17 @@ sub call {
     undef $trace;
 
     return $res;
+}
+
+sub munge_error {
+    my($err, $caller) = @_;
+    return $err if ref $err;
+
+    # Ugly hack to remove " at ... line ..." automatically appended by perl
+    # If there's a proper way to do this, please let me know.
+    $err =~ s/ at \Q$caller->[1]\E line $caller->[2]\.\n$//;
+
+    return $err;
 }
 
 sub utf8_safe {
