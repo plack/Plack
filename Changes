@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9965  Mon Jan 24 23:08:04 PST 2011
+        - Requires Devel::StackTrace 0.11
+        - Fixed a regression where StackTrace wasn't able to get the thrown exception as an error message (hachi)
+
 0.9964  Mon Jan 24 16:29:08 PST 2011
         - Various documentation improvements (miyagawa, schwern)
         - Improved the way it eliminates Plack::Middleware::StackTrace from its own stacktrace (Jonathan Swartz)
