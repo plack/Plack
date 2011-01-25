@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9966  Tue Jan 25 12:00:25 PST 2011
+        - Fixed a memory leak in SimploLogger (vti)
+        - Support %v in AccessLog (Ranguard)
+        - Force set CONTENT_LENGTH in req_to_psgi when $content is given to HTTP::Request (timbunce) #150
+        - Fixed a case where SCRIPT_NAME and PATH_INFO can both get empty in req_to_psgi (doy) #163
+
 0.9965  Mon Jan 24 23:08:04 PST 2011
         - Requires Devel::StackTrace 0.11
         - Fixed a regression where StackTrace wasn't able to get the thrown exception as an error message (hachi)

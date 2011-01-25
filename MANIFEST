@@ -137,6 +137,8 @@ share/baybridge.jpg
 share/face.jpg
 t/00_compile.t
 t/FCGIUtils.pm
+t/HTTP-Message-PSGI/content_length.t
+t/HTTP-Message-PSGI/path_info.t
 t/HTTP-Message-PSGI/utf8_req.t
 t/HTTP-Server-PSGI/post.t
 t/Plack-Builder/mount.t
