@@ -171,7 +171,13 @@ CONTRIBUTORS
     Aaron Trevena
 
 SEE ALSO
-    PSGI <http://plackperl.org/>
+    The PSGI specification upon which Plack is based.
+
+    <http://plackperl.org/>
+
+    The Plack wiki: <https://github.com/miyagawa/Plack/wiki>
+
+    The Plack FAQ: <https://github.com/miyagawa/Plack/wiki/Faq>
 
 LICENSE
     This library is free software; you can redistribute it and/or modify it

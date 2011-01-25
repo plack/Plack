@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9964  Mon Jan 24 16:29:08 PST 2011
+        - Various documentation improvements (miyagawa, schwern)
+        - Improved the way it eliminates Plack::Middleware::StackTrace from its own stacktrace (Jonathan Swartz)
+
 0.9963  Mon Jan 10 16:46:33 PST 2011
         - Fixed fcgi.t for lighttpd < 1.4.23 (confound)
 
