@@ -2,6 +2,9 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9967  Tue Jan 25 14:26:37 PST 2011
+        - Fixed StackTrace to require D::ST::WithLexicals 0.08 that supports 'message' (doy)
+
 0.9966  Tue Jan 25 12:00:25 PST 2011
         - Fixed a memory leak in SimploLogger (vti)
         - Support %v in AccessLog (Ranguard)
