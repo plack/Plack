@@ -25,11 +25,11 @@ my $test = sub {
     my $req = GET "http://example.com/";
     $req->header("Host" => "example.com", "X-Forwarded-For" => "192.0.2.1");
 
-    my $fmt = "%{Host}i %{X-Forwarded-For}i %{Content-Type}o %{%m %y}t";
+    my $fmt = "%{Host}i %{X-Forwarded-For}i %{Content-Type}o %{%m %y}t %v";
     $test->($fmt)->($req);
     chomp $log;
     my $month_year = POSIX::strftime('%m %y', localtime);
-    is $log, "example.com 192.0.2.1 text/plain [$month_year]";
+    is $log, "example.com 192.0.2.1 text/plain [$month_year] example.com";
 }
 
 {

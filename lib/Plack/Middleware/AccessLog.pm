@@ -58,6 +58,7 @@ sub log_line {
         }
     };
 
+
     my %char_handler = (
         '%' => sub { '%' },
         h => sub { $env->{REMOTE_ADDR} || '-' },
@@ -70,6 +71,7 @@ sub log_line {
         b => sub { $opts->{content_length} || $h->get('Content-Length') || "-" },
         T => sub { $opts->{time} ? int($opts->{time}) : "-" },
         D => sub { $opts->{time} ? $opts->{time} * 1000000 : "-" },
+        v => sub { $env->{SERVER_NAME} || '-' },
     );
 
     my $char_handler = sub {
