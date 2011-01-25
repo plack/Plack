@@ -44,6 +44,8 @@ sub req_to_psgi {
         }
     } else {
         open $input, "<", \$content;
+        $req->content_length(length $content)
+            unless defined $req->content_length;
     }
 
     my $env = {
