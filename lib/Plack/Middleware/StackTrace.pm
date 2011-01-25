@@ -10,7 +10,7 @@ use Plack::Util::Accessor qw( force no_print_errors );
 our $StackTraceClass = "Devel::StackTrace";
 
 # Optional since it needs PadWalker
-if (try { require Devel::StackTrace::WithLexicals; 1 }) {
+if (try { require Devel::StackTrace::WithLexicals; Devel::StackTrace::WithLexicals->VERSION(0.08); 1 }) {
     $StackTraceClass = "Devel::StackTrace::WithLexicals";
 }
 
