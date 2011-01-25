@@ -19,7 +19,7 @@ sub call {
 
     my $trace;
     local $SIG{__DIE__} = sub {
-        $trace = $StackTraceClass->new(indent => 1, message => $_[0]);
+        $trace = $StackTraceClass->new(indent => 1, message => $_[0], ignore_package => __PACKAGE__);
         die @_;
     };
 
