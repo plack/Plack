@@ -13,11 +13,12 @@ sub call {
 
     my $min = $level_numbers{ $self->level || "debug" };
 
+    my $errors_io = $env->{'psgi.errors'};
     $env->{'psgix.logger'} = sub {
         my $args = shift;
 
         if ($level_numbers{$args->{level}} >= $min) {
-            $env->{'psgi.errors'}->print($self->format_message($args->{level}, $args->{message}));
+            $errors_io->print($self->format_message($args->{level}, $args->{message}));
         }
     };
 
