@@ -118,6 +118,14 @@ or a code ref depending on your application), or throw an exception
 Plack::Recursive::ForwardRequest anywhere in the code to I<forward>
 the current request (i.e. abort the current and redo the request).
 
+=head1 EXCEPTIONS
+
+This middleware passes through unknown exceptions to the outside
+middleware stack, so if you use this middleware with other exception
+handlers such as L<Plack::Middleware::StackTrace> or
+L<Plack::Middleware::HTTPExceptions>, be sure to wrap this so
+L<Plack::Middleware::Recursive> gets as inner as possible.
+
 =head1 AUTHORS
 
 Tatsuhiko Miyagawa
