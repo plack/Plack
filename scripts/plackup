@@ -43,11 +43,11 @@ directory, that would look like:
 
   #!/usr/bin/perl
   use MyApp;
-  my $app = MyApp->new;
-  my $handler = sub { $app->run_psgi(@_) };
+  my $application = MyApp->new;
+  my $app = sub { $application->run_psgi(@_) };
 
-The last statement of C<app.psgi> should be a code reference that is a
-PSGI application.
+The last statement of C<app.psgi>, in this case C<$app>, should be a
+code reference that is a PSGI application.
 
 =head1 ARGUMENTS
 
