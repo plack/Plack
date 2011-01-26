@@ -124,13 +124,6 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
       enable "Plack::Middleware::Foo";
       enable "Plack::Middleware::Bar", opt => "val";
       enable "Plack::Middleware::Baz";
-      enable sub {
-          my $app = shift;
-          sub {
-              my $env = shift;
-              $app->($env);
-          };
-      };
       $app;
   };
 
@@ -189,7 +182,13 @@ which is PSGI application that consumes C<$env> in runtime. So:
   builder {
       enable sub {
           my $app = shift;
-          sub { my $env = shift; $app->($env) };
+          sub {
+              my $env = shift;
+              # do preprocessing
+              my $res = $app->($env);
+              # do postprocessing
+              return $res;
+          };
       };
       $app;
   };
