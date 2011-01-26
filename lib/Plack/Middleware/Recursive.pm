@@ -17,6 +17,8 @@ sub call {
     } catch {
         if (blessed $_ && $_->isa('Plack::Recursive::ForwardRequest')) {
             return $self->recurse_callback($env)->($_->path);
+        } else {
+            die $_; # rethrow
         }
     };
 

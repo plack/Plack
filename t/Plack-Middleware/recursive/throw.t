@@ -13,6 +13,8 @@ my $app = sub {
         return [ 200, [ 'Content-Type', 'text/plain' ], [ "Hello $env->{QUERY_STRING}" ] ];
     } elsif ($env->{PATH_INFO} eq '/forwarded') {
         Plack::Recursive::ForwardRequest->throw("/forwarded2?q=bar");
+    } elsif ($env->{PATH_INFO} eq '/die') {
+        die "Foo";
     }
 
     Plack::Recursive::ForwardRequest->throw("/forwarded?q=bar");
@@ -26,6 +28,10 @@ test_psgi $app, sub {
     my $res = $cb->(GET "/");
     is $res->code, 200;
     is $res->content, "Hello q=bar";
+
+    $res = $cb->(GET "/die");
+    is $res->code, 500;
+    like $res->content, qr/Foo at t/;
 };
 
 done_testing;
