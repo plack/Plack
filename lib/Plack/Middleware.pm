@@ -72,7 +72,7 @@ non-persisten environment such as CGI), so you should never set or
 cache per-request data like C<$env> in your middleware object. See
 also L<Plack::Component/"OBJECT LIFECYCLE">.
 
-See L<Plack::Builder> how to actually enable middlewares in your
+See L<Plack::Builder> how to actually enable middleware in your
 I<.psgi> application file using the DSL. If you do not like our
 builder DSL, you can also use C<wrap> method to wrap your application
 with a middleware:
@@ -82,6 +82,94 @@ with a middleware:
   my $app = sub { ... };
   $app = Plack::Middleware::Foo->wrap($app, %options);
   $app = Plack::Middleware::Bar->wrap($app, %options);
+
+=head1 RESPONSE CALLBACK
+
+The typical middleware is written like this:
+
+  package Plack::Middleware::Something;
+  use parent qw(Plack::Middleware);
+
+  sub call {
+      my($self, $env) = @_;
+      # pre-processing $env
+      my $res = $self->app->($env);
+      # post-processing $res
+      return $res;
+  }
+
+The tricky thing about post processing the response is that it could
+either be an immediate 3 element array ref, or a code reference that
+implements the delayed (streaming) interface.
+
+Dealing with these two types of response in each piece of middleware
+is pointless, so you're recommended to use the C<response_cb> wrapper
+function in L<Plack::Util> when implementing a post processing
+middleware.
+
+  my $res = $app->($env);
+  Plack::Util::response_cb($res, sub {
+      my $res = shift;
+      # do something with $res;
+  });
+
+The callback function gets a PSGI response as a 3 element array
+reference, and you can update the reference to implement the post
+processing.
+
+  package Plack::Middleware::Always500;
+  use parent qw(Plack::Middleware);
+  use Plack::Util;
+
+  sub call {
+      my($self, $env) = @_;
+      my $res  = $self->app->($env);
+      Plack::Util::response_cb($res, sub {
+          my $res = shift;
+          $res->[0] = 500;
+      });
+  }
+
+In this example, the callback gets the C<$res> and updates its first
+element (status code) to 500. Using C<response_cb> makes sure that
+this works with the delayed response too. Note that you have to keep
+the C<$res> reference when you swap the entire response.
+
+  Plack::Util::response_cb($res, sub {
+      my $res = shift;
+      $res = [ 500, $new_headers, $new_body ]; # THIS DOES NOT WORK
+  });
+
+This does not work, since assigning a new anonymous array to C<$res>
+doesn't update the actual PSGI reference. You should instead do:
+
+  Plack::Util::response_cb($res, sub {
+      my $res = shift;
+      @$res = (500, $new_headers, $new_body); # THIS WORKS
+  });
+
+The third element of PSGI response array ref is a body, and it could
+be either array ref or IO::Handle-ish object. The application could
+also make use of C<$writer> object if C<psgi.streaming> is in
+effect. Dealing with this is painful again, and C<response_cb> can
+take care of that too, by allowing you to return a content filter.
+
+  # replace all "Foo" in content body with "Bar"
+  Plack::Util::response_cb($res, sub {
+      my $res = shift;
+      return sub {
+          my $chunk = shift;
+          return unless defined $chunk;
+          $chunk =~ s/Foo/Bar/g;
+          return $chunk;
+      }
+  });
+
+The callback takes one argument C<$chunk> and your callback is
+expected to return the updated chunk. If the given C<$chunk> is undef,
+it means the stream has reached the end, so your callback should also
+return undef, or return the final chunk and return undef when called
+next time.
 
 =head1 SEE ALSO
 

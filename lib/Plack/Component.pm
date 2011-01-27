@@ -109,6 +109,11 @@ convert your component into a PSGI C<$app>. You should not ever need to
 override this method, it is recommended to use C<prepare_app> and C<call>
 instead.
 
+=item response_cb
+
+This is a wrapper for C<response_cb> in L<Plack::Util>. See
+L<Plack::Middleware/RESPONSE CALLBACK> for details.
+
 =back
 
 =head1 OBJECT LIFECYCLE

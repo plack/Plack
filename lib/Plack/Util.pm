@@ -490,6 +490,10 @@ Creates an instant object that can react to methods passed in the
 constructor. Handy to create when you need to create an IO stream
 object for input or errors.
 
+=item response_cb
+
+See L<Plack::Middleware/RESPONSE CALLBACK> for details.
+
 =back
 
 =cut
