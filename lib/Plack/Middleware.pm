@@ -132,8 +132,11 @@ processing.
 
 In this example, the callback gets the C<$res> and updates its first
 element (status code) to 500. Using C<response_cb> makes sure that
-this works with the delayed response too. Note that you have to keep
-the C<$res> reference when you swap the entire response.
+this works with the delayed response too.
+
+You're not required (and not recommended either) to return a new array
+reference they will be simply ignored. Similarly, note that you have
+to keep the C<$res> reference when you swap the entire response.
 
   Plack::Util::response_cb($res, sub {
       my $res = shift;
@@ -141,7 +144,8 @@ the C<$res> reference when you swap the entire response.
   });
 
 This does not work, since assigning a new anonymous array to C<$res>
-doesn't update the actual PSGI reference. You should instead do:
+doesn't update the original PSGI response value. You should instead
+do:
 
   Plack::Util::response_cb($res, sub {
       my $res = shift;
@@ -151,8 +155,9 @@ doesn't update the actual PSGI reference. You should instead do:
 The third element of PSGI response array ref is a body, and it could
 be either array ref or IO::Handle-ish object. The application could
 also make use of C<$writer> object if C<psgi.streaming> is in
-effect. Dealing with this is painful again, and C<response_cb> can
-take care of that too, by allowing you to return a content filter.
+effect. Dealing with these variants is again really painful, and
+C<response_cb> can take care of that too, by allowing you to return a
+content filter as a code reference.
 
   # replace all "Foo" in content body with "Bar"
   Plack::Util::response_cb($res, sub {
