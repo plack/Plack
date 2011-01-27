@@ -145,7 +145,7 @@ swap the entire response.
 
   Plack::Util::response_cb($res, sub {
       my $res = shift;
-      $res = [ 500, $new_headers, $new_body ]; # THIS DOES NOT WORK
+      $res = [ $new_status, $new_headers, $new_body ]; # THIS DOES NOT WORK
       return;
   });
 
@@ -155,7 +155,7 @@ do:
 
   Plack::Util::response_cb($res, sub {
       my $res = shift;
-      @$res = (500, $new_headers, $new_body); # THIS WORKS
+      @$res = ($new_status, $new_headers, $new_body); # THIS WORKS
       return;
   });
 
