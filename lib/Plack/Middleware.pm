@@ -127,6 +127,7 @@ processing.
       Plack::Util::response_cb($res, sub {
           my $res = shift;
           $res->[0] = 500;
+          return;
       });
   }
 
@@ -135,12 +136,17 @@ element (status code) to 500. Using C<response_cb> makes sure that
 this works with the delayed response too.
 
 You're not required (and not recommended either) to return a new array
-reference they will be simply ignored. Similarly, note that you have
-to keep the C<$res> reference when you swap the entire response.
+reference - they will be simply ignored. You're suggested to
+explicitly return, unless you fiddle with the content filter callback
+(see below).
+
+Similarly, note that you have to keep the C<$res> reference when you
+swap the entire response.
 
   Plack::Util::response_cb($res, sub {
       my $res = shift;
       $res = [ 500, $new_headers, $new_body ]; # THIS DOES NOT WORK
+      return;
   });
 
 This does not work, since assigning a new anonymous array to C<$res>
@@ -150,6 +156,7 @@ do:
   Plack::Util::response_cb($res, sub {
       my $res = shift;
       @$res = (500, $new_headers, $new_body); # THIS WORKS
+      return;
   });
 
 The third element of PSGI response array ref is a body, and it could
