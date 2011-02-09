@@ -171,7 +171,7 @@ The following copyright notice applies to all the files provided in
 this distribution, including binary files, unless explicitly noted
 otherwise.
 
-Copyright 2009-2010 Tatsuhiko Miyagawa
+Copyright 2009-2011 Tatsuhiko Miyagawa
 
 =head1 CONTRIBUTORS
 
