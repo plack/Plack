@@ -164,8 +164,8 @@ t/Plack-Middleware/auth_basic.t
 t/Plack-Middleware/auth_basic_env.t
 t/Plack-Middleware/auth_basic_simple.t
 t/Plack-Middleware/bufferedstreaming.t
-t/Plack-Middleware/cascade.t
-t/Plack-Middleware/cascade_streaming.t
+t/Plack-Middleware/cascade/basic.t
+t/Plack-Middleware/cascade/streaming.t
 t/Plack-Middleware/cgi-bin/hello.cgi
 t/Plack-Middleware/cgi-bin/hello.py
 t/Plack-Middleware/cgi-bin/hello2.cgi
@@ -205,10 +205,10 @@ t/Plack-Middleware/refresh-init.t
 t/Plack-Middleware/runtime.t
 t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/simple_logger.t
-t/Plack-Middleware/stacktrace.t
-t/Plack-Middleware/stacktrace_force.t
-t/Plack-Middleware/stacktrace_streaming.t
-t/Plack-Middleware/stacktrace_utf8.t
+t/Plack-Middleware/stacktrace/basic.t
+t/Plack-Middleware/stacktrace/force.t
+t/Plack-Middleware/stacktrace/streaming.t
+t/Plack-Middleware/stacktrace/utf8.t
 t/Plack-Middleware/static.t
 t/Plack-Middleware/static.txt
 t/Plack-Middleware/static_env.t
