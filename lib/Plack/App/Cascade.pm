@@ -38,7 +38,7 @@ sub call {
         };
 
         for my $app (@{$self->apps || []}) {
-            $res = $app->($env);
+            my $res = $app->($env);
             if (ref $res eq 'CODE') {
                 $res->($respond_wrapper);
             } else {
