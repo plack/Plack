@@ -2,8 +2,11 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
-0.9968
+0.9968  Wed Feb  9 19:07:48 PST 2011
         - Fixed Recursive middleware to rethrow unknown exceptions. #166 (reported by waba)
+        - Document response_cb. #121
+        - Plack::Loader to print errors if it is really a compilation error
+        - Fixed the Cascade app to work with all 404 responses with the streaming interface. #171 (reported by eevee)
 
 0.9967  Tue Jan 25 14:26:37 PST 2011
         - Fixed StackTrace to require D::ST::WithLexicals 0.08 that supports 'message' (doy)
