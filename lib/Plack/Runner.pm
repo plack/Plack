@@ -56,9 +56,9 @@ sub parse_options {
     );
 
     my(@options, @argv);
-    while (defined($_ = shift @ARGV)) {
-        if (s/^--?//) {
-            my @v = split '=', $_, 2;
+    while (defined(my $arg = shift @ARGV)) {
+        if ($arg =~ s/^--?//) {
+            my @v = split '=', $arg, 2;
             $v[0] =~ tr/-/_/;
             if (@v == 2) {
                 push @options, @v;
@@ -68,7 +68,7 @@ sub parse_options {
                 push @options, $v[0], shift @ARGV;
             }
         } else {
-            push @argv, $_;
+            push @argv, $arg;
         }
     }
 
