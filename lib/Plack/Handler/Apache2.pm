@@ -6,6 +6,7 @@ use Apache2::RequestIO;
 use Apache2::RequestUtil;
 use Apache2::Response;
 use Apache2::Const -compile => qw(OK);
+use Apache2::Log;
 use APR::Table;
 use IO::Handle;
 use Plack::Util;
@@ -106,7 +107,7 @@ sub fixup_path {
     } else {
         # Apache's <Location> is matched but here is not.
         # This is something wrong. We can only respect original.
-        $r->log_error(
+        $r->server->log_error(
             "Your request path is '$path_info' and it doesn't match your Location(Match) '$location'. " .
             "This should be due to the configuration error. See perldoc Plack::Handler::Apache2 for details."
         );
