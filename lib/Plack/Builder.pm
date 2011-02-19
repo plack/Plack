@@ -264,7 +264,7 @@ support above):
 
 will locate the C<$app> under C</foo/bar> since the inner C<builder>
 block puts it under C</bar> and it results a new PSGI application
-which is located under C</foo> becuase of the outer C<builder> block.
+which is located under C</foo> because of the outer C<builder> block.
 
 =back
 
