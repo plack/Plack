@@ -65,7 +65,6 @@ lib/Plack/Handler/CGI.pm
 lib/Plack/Handler/FCGI.pm
 lib/Plack/Handler/HTTP/Server/PSGI.pm
 lib/Plack/Handler/HTTP/Server/Simple.pm
-lib/Plack/Handler/Net/FastCGI.pm
 lib/Plack/Handler/Standalone.pm
 lib/Plack/HTTPParser.pm
 lib/Plack/HTTPParser/PP.pm
@@ -207,6 +206,7 @@ t/Plack-Middleware/simple_content_filter.t
 t/Plack-Middleware/simple_logger.t
 t/Plack-Middleware/stacktrace/basic.t
 t/Plack-Middleware/stacktrace/force.t
+t/Plack-Middleware/stacktrace/sigdie.t
 t/Plack-Middleware/stacktrace/streaming.t
 t/Plack-Middleware/stacktrace/utf8.t
 t/Plack-Middleware/static.t
