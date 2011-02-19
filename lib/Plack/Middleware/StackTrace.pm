@@ -27,7 +27,12 @@ sub call {
     };
 
     my $caught;
-    my $res = try { $self->app->($env) } catch { $caught = $_ };
+    my $res = try {
+        $self->app->($env);
+    } catch {
+        $caught = $_;
+        [ 500, [ "Content-Type", "text/plain; charset=utf-8" ], [ no_trace_error(utf8_safe($caught)) ] ];
+    };
 
     if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
         my $text = $trace->as_string;
@@ -48,6 +53,19 @@ sub call {
     undef $trace;
 
     return $res;
+}
+
+sub no_trace_error {
+    my $msg = shift;
+    chomp($msg);
+
+    return <<EOF;
+The application raised the following error:
+
+  $msg
+
+and the StackTrace couldn't catch the exception and its stack trace, possibly because your application overrides \$SIG{__DIE__} by itself, preventing the middleware to work correctly. Remove the offending code that does it, or unload the module that manipulates the signal such as CGI::Carp, or Carp::Always.
+EOF
 }
 
 sub munge_error {
