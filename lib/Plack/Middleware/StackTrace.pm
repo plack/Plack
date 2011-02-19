@@ -64,7 +64,7 @@ The application raised the following error:
 
   $msg
 
-and the StackTrace couldn't catch the exception and its stack trace, possibly because your application overrides \$SIG{__DIE__} by itself, preventing the middleware from working correctly. Remove the offending code that does it, or unload the module that manipulates the signal such as CGI::Carp, or Carp::Always.
+and the StackTrace couldn't catch its stack trace, possibly because your application overrides \$SIG{__DIE__} by itself, preventing the middleware from working correctly. Remove the offending code or module that does it: known examples are CGI::Carp and Carp::Always.
 EOF
 }
 
