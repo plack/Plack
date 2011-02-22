@@ -702,10 +702,10 @@ our @TEST = (
         'repeated slashes',
         sub {
             my $cb = shift;
-            my $res = $cb->(GET "http://127.0.0.1/foo///bar/baz");
+            my $res = $cb->(GET "http://127.0.0.1//foo///bar/baz");
             is $res->code, 200;
             is $res->header('content_type'), 'text/plain';
-            is $res->content, '/foo///bar/baz';
+            is $res->content, '//foo///bar/baz';
         },
         sub {
             my $env = shift;
