@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9970  Tue Feb 22 08:35:50 PST 2011
+        - Apache2: Fixed a bug where dispatcher fails to parse first path when it begins with two or
+          more slashes (clkao)
+
 0.9969  Fri Feb 18 21:35:29 PST 2011
         - Suppress the use of unlocalized $_ in Plack::Runner (mst)
         - Plack::Handler::Net::FastCGI is now removed from Plack core dist.
