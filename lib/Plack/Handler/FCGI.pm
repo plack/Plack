@@ -105,7 +105,7 @@ sub run {
         delete $env->{HTTP_CONTENT_LENGTH};
 
         # lighttpd munges multiple slashes in PATH_INFO into one. Try recovering it
-        my $uri = URI->new($env->{REQUEST_URI});
+        my $uri = URI->new("http://localhost" .  $env->{REQUEST_URI});
         $env->{PATH_INFO} = uri_unescape($uri->path);
         $env->{PATH_INFO} =~ s/^\Q$env->{SCRIPT_NAME}\E//;
 
