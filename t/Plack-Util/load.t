@@ -45,4 +45,11 @@ use Test::More;
     unlike $@, qr/Died/;
 }
 
+{
+    my $app = Plack::Util::load_psgi("t/Plack-Util/bin/findbin.psgi");
+    test_psgi $app, sub {
+        like $_[0]->(GET "/")->content, qr!t[/\\]Plack-Util[/\\]bin$!;
+    }
+}
+
 done_testing;
