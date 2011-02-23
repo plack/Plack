@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9971  Wed Feb 23 14:02:35 PST 2011
+    [INCOMPATIBLE CHANGES]
+        - Localize $0 to the given .psgi path when evaluating it in Plack::Util::load_psgi()
+          This fixes the unexpected values and/or crashes with Starman when your application
+          uses FindBin module.
+
 0.9970  Tue Feb 22 08:35:50 PST 2011
         - Apache2: Fixed a bug where dispatcher fails to parse first path when it begins with two or
           more slashes (clkao)

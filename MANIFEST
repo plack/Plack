@@ -260,6 +260,7 @@ t/Plack-Test/hello_server.t
 t/Plack-Test/suite.t
 t/Plack-Util/bad.psgi
 t/Plack-Util/bad2.psgi
+t/Plack-Util/bin/findbin.psgi
 t/Plack-Util/error.psgi
 t/Plack-Util/foreach.t
 t/Plack-Util/headers.t
