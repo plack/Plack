@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9972  Thu Feb 24 10:50:01 PST 2011
+        - Fixed the Plack::Runner docs to avoid the cargo cult issue of __FILE__ eq $0
+        - Added a silly check to give warnings if the idiom __FILE__ eq $0 is used in .psgi
+        
 0.9971  Wed Feb 23 14:02:35 PST 2011
     [INCOMPATIBLE CHANGES]
         - Localize $0 to the given .psgi path when evaluating it in Plack::Util::load_psgi()
