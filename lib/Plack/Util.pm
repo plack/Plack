@@ -124,7 +124,7 @@ sub _file_zero_check {
     open my $fh, "<", $file or return;
 
     my $code = join '', <$fh>;
-    if ($code =~ /(__FILE__\s+eq\s+\$0|\$0\s+eq\+__FILE__)/) {
+    if ($code =~ /(__FILE__\s+eq\s+\$0|\$0\s+eq\s+__FILE__)/) {
         warn <<WARNING
 Your PSGI file ($file) seems to use the following idiom, which is known to be broken since Plack 0.9971:
 
