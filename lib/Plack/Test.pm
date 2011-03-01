@@ -86,6 +86,17 @@ names (I<127.0.0.1> by default), so the following code just works.
       my $res = $cb->(GET "/hello");
   };
 
+Note that however, it is not a good idea to pass an arbitrary
+(i.e. user-input) string to the C<GET> function or even C<<
+HTTP::Request->new >> by assuming that it always represents a path,
+because:
+
+  my $req = GET "//foo/bar";
+
+would represent a request for a URL that has no scheme, has a hostname
+I<foo> and a path I</bar>, instead of a path I<//foo/bar> which you
+might actually want.
+
 =back
 
 =head1 OPTIONS
