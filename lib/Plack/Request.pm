@@ -369,7 +369,7 @@ Request and Response API on top of PSGI.
 =head1 METHODS
 
 Some of the methods defined in the earlier versions are deprecated in
-version 1.00. Take a look at L</"INCOMPATIBILITIES">.
+version 0.99. Take a look at L</"INCOMPATIBILITIES">.
 
 Unless otherwise noted, all methods and attributes are B<read-only>,
 and passing values to the method like an accessor doesn't work like
@@ -642,7 +642,7 @@ C</app/logout?signoff=1>.
 
 =head1 INCOMPATIBILITIES
 
-In version 1.0, many utility methods are removed or deprecated, and
+In version 0.99, many utility methods are removed or deprecated, and
 most methods are made read-only.
 
 The following methods are deprecated: C<hostname>, C<url_scheme>,
