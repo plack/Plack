@@ -2,6 +2,7 @@ use Test::More;
 use Plack::Test;
 
 $Plack::Test::Impl = "Server";
+local %ENV = (); # use HTTP::Server::PSGI
 
 test_psgi
     client => sub {

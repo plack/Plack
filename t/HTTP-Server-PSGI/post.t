@@ -10,7 +10,7 @@ test_tcp(
     server => sub {
         my $port = shift;
         my $runner = Plack::Runner->new;
-        $runner->parse_options("--port" => $port, "-E", "dev");
+        $runner->parse_options("--port" => $port, "-E", "dev", "-s", "HTTP::Server::PSGI");
         $runner->run(
             sub {
                 my $env = shift;

@@ -12,8 +12,7 @@ my $builder = sub {
 $INC{"Plack/Handler/Twiggy.pm"} = __FILE__;
 sub Plack::Handler::Twiggy::new { bless {}, shift }
 
-# The following eval might not fail if you set PLACK_SEVER
-delete $ENV{PLACK_SERVER};
+local %ENV = ();
 
 eval {
     my $loader = Plack::Loader->new;

@@ -10,6 +10,8 @@ my $file = "share/baybridge.jpg";
 my @backends = qw( Server MockHTTP );
 sub flip_backend { $Plack::Test::Impl = shift @backends }
 
+local %ENV = (); # use HTTP::Server::PSGI
+
 my $app = sub {
     my $req = Plack::Request->new(shift);
     is $req->uploads->{image}->size, -s $file;

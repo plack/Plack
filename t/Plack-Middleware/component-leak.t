@@ -39,6 +39,7 @@ use Test::More;
 use Plack::Test;
 use HTTP::Request::Common;
 $Plack::Test::Impl = "Server";
+local %ENV = (); # use HTTP::Server::PSGI
 
 my $app = MyComponent->new;
 test_psgi( $app->to_app, sub {

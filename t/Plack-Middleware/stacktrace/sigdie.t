@@ -6,6 +6,7 @@ use Plack::Test;
 use HTTP::Request::Common;
 
 $Plack::Test::Impl = "Server";
+local %ENV = (); # use HTTP::Server::PSGI
 
 my $app = sub {
     $SIG{__DIE__} = sub {};
