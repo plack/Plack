@@ -219,6 +219,7 @@ t/Plack-Middleware/urlmap_builder.t
 t/Plack-Middleware/urlmap_env.t
 t/Plack-Middleware/urlmap_ports.t
 t/Plack-Middleware/wrapcgi.t
+t/Plack-Middleware/wrapcgi_exec.t
 t/Plack-Middleware/xframework.t
 t/Plack-Middleware/xsendfile.t
 t/Plack-MIME/add_type.t

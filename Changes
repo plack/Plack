@@ -2,6 +2,13 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9974  Thu Mar  3 20:55:28 PST 2011
+        - Added a documentation about using relative URI paths beginning with //
+        - Added IIS6ScriptNameFix that fixes SCRIPT_NAME for IIS6 FastCGI, extracted from Catalyst (rafl)
+        - Moved the wrapcgi/exec tests for Win32 #174
+        - Fixed a warning for the new Test::TCP in FCGI testing
+        - Clear %ENV when running the Plack::Test::Suite with Server implementation (hachi)
+
 0.9973  Sat Feb 26 09:40:15 PST 2011
         - Fixed the regexp in the code check added in 0.9972 (leedo)
 
