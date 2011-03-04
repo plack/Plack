@@ -763,6 +763,7 @@ sub run_server_tests {
             my $port = shift;
             my $app  = $class->test_app_handler;
             $server->($port, $app);
+            exit(0); # for Test::TCP
         },
         port => $server_port,
     );
