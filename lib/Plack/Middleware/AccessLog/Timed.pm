@@ -60,7 +60,7 @@ Plack::Middleware::AccessLog::Timed - Logs requests with time and accurate body 
 
   builder {
       enable "Plack::Middleware::AccessLog::Timed",
-          format => ""%v %h %l %u %t \"%r\" %>s %b %D";
+          format => "%v %h %l %u %t \"%r\" %>s %b %D";
       $app;
   };
 
