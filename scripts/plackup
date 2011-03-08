@@ -108,7 +108,7 @@ C<.psgi> path in the command line arguments.
 
 The interface a TCP based server daemon binds to. Defauts to undef,
 which lets most server backends bind the any (*) interface. This
-opeion doesn't mean anything if the server does not support TCP
+option doesn't mean anything if the server does not support TCP
 socket.
 
 =item -p, --port
