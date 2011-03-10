@@ -12,7 +12,7 @@ my $builder = sub {
 $INC{"Plack/Handler/Twiggy.pm"} = __FILE__;
 sub Plack::Handler::Twiggy::new { bless {}, shift }
 
-local %ENV = ();
+local *Plack::Loader::env = sub { return {} };
 
 eval {
     my $loader = Plack::Loader->new;

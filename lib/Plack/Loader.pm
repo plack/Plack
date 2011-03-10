@@ -61,11 +61,13 @@ sub preload_app {
 sub guess {
     my $class = shift;
 
-    return $ENV{PLACK_SERVER} if $ENV{PLACK_SERVER};
+    my $env = $class->env;
 
-    if ($ENV{PHP_FCGI_CHILDREN} || $ENV{FCGI_ROLE} || $ENV{FCGI_SOCKET_PATH}) {
+    return $env->{PLACK_SERVER} if $env->{PLACK_SERVER};
+
+    if ($env->{PHP_FCGI_CHILDREN} || $env->{FCGI_ROLE} || $env->{FCGI_SOCKET_PATH}) {
         return "FCGI";
-    } elsif ($ENV{GATEWAY_INTERFACE}) {
+    } elsif ($env->{GATEWAY_INTERFACE}) {
         return "CGI";
     } elsif (exists $INC{"AnyEvent.pm"}) {
         return "Twiggy";
@@ -79,6 +81,8 @@ sub guess {
         return "Standalone";
     }
 }
+
+sub env { \%ENV }
 
 sub run {
     my($self, $server, $builder) = @_;

@@ -5,7 +5,7 @@ use Plack::Test;
 use HTTP::Request::Common;
 
 $Plack::Test::Impl = "Server";
-local %ENV = (); # use HTTP::Server::PSGI
+local $ENV{PLACK_SERVER} = "HTTP::Server::PSGI";
 
 my $make_app = sub {
     my $name = shift;

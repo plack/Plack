@@ -7,7 +7,7 @@ use Plack::Test;
 use Plack::Middleware::Chunked;
 $Plack::Test::Impl = "Server";
 
-local %ENV = (); # use HTTP::Server::PSGI
+local $ENV{PLACK_SERVER} = "HTTP::Server::PSGI";
 
 my @app = (
     sub { [ 200, [], [ 'Hello World' ] ] },

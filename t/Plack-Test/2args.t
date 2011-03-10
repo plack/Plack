@@ -2,7 +2,7 @@ use Plack::Test;
 use Test::More;
 use HTTP::Request::Common;
 $Plack::Test::Impl = "Server";
-local %ENV = (); # use HTTP::Server::PSGI
+local $ENV{PLACK_SERVER} = "HTTP::Server::PSGI";
 
 my $app = sub { return [ 200, [], [ "Hello" ] ] };
 
