@@ -13,9 +13,9 @@ use Plack::Util;
 
     is $h->get('Foo'), 'bar';
     $h->push('Foo' => 'xxx');
-    is $h->get('Foo'), 'bar';
+    is $h->get('Foo'), 'bar, xxx';
     my @v = $h->get('Foo');
-    is_deeply \@v, [ 'bar', 'xxx' ];
+    is_deeply \@v, [ 'bar, xxx' ];
 
     ok $h->exists('Bar');
     $h->remove('Bar');

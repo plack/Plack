@@ -33,6 +33,12 @@ use Plack::Util;
 {
     my $headers = [ Foo => 'bar', Bar => 'baz' ];
     Plack::Util::header_push($headers, Foo => 'quox');
+    is Plack::Util::header_get($headers, 'foo'), 'bar, quox', 'merged values for header_get()';
+}
+
+{
+    my $headers = [ Foo => 'bar', Bar => 'baz' ];
+    Plack::Util::header_push($headers, Foo => 'quox');
     is_deeply $headers, [ Foo => 'bar', Bar => 'baz', Foo => 'quox' ];
 }
 
