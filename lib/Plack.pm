@@ -114,7 +114,7 @@ reference.
 
 =head2 Plack::Test
 
-L<Plack::Test> is an unified interface to test your PSGI application
+L<Plack::Test> is a unified interface to test your PSGI application
 using standard L<HTTP::Request> and L<HTTP::Response> pair with simple
 callbacks.
 

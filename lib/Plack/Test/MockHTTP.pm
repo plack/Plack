@@ -43,7 +43,7 @@ Plack::Test::MockHTTP - Run mocked HTTP tests through PSGI applications
 
 =head1 DESCRIPTION
 
-Plack::Test::MockHTTP is an utility to run PSGI application given
+Plack::Test::MockHTTP is a utility to run PSGI application given
 HTTP::Request objects and return HTTP::Response object out of PSGI
 application response. See L<Plack::Test> how to use this module.
 

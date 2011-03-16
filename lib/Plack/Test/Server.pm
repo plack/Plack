@@ -43,7 +43,7 @@ Plack::Test::Server - Run HTTP tests through live Plack servers
 
 =head1 DESCRIPTION
 
-Plack::Test::Server is an utility to run PSGI application with Plack
+Plack::Test::Server is a utility to run PSGI application with Plack
 server implementations, and run the live HTTP tests with the server
 using a callback. See L<Plack::Test> how to use this module.
 
