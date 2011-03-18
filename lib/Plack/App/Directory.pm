@@ -66,12 +66,12 @@ sub serve_path {
         my $is_dir = -d $file;
         my @stat = stat _;
 
+        $url = join '/', map {uri_escape($_)} split m{/}, $url;
+
         if ($is_dir) {
             $basename .= "/";
             $url      .= "/";
         }
-
-        $url = join '/', map {uri_escape($_)} split m{/}, $url;
 
         my $mime_type = $is_dir ? 'directory' : ( Plack::MIME->mime_type($file) || 'text/plain' );
         push @files, [ $url, $basename, $stat[7], $mime_type, HTTP::Date::time2str($stat[9]) ];
