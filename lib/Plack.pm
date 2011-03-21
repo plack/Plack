@@ -35,15 +35,15 @@ L<Apache2|Plack::Handler::Apache2> and
 L<HTTP::Server::Simple|Plack::Handler::HTTP::Server::Simple> included
 in the core Plack distribution.
 
-There are also many HTTP server implementations on CPAN that has Plack
+There are also many HTTP server implementations on CPAN that have Plack
 handlers.
 
-See L<Plack::Handler> how to write your own adapters.
+See L<Plack::Handler> when writing your own adapters.
 
 =head2 Plack::Loader
 
-L<Plack::Loader> is a loader to load one of L<Plack::Handler> adapters
-and run PSGI application code reference with it.
+L<Plack::Loader> is a loader to load one L<Plack::Handler> adapter
+and run a PSGI application code reference with it.
 
 =head2 Plack::Util
 
@@ -52,9 +52,9 @@ implementors as well as middleware authors.
 
 =head2 .psgi files
 
-PSGI application is a code reference but it's not easy to pass code
-reference in the command line or configuration files, so Plack uses a
-convention that you need a file named C<app.psgi> or alike, which
+A PSGI application is a code reference but it's not easy to pass code
+reference via the command line or configuration files, so Plack uses a
+convention that you need a file named C<app.psgi> or similar, which
 would be loaded (via perl's core function C<do>) to return the PSGI
 application code reference.
 
@@ -86,11 +86,11 @@ server backends like Apache2 needs a separate configuration but
 C<.psgi> application file can still be the same.
 
 If you want to write your own frontend that replaces, or adds
-functionalities to L<plackup>, take a look at L<Plack::Runner> module.
+functionalities to L<plackup>, take a look at the L<Plack::Runner> module.
 
 =head2 Plack::Middleware
 
-PSGI middleware is a PSGI application that wraps existent PSGI
+PSGI middleware is a PSGI application that wraps an existing PSGI
 application and plays both side of application and servers. From the
 servers the wrapped code reference still looks like and behaves
 exactly the same as PSGI applications.
