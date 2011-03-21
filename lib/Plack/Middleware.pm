@@ -68,7 +68,7 @@ can use C<< $self->app >> to call the original (wrapped) application.
 
 Your middleware object is created at a PSGI application compile time
 and is persistent during the web server life cycle (unless it is a
-non-persisten environment such as CGI), so you should never set or
+non-persistent environment such as CGI), so you should never set or
 cache per-request data like C<$env> in your middleware object. See
 also L<Plack::Component/"OBJECT LIFECYCLE">.
 

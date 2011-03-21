@@ -128,7 +128,7 @@ the same object whenever a new request comes in.
 You can check if it is running in a persistent environment by checking
 C<psgi.run_once> key in the C<$env> being true (non-persistent) or
 false (persistent), but it is best for you to write your middleware
-safe in the persistent environment. To accomplish that, you should
+safely for a persistent environment. To accomplish that, you should
 avoid saving per-request data like C<$env> in your object.
 
 =head1 BACKWARDS COMPATIBILITY
