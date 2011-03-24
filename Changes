@@ -2,6 +2,23 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.99_75 Thu Mar 24 11:29:22 PDT 2011
+    [INCOMPATIBLE CHANGES]
+        - builder {} now always returns a PSGI code reference, instead of inconsistently
+          returning URLMap object when mount() is used. (reported by hoelzro)
+        - Plack::Runner now automatically calls ->parse_options() if it hasn't been called,
+          so the sane defaults for plackup can be applied. (reported by arcanez)
+
+    [BUG FIXES]
+        - Fixed the way to override %ENV to avoid test breakages in Win32 #179
+        - Properly append '/' when linking to a directory in Plack::App::Directory (theory)
+
+    [IMPROVEMENTS]
+        - Skips the current directory in Plack::App::Directory
+        - Plack::App::Directory now redirects to a canonical URL that has a trailing slash
+          just like Apache (hobbs)
+        - Fixed some typos and outdated information in the PODs
+
 0.9974  Thu Mar  3 20:55:28 PST 2011
         - Added a documentation about using relative URI paths beginning with //
         - Added IIS6ScriptNameFix that fixes SCRIPT_NAME for IIS6 FastCGI, extracted from Catalyst (rafl)

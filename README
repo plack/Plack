@@ -13,8 +13,8 @@ MODULES AND UTILITIES
   Plack::Handler
     Plack::Handler and its subclasses contains adapters for web servers. We
     have adapters for the built-in standalone web server HTTP::Server::PSGI,
-    CGI, FCGI, Apache1, Apache2, Net::FastCGI and HTTP::Server::Simple
-    included in the core Plack distribution.
+    CGI, FCGI, Apache1, Apache2 and HTTP::Server::Simple included in the
+    core Plack distribution.
 
     There are also many HTTP server implementations on CPAN that has Plack
     handlers.
@@ -85,7 +85,7 @@ MODULES AND UTILITIES
     Plack::Response does the same to construct the response array reference.
 
   Plack::Test
-    Plack::Test is an unified interface to test your PSGI application using
+    Plack::Test is a unified interface to test your PSGI application using
     standard HTTP::Request and HTTP::Response pair with simple callbacks.
 
   Plack::Test::Suite

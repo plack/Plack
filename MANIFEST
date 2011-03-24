@@ -141,6 +141,7 @@ t/HTTP-Message-PSGI/content_length.t
 t/HTTP-Message-PSGI/path_info.t
 t/HTTP-Message-PSGI/utf8_req.t
 t/HTTP-Server-PSGI/post.t
+t/Plack-Builder/builder.t
 t/Plack-Builder/mount.t
 t/Plack-Builder/oo_interface.t
 t/Plack-Handler/apache1.t
