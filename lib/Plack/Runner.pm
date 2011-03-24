@@ -231,6 +231,10 @@ sub run {
         return $self->run;
     }
 
+    unless ($self->{options}) {
+        $self->parse_options();
+    }
+
     my @args = @_ ? @_ : @{$self->{argv}};
 
     $self->setup;
