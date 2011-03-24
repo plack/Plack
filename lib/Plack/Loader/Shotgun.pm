@@ -64,7 +64,7 @@ Plack::Loader::Shotgun - forking implementation of plackup
 
   plackup -L Shotgun
 
-=head1 DESCRIPTIOM
+=head1 DESCRIPTION
 
 Shotgun loader delays the compilation and execution of your
 application until the runtime. When a new request comes in, this forks
