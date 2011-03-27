@@ -18,6 +18,23 @@ test_psgi $app, sub {
     is $res->code, 200;
 };
 
+my $app_content_type = Plack::App::File->new(
+    file => 'README',
+    content_type => 'text/x-readme'
+);
+
+test_psgi $app_content_type, sub {
+    my $cb = shift;
+
+    my $res = $cb->(GET "/");
+    is $res->code, 200;
+    like $res->content, qr/Plack/;
+
+    $res = $cb->(GET "/whatever");
+    is $res->content_type, 'text/x-readme';
+    is $res->code, 200;
+};
+
 
 
 done_testing;

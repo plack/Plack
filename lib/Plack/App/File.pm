@@ -8,7 +8,7 @@ use Plack::Util;
 use Plack::MIME;
 use HTTP::Date;
 
-use Plack::Util::Accessor qw( root file encoding );
+use Plack::Util::Accessor qw( root file content_type encoding );
 
 sub should_handle {
     my($self, $file) = @_;
@@ -85,7 +85,8 @@ sub allow_path_info { 0 }
 sub serve_path {
     my($self, $env, $file) = @_;
 
-    my $content_type = Plack::MIME->mime_type($file) || 'text/plain';
+    my $content_type = $self->content_type || Plack::MIME->mime_type($file)
+                       || 'text/plain';
 
     if ($content_type =~ m!^text/!) {
         $content_type .= "; charset=" . ($self->encoding || "utf-8");
