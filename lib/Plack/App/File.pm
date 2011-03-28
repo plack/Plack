@@ -172,6 +172,11 @@ it's not set, the application uses C<root> to find the matching file.
 
 Set the file encoding for text files. Defaults to C<utf-8>.
 
+=item content_type
+
+Set the file content type. If not set L<Plack::MIME> will try to detect it
+based on the file extension or fall back to C<text/plain>.
+
 =back
 
 =head1 AUTHOR
