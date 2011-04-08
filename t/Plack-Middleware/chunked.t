@@ -1,6 +1,6 @@
 use strict;
 use Test::More;
-use Test::Requires qw(IO::Handle::Util);
+use Test::Requires qw(IO::Handle::Util LWP::Protocol::http10);
 use IO::Handle::Util qw(:io_from);
 use HTTP::Request::Common;
 use Plack::Test;
@@ -28,7 +28,6 @@ test_psgi app => Plack::Middleware::Chunked->wrap($app), client => sub {
     for my $proto (qw( HTTP/1.1 HTTP/1.0 )) {
         my $is_http_10 = $proto eq 'HTTP/1.0';
         if ($is_http_10) {
-            require LWP::Protocol::http10;
             LWP::Protocol::implementor('http', 'LWP::Protocol::http10');
         }
 
