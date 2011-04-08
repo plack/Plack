@@ -363,7 +363,7 @@ mod_perl's Apache::Request: yet too low level.
 
 If you're writing a web application, not a framework, then you're
 encouraged to use one of the web application frameworks that support
-PSGI, or see L<Piglet> or L<HTTP::Engine> to provide higher level
+PSGI, or see modules like L<HTTP::Engine> to provide higher level
 Request and Response API on top of PSGI.
 
 =head1 METHODS
