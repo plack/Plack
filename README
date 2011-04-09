@@ -16,13 +16,13 @@ MODULES AND UTILITIES
     CGI, FCGI, Apache1, Apache2 and HTTP::Server::Simple included in the
     core Plack distribution.
 
-    There are also many HTTP server implementations on CPAN that has Plack
+    There are also many HTTP server implementations on CPAN that have Plack
     handlers.
 
-    See Plack::Handler how to write your own adapters.
+    See Plack::Handler when writing your own adapters.
 
   Plack::Loader
-    Plack::Loader is a loader to load one of Plack::Handler adapters and run
+    Plack::Loader is a loader to load one Plack::Handler adapter and run a
     PSGI application code reference with it.
 
   Plack::Util
@@ -30,9 +30,9 @@ MODULES AND UTILITIES
     as well as middleware authors.
 
   .psgi files
-    PSGI application is a code reference but it's not easy to pass code
-    reference in the command line or configuration files, so Plack uses a
-    convention that you need a file named "app.psgi" or alike, which would
+    A PSGI application is a code reference but it's not easy to pass code
+    reference via the command line or configuration files, so Plack uses a
+    convention that you need a file named "app.psgi" or similar, which would
     be loaded (via perl's core function "do") to return the PSGI application
     code reference.
 
@@ -62,10 +62,10 @@ MODULES AND UTILITIES
     can still be the same.
 
     If you want to write your own frontend that replaces, or adds
-    functionalities to plackup, take a look at Plack::Runner module.
+    functionalities to plackup, take a look at the Plack::Runner module.
 
   Plack::Middleware
-    PSGI middleware is a PSGI application that wraps existent PSGI
+    PSGI middleware is a PSGI application that wraps an existing PSGI
     application and plays both side of application and servers. From the
     servers the wrapped code reference still looks like and behaves exactly
     the same as PSGI applications.

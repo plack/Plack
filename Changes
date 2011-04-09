@@ -2,6 +2,14 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9976  Fri Apr  8 18:07:11 PDT 2011
+    [NEW FEATURES]
+        - Support setting content_type in App::File (ajgb)
+
+    [IMPROVEMENTS]
+        - Document fixes (jhannah)
+        - Skip bad tests failing on LWP 6 (daxim)
+
 0.99_75 Thu Mar 24 11:29:22 PDT 2011
     [INCOMPATIBLE CHANGES]
         - builder {} now always returns a PSGI code reference, instead of inconsistently
