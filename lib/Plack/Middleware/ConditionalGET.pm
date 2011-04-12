@@ -12,6 +12,8 @@ sub call {
 
     $self->response_cb($res, sub {
         my $res = shift;
+        return unless $res->[2]; # do not support streaming interface
+
         my $h = Plack::Util::headers($res->[1]);
         if ( $self->etag_matches($h, $env) || $self->not_modified_since($h, $env) ) {
             $res->[0] = 304;
