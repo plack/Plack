@@ -18,6 +18,8 @@ sub cb {
 test_psgi $app, sub {
     my $cb = shift;
 
+    local $^W = 0;
+
     my $res = $cb->(GET "http://localhost/");
     is $res->code, 200;
 
