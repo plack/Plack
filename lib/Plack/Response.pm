@@ -220,6 +220,10 @@ headers.
 Gets and sets HTTP response body. Setter can take either a string, an
 array ref, or an IO::Handle-like object. C<content> is an alias.
 
+Note that this method doesn't automatically set I<Content-Length> for
+the response. You have to set it manually if you want, with the
+C<content_length> method (see below).
+
 =item header
 
   $res->header('X-Foo' => 'bar');
