@@ -2,6 +2,7 @@ package Plack::Handler::CGI;
 use strict;
 use warnings;
 use IO::Handle;
+use HTTP::Status qw(status_message);
 
 sub new { bless {}, shift }
 
@@ -54,7 +55,8 @@ sub _handle_response {
     *STDOUT->autoflush(1);
 
     my $hdrs;
-    $hdrs = "Status: $res->[0]\015\012";
+    my $message = status_message($res->[0]);
+    $hdrs = "Status: $res->[0] $message\015\012";
 
     my $headers = $res->[1];
     while (my ($k, $v) = splice(@$headers, 0, 2)) {

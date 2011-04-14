@@ -5,6 +5,7 @@ use parent qw(Exporter);
 our @EXPORT = qw( req_to_psgi res_from_psgi );
 
 use Carp ();
+use HTTP::Status qw(status_message);
 use URI::Escape ();
 use Plack::Util;
 use Try::Tiny;
@@ -112,6 +113,7 @@ sub _res_from_psgi {
 
     my $convert_resp = sub {
         my $res = HTTP::Response->new($status);
+        $res->message(status_message($status));
         $res->headers->header(@$headers) if @$headers;
 
         if (ref $body eq 'ARRAY') {

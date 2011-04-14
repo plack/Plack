@@ -41,6 +41,7 @@ our @TEST = (
             my $cb = shift;
             my $res = $cb->(GET "http://127.0.0.1/?name=miyagawa");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             is $res->content, 'Hello, name=miyagawa';
         },
@@ -59,6 +60,7 @@ our @TEST = (
             my $cb = shift;
             my $res = $cb->(POST "http://127.0.0.1/", [name => 'tatsuhiko']);
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('Client-Content-Length'), 14;
             is $res->header('Client-Content-Type'), 'application/x-www-form-urlencoded';
             is $res->header('content_type'), 'text/plain';
@@ -90,6 +92,7 @@ our @TEST = (
 
             my $res = $cb->($req);
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('Client-Content-Length'), length $chunk;
             is length $res->content, length $chunk;
             is Digest::MD5::md5_hex($res->content), Digest::MD5::md5_hex($chunk);
@@ -120,6 +123,7 @@ our @TEST = (
             my $cb = shift;
             my $res = $cb->(POST "http://127.0.0.1/");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             is $res->content, 'http';
         },
@@ -138,6 +142,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             like $res->content, qr/^package /;
             like $res->content, qr/END_MARK_FOR_TESTING$/;
@@ -158,6 +163,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/foo.jpg");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'image/jpeg';
             is length $res->content, 4745;
         },
@@ -177,6 +183,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/baybridge.jpg");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'image/jpeg';
             is length $res->content, 79838;
             is Digest::MD5::md5_hex($res->content), '983726ae0e4ce5081bef5fb2b7216950';
@@ -198,6 +205,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan", Foo => "Bar");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             is $res->content, 'Bar';
         },
@@ -216,6 +224,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan", Cookie => "foo");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             is $res->content, 'foo';
         },
@@ -234,6 +243,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             is $res->content, join("\n",
                 'REQUEST_METHOD:GET',
@@ -308,6 +318,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/foo/?dankogai=kogaidan");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             like $res->content, qr{^HTTP/1\.[01]$};
         },
@@ -402,6 +413,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/");
             is $res->code, 500;
+            is $res->message, 'Internal Server Error';
         },
         sub {
             my $env = shift;
@@ -475,6 +487,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/");
             is $res->code, 304;
+            is $res->message, 'Not Modified';
             is $res->content, '';
             ok ! defined $res->header('content_type'), "No Content-Type";
             ok ! defined $res->header('content_length'), "No Content-Length";
@@ -503,6 +516,7 @@ our @TEST = (
             my $cb  = shift;
             my $res = $cb->(GET "http://127.0.0.1/foo.jpg");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'image/jpeg';
             is length $res->content, 4745;
         },
@@ -526,6 +540,7 @@ our @TEST = (
             $req->header('X-Foo' => $v);
             my $res = $cb->($req);
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->content, $v;
         },
         sub {
@@ -545,6 +560,7 @@ our @TEST = (
             return if $res->code == 501;
 
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             is $res->content, 'Hello, name=miyagawa';
         },
@@ -569,6 +585,7 @@ our @TEST = (
             return if $res->code == 501;
 
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             is $res->content, 'Hello, name=miyagawa';
         },
@@ -609,6 +626,7 @@ our @TEST = (
             my $cb = shift;
             my $res = $cb->(GET "http://127.0.0.1/");
             is $res->code, 404;
+            is $res->message, 'Not Found';
             is $res->content, 'Not Found';
         },
         sub {
@@ -650,6 +668,7 @@ our @TEST = (
             my $cb = shift;
             my $res = $cb->(GET "http://127.0.0.1/");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('Client-Transfer-Encoding'), undef;
             is $res->content, '';
         },
@@ -704,6 +723,7 @@ our @TEST = (
             my $cb = shift;
             my $res = $cb->(GET "http://127.0.0.1//foo///bar/baz");
             is $res->code, 200;
+            is $res->message, 'OK';
             is $res->header('content_type'), 'text/plain';
             is $res->content, '//foo///bar/baz';
         },
