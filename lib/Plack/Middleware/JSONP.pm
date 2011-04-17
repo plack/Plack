@@ -24,7 +24,7 @@ sub call {
             if ($h->get('Content-Type') =~ m!/(?:json|javascript)! &&
                 $env->{QUERY_STRING} =~ /(?:^|&)$callback_key=([^&]+)/) {
                 my $cb = URI::Escape::uri_unescape($1);
-                if ($cb =~ /^[\w\.\[\]]+$/) {
+                if ($cb =~ /^[\w\.\[\]'"]+$/) {
                     my $jsonp = "$cb($res->[2][0])";
                     $res->[2] = [ $jsonp ];
                     $h->set('Content-Length', length $jsonp);
