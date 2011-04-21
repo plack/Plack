@@ -108,6 +108,7 @@ sub _load_sandbox {
     _file_zero_check($_file) if $ENV{PLACK_ENV} eq 'development';
 
     local $0 = $_file; # so FindBin etc. works
+    local @ARGV = ();  # Some frameworks might try to parse @ARGV
 
     return eval sprintf <<'END_EVAL', $_package;
 package Plack::Sandbox::%s;

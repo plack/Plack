@@ -34,8 +34,11 @@ sub parse_options {
     my($host, $port, $socket, @listen);
 
     require Getopt::Long;
-    Getopt::Long::Configure("no_ignore_case", "pass_through");
-    Getopt::Long::GetOptions(
+    my $parser = Getopt::Long::Parser->new(
+        config => [ "no_ignore_case", "pass_through" ],
+    );
+
+    $parser->getoptions(
         "a|app=s"      => \$self->{app},
         "o|host=s"     => \$host,
         "p|port=i"     => \$port,
