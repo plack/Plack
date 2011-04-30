@@ -3,13 +3,14 @@ use Test::More;
 use Plack::Test;
 use Plack::Builder;
 
-my $json = '{"foo":"bar"}';
+my @json = ('{"foo":', '"bar"}');
+my $json = join '', @json;
 
 my @tests = (
     {
         callback_key => 'json.p',
         app          => sub {
-            return [ 200, [ 'Content-Type' => 'application/json' ], [$json] ];
+            return [ 200, [ 'Content-Type' => 'application/json' ], [@json] ];
         },
     },
     {
