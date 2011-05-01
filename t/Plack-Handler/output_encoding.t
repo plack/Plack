@@ -3,6 +3,9 @@ use warnings;
 
 package output_encoding;
 
+# as these tests serve mostly as a reminder for authors, they can be skipped
+use Test::Requires qw( File::Slurp Class::Load );
+
 use Test::More;
 use File::Slurp 'read_file';
 
