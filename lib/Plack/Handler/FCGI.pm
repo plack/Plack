@@ -153,6 +153,7 @@ sub _handle_response {
     my ($self, $res) = @_;
 
     *STDOUT->autoflush(1);
+    binmode STDOUT;
 
     my $hdrs;
     my $message = status_message($res->[0]);
