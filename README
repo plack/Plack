@@ -89,7 +89,9 @@ MODULES AND UTILITIES
     standard HTTP::Request and HTTP::Response pair with simple callbacks.
 
   Plack::Test::Suite
-    Plack::Test::Suite is a test suite to test a new PSGI server backend.
+    Plack::Test::Suite is a test suite to test a new PSGI server backend.  The 
+    $ENV{PLACK_TEST_SCRIPT_NAME} should be set if the backend uses a prefix to
+    route requests (see examples in t/Plack-Handler/cgi.t and t/Plack-Handler/fcgi.t).
 
 CONTRIBUTING
   Patches and Bug Fixes
