@@ -247,6 +247,7 @@ our @TEST = (
             is $res->header('content_type'), 'text/plain';
             is $res->content, join("\n",
                 'REQUEST_METHOD:GET',
+                "SCRIPT_NAME:$ENV{PLACK_TEST_SCRIPT_NAME}",
                 'PATH_INFO:/foo/',
                 'QUERY_STRING:dankogai=kogaidan',
                 'SERVER_NAME:127.0.0.1',
@@ -256,7 +257,7 @@ our @TEST = (
         sub {
             my $env = shift;
             my $body;
-            $body .= $_ . ':' . $env->{$_} . "\n" for qw/REQUEST_METHOD PATH_INFO QUERY_STRING SERVER_NAME SERVER_PORT/;
+            $body .= $_ . ':' . $env->{$_} . "\n" for qw/REQUEST_METHOD SCRIPT_NAME PATH_INFO QUERY_STRING SERVER_NAME SERVER_PORT/;
             return [
                 200,
                 [ 'Content-Type' => 'text/plain', ],
@@ -769,9 +770,7 @@ sub run_server_tests {
                 my $cb = sub {
                     my $req = shift;
                     $req->uri->port($http_port || $port);
-                    if ($ENV{PLACK_TEST_SCRIPT_NAME}) {
-                        $req->uri->path($ENV{PLACK_TEST_SCRIPT_NAME} . $req->uri->path);
-                    }
+                    $req->uri->path(($ENV{PLACK_TEST_SCRIPT_NAME}||"") . $req->uri->path);
                     $req->header('X-Plack-Test' => $i);
                     return $ua->request($req);
                 };
