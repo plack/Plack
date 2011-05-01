@@ -108,6 +108,7 @@ sub _handle_response {
     my ($self, $res) = @_;
 
     *STDOUT->autoflush(1);
+    binmode STDOUT;
 
     my $hdrs;
     my $message = $StatusCode{$res->[0]};
