@@ -2,6 +2,17 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9977  Sun May  1 12:16:08 PDT 2011
+    [BUG FIXES]
+        - Fixed ConditionalGET to not die with streaming interface (reported by Paul Ervamaa)
+        - Add a reason string to CGI/FastCGI Status header to comply with RFC 3875 (Stephen Clouse)
+        - Fixed a CGI/FastCGI handler to ensure newlines are not mangled on Win32 platforms (Christian Walde)
+
+    [IMPROVEMENTS]
+        - localize @ARGV to empty when evaluating a PSGI application (https://github.com/sukria/Dancer/issues/473)
+        - Fixed the use of Getopt::Long to make the pass_through flag local
+        - Middleware::JSONP now supports more response types such as IO::Handle (reported by Theory)
+
 0.9976  Fri Apr  8 18:07:11 PDT 2011
     [NEW FEATURES]
         - Support setting content_type in App::File (ajgb)

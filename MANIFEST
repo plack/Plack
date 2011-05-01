@@ -151,7 +151,9 @@ t/Plack-Handler/cgi.t
 t/Plack-Handler/fcgi.t
 t/Plack-Handler/fcgi_client.t
 t/Plack-Handler/http_server_simple.t
+t/Plack-Handler/output_encoding.t
 t/Plack-Handler/standalone.t
+t/Plack-Handler/try_mangle.pl
 t/Plack-HTTPParser-PP/simple.t
 t/Plack-Loader/auto.t
 t/Plack-Loader/auto_fallback.t
@@ -178,6 +180,7 @@ t/Plack-Middleware/component-leak.t
 t/Plack-Middleware/component.t
 t/Plack-Middleware/conditional.t
 t/Plack-Middleware/conditionalget.t
+t/Plack-Middleware/conditionalget_writer.t
 t/Plack-Middleware/content_length.t
 t/Plack-Middleware/directory.t
 t/Plack-Middleware/error_document.t
