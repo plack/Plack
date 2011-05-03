@@ -20,7 +20,7 @@ sub run {
     my $mangle_file = 'mangle_test.txt';
 
     test_handler( 'CGI', $mangler, $mangle_file );
-    test_handler( 'FCGI', $mangler, $mangle_file );
+#    test_handler( 'FCGI', $mangler, $mangle_file );
 
     return;
 }
