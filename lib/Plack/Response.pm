@@ -271,6 +271,13 @@ B<does not> convert string formats such as C<+3M>.
       expires => time + 24 * 60 * 60,
   };
 
+=item finalize
+
+  $res->finalize;
+
+Returns the status code, headers, and body of this response as a PSGI
+response array reference.
+
 =back
 
 =head1 AUTHOR
