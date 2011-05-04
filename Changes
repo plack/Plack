@@ -2,6 +2,11 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9978  Wed May  4 11:29:12 PDT 2011
+    [TEST FIXES]
+        - Fixed a failing output_encoding.t because of FCGI dependencies
+        - Improved Plack::Test::Suite documentation
+
 0.9977  Sun May  1 12:16:08 PDT 2011
     [BUG FIXES]
         - Fixed ConditionalGET to not die with streaming interface (reported by Paul Ervamaa)

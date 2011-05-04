@@ -3,7 +3,7 @@ package Plack;
 use strict;
 use warnings;
 use 5.008_001;
-our $VERSION = '0.9977';
+our $VERSION = '0.9978';
 $VERSION = eval $VERSION;
 
 1;
