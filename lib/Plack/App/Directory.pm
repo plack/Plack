@@ -84,7 +84,7 @@ sub parse_files {
 
     my @children = $self->read_directory($dir);
 
-    for my $basename ($self->sort_files(\@children)) {
+    for my $basename ($self->sort_files($dir, \@children)) {
         my $file = "$dir/$basename";
         my $url = $dir_url . $basename;
 
@@ -107,7 +107,7 @@ sub parse_files {
 
 sub sort_files {
     my $self = shift;
-    my ($files) = @_;
+    my ($dir, $files) = @_;
 
     return sort { $a cmp $b } @$files;
 }
