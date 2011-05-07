@@ -25,21 +25,17 @@ my $handler = builder {
 test_psgi $handler, sub {
     my $cb = shift;
 
-    subtest 'streaming' => sub {
-        my $res = $cb->( GET "http://localhost/streaming-klingklangklong" );
-        is $res->code, 200, 'Response HTTP status';
-        is $res->content, 'klingklangklong', 'Response content';
-    };
+    my $res = $cb->( GET "http://localhost/streaming-klingklangklong" );
+    is $res->code, 200, 'Response HTTP status';
+    is $res->content, 'klingklangklong', 'Response content';
 
-    subtest 'streaming not modified' => sub {
-        # the middleware does not support streaming interface but make it at least not die
-        my $res = $cb->( GET
-            "http://localhost/streaming-klingklangklong",
-            'If-None-Match' => 'DEADBEEF'
-        );
-        is $res->code, 200, 'Response HTTP status';
-        is $res->content, 'klingklangklong', 'Response content';
-    };
+    # the middleware does not support streaming interface but make it at least not die
+    $res = $cb->( GET
+        "http://localhost/streaming-klingklangklong",
+        'If-None-Match' => 'DEADBEEF'
+    );
+    is $res->code, 200, 'Response HTTP status';
+    is $res->content, 'klingklangklong', 'Response content';
 };
 
 done_testing;
