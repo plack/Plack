@@ -177,6 +177,12 @@ sub headers {
     );
 }
 
+sub _h ($) {
+    my $k = shift;
+    $k =~ s/_/-/g;
+    return $k;
+}
+
 sub header_iter {
     my($headers, $code) = @_;
 
@@ -200,6 +206,8 @@ sub header_get {
 sub header_set {
     my($headers, $key, $val) = @_;
 
+    $key = _h $key;
+
     my($set, @new_headers);
     header_iter $headers, sub {
         if (lc $key eq lc $_[0]) {
@@ -216,7 +224,7 @@ sub header_set {
 
 sub header_push {
     my($headers, $key, $val) = @_;
-    push @$headers, $key, $val;
+    push @$headers, _h $key, $val;
 }
 
 sub header_exists {
@@ -476,6 +484,11 @@ name as case insensitive.
 
   my $hdrs = [ 'Content-Type' => 'text/plain' ];
   my $v = Plack::Util::header_get($hdrs, 'content-type'); # 'text/plain'
+
+C<header_set> and C<header_push> will convert C<_> in header names to C<-> for
+convenience.
+
+  Plack::Util::header_set(content_type => 'text/fancy'); # sets 'content-type'
 
 =item headers
 
