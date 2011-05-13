@@ -64,6 +64,27 @@ sub new { bless {}, shift }
 sub run {
     my ($self, $app) = @_;
 
+    my $env = $self->setup_env();
+
+    my $res = $app->($env);
+    if (ref $res eq 'ARRAY') {
+        $self->_handle_response($res);
+    }
+    elsif (ref $res eq 'CODE') {
+        $res->(sub {
+            $self->_handle_response($_[0]);
+        });
+    }
+    else {
+        die "Bad response $res";
+    }
+}
+
+sub setup_env {
+    my ( $self, $override_env ) = @_;
+
+    $override_env ||= {};
+
     my $env = {
         %ENV,
         'psgi.version'    => [ 1, 1 ],
@@ -75,6 +96,7 @@ sub run {
         'psgi.run_once'     => 1,
         'psgi.streaming'    => 1,
         'psgi.nonblocking'  => 1,
+        %{ $override_env },
     };
 
     delete $env->{HTTP_CONTENT_TYPE};
@@ -90,19 +112,10 @@ sub run {
         $env->{PATH_INFO}   = '/' . $env->{PATH_INFO};
     }
 
-    my $res = $app->($env);
-    if (ref $res eq 'ARRAY') {
-        $self->_handle_response($res);
-    }
-    elsif (ref $res eq 'CODE') {
-        $res->(sub {
-            $self->_handle_response($_[0]);
-        });
-    }
-    else {
-        die "Bad response $res";
-    }
+    return $env;
 }
+
+
 
 sub _handle_response {
     my ($self, $res) = @_;
@@ -184,6 +197,21 @@ CGI-compatible perl-based web server:
 =head1 DESCRIPTION
 
 This is a handler module to run any PSGI application as a CGI script.
+
+=head1 UTILITY METHODS
+
+=head2 setup_env()
+
+  my $env = Plack::Handler::CGI->setup_env();
+  my $env = Plack::Handler::CGI->setup_env(\%override_env);
+
+Sets up the PSGI environment hash for a CGI request from C<< %ENV >>> and returns it.
+You can can provide a hashref of key/value pairs to override the defaults if you would like.
+
+This method is typically not called directly, but could be useful for example if you want to
+introduce the use of L<Plack::Request> outside of a native PSGI environment:
+
+ my $req = Plack::Request->new( Plack::Handler::CGI->setup_env() ) ;
 
 =head1 SEE ALSO
 
