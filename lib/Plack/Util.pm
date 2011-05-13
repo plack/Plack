@@ -259,7 +259,7 @@ sub encode_html {
 
 sub inline_object {
     my %args = @_;
-    bless {%args}, 'Plack::Util::Prototype';
+    bless \%args, 'Plack::Util::Prototype';
 }
 
 sub response_cb {
