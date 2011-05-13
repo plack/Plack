@@ -54,7 +54,7 @@ sub call_app {
         $env->{HTTP_AUTHORIZATION} = $HTTP_AUTHORIZATION;
     }
 
-    my $vpath    = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+    my $vpath    = $env->{SCRIPT_NAME} . ($env->{PATH_INFO} || '');
 
     my $location = $r->location || "/";
        $location =~ s{/$}{};
