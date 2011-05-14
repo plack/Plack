@@ -208,11 +208,6 @@ This is a handler module to run any PSGI application as a CGI script.
 Sets up the PSGI environment hash for a CGI request from C<< %ENV >>> and returns it.
 You can can provide a hashref of key/value pairs to override the defaults if you would like.
 
-This method is typically not called directly, but could be useful for example if you want to
-introduce the use of L<Plack::Request> outside of a native PSGI environment:
-
- my $req = Plack::Request->new( Plack::Handler::CGI->setup_env() ) ;
-
 =head1 SEE ALSO
 
 L<Plack>
