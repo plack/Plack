@@ -83,6 +83,14 @@ sub validate_env {
     }
 }
 
+sub is_possibly_fh {
+    my $fh = shift;
+
+    ref $fh eq 'GLOB' &&
+    *{$fh}{IO} &&
+    *{$fh}{IO}->can('getline');
+}
+
 sub validate_res {
     my ($self, $res, $streaming) = @_;
 
@@ -112,6 +120,7 @@ sub validate_res {
     unless (@$res == 2 ||
             ref $res->[2] eq 'ARRAY' ||
             Plack::Util::is_real_fh($res->[2]) ||
+            is_possibly_fh($res->[2]) ||
             (blessed($res->[2]) && $res->[2]->can('getline'))) {
         $croak->('body should be an array ref or filehandle');
     }

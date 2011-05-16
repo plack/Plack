@@ -17,11 +17,26 @@ my @bad = map { Plack::Middleware::Lint->wrap($_) } (
     sub { return sub { shift->([ 200, [], undef ]) } },
 );
 
+my @good = map { Plack::Middleware::Lint->wrap($_) } (
+    sub {
+        open my $io, "<", \"foo";
+        return [ 200, [ "Content-Type", "text/plain" ], $io ];
+    },
+);
+
 for my $app (@bad) {
     test_psgi $app, sub {
         my $cb = shift;
         my $res = $cb->(GET "/");
         is $res->code, 500, $res->content;
+    };
+}
+
+for my $app (@good) {
+    test_psgi $app, sub {
+        my $cb = shift;
+        my $res = $cb->(GET "/");
+        is $res->code, 200, $res->content;
     };
 }
 
