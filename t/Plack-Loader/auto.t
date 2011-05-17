@@ -1,4 +1,5 @@
 use strict;
+use warnings;
 use Test::More;
 use Plack::Loader;
 
@@ -12,6 +13,7 @@ my $builder = sub {
 $INC{"Plack/Handler/Twiggy.pm"} = __FILE__;
 sub Plack::Handler::Twiggy::new { bless {}, shift }
 
+no warnings 'redefine';
 local *Plack::Loader::env = sub { return {} };
 
 eval {
