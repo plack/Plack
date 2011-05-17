@@ -2,6 +2,18 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9979  Tue May 17 09:54:03 PDT 2011
+    [BUG FIXES]
+        - Fixed Middleware::AccessLog's default %t format to match Apache's format
+        - Fixed a warning in Apache1 handler where PATH_INFO doesn't exist #204
+        - Fixed a bad test relying on new Test::More versions
+
+    [IMPROVEMENTS]
+        - Fixed Lint to accept bare in-memory filehandle per http://stackoverflow.com/questions/6011793/
+        - Added setup_env() to Plack::Handler::CGI (markstos)
+        - Added a non-blocking Hello World example in eg/dot-psgi
+        - Doc cleanup
+
 0.9978  Wed May  4 11:29:12 PDT 2011
     [TEST FIXES]
         - Fixed a failing output_encoding.t because of FCGI dependencies

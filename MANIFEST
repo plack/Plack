@@ -20,6 +20,7 @@ eg/dot-psgi/frameworks/Schenker.psgi
 eg/dot-psgi/frameworks/Squatting.psgi
 eg/dot-psgi/Hello.psgi
 eg/dot-psgi/image.psgi
+eg/dot-psgi/nonblock-hello.psgi
 eg/dot-psgi/plack-req.psgi
 eg/dot-psgi/runnable.psgi
 eg/dot-psgi/slowapp.psgi
