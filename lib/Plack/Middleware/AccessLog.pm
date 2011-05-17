@@ -64,7 +64,7 @@ sub log_line {
         h => sub { $env->{REMOTE_ADDR} || '-' },
         l => sub { '-' },
         u => sub { $env->{REMOTE_USER} || '-' },
-        t => sub { "[" . $strftime->("%d/%b/%Y %H:%M:%S", localtime) . "]" },
+        t => sub { "[" . $strftime->("%d/%b/%Y:%H:%M:%S %z", localtime) . "]" },
         r => sub { _safe($env->{REQUEST_METHOD}) . " " . _safe($env->{REQUEST_URI}) .
                    " " . $env->{SERVER_PROTOCOL} },
         s => sub { $status },
