@@ -195,6 +195,10 @@ based on the file extension or fall back to C<text/plain>.
 
 Tatsuhiko Miyagawa
 
+=head1 CONTRIBUTOR
+
+Olivier MenguE<eacute>, dolmen@cpan.org
+
 =head1 SEE ALSO
 
 L<Plack::Middleware::Static> L<Plack::App::Directory>
