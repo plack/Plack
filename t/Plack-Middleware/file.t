@@ -16,6 +16,14 @@ test_psgi $app, sub {
     $res = $cb->(GET "/whatever");
     is $res->content_type, 'text/plain';
     is $res->code, 200;
+    my $last_modified = $res->header('Last-Modified');
+    like $last_modified, qr/ GMT$/;
+
+    $res = $cb->(GET "/whatever", 'If-Modified-Since' => $last_modified);
+    is $res->code, 304;
+    is $res->header('Content-Length'), undef;
+    is $res->header('Content-Type'), undef;
+    is $res->header('Last-Modified'), undef;
 };
 
 my $app_content_type = Plack::App::File->new(
