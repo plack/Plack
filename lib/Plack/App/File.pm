@@ -85,17 +85,22 @@ sub allow_path_info { 0 }
 sub serve_path {
     my($self, $env, $file) = @_;
 
+    open my $fh, "<:raw", $file
+        or return $self->return_403;
+
+    my @stat = stat $file;
+
+    my $last_modified = HTTP::Date::time2str( $stat[9] );
+    my $if_modified_since = $env->{HTTP_IF_MODIFIED_SINCE};
+    (!defined($if_modified_since) || $if_modified_since ne $last_modified)
+        or return $self->return_304;
+
     my $content_type = $self->content_type || Plack::MIME->mime_type($file)
                        || 'text/plain';
 
     if ($content_type =~ m!^text/!) {
         $content_type .= "; charset=" . ($self->encoding || "utf-8");
     }
-
-    open my $fh, "<:raw", $file
-        or return $self->return_403;
-
-    my @stat = stat $file;
 
     Plack::Util::set_io_path($fh, Cwd::realpath($file));
 
@@ -104,10 +109,17 @@ sub serve_path {
         [
             'Content-Type'   => $content_type,
             'Content-Length' => $stat[7],
-            'Last-Modified'  => HTTP::Date::time2str( $stat[9] )
+            'Last-Modified'  => $last_modified,
         ],
         $fh,
     ];
+}
+
+# 304 Not Modified (client caching)
+sub return_304 {
+    # my $self = shift;
+    # Do not send Content-Length/Content-Type
+    return [304, [], [] ];
 }
 
 sub return_403 {
