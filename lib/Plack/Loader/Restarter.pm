@@ -42,7 +42,6 @@ sub _kill_child {
     warn "Killing the existing server (pid:$pid)\n";
     kill 'TERM' => $pid;
     waitpid($pid, 0);
-    warn "Successfully killed! Restarting the new server process.\n";
 }
 
 sub valid_file {
@@ -59,6 +58,7 @@ sub run {
     require Filesys::Notify::Simple;
     my $watcher = Filesys::Notify::Simple->new($self->{watch});
     warn "Watching @{$self->{watch}} for file updates.\n";
+    local $SIG{TERM} = sub { $self->_kill_child };
 
     while (1) {
         my @restart;
@@ -79,6 +79,7 @@ sub run {
         }
 
         $self->_kill_child;
+        warn "Successfully killed! Restarting the new server process.\n";
         $self->_fork_and_start($server, $builder);
         return unless $self->{pid};
     }
