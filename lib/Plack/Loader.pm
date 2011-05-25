@@ -75,8 +75,6 @@ sub guess {
         return "Corona";
     } elsif (exists $INC{"POE.pm"}) {
         return "POE";
-    } elsif (exists $INC{"Danga/Socket.pm"}) {
-        return "Danga::Socket";
     } else {
         return "Standalone";
     }
@@ -132,8 +130,9 @@ use the corresponding server implementation.
 
 =item %INC
 
-If one of L<AnyEvent>, L<Coro>, L<POE> or L<Danga::Socket> is loaded,
-the relevant implementation will be loaded.
+If one of L<AnyEvent>, L<Coro> or L<POE> is loaded, the relevant
+server implementation such as L<Twiggy>, L<Corona> or
+L<POE::Component::Server::PSGI> will be loaded, if they're available.
 
 =back
 
