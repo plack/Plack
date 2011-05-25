@@ -123,6 +123,11 @@ Select a specific implementation to run on using the C<PLACK_SERVER>
 environment variable or use the C<-s> or C<--server> flag which will
 be preferred over the environment variable if present.
 
+If this option is not given, plackup will try to detect the I<best>
+server implementation based on the environment variables as well as
+modules loaded by your application in C<%INC>. See L<Plack::Loader>
+for details.
+
 =item -S, --socket
 
 UNIX domain socket path to listen on. Defaults to undef. This option
@@ -171,6 +176,11 @@ Make plackup to watch updates from your development directory and
 restarts the server whenever a file is updated. This option by default
 watches the C<lib> directory and the base directory where I<.psgi>
 file is located. Use C<-R> if you want to watch other directories.
+
+Because C<-r> option (or C<-R>, see below) will delay the compilation
+of your application, automatic server detection (See the explanation
+of C<-s> above) depending on the modules used in your application will
+fail. You're recommended to explicitly specify C<-s> in such cases.
 
 =item -R, --Reload
 
