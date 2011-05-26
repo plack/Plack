@@ -72,6 +72,7 @@ sub log_line {
         T => sub { $opts->{time} ? int($opts->{time}) : "-" },
         D => sub { $opts->{time} ? $opts->{time} * 1000000 : "-" },
         v => sub { $env->{SERVER_NAME} || '-' },
+        V => sub { $env->{HTTP_HOST} || $env->{SERVER_NAME} || '-' },
     );
 
     my $char_handler = sub {
