@@ -61,3 +61,52 @@ is_deeply(\%env, {
     SCRIPT_NAME     => '',
     SERVER_PROTOCOL => 'HTTP/1.0',
 }, 'multiline');
+
+# dumb HTTP client: https://github.com/miyagawa/Plack/issues/213
+$req = <<"EOT";
+GET /a/b#c HTTP/1.0\r
+\r
+EOT
+%env = ();
+is(parse_http_request($req, \%env), length($req), 'URI fragment');
+is_deeply(\%env, {
+    SCRIPT_NAME => '',
+    PATH_INFO   => '/a/b',
+    REQUEST_METHOD => 'GET',
+    REQUEST_URI    => '/a/b#c',
+    QUERY_STRING   => '',
+    SCRIPT_NAME     => '',
+    SERVER_PROTOCOL => 'HTTP/1.0',
+});
+
+$req = <<"EOT";
+GET /a/b%23c HTTP/1.0\r
+\r
+EOT
+%env = ();
+is(parse_http_request($req, \%env), length($req), '%23 -> #');
+is_deeply(\%env, {
+    SCRIPT_NAME => '',
+    PATH_INFO   => '/a/b#c',
+    REQUEST_METHOD => 'GET',
+    REQUEST_URI    => '/a/b%23c',
+    QUERY_STRING   => '',
+    SCRIPT_NAME     => '',
+    SERVER_PROTOCOL => 'HTTP/1.0',
+});
+
+$req = <<"EOT";
+GET /a/b?c=d#e HTTP/1.0\r
+\r
+EOT
+%env = ();
+is(parse_http_request($req, \%env), length($req), 'URI fragment after query string');
+is_deeply(\%env, {
+    SCRIPT_NAME => '',
+    PATH_INFO   => '/a/b',
+    REQUEST_METHOD => 'GET',
+    REQUEST_URI    => '/a/b?c=d#e',
+    QUERY_STRING   => 'c=d',
+    SCRIPT_NAME     => '',
+    SERVER_PROTOCOL => 'HTTP/1.0',
+});
