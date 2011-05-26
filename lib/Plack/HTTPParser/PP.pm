@@ -52,6 +52,8 @@ sub _parse_header {
     $env->{REQUEST_URI}     = $uri;
 
     my($path, $query) = ( $uri =~ /^([^?]*)(?:\?(.*))?$/s );
+    for ($path, $query) { s/\#.*?$// if length } # dumb clients sending URI fragments
+
     $env->{PATH_INFO}    = URI::Escape::uri_unescape($path);
     $env->{QUERY_STRING} = $query || '';
     $env->{SCRIPT_NAME}  = '';

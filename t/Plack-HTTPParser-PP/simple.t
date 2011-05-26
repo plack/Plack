@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 12;
 
 use Plack::HTTPParser::PP;
 *parse_http_request = \&Plack::HTTPParser::PP::parse_http_request;
