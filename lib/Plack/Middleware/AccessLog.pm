@@ -72,6 +72,7 @@ sub log_line {
         T => sub { $opts->{time} ? int($opts->{time}) : "-" },
         D => sub { $opts->{time} ? $opts->{time} * 1000000 : "-" },
         v => sub { $env->{SERVER_NAME} || '-' },
+        V => sub { $env->{HTTP_HOST} || $env->{SERVER_NAME} || '-' },
     );
 
     my $char_handler = sub {
@@ -130,7 +131,8 @@ Plack::Middleware::AccessLog - Logs requests like Apache's log format
 Plack::Middleware::AccessLog forwards the request to the given app and
 logs request and response details to the logger callback. The format
 can be specified using Apache-like format strings (or C<combined> or
-C<common> for the default formats).
+C<common> for the default formats). If none is specified C<combined> is
+used.
 
 This middleware uses calculable content-length by checking body type,
 and can not log the time taken to serve requests. It also logs the
