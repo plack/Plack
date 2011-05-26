@@ -36,6 +36,10 @@ Plack::HTTPParser is a wrapper class to dispatch C<parse_http_request>
 to Kazuho Oku's XS based HTTP::Parser::XS or pure perl fallback based
 on David Robins HTTP::Parser.
 
+If you want to force the use of the slower pure perl version even if the
+fast XS version is available, set the environment variable
+C<PLACK_HTTP_PARSER_PP> to 1.
+
 =head1 SEE ALSO
 
 L<HTTP::Parser::XS> L<HTTP::Parser>
