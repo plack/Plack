@@ -103,10 +103,9 @@ sub setup_env {
     delete $env->{HTTP_CONTENT_LENGTH};
     $env->{'HTTP_COOKIE'} ||= $ENV{COOKIE}; # O'Reilly server bug
 
-    if (!exists $env->{PATH_INFO}) {
-        $env->{PATH_INFO} = '';
-    }
-
+    $env->{PATH_INFO}   = '' if !exists $env->{PATH_INFO};
+    $env->{SCRIPT_NAME} = '' if !exists $env->{SCRIPT_NAME};
+    
     if ($env->{SCRIPT_NAME} eq '/') {
         $env->{SCRIPT_NAME} = '';
         $env->{PATH_INFO}   = '/' . $env->{PATH_INFO};
