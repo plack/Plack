@@ -40,7 +40,13 @@ sub new {
         timeout            => $args{timeout} || 300,
         server_software    => $args{server_software} || $class,
         server_ready       => $args{server_ready} || sub {},
+        ssl                => $args{ssl} ? 1 : 0,
+        ssl_key_file       => $args{ssl_key_file}  || 'certs/server-key.pem',
+        ssl_cert_file      => $args{ssl_cert_file} || 'certs/server-cert.pem',
+        socket_class       => $args{ssl} ? 'IO::Socket::SSL' : 'IO::Socket::INET',
     }, $class;
+
+    require IO::Socket::SSL if $self->{ssl};
 
     if ($args{max_workers} && $args{max_workers} > 1) {
         Carp::carp(
@@ -60,12 +66,16 @@ sub run {
 
 sub setup_listener {
     my $self = shift;
-    $self->{listen_sock} ||= IO::Socket::INET->new(
+    $self->{listen_sock} ||= $self->{socket_class}->new(
         Listen    => SOMAXCONN,
         LocalPort => $self->{port},
         LocalAddr => $self->{host},
         Proto     => 'tcp',
         ReuseAddr => 1,
+        $self->{ssl} ? (
+            SSL_key_file  => $self->{ssl_key_file},
+            SSL_cert_file => $self->{ssl_cert_file},
+        ) : (),
     ) or die "failed to listen to port $self->{port}:$!";
 
     $self->{server_ready}->($self);
@@ -88,7 +98,7 @@ sub accept_loop {
                 REMOTE_ADDR => $conn->peerhost,
                 'psgi.version' => [ 1, 1 ],
                 'psgi.errors'  => *STDERR,
-                'psgi.url_scheme' => 'http',
+                'psgi.url_scheme' => $self->{ssl} ? 'https' : 'http',
                 'psgi.run_once'     => Plack::Util::FALSE,
                 'psgi.multithread'  => Plack::Util::FALSE,
                 'psgi.multiprocess' => Plack::Util::FALSE,
