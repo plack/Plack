@@ -40,7 +40,6 @@ sub new {
         timeout            => $args{timeout} || 300,
         server_software    => $args{server_software} || $class,
         server_ready       => $args{server_ready} || sub {},
-        max_reqs_per_child => $args{max_reqs_per_child} || 100,
     }, $class;
 
     if ($args{max_workers} && $args{max_workers} > 1) {
@@ -73,18 +72,15 @@ sub setup_listener {
 }
 
 sub accept_loop {
-    # TODO handle $max_reqs_per_child
-    my($self, $app, $max_reqs_per_child) = @_;
-    my $proc_req_count = 0;
+    my($self, $app) = @_;
 
     $app = Plack::Middleware::ContentLength->wrap($app);
 
-    while (! defined $max_reqs_per_child || $proc_req_count < $max_reqs_per_child) {
+    while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $self->{listen_sock}->accept) {
             $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                 or die "setsockopt(TCP_NODELAY) failed:$!";
-            ++$proc_req_count;
             my $env = {
                 SERVER_PORT => $self->{port},
                 SERVER_NAME => $self->{host},
