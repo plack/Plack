@@ -2,7 +2,7 @@ package Plack::App::FCGIDispatcher;
 use strict;
 use warnings;
 use parent qw(Plack::Component);
-use Plack::Util::Accessor qw(host port socket);
+use Plack::Util::Accessor qw(host port socket timeout);
 
 use FCGI::Client;
 use HTTP::Response;
@@ -29,7 +29,10 @@ sub call {
 
     $sock or die "Can't create socket to FCGI daemon: $!";
 
-    my $conn = FCGI::Client::Connection->new(sock => $sock);
+    my $conn = FCGI::Client::Connection->new(
+        sock    => $sock,
+        timeout => $self->timeout || 1,
+    );
     my $input = delete $env->{'psgi.input'};
 
     my $content_in = '';
