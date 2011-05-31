@@ -11,6 +11,8 @@ sub call {
     my $self = shift;
     my $env  = shift;
 
+    my $fcgi_env = +{ %$env }; # shallow copy
+
     my $sock;
     if ($self->socket) {
         require IO::Socket::UNIX;
@@ -31,9 +33,9 @@ sub call {
 
     my $conn = FCGI::Client::Connection->new(
         sock    => $sock,
-        timeout => $self->timeout || 1,
+        timeout => $self->timeout || 60,
     );
-    my $input = delete $env->{'psgi.input'};
+    my $input = delete $fcgi_env->{'psgi.input'};
 
     my $content_in = '';
     if (my $cl = $env->{CONTENT_LENGTH}) {
@@ -43,14 +45,19 @@ sub call {
         }
     }
 
-    for my $key (keys %$env) {
-        delete $env->{$key} if $key =~ /\./;
+    for my $key (keys %$fcgi_env) {
+        delete $fcgi_env->{$key} if $key =~ /\./;
     }
 
-    my ($stdout, $stderr) = $conn->request(
-        $env,
-        $content_in,
-    );
+    my($stdout, $stderr);
+    eval {
+        ($stdout, $stderr) = $conn->request($fcgi_env, $content_in);
+    };
+    if ($@) {
+        $env->{'psgi.errors'}->print($@);
+        return [ 502, ["Content-Type", "text/plain"], ["Bad FastCGI gateway"] ];
+    }
+
     print STDERR $stderr if $stderr;
 
     unless ( $stdout =~ /^HTTP/ ) {
