@@ -51,7 +51,6 @@ lib/Plack.pm
 lib/Plack/App/Cascade.pm
 lib/Plack/App/CGIBin.pm
 lib/Plack/App/Directory.pm
-lib/Plack/App/FCGIDispatcher.pm
 lib/Plack/App/File.pm
 lib/Plack/App/PSGIBin.pm
 lib/Plack/App/URLMap.pm
