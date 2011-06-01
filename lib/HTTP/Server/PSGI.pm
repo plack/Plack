@@ -40,13 +40,11 @@ sub new {
         timeout            => $args{timeout} || 300,
         server_software    => $args{server_software} || $class,
         server_ready       => $args{server_ready} || sub {},
-        ssl                => $args{ssl} ? 1 : 0,
-        ssl_key_file       => $args{ssl_key_file}  || 'certs/server-key.pem',
-        ssl_cert_file      => $args{ssl_cert_file} || 'certs/server-cert.pem',
-        socket_class       => $args{ssl} ? 'IO::Socket::SSL' : 'IO::Socket::INET',
+        ssl                => $args{ssl},
+        ipv6               => $args{ipv6},
+        ssl_key_file       => $args{ssl_key_file},
+        ssl_cert_file      => $args{ssl_cert_file},
     }, $class;
-
-    require IO::Socket::SSL if $self->{ssl};
 
     if ($args{max_workers} && $args{max_workers} > 1) {
         Carp::carp(
@@ -64,19 +62,44 @@ sub run {
     $self->accept_loop($app);
 }
 
+sub prepare_socket_class {
+    my($self, $args) = @_;
+
+    if ($self->{ssl} && $self->{ipv6}) {
+        Carp::croak("SSL and IPv6 are not supported at the same time (yet). Choose one.");
+    }
+
+    if ($self->{ssl}) {
+        eval { require IO::Socket::SSL; 1 }
+            or Carp::croak("SSL suport requires IO::Socket::SSL");
+        $args->{SSL_key_file}  = $self->{ssl_key_file};
+        $args->{SSL_cert_file} = $self->{ssl_cert_file};
+        return "IO::Socket::SSL";
+    } elsif ($self->{ipv6}) {
+        eval { require IO::Socket::IP; 1 }
+            or Carp::croak("IPv6 support requires IO::Socket::IP");
+        $self->{host}      ||= '::1';
+        $args->{LocalAddr} ||= '::1';
+        return "IO::Socket::IP";
+    }
+
+    return "IO::Socket::INET";
+}
+
 sub setup_listener {
     my $self = shift;
-    $self->{listen_sock} ||= $self->{socket_class}->new(
+
+    my %args = (
         Listen    => SOMAXCONN,
         LocalPort => $self->{port},
         LocalAddr => $self->{host},
         Proto     => 'tcp',
         ReuseAddr => 1,
-        $self->{ssl} ? (
-            SSL_key_file  => $self->{ssl_key_file},
-            SSL_cert_file => $self->{ssl_cert_file},
-        ) : (),
-    ) or die "failed to listen to port $self->{port}:$!";
+    );
+
+    my $class = $self->prepare_socket_class(\%args);
+    $self->{listen_sock} ||= $class->new(%args)
+        or die "failed to listen to port $self->{port}: $!";
 
     $self->{server_ready}->($self);
 }
