@@ -622,6 +622,17 @@ our @TEST = (
         },
     ],
     [
+        'newlines',
+        sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://127.0.0.1/");
+            is length($res->content), 7;
+        },
+        sub {
+            return [ 200, [ "Content-Type", "text/plain" ], [ "Bar\nBaz" ] ];
+        },
+    ],
+    [
         'test 404',
         sub {
             my $cb = shift;
