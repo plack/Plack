@@ -46,6 +46,9 @@ sub transform_error {
     my($self, $e, $env) = @_;
 
     my($code, $message);
+    if (blessed $e && $e->can('as_psgi')) {
+        return $e->as_psgi;
+    }
     if (blessed $e && $e->can('code')) {
         $code = $e->code;
         $message =
