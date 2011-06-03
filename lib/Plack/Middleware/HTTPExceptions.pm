@@ -1,6 +1,7 @@
 package Plack::Middleware::HTTPExceptions;
 use strict;
 use parent qw(Plack::Middleware);
+use Plack::Util::Accessor qw(rethrow);
 
 use Carp ();
 use Try::Tiny;
@@ -46,8 +47,13 @@ sub transform_error {
             $e->can('as_string')       ? $e->as_string :
             overload::Method($e, '""') ? "$e"          : undef;
     } else {
-        $code = 500;
-        $env->{'psgi.errors'}->print($e);
+        if ($self->rethrow) {
+            die $e;
+        }
+        else {
+            $code = 500;
+            $env->{'psgi.errors'}->print($e);
+        }
     }
 
     if ($code !~ /^[3-5]\d\d$/) {
