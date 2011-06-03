@@ -8,6 +8,11 @@ use Try::Tiny;
 use Scalar::Util 'blessed';
 use HTTP::Status ();
 
+sub prepare_app {
+    my $self = shift;
+    $self->rethrow(1) if ($ENV{PLACK_ENV} || '') eq 'development';
+}
+
 sub call {
     my($self, $env) = @_;
 
