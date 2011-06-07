@@ -9,6 +9,7 @@ use Carp ();
 use Scalar::Util ();
 use HTTP::Headers;
 use URI::Escape ();
+use URI ();
 
 sub code    { shift->status(@_) }
 sub content { shift->body(@_)   }
@@ -65,7 +66,15 @@ sub content_encoding {
 }
 
 sub location {
-    shift->headers->header('Location' => @_);
+    my $self = shift;
+
+    if (@_) {
+        my $uri = shift;
+        my $loc = URI->new($uri)->as_string;
+        $self->headers->header('Location' => $loc);
+    }
+
+    return $self->headers->header('Location');
 }
 
 sub redirect {
