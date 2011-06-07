@@ -13,6 +13,13 @@ my @bad = map { Plack::Middleware::Lint->wrap($_) } (
     sub { return [ 200, [], [ "\x{1234}" ] ] },
     sub { return [ 200, [], {} ] },
     sub { return [ 200, [], undef ] },
+    sub { return [ 200, [ "Foo:", "bar" ], [ "Hello" ] ] },
+    sub { return [ 200, [ "Foo-", "bar" ], [ "Hello" ] ] },
+    sub { return [ 200, [ "0xyz", "bar" ], [ "Hello" ] ] },
+    sub { return [ 200, [ "Status", "201" ], [ "Hi" ] ] },
+    sub { return [ 200, [ "Foo\nBar", "baz" ], [ '' ] ] },
+    sub { return [ 200, [ "Location", "Foo\nBar" ], [] ] },
+    sub { return [ 200, [ "Foo" ], [ "Hello" ] ] },
     sub { return sub { shift->([ 200, [], {} ]) } },
     sub { return sub { shift->([ 200, [], undef ]) } },
 );

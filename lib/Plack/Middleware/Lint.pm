@@ -28,35 +28,35 @@ sub call {
 sub validate_env {
     my ($self, $env) = @_;
     unless ($env->{'REQUEST_METHOD'}) {
-        Carp::croak('missing env param: REQUEST_METHOD');
+        Carp::croak('Missing env param: REQUEST_METHOD');
     }
     unless ($env->{'REQUEST_METHOD'} =~ /^[A-Z]+$/) {
-        Carp::croak("invalid env param: REQUEST_METHOD($env->{REQUEST_METHOD})");
+        Carp::croak("Invalid env param: REQUEST_METHOD($env->{REQUEST_METHOD})");
     }
     unless (defined($env->{'SCRIPT_NAME'})) { # allows empty string
-        Carp::croak('missing mandatory env param: SCRIPT_NAME');
+        Carp::croak('Missing mandatory env param: SCRIPT_NAME');
     }
     unless (defined($env->{'PATH_INFO'})) { # allows empty string
-        Carp::croak('missing mandatory env param: PATH_INFO');
+        Carp::croak('Missing mandatory env param: PATH_INFO');
     }
     unless (defined($env->{'SERVER_NAME'})) {
-        Carp::croak('missing mandatory env param: SERVER_NAME');
+        Carp::croak('Missing mandatory env param: SERVER_NAME');
     }
     unless ($env->{'SERVER_NAME'} ne '') {
         Carp::croak('SERVER_NAME must not be empty string');
     }
     unless (defined($env->{'SERVER_PORT'})) {
-        Carp::croak('missing mandatory env param: SERVER_PORT');
+        Carp::croak('Missing mandatory env param: SERVER_PORT');
     }
     unless ($env->{'SERVER_PORT'} ne '') {
         Carp::croak('SERVER_PORT must not be empty string');
     }
     unless (!defined($env->{'SERVER_PROTOCOL'}) || $env->{'SERVER_PROTOCOL'} =~ m{^HTTP/1.\d$}) {
-        Carp::croak('invalid SERVER_PROTOCOL');
+        Carp::croak('Invalid SERVER_PROTOCOL');
     }
     for my $param (qw/version url_scheme input errors multithread multiprocess/) {
         unless (exists $env->{"psgi.$param"}) {
-            Carp::croak("missing psgi.$param");
+            Carp::croak("Missing psgi.$param");
         }
     }
     unless (ref($env->{'psgi.version'}) eq 'ARRAY') {
@@ -71,7 +71,7 @@ sub validate_env {
     if ($env->{"psgi.version"}->[1] == 1) { # 1.1
         for my $param (qw(streaming nonblocking run_once)) {
             unless (exists $env->{"psgi.$param"}) {
-                Carp::croak("missing psgi.$param");
+                Carp::croak("Missing psgi.$param");
             }
         }
     }
@@ -97,7 +97,7 @@ sub validate_res {
     my $croak = $streaming ? \&Carp::confess : \&Carp::croak;
 
     unless (ref($res) and ref($res) eq 'ARRAY' || ref($res) eq 'CODE') {
-        $croak->('response should be array ref or code ref');
+        $croak->('Response should be array ref or code ref');
     }
 
     if (ref $res eq 'CODE') {
@@ -105,15 +105,35 @@ sub validate_res {
     }
 
     unless (@$res == 3 || ($streaming && @$res == 2)) {
-        $croak->('response needs to be 3 element array, or 2 element in streaming');
+        $croak->('Response needs to be 3 element array, or 2 element in streaming');
     }
 
     unless ($res->[0] =~ /^\d+$/ && $res->[0] >= 100) {
-        $croak->('status code needs to be an integer greater than or equal to 100');
+        $croak->('Status code needs to be an integer greater than or equal to 100');
     }
 
     unless (ref $res->[1] eq 'ARRAY') {
         $croak->('Headers needs to be an array ref');
+    }
+
+    my @copy = @{$res->[1]};
+    unless (@copy % 2 == 0) {
+        $croak->('The number of response headers needs to be even, not odd');
+    }
+
+    while(my($key, $val) = splice(@copy, 0, 2)) {
+        if (lc $key eq 'status') {
+            $croak->('Response headers MUST NOT contain a key named Status');
+        }
+        if ($key =~ /[:\r\n]|[-_]$/) {
+            $croak->('Response headers MUST NOT contain a key with : or newlines, or that end in - or _');
+        }
+        unless ($key =~ /^[a-zA-Z][0-9a-zA-Z\-_]*$/) {
+            $croak->('Response headers MUST consist only of letters, digits, _ or - and MUST start with a letter');
+        }
+        if ($val =~ /[\000-\037]/) {
+            $croak->('Response headers MUST contain characters below octal \037');
+        }
     }
 
     # @$res == 2 is only right in psgi.streaming, and it's already checked.
@@ -122,11 +142,11 @@ sub validate_res {
             Plack::Util::is_real_fh($res->[2]) ||
             is_possibly_fh($res->[2]) ||
             (blessed($res->[2]) && $res->[2]->can('getline'))) {
-        $croak->('body should be an array ref or filehandle');
+        $croak->('Body should be an array ref or filehandle');
     }
 
     if (ref $res->[2] eq 'ARRAY' && grep _is_really_utf8($_), @{$res->[2]}) {
-        $croak->('body must be bytes and should not contain wide characters (UTF-8 strings).');
+        $croak->('Body must be bytes and should not contain wide characters (UTF-8 strings).');
     }
 
     return $res;
