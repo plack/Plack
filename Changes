@@ -2,6 +2,20 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9980  Mon Jun  6 20:24:25 PDT 2011
+    [BUG FIXES]
+        - Fixed a bug where restarting loader doesn't terminate children (#209)
+        - Strip URI fragments off of PATH_INFO and QUERY_STRING (#213)
+
+    [IMPROVEMENTS]
+        - Documented -r vs auto server detection caveat
+        - Documented a default AccessLog format (ask)
+        - Support %V in AccessLog formats (ask)
+        - Document PLACK_HTTP_PARSER_PP (melo)
+
+    [NEW FEATURES]
+        - Added experimental IPv6 and SSL support for the built-in HTTP::Server::PSGI
+
 0.9979  Tue May 17 09:54:03 PDT 2011
     [BUG FIXES]
         - Fixed Middleware::AccessLog's default %t format to match Apache's format

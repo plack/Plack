@@ -149,7 +149,6 @@ t/Plack-Handler/apache2-registry.t
 t/Plack-Handler/apache2.t
 t/Plack-Handler/cgi.t
 t/Plack-Handler/fcgi.t
-t/Plack-Handler/fcgi_client.t
 t/Plack-Handler/http_server_simple.t
 t/Plack-Handler/output_encoding.t
 t/Plack-Handler/standalone.t
