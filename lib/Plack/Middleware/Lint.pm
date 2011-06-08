@@ -132,7 +132,7 @@ sub validate_res {
             $croak->('Response headers MUST consist only of letters, digits, _ or - and MUST start with a letter');
         }
         if ($val =~ /[\000-\037]/) {
-            $croak->('Response headers MUST contain characters below octal \037');
+            $croak->('Response headers MUST NOT contain characters below octal \037');
         }
     }
 
