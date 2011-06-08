@@ -27,32 +27,32 @@ sub call {
 
 sub validate_env {
     my ($self, $env) = @_;
-    unless ($env->{'REQUEST_METHOD'}) {
+    unless ($env->{REQUEST_METHOD}) {
         die('Missing env param: REQUEST_METHOD');
     }
-    unless ($env->{'REQUEST_METHOD'} =~ /^[A-Z]+$/) {
+    unless ($env->{REQUEST_METHOD} =~ /^[A-Z]+$/) {
         die("Invalid env param: REQUEST_METHOD($env->{REQUEST_METHOD})");
     }
-    unless (defined($env->{'SCRIPT_NAME'})) { # allows empty string
+    unless (defined($env->{SCRIPT_NAME})) { # allows empty string
         die('Missing mandatory env param: SCRIPT_NAME');
     }
-    unless (defined($env->{'PATH_INFO'})) { # allows empty string
+    unless (defined($env->{PATH_INFO})) { # allows empty string
         die('Missing mandatory env param: PATH_INFO');
     }
-    unless (defined($env->{'SERVER_NAME'})) {
+    unless (defined($env->{SERVER_NAME})) {
         die('Missing mandatory env param: SERVER_NAME');
     }
-    unless ($env->{'SERVER_NAME'} ne '') {
+    if ($env->{SERVER_NAME} eq '') {
         die('SERVER_NAME must not be empty string');
     }
-    unless (defined($env->{'SERVER_PORT'})) {
+    unless (defined($env->{SERVER_PORT})) {
         die('Missing mandatory env param: SERVER_PORT');
     }
-    unless ($env->{'SERVER_PORT'} ne '') {
+    if ($env->{SERVER_PORT} eq '') {
         die('SERVER_PORT must not be empty string');
     }
-    unless (!defined($env->{'SERVER_PROTOCOL'}) || $env->{'SERVER_PROTOCOL'} =~ m{^HTTP/1.\d$}) {
-        die('Invalid SERVER_PROTOCOL');
+    if (defined($env->{SERVER_PROTOCOL}) and $env->{SERVER_PROTOCOL} !~ m{^HTTP/1.\d$}) {
+        die("Invalid SERVER_PROTOCOL: $env->{SEREVR_PROTOCOL}");
     }
     for my $param (qw/version url_scheme input errors multithread multiprocess/) {
         unless (exists $env->{"psgi.$param"}) {
@@ -60,13 +60,13 @@ sub validate_env {
         }
     }
     unless (ref($env->{'psgi.version'}) eq 'ARRAY') {
-        die('psgi.version should be ArrayRef');
+        die("psgi.version should be ArrayRef: $env->{'psgi.version'}");
     }
     unless (scalar(@{$env->{'psgi.version'}}) == 2) {
-        die('psgi.version should contain 2 elements');
+        die('psgi.version should contain 2 elements, not ', scalar(@{$env->{'psgi.version'}}));
     }
     unless ($env->{'psgi.url_scheme'} =~ /^https?$/) {
-        die('psgi.version should be "http" or "https"');
+        die("psgi.url_scheme should be 'http' or 'https': ", $env->{'psgi.url_scheme'});
     }
     if ($env->{"psgi.version"}->[1] == 1) { # 1.1
         for my $param (qw(streaming nonblocking run_once)) {
@@ -94,8 +94,8 @@ sub is_possibly_fh {
 sub validate_res {
     my ($self, $res, $streaming) = @_;
 
-    unless (ref($res) and ref($res) eq 'ARRAY' || ref($res) eq 'CODE') {
-        die('Response should be array ref or code ref');
+    unless (ref($res) eq 'ARRAY' or ref($res) eq 'CODE') {
+        die("Response should be array ref or code ref: $res");
     }
 
     if (ref $res eq 'CODE') {
@@ -107,16 +107,16 @@ sub validate_res {
     }
 
     unless ($res->[0] =~ /^\d+$/ && $res->[0] >= 100) {
-        die('Status code needs to be an integer greater than or equal to 100x');
+        die("Status code needs to be an integer greater than or equal to 100: $res->[0]");
     }
 
     unless (ref $res->[1] eq 'ARRAY') {
-        die('Headers needs to be an array ref');
+        die("Headers needs to be an array ref: $res->[1]");
     }
 
     my @copy = @{$res->[1]};
     unless (@copy % 2 == 0) {
-        die('The number of response headers needs to be even, not odd');
+        die('The number of response headers needs to be even, not odd(', scalar(@copy), ')');
     }
 
     while(my($key, $val) = splice(@copy, 0, 2)) {
@@ -124,13 +124,13 @@ sub validate_res {
             die('Response headers MUST NOT contain a key named Status');
         }
         if ($key =~ /[:\r\n]|[-_]$/) {
-            die('Response headers MUST NOT contain a key with : or newlines, or that end in - or _');
+            die("Response headers MUST NOT contain a key with : or newlines, or that end in - or _: $key");
         }
         unless ($key =~ /^[a-zA-Z][0-9a-zA-Z\-_]*$/) {
-            die('Response headers MUST consist only of letters, digits, _ or - and MUST start with a letter');
+            die("Response headers MUST consist only of letters, digits, _ or - and MUST start with a letter: $key");
         }
         if ($val =~ /[\000-\037]/) {
-            die('Response headers MUST NOT contain characters below octal \037');
+            die("Response headers MUST NOT contain characters below octal \037: $val");
         }
     }
 
@@ -140,11 +140,11 @@ sub validate_res {
             Plack::Util::is_real_fh($res->[2]) ||
             is_possibly_fh($res->[2]) ||
             (blessed($res->[2]) && $res->[2]->can('getline'))) {
-        die('Body should be an array ref or filehandle');
+        die("Body should be an array ref or filehandle: $res->[2]");
     }
 
     if (ref $res->[2] eq 'ARRAY' && grep _is_really_utf8($_), @{$res->[2]}) {
-        die('Body must be bytes and should not contain wide characters (UTF-8 strings).');
+        die("Body must be bytes and should not contain wide characters (UTF-8 strings)");
     }
 
     return $res;
