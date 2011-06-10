@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use Plack::Response;
-use URI;
 
 {
     my $res = Plack::Response->new;
