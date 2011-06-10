@@ -254,9 +254,16 @@ Shortcut for the equivalent get/set methods in C<< $res->headers >>.
 
 Sets redirect URL with an optional status code, which defaults to 302.
 
+Note that this method doesn't normalize the given URI string. Users of
+this module have to be responsible about properly encoding URI paths
+and parameters.
+
 =item location
 
 Gets and sets C<Location> header.
+
+Note that this method doesn't normalize the given URI string in the
+setter. See above in C<redirect> for details.
 
 =item cookies
 
