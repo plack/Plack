@@ -21,11 +21,11 @@ use URI;
 
 {
     my $uri_invalid = "http://www.google.com/\r\nX-Injection: true\r\n\r\nHello World";
-    my $uri_valid   = URI->new($uri_invalid)->as_string;
 
     my $res = Plack::Response->new;
     $res->redirect($uri_invalid, 301);
-    is_deeply $res->finalize, [ 301, [ 'Location' => $uri_valid ], [] ];
+    my $psgi_res = $res->finalize;
+    ok $psgi_res->[1][1] !~ /\n/;
 }
 
 done_testing;
