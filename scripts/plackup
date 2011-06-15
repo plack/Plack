@@ -135,9 +135,9 @@ doesn't mean anything if the server doesn't support UNIX sockets.
 
 =item -l, --listen
 
-Addresses to listen on. It could be "HOST:PORT", ":PORT" or "PATH"
-(without colons). It could be multiple but it depends on the server
-implementations whether multiple interfaces are supported.
+Addresses to listen on. It could be "HOST:PORT", ":PORT" or "PATH" (without
+colons). You may use this option multiple times to listen on multiple
+addresses, but the server will decide whether it supports multiple interfaces.
 
 =item -D, --daemonize
 
@@ -146,11 +146,13 @@ implementation whether this option is respected or not.
 
 =item -I
 
-Specify perl library include path, like C<perl>'s -I option.
+Specify perl library include path, like C<perl>'s -I option. You may add
+multiple paths by using this option multiple times.
 
 =item -M
 
-Specify modules to load before loading the app code.
+Specify modules to load before loading the app code. You may load multiple
+modules by using this option multiple times.
 
 =item -E, --env
 
