@@ -159,7 +159,7 @@ or frameworks to tell which environment setting the application is running on.
   env PLACK_ENV=deployment plackup
 
 Common values are C<development>, C<deployment>, and C<test>. The default value
-is C<deployment>, which causes C<plackup> to load the middleware components:
+is C<development>, which causes C<plackup> to load the middleware components:
 I<AccessLog>, I<StackTrace> and I<Lint>.
 
 =item -r, --reload
