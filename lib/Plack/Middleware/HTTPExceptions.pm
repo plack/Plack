@@ -100,7 +100,7 @@ Plack::Middleware::HTTPExceptions - Catch HTTP exceptions
   };
 
   builder {
-      enable "HTTPExceptions";
+      enable "HTTPExceptions", rethrow => 1;
       $app;
   };
 
@@ -113,23 +113,33 @@ status code.
 Your application is supposed to throw an object that implements
 C<code> method which returns the HTTP status code such as 501 or
 404. This middleware catches them and creates a valid response out of
-the code.
+the code. If the C<code> method returns a code that is not an HTTP
+redirect or error code (3xx, 4xx, or 5xx), the exception will be rethrown.
 
 The exception object may also implement C<as_string>, or overload the
 stringification, to represent the text of the error, which defaults to
 the status message of error codes, such as I<Service Unavailable> for
 C<503>.
 
+Finally, the exception object may implement C<as_psgi>, and the result
+of this will be returned directly as the PSGI response.
+
 If the code is in the 3xx range and the exception implements the 'location'
 method (HTTP::Exception::3xx does), the Location header will be set in the
 response, so you can do redirects this way.
 
-There's a CPAN module L<HTTP::Exception> and they are pefect to throw
-from your application to let this middleware catch and display, but
-you can also implement your own exception class to throw.
+There are CPAN modules L<HTTP::Exception> and L<HTTP::Throwable>, and
+they are pefect to throw from your application to let this middleware
+catch and display, but you can also implement your own exception class
+to throw.
 
-All the other errors that can't be translated into HTTP errors are
-just rethrown to the outer frame.
+If the thrown exception is not an object that implements either a
+C<code> or an C<as_psgi> method, a 500 error will be returned.
+Alternatively, you can pass a true value for the C<rethrow> parameter
+for this middleware, and the exception will instead be rethrown. This is
+enabled by default when C<PLACK_ENV> is set to C<development>, so that
+the L<StackTrace|Plack::Middleware::StackTrace> middleware can catch it
+instead.
 
 =head1 AUTHOR
 
@@ -137,6 +147,6 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-paste.httpexceptions L<HTTP::Exception>
+paste.httpexceptions L<HTTP::Exception> L<HTTP::Throwable>
 
 =cut
