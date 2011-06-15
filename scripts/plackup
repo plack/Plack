@@ -17,37 +17,36 @@ plackup - Run PSGI application with Plack servers
   # read your app from app.psgi file
   plackup
 
-  # can be passed as an ARGV[0] (or with -a option)
+  # choose .psgi file from ARGV[0] (or with -a option)
   plackup hello.psgi
 
-  # Switch server implementation with --server (or -s)
+  # switch server implementation with --server (or -s)
   plackup --server HTTP::Server::Simple --port 9090 --host 127.0.0.1 test.psgi
 
-  # Use UNIX socket to run FCGI daemon
+  # use UNIX socket to run FCGI daemon
   plackup -s FCGI --listen /tmp/fcgi.sock myapp.psgi
 
-  # FCGI external server on port 9090
+  # launch FCGI external server on port 9090
   plackup -s FCGI --port 9090
 
 =head1 DESCRIPTION
 
-plackup is a command line utility to run PSGI application from the command line.
+plackup is a command line utility to run PSGI applications from the command
+line.
 
 plackup automatically figures out the environment it is run in, and
 runs your application in that environment. FastCGI, CGI, AnyEvent and
 others can all be detected. See L<Plack::Loader> for the authorative
 list.
 
-C<plackup> assumes you have an C<app.psgi> script in your current
-directory, that would look like:
+C<plackup> assumes you have an C<app.psgi> script in your current directory.
+The last statement of C<app.psgi> should be a code reference that is a PSGI
+application:
 
   #!/usr/bin/perl
   use MyApp;
   my $application = MyApp->new;
   my $app = sub { $application->run_psgi(@_) };
-
-The last statement of C<app.psgi>, in this case C<$app>, should be a
-code reference that is a PSGI application.
 
 =head1 ARGUMENTS
 
@@ -58,7 +57,7 @@ code reference that is a PSGI application.
   plackup --host 127.0.0.1 --port 9090 /path/to/app.psgi
 
 The first non-option argument is used as a C<.psgi> file path. You can
-also set this path with C<-a> or C<--app> option. If omitted, the
+also set this path with C<-a> or C<--app>. If omitted, the
 default file path is C<app.psgi> in the current directory.
 
 =back
@@ -69,24 +68,23 @@ default file path is C<app.psgi> in the current directory.
 
 =item -a, --app
 
-C<--app> option allows you to locate a C<.psgi> script with a
-different name in a different path. This can also be set as a
-non-option argument. (See above)
+Specifies the full path to a C<.psgi> script. You may alternately provide this
+path as the first argument to C<plackup>.
 
 =item -e
 
-Evaluate the given perl code as a PSGI app, much like perl's C<-e>
-option.
+Evaluates the given perl code as a PSGI app, much like perl's C<-e>
+option:
 
   plackup -e 'sub { my $env = shift; return [ ... ] }'
 
 You can also specify C<-e> option with C<.psgi> file path to wrap the
 application with middleware configuration from the command line. You
-can also use L<Plack::Builder> DSL syntax inside C<-e> code.
+can also use L<Plack::Builder> DSL syntax inside C<-e> code. For example:
 
   plackup -e 'enable "Auth::Basic", authenticator => ...;' myapp.psgi
 
-equals to run the following PSGI application:
+is equivalent to the PSGI application:
 
   use Plack::Builder;
   use Plack::Util;
@@ -97,8 +95,8 @@ equals to run the following PSGI application:
   };
 
 Note that when you use C<-e> option to enable middleware, plackup
-doesn't assume the implicit C<app.psgi> path. You should always pass
-C<.psgi> path in the command line arguments.
+doesn't assume the implicit C<app.psgi> path. You must pass the path to your
+C<.psgi> file in the command line arguments.
 
   plackup                             # Runs app.psgi
   plackup -e 'enable "Foo"'           # Doesn't work!
@@ -106,109 +104,102 @@ C<.psgi> path in the command line arguments.
 
 =item -o, --host
 
-The interface a TCP based server daemon binds to. Defauts to undef,
-which lets most server backends bind the any (*) interface. This
-option doesn't mean anything if the server does not support TCP
-socket.
+Binds to a TCP interface. Defauts to undef, which lets most server backends
+bind the any (*) interface. This option is only valid for servers which support
+TCP sockets.
 
 =item -p, --port
 
-The port number a TCP based server daemon listens on. Defaults to
-5000. This option doesn't mean anything if the server does not support
-TCP socket.
+Binds to a TCP port. Defaults to 5000. This option is only valid for servers
+which support TCP sockets.
 
-=item -s, --server
+=item -s, --server, the C<PLACK_SERVER> environment variable
 
-Select a specific implementation to run on using the C<PLACK_SERVER>
-environment variable or use the C<-s> or C<--server> flag which will
-be preferred over the environment variable if present.
+Selects a specific server implementation to run on. When provided, the C<-s> or
+C<--server> flag will be preferred over the environment variable.
 
-If this option is not given, plackup will try to detect the I<best>
-server implementation based on the environment variables as well as
-modules loaded by your application in C<%INC>. See L<Plack::Loader>
-for details.
+If no option is given, plackup will try to detect the I<best> server
+implementation based on the environment variables as well as modules loaded by
+your application in C<%INC>. See L<Plack::Loader> for details.
 
 =item -S, --socket
 
-UNIX domain socket path to listen on. Defaults to undef. This option
-doesn't mean anything if the server doesn't support UNIX sockets.
+Listens on a UNIX domain socket path. Defaults to undef. This option is only
+valid for servers which support UNIX sockets.
 
 =item -l, --listen
 
-Addresses to listen on. It could be "HOST:PORT", ":PORT" or "PATH"
-(without colons). It could be multiple but it depends on the server
-implementations whether multiple interfaces are supported.
+Listens on one or more addresses, whether "HOST:PORT", ":PORT", or "PATH"
+(without colons). You may use this option multiple times to listen on multiple
+addresses, but the server will decide whether it supports multiple interfaces.
 
 =item -D, --daemonize
 
-Makes the process go background. It's up to the backend server/handler
+Makes the process run in the background. It's up to the backend server/handler
 implementation whether this option is respected or not.
 
 =item -I
 
-Specify perl library include path, like C<perl>'s -I option.
+Specifies Perl library include paths, like C<perl>'s -I option. You may add
+multiple paths by using this option multiple times.
 
 =item -M
 
-Specify modules to load before loading the app code.
+Loads the named modules before loading the app's code. You may load multiple
+modules by using this option multiple times.
 
-=item -E, --env
+=item -E, --env, the C<PLACK_ENV> environment variable.
 
-Specify the environment option (default is C<development>). You can
-set this value by setting C<PLACK_ENV> environment variable as well,
-and specifying the value with the command line options writes back to
-C<PLACK_ENV> as well, so applications or frameworks can tell which
-environment setting the application is running on.
+Specifies the environment option. Setting this value with C<-E> or C<--env>
+also writes to the C<PLACK_ENV> environment variable. This allows applications
+or frameworks to tell which environment setting the application is running on.
 
   # These two are the same
   plackup -E deployment
   env PLACK_ENV=deployment plackup
 
-The value can be anything but commonly used ones are C<development>,
-C<deployment> and C<test>.
-
-If it's set to C<development>, following middleware components are
-enabled by default: I<AccessLog>, I<StackTrace> and I<Lint>.
+Common values are C<development>, C<deployment>, and C<test>. The default value
+is C<deployment>, which causes C<plackup> to load the middleware components:
+I<AccessLog>, I<StackTrace> and I<Lint>.
 
 =item -r, --reload
 
-Make plackup to watch updates from your development directory and
-restarts the server whenever a file is updated. This option by default
-watches the C<lib> directory and the base directory where I<.psgi>
-file is located. Use C<-R> if you want to watch other directories.
+Makes plackup restart the server whenever a file in your development directory
+changes. This option by default watches the C<lib> directory and the base
+directory where I<.psgi> file is located. Use C<-R> to watch other
+directories.
 
-Because C<-r> option (or C<-R>, see below) will delay the compilation
-of your application, automatic server detection (See the explanation
-of C<-s> above) depending on the modules used in your application will
-fail. You're recommended to explicitly specify C<-s> in such cases.
+Reloading will delay the compilation of your application. Automatic server
+detection (see C<-s> above) may not behave as you expect, if plackup needs to
+scan your application for the modules it uses. Avoid problems by specifying
+C<-s> explicitly when using C<-r> or C<-R>.
 
 =item -R, --Reload
 
-C<-R> option allows you to specify the path to watch file updates
-separated by comma (C<,>).
+Makes plackup restart the server whenever a file in any of the given
+directories changes. C<-R> and C<--Reload> take a comma-separated list of
+paths:
 
   plackup -R /path/to/project/lib,/path/to/project/templates
 
 =item -L, --loader
 
-Specify the server loading subclass that implements how to run the
-server. Available options are I<Plack::Loader> (default), I<Restarter>
-(automatically set when C<-r> or C<-R> is used), I<Delayed> and
-I<Shotgun>.
+Specifies the server loading subclass that implements how to run the server.
+Available options are I<Plack::Loader> (default), I<Restarter> (automatically
+set when C<-r> or C<-R> is used), I<Delayed> and I<Shotgun>.
 
-See L<Plack::Loader::Delayed> and L<Plack::Loader::Shotgun> when to
-use those loader types.
+See L<Plack::Loader::Delayed> and L<Plack::Loader::Shotgun> for more details.
 
 =item --access-log
 
-Specify the pathname of a file where the access log should be written.
-By default, in the development environment access logs will go to STDERR.
+Specifies the pathname of a file where the access log should be written.  By
+default, in the development environment access logs will go to STDERR.
 
 =back
 
-Other options that starts with C<--> are passed through to the backend
-server. See each Plack::Handler backend documentations to see which
-options are available.
+Other options that starts with C<--> are passed through to the backend server.
+See each Plack::Handler backend's documentation for more details on their
+available options.
 
 =head1 SEE ALSO
 
