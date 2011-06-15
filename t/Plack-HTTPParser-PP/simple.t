@@ -1,4 +1,5 @@
-use Test::More tests => 12;
+use strict;
+use Test::More;
 
 use Plack::HTTPParser::PP;
 *parse_http_request = \&Plack::HTTPParser::PP::parse_http_request;
@@ -110,3 +111,13 @@ is_deeply(\%env, {
     SCRIPT_NAME     => '',
     SERVER_PROTOCOL => 'HTTP/1.0',
 });
+
+my $w;
+{
+    local $SIG{__WARN__} = sub { $w = shift };
+    $req = "GET /foo HTTP/1.0\r\n\r\n";
+    parse_http_request($req, \%env);
+}
+ok !$w;
+
+done_testing;
