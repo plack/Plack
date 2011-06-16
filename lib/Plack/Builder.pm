@@ -15,10 +15,7 @@ sub new {
 sub add_middleware {
     my($self, $mw, @args) = @_;
 
-    if (ref $mw ne 'CODE') {
-        my $mw_class = Plack::Util::load_class($mw, 'Plack::Middleware');
-        $mw = sub { $mw_class->wrap($_[0], @args) };
-    }
+    $mw = $self->_load_middleware($mw, @args);
 
     push @{$self->{middlewares}}, $mw;
 }
@@ -26,10 +23,7 @@ sub add_middleware {
 sub add_middleware_if {
     my($self, $cond, $mw, @args) = @_;
 
-    if (ref $mw ne 'CODE') {
-        my $mw_class = Plack::Util::load_class($mw, 'Plack::Middleware');
-        $mw = sub { $mw_class->wrap($_[0], @args) };
-    }
+    $mw = $self->_load_middleware($mw, @args);
 
     push @{$self->{middlewares}}, sub {
         Plack::Middleware::Conditional->wrap($_[0], condition => $cond, builder => $mw);
@@ -37,6 +31,23 @@ sub add_middleware_if {
 }
 
 # do you want remove_middleware() etc.?
+
+sub _load_middleware {
+    my($self, $mw, @args) = @_;
+
+    if (Scalar::Util::blessed $mw && $mw->isa('Plack::Middleware')) {
+        my $app = $mw;
+        $mw = sub {
+            $app->app($_[0]); $app->to_app; 
+        };
+    } 
+    if (ref $mw ne 'CODE') {
+        my $mw_class = Plack::Util::load_class($mw, 'Plack::Middleware');
+        $mw = sub { $mw_class->wrap($_[0], @args) };
+    }
+
+    $mw;
+}
 
 sub _mount {
     my ($self, $location, $app) = @_;
@@ -174,6 +185,17 @@ is syntactically equal to:
   $app = Plack::Middleware::Foo->wrap($app);
 
 In other words, you're supposed to C<enable> middleware from outer to inner.
+
+You can also enable instances of Plack::Middleware subclasses:
+
+  my $foo = Plack::Middleware::Foo->new;
+  my $bar = Plack::Middleware::Bar->new( opt => "val" );
+
+  builder {
+      enable $foo;
+      enable $bar;
+      $app;
+  };
 
 =head1 INLINE MIDDLEWARE
 
