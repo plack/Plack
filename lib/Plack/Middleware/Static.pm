@@ -4,7 +4,7 @@ use warnings;
 use parent qw/Plack::Middleware/;
 use Plack::App::File;
 
-use Plack::Util::Accessor qw( path root encoding pass_through );
+use Plack::Util::Accessor qw( path root encoding pass_through default );
 
 sub call {
     my $self = shift;
@@ -29,7 +29,7 @@ sub _handle_static {
         return unless $matched;
     }
 
-    $self->{file} ||= Plack::App::File->new({ root => $self->root || '.', encoding => $self->encoding });
+    $self->{file} ||= Plack::App::File->new({ root => $self->root || '.', encoding => $self->encoding, default => $self->default });
     local $env->{PATH_INFO} = $path; # rewrite PATH
     return $self->{file}->call($env);
 }
@@ -106,6 +106,12 @@ By turning on this option, this middleware will pass the request
 back to the application for further processing, if the incoming
 request path matches with the C<path> but the requested file is not
 found on the file system.
+
+=item default
+
+Specifies the default fallback file name to use when the request asks for a
+directory. That is, set C<default> to something like C<index.html> so that a
+request for C</path/to/directory/> will serve C</path/to/directory/index.html>.
 
 =back
 

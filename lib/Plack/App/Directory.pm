@@ -40,7 +40,7 @@ PAGE
 
 sub should_handle {
     my($self, $file) = @_;
-    return -d $file || -f $file;
+    return $file if -d $file || -f $file;
 }
 
 sub return_dir_redirect {
