@@ -16,7 +16,7 @@ my %test = (
         # URI-escape
         my $res = $cb->(GET "http://localhost/");
         my($ct, $charset) = $res->content_type;
-        ok $res->content =~ m{/%23foo};
+        like $res->content, qr{/%23foo};
 
         $res = $cb->(GET "/..");
         is $res->code, 403;

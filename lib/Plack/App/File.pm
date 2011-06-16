@@ -8,11 +8,17 @@ use Plack::Util;
 use Plack::MIME;
 use HTTP::Date;
 
-use Plack::Util::Accessor qw( root file content_type encoding );
+use Plack::Util::Accessor qw( root file content_type encoding default );
 
 sub should_handle {
     my($self, $file) = @_;
-    return -f $file;
+
+    return $file if -f $file;
+    return unless $self->default;
+    return;
+
+    my $default = File::Spec::Unix->catfile($file, $self->default);
+    return $default if -f $default;
 }
 
 sub call {
@@ -60,8 +66,7 @@ sub locate_file {
     my($file, @path_info);
     while (@path) {
         my $try = File::Spec::Unix->catfile($docroot, @path);
-        if ($self->should_handle($try)) {
-            $file = $try;
+        if ($file = $self->should_handle($try)) {
             last;
         } elsif (!$self->allow_path_info) {
             last;
@@ -176,6 +181,12 @@ Set the file encoding for text files. Defaults to C<utf-8>.
 
 Set the file content type. If not set L<Plack::MIME> will try to detect it
 based on the file extension or fall back to C<text/plain>.
+
+=item default
+
+Specifies the default fallback file name to use when the request asks for a
+directory. That is, set C<default> to something like C<index.html> so that a
+request for C</path/to/directory/> will serve C</path/to/directory/index.html>.
 
 =back
 
