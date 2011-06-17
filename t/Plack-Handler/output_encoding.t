@@ -10,6 +10,7 @@ done_testing;
 
 sub read_file {
     open my $fh, "<", shift;
+    binmode $fh;
     return join '', <$fh>;
 }
 
@@ -29,7 +30,7 @@ sub test_handler {
     my ( $handler, $mangler, $mangle_file ) = @_;
 
     system( "$^X $mangler Plack::Handler::$handler > $mangle_file" );
-    like read_file( $mangle_file, binmode => ':raw' ), qr/test\ntest/, '\n is not converted';
+    like read_file( $mangle_file ), qr/test\ntest/, '\n is not converted';
     unlink $mangle_file;
 
     return;
