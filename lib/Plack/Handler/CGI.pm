@@ -85,6 +85,9 @@ sub setup_env {
 
     $override_env ||= {};
 
+    binmode STDIN;
+    binmode STDERR;
+
     my $env = {
         %ENV,
         'psgi.version'    => [ 1, 1 ],
