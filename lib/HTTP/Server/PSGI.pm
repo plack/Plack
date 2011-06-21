@@ -205,7 +205,7 @@ sub _handle_response {
 
     Plack::Util::header_iter($res->[1], sub {
         my ($k, $v) = @_;
-        push @lines, "$k: $v\015\012";
+        push @lines, "$k: $v\015\012" if $v;
     });
 
     unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012";
