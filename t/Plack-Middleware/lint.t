@@ -22,6 +22,7 @@ my @bad = map { Plack::Middleware::Lint->wrap($_) } (
     sub { return [ 200, [ "Foo" ], [ "Hello" ] ] },
     sub { return sub { shift->([ 200, [], {} ]) } },
     sub { return sub { shift->([ 200, [], undef ]) } },
+    sub { return [ 200, [ "X-Foo", undef ], [ "Hi" ] ] },
 );
 
 my @good = map { Plack::Middleware::Lint->wrap($_) } (

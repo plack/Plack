@@ -132,6 +132,9 @@ sub validate_res {
         if ($val =~ /[\000-\037]/) {
             die("Response headers MUST NOT contain characters below octal \037: $val");
         }
+        if (!defined $val) {
+            die("Response headers MUST be a defined string");
+        }
     }
 
     # @$res == 2 is only right in psgi.streaming, and it's already checked.
