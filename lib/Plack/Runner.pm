@@ -196,7 +196,7 @@ sub prepare_devel {
     $app = $self->apply_middleware($app, 'Lint');
     $app = $self->apply_middleware($app, 'StackTrace');
     if (!$ENV{GATEWAY_INTERFACE} and !$self->{access_log}) {
-        $app = $self->apply_middleware($app, 'AccessLog', logger => sub { print STDERR @_ });
+        $app = $self->apply_middleware($app, 'AccessLog');
     }
 
     push @{$self->{options}}, server_ready => sub {
