@@ -100,6 +100,7 @@ sub run {
             'psgi.run_once'     => Plack::Util::FALSE,
             'psgi.streaming'    => Plack::Util::TRUE,
             'psgi.nonblocking'  => Plack::Util::FALSE,
+            'psgix.harakiri'    => defined $proc_manager,
         };
 
         delete $env->{HTTP_CONTENT_TYPE};
@@ -146,6 +147,10 @@ sub run {
         $request->Finish;
 
         $proc_manager && $proc_manager->pm_post_dispatch();
+
+        if ($proc_manager && $env->{'psgix.harakiri.commit'}) {
+            $proc_manager->pm_exit("safe exit with harakiri");
+        }
     }
 }
 
