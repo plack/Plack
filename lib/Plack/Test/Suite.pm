@@ -675,25 +675,6 @@ our @TEST = (
         },
     ],
     [
-        'Content-Length => 0 is not set Transfer-Encoding # regression test',
-        sub {
-            my $cb = shift;
-            my $res = $cb->(GET "http://127.0.0.1/");
-            is $res->code, 200;
-            is $res->message, 'OK';
-            is $res->header('Client-Transfer-Encoding'), undef;
-            is $res->content, '';
-        },
-        sub {
-            my $env = shift;
-            return [
-                200,
-                [ 'Content-Length' => '0' ],
-                ['' ],
-            ];
-        },
-    ],
-    [
         'handle Authorization header',
         sub {
             my $cb  = shift;
