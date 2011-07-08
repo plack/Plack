@@ -283,6 +283,7 @@ sub write_timeout {
 # writes all data in buf and returns number of bytes written or undef if failed
 sub write_all {
     my ($self, $sock, $buf, $timeout) = @_;
+    return 0 unless defined $buf;
     my $off = 0;
     while (my $len = length($buf) - $off) {
         my $ret = $self->write_timeout($sock, $buf, $len, $off, $timeout)
