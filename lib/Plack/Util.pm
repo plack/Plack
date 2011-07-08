@@ -307,7 +307,11 @@ sub response_cb {
                     if ($writer) {
                         return Plack::Util::inline_object
                             write => sub { $writer->write($filter_cb->(@_)) },
-                            close => sub { $writer->write($filter_cb->(undef)); $writer->close };
+                            close => sub {
+                                my $chunk = $filter_cb->(undef);
+                                $writer->write($chunk) if defined $chunk;
+                                $writer->close;
+                            };
                     }
                 } else {
                     return $respond->($res);
