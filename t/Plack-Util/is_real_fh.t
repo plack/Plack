@@ -3,8 +3,18 @@ use Test::More;
 use Plack::Util;
 
 {
-    open my $fh, "<", "/dev/null";
+    open my $fh, __FILE__;
     ok Plack::Util::is_real_fh($fh);
+}
+
+{
+    my $fh = IO::File->new(__FILE__);
+    ok Plack::Util::is_real_fh($fh);
+}
+
+{
+    open my $fh, "<", "/dev/null";
+    ok ! Plack::Util::is_real_fh($fh);
 }
 
 {
@@ -15,7 +25,7 @@ use Plack::Util;
 {
     use IO::File;
     my $fh = IO::File->new("/dev/null");
-    ok Plack::Util::is_real_fh($fh);
+    ok ! Plack::Util::is_real_fh($fh);
 }
 
 done_testing;

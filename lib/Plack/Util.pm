@@ -27,6 +27,8 @@ sub load_class {
 sub is_real_fh ($) {
     my $fh = shift;
 
+    return FALSE if -p $fh or -c _ or -b _;
+
     my $reftype = Scalar::Util::reftype($fh) or return;
     if (   $reftype eq 'IO'
         or $reftype eq 'GLOB' && *{$fh}{IO}
@@ -71,6 +73,8 @@ sub content_length {
         }
         return $cl;
     } elsif ( is_real_fh($body) ) {
+        warn is_real_fh($body);
+        warn -s $body;
         return (-s $body) - tell($body);
     }
 
