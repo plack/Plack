@@ -362,7 +362,7 @@ certainly possible but not recommended: it's like doing so with
 mod_perl's Apache::Request: yet too low level.
 
 If you're writing a web application, not a framework, then you're
-encouraged to use one of the web application frameworks that support
+encouraged to use one of the L<web application frameworks|http://plackperl.org/#frameworks> that support
 PSGI, or see modules like L<HTTP::Engine> to provide higher level
 Request and Response API on top of PSGI.
 
