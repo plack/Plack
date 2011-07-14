@@ -78,6 +78,10 @@ option:
 
   plackup -e 'sub { my $env = shift; return [ ... ] }'
 
+It is also handy when you want to run a custom application like Plack::App::*.
+
+  plackup -MPlack::App::File -e 'Plack::App::File->new(...)->to_app'
+
 You can also specify C<-e> option with C<.psgi> file path to wrap the
 application with middleware configuration from the command line. You
 can also use L<Plack::Builder> DSL syntax inside C<-e> code. For example:
@@ -95,12 +99,14 @@ is equivalent to the PSGI application:
   };
 
 Note that when you use C<-e> option to enable middleware, plackup
-doesn't assume the implicit C<app.psgi> path. You must pass the path to your
-C<.psgi> file in the command line arguments.
+doesn't assume the implicit C<app.psgi> path. You must either pass the
+path to your C<.psgi> file in the command line arguments, or load the
+application inside C<-e> after the C<enable>.
 
-  plackup                             # Runs app.psgi
-  plackup -e 'enable "Foo"'           # Doesn't work!
-  plackup -e 'enable "Foo"' app.psgi  # Works
+  plackup                                # Runs app.psgi
+  plackup -e 'enable "Foo"'              # Doesn't work!
+  plackup -e 'enable "Foo"' app.psgi     # Works
+  plackup -e 'enable "Foo"; sub { ... }' # Works
 
 =item -o, --host
 
