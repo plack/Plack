@@ -58,7 +58,7 @@ sub run {
     require Filesys::Notify::Simple;
     my $watcher = Filesys::Notify::Simple->new($self->{watch});
     warn "Watching @{$self->{watch}} for file updates.\n";
-    local $SIG{TERM} = sub { $self->_kill_child };
+    local $SIG{TERM} = sub { $self->_kill_child; exit(0); };
 
     while (1) {
         my @restart;
