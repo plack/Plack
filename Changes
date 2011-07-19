@@ -2,6 +2,29 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9981  Mon Jul 18 17:24:11 PDT 2011
+    [BUG FIXES]
+        - Plack::Request: Added a sanity check to remove newlines from headers to follow
+          the PSGI specification #224
+        - HTTPParser::PP: Fixed warnings #225
+        - plackup now prints errors to psgi.errors rather than STDERR
+        - Fixes issues with undef returned from streaming handler in middleware #231
+        - ContentLength: Do not auto-add Content-Length from block devices, pipes and
+          character files
+
+    [NEW FEATURES]
+        - HTTPExceptions: Support ->as_psgi method on exceptions (doy)
+        - FastCGI: Support psgix.harakiri
+
+    [IMPROVEMENTS]
+        - Lint: Added more checks to validate header values
+        - StackTrace: Strip caller information since it is not useful anyway
+        - HTTPExceptions: Added rethrow option (doy)
+        - Misc. doc fixes on plackup (chromatic)
+        - binmode STDIN for CGI handler for Win32 #218
+        - Remove the test that tests Server specific handling of Transfer-Encoding
+        - Fixed POD link (audreyt)
+
 0.9980  Mon Jun  6 20:24:25 PDT 2011
     [BUG FIXES]
         - Fixed a bug where restarting loader doesn't terminate children (#209)

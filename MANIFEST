@@ -251,6 +251,7 @@ t/Plack-Request/upload.t
 t/Plack-Request/uri.t
 t/Plack-Request/uri_utf8.t
 t/Plack-Response/body.t
+t/Plack-Response/compatible.t
 t/Plack-Response/cookie.t
 t/Plack-Response/new.t
 t/Plack-Response/redirect.t
@@ -276,6 +277,7 @@ t/Plack-Util/inline_object.t
 t/Plack-Util/io_with_path.t
 t/Plack-Util/is_real_fh.t
 t/Plack-Util/load.t
+t/Plack-Util/response_cb.t
 xt/perlcriticrc
 xt/pod.t
 xt/podspell.t
