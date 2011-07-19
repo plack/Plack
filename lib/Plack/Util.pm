@@ -73,8 +73,6 @@ sub content_length {
         }
         return $cl;
     } elsif ( is_real_fh($body) ) {
-        warn is_real_fh($body);
-        warn -s $body;
         return (-s $body) - tell($body);
     }
 
