@@ -5,16 +5,17 @@ use LWP::UserAgent;
 use HTTP::Request::Common;
 use Plack::Loader::Restarter;
 
+plan skip_all => 'Dev test' unless -e 'inc/.author' or $ENV{TEST_RESTARTER};
+
 my @return_bodies = ('Hi first', 'Hi second', 'Hi third');
-my @restartertestfiles = ('restartertestfile1', 'restartertestfile2');
+my @restartertestfiles = ('t/restartertestfile1.pl', 't/restartertestfile2.pl');
 unlink $_ for @restartertestfiles;
 
 my $builder = sub {
     my $idx = 0;
-    for ( @restartertestfiles ) {
-        $idx++ if -f;
+    for my $file (@restartertestfiles) {
+        $idx++ if -e $file;
     }
-    warn "idx: $idx";
 
     my $return_body = $return_bodies[$idx];
     my $app = sub {
@@ -35,14 +36,14 @@ test_tcp(
 
         is $cb->()->content, $return_bodies[0];
 
-        open my $wfh, '>', $restartertestfiles[0];
-        sleep 1;
+        touch($restartertestfiles[0]);
+        sleep 2;
         wait_port($port);
 
         is $cb->()->content, $return_bodies[1];
 
-        open my $wfh2, '>', $restartertestfiles[1];
-        sleep 1;
+        touch($restartertestfiles[1]);
+        sleep 2;
         wait_port($port);
 
         is $cb->()->content, $return_bodies[2];
@@ -53,14 +54,18 @@ test_tcp(
         my $loader = Plack::Loader::Restarter->new;
         my $server = $loader->auto(port => $port);
         $loader->preload_app($builder);
-        $loader->watch('.');
+        $loader->watch('t');
         $loader->run($server);
     },
 );
 
+sub touch {
+    my $file = shift;
+    open my $fh, ">", $file or die $!;
+    print $fh time;
+    close $fh;
+}
 
 unlink $_ for @restartertestfiles;
 
 done_testing;
-
-
