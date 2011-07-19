@@ -5,7 +5,6 @@ my $app = sub {
     warn "This app needs a server that supports psgi.streaming"
         unless $env->{'psgi.streaming'};
 
-    my $cv = AE::cv;
     return sub {
         my $respond = shift;
         my $w = $respond->([ 200, ['X-Foo' => 'bar', 'Content-Type' => 'text/plain'] ]);
