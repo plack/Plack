@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9982  Tue Jul 19 13:07:35 PDT 2011
+    [BUG FIXES]
+        - Fixed the bug in restarter introduced in 0.9980 (nihen) #223 #234
+        - Removed a debug statement left over in Plack::Util
+        - Fixed warnings in Lint
+
 0.9981  Mon Jul 18 17:24:11 PDT 2011
     [BUG FIXES]
         - Plack::Request: Added a sanity check to remove newlines from headers to follow

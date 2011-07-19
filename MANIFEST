@@ -157,6 +157,7 @@ t/Plack-HTTPParser-PP/simple.t
 t/Plack-Loader/auto.t
 t/Plack-Loader/auto_fallback.t
 t/Plack-Loader/delayed.t
+t/Plack-Loader/restarter.t
 t/Plack-Loader/shotgun.t
 t/Plack-Middleware/access_log.t
 t/Plack-Middleware/access_log_timed.t
