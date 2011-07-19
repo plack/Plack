@@ -27,7 +27,10 @@ sub load_class {
 sub is_real_fh ($) {
     my $fh = shift;
 
-    return FALSE if -p $fh or -c _ or -b _;
+    {
+        no warnings 'uninitialized';
+        return FALSE if -p $fh or -c _ or -b _;
+    }
 
     my $reftype = Scalar::Util::reftype($fh) or return;
     if (   $reftype eq 'IO'
