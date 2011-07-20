@@ -110,7 +110,7 @@ sub setup_env {
         $env->{PATH_INFO} = '';
     }
 
-    if ($env->{SCRIPT_NAME} eq '/') {
+    if (!exists $env->{SCRIPT_NAME} || $env->{SCRIPT_NAME} eq '/') {
         $env->{SCRIPT_NAME} = '';
         $env->{PATH_INFO}   = '/' . $env->{PATH_INFO};
     }
