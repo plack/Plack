@@ -69,10 +69,10 @@ sub guess {
         return "FCGI";
     } elsif ($env->{GATEWAY_INTERFACE}) {
         return "CGI";
-    } elsif (exists $INC{"AnyEvent.pm"}) {
-        return "Twiggy";
     } elsif (exists $INC{"Coro.pm"}) {
         return "Corona";
+    } elsif (exists $INC{"AnyEvent.pm"}) {
+        return "Twiggy";
     } elsif (exists $INC{"POE.pm"}) {
         return "POE";
     } else {
