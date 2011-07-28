@@ -54,6 +54,8 @@ sub prepare_app {
                 my $fh = $env->{'psgi.input'};
                 <$fh>;
             });
+            # close STDIN so child will stop waiting
+            close $stdinw;
 
             my $res = '';
             while (waitpid($pid, WNOHANG) <= 0) {
