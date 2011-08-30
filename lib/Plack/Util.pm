@@ -71,9 +71,14 @@ sub content_length {
 
     if (ref $body eq 'ARRAY') {
         my $cl = 0;
-        for my $chunk (@$body) {
-            $cl += length $chunk;
-        }
+        {
+            # Content Length need to be in bytes, so count length of string
+            # in bytes
+            use bytes;
+            for my $chunk (@$body) {
+                $cl += length $chunk;
+            }
+         }
         return $cl;
     } elsif ( is_real_fh($body) ) {
         return (-s $body) - tell($body);
