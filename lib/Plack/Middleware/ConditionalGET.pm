@@ -25,6 +25,11 @@ sub call {
 
 no warnings 'uninitialized';
 
+# RFC 2616 14.25 says it's OK and expected to use 'eq' :)
+# > Note: When handling an If-Modified-Since header field, some
+# > servers will use an exact date comparison function, rather than a
+# > less-than function, for deciding whether to send a 304 ...
+
 sub etag_matches {
     my($self, $h, $env) = @_;
     $h->exists('ETag') && $h->get('ETag') eq _value($env->{HTTP_IF_NONE_MATCH});
