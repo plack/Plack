@@ -49,6 +49,7 @@ sub call_app {
         'psgi.run_once'       => Plack::Util::FALSE,
         'psgi.streaming'      => Plack::Util::TRUE,
         'psgi.nonblocking'    => Plack::Util::FALSE,
+        'psgix.harakiri'      => Plack::Util::TRUE,
     };
 
     if (defined(my $HTTP_AUTHORIZATION = $r->headers_in->{Authorization})) {
@@ -74,6 +75,10 @@ sub call_app {
     }
     else {
         die "Bad response $res";
+    }
+
+    if ($env->{'psgix.harakiri.commit'}) {
+        $r->child_terminate;
     }
 
     return Apache2::Const::OK;
