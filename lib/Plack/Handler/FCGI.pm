@@ -295,7 +295,7 @@ Unix domain socket and run it at the server's root URL (/).
         fastcgi_param  CONTENT_TYPE     $content_type;
         fastcgi_param  CONTENT_LENGTH   $content_length;
         fastcgi_param  REQUEST_URI      $request_uri;
-        fastcgi_param  SEREVR_PROTOCOL  $server_protocol;
+        fastcgi_param  SERVER_PROTOCOL  $server_protocol;
         fastcgi_param  REMOTE_ADDR      $remote_addr;
         fastcgi_param  REMOTE_PORT      $remote_port;
         fastcgi_param  SERVER_ADDR      $server_addr;
