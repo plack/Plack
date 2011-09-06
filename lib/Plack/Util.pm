@@ -328,6 +328,17 @@ sub response_cb {
     return $res;
 }
 
+sub guard (&) {
+    my $code = shift;
+    bless $code, 'Plack::Util::Guard';
+}
+
+sub run_after_request {
+    my ($env, $code) = @_;
+    my $queue = $env->{'plack.run_after_request'} ||= [];
+    push @$queue, guard { $code->() };
+}
+
 package Plack::Util::Prototype;
 
 our $AUTOLOAD;
@@ -358,6 +369,10 @@ sub path {
     }
     ${*$self}{+__PACKAGE__};
 }
+
+package Plack::Util::Guard;
+
+sub DESTROY { $_[0]->() }
 
 package Plack::Util;
 
@@ -528,6 +543,29 @@ object for input or errors.
 =item response_cb
 
 See L<Plack::Middleware/RESPONSE CALLBACK> for details.
+
+=item guard
+
+    my $x = 0;
+    my $g = Plack::Util::guard { $x++ };
+    # $x++ will execute when $g goes out of scope
+
+Creates a simple guard object that will run the block you give it when the
+object goes out of scope.
+
+=item run_after_request
+
+    Plack::Util::run_after_request($env, sub {
+        do_some_long_running_task(@args);
+    });
+
+Store a L</guard> into C<$env> so that your code will run after the request is
+over and C<$env> goes out of scope.  You may safely call this multiple times per
+request.
+
+Be careful not to refer to C<$env> in your coderef, since this will cause a
+circular reference and result in your coderef never being called (since C<$env>
+will never go out of scope).
 
 =back
 
