@@ -86,7 +86,8 @@ sub finalize {
     my $self = shift;
     Carp::croak "missing status" unless $self->status();
 
-    $self->_finalize_cookies();
+    my $headers = $self->headers->clone;
+    $self->_finalize_cookies($headers);
 
     return [
         $self->status,
@@ -99,9 +100,9 @@ sub finalize {
                     $v =~ s/\015|\012//g; # remove CR and LF since the char is invalid here
 
                     ( $k => $v )
-                } $self->headers->header($_);
+                } $headers->header($_);
 
-            } $self->headers->header_field_names
+            } $headers->header_field_names
         ],
         $self->_body,
     ];
@@ -119,11 +120,11 @@ sub _body {
 }
 
 sub _finalize_cookies {
-    my $self = shift;
+    my($self, $headers) = @_;
 
     while (my($name, $val) = each %{$self->cookies}) {
         my $cookie = $self->_bake_cookie($name, $val);
-        $self->headers->push_header( 'Set-Cookie' => $cookie );
+        $headers->push_header('Set-Cookie' => $cookie);
     }
 }
 
