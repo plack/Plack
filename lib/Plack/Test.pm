@@ -126,9 +126,11 @@ application in a server locally.
 
 =back
 
-For instance, you can test your application with C<ServerSimple> server backends with:
+For instance, test your application with the C<HTTP::Server::ServerSimple>
+server backend with:
 
-  > env PLACK_TEST_IMPL=Server PLACK_SERVER=ServerSimple prove -l t/test.t
+  > env PLACK_TEST_IMPL=Server PLACK_SERVER=HTTP::Server::ServerSimple \
+    prove -l t/test.t
 
 =head1 AUTHOR
 
