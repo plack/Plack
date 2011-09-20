@@ -24,6 +24,9 @@ my %test = (
         $res = $cb->(GET "/..%00foo");
         is $res->code, 400;
 
+        $res = $cb->(GET "/");
+        like $res->content, qr/Index of \//;
+
     SKIP: {
             skip "Filenames can't end with . on windows", 2 if $^O eq "MSWin32";
 

@@ -42,6 +42,8 @@ sub shebang_for {
 sub serve_path {
     my($self, $env, $file) = @_;
 
+    local @{$env}{qw(SCRIPT_NAME PATH_INFO)} = @{$env}{qw( plack.file.SCRIPT_NAME plack.file.PATH_INFO )};
+
     my $app = $self->{_compiled}->{$file} ||= Plack::App::WrapCGI->new(
         script => $file, execute => $self->would_exec($file),
     );

@@ -9,8 +9,9 @@ sub allow_path_info { 1 }
 sub serve_path {
     my($self, $env, $file) = @_;
 
-    my $app = $self->{_compiled}->{$file} ||= Plack::Util::load_psgi($file);
+    local @{$env}{qw(SCRIPT_NAME PATH_INFO)} = @{$env}{qw( plack.file.SCRIPT_NAME plack.file.PATH_INFO )};
 
+    my $app = $self->{_compiled}->{$file} ||= Plack::Util::load_psgi($file);
     $app->($env);
 }
 
