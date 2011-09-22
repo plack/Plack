@@ -78,8 +78,8 @@ sub prepare_socket_class {
     } elsif ($self->{ipv6}) {
         eval { require IO::Socket::IP; 1 }
             or Carp::croak("IPv6 support requires IO::Socket::IP");
-        $self->{host}      ||= '::1';
-        $args->{LocalAddr} ||= '::1';
+        $self->{host}      ||= '::';
+        $args->{LocalAddr} ||= '::';
         return "IO::Socket::IP";
     }
 
