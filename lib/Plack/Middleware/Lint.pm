@@ -36,6 +36,9 @@ sub validate_env {
     unless (defined($env->{SCRIPT_NAME})) { # allows empty string
         die('Missing mandatory env param: SCRIPT_NAME');
     }
+    if ($env->{SCRIPT_NAME} eq '/') {
+        die('SCRIPT_NAME must not be /');
+    }
     unless (defined($env->{PATH_INFO})) { # allows empty string
         die('Missing mandatory env param: PATH_INFO');
     }

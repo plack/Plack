@@ -25,12 +25,21 @@ my @bad = map { Plack::Middleware::Lint->wrap($_) } (
     sub { return [ 200, [ "X-Foo", undef ], [ "Hi" ] ] },
 );
 
+push @bad, Plack::Middleware::BadScriptName->wrap(
+    Plack::Middleware::Lint->wrap( \&hello_world_app
+));
+
 my @good = map { Plack::Middleware::Lint->wrap($_) } (
     sub {
         open my $io, "<", \"foo";
         return [ 200, [ "Content-Type", "text/plain" ], $io ];
     },
 );
+
+sub hello_world_app
+{
+    return [ 200, [ 'Content-Type' => 'text/plain' ], [ 'Hello, world!' ] ]
+}
 
 for my $app (@bad) {
     test_psgi $app, sub {
@@ -49,3 +58,16 @@ for my $app (@good) {
 }
 
 done_testing;
+
+# fool PAUSE
+package
+    Plack::Middleware::BadScriptName;
+
+use parent 'Plack::Middleware';
+
+sub call
+{
+    my ($self, $env)    = @_;
+    $env->{SCRIPT_NAME} = '/';
+    $self->app->($env);
+}
