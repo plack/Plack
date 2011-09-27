@@ -2,6 +2,23 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9983  Tue Sep 27 09:55:48 PDT 2011
+    [BUG FIXES]
+        - Fixed a typo in nginx FastCGI configuration
+        - Clone HTTP headers in Response->finalize #237 (chip)
+        - Fixed Directory app not displaying the right path in its title
+        - Changed IPv6 default listen address to wildcard (ollyg)
+        - Fixed the FastCGI handler with web-server mode on Win32
+
+    [NEW FEATURES]
+        - Added psgix.harakiri for Apache handlers
+
+    [IMPROVEMENTS]
+        - Prefer Corona when Coro is detected #236 (chip)
+        - Increased Pod::Usage dependency
+        - Improved Plack::Test documentation (chromatic)
+        - Lint now checks if SCRIPT_NAME eq '/' which is forbidden in the spec (chromatic)
+
 0.9982  Tue Jul 19 13:07:35 PDT 2011
     [BUG FIXES]
         - Fixed the bug in restarter introduced in 0.9980 (nihen) #223 #234
