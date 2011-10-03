@@ -317,10 +317,9 @@ sub _parse_request_body {
 
 sub _make_upload {
     my($self, $upload) = @_;
-    Plack::Request::Upload->new(
-        headers => HTTP::Headers->new( %{delete $upload->{headers}} ),
-        %$upload,
-    );
+    my %copy = %$upload;
+    $copy{headers} = HTTP::Headers->new(%{$upload->{headers}});
+    Plack::Request::Upload->new(%copy);
 }
 
 1;
