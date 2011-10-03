@@ -60,5 +60,46 @@ print \$q->header, "Hello " x 10000;
     undef $tmp;
 }
 
+# test that wrapped cgi doesn't wait indefinitely for STDIN
+{
+    my $tmp = File::Temp->new(CLEANUP => 1);
+    print $tmp <<"...";
+#!$^X
+print "Content-type: text/plain\\n\\nYou said: ";
+local \$/;
+print <STDIN>;
+...
+    close $tmp;
+
+    chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
+
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    test_psgi app => $app_exec, client => sub {
+        my $cb = shift;
+
+        eval {
+            # without the fix $res->content seems to be "alarm\n" which still fails
+            local $SIG{ALRM} = sub { die "alarm\n" }; # NB: \n required
+            alarm(10);
+            my $res = $cb->(GET "http://localhost/?name=foo");
+            alarm(0);
+            is $res->code, 200;
+            is $res->content, "You said: ";
+
+            alarm(10);
+            $res = $cb->(POST "http://localhost/", Content => "doing things\nthe hard way");
+            alarm(0);
+            is $res->code, 200;
+            is $res->content, "You said: doing things\nthe hard way";
+        };
+        if ( $@ ) {
+            die unless $@ eq "alarm\n";   # propagate unexpected errors
+            ok 0, "request timed out waiting for STDIN";
+        }
+    };
+
+    undef $tmp;
+};
+
 done_testing;
 
