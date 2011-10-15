@@ -37,6 +37,7 @@ sub call {
                     close => sub {
                         if ($ret) {
                             $ret->([ @$write, \@body ]);
+                            undef $ret;
                         }
                         else {
                             $ret = [ @$write, \@body ];
