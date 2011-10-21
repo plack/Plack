@@ -22,7 +22,7 @@ sub auto {
     my $server = try {
         $class->load($backend, @args);
     } catch {
-        if (($ENV{PLACK_ENV}||'') eq 'development' or !/Can't locate/) {
+        if (($ENV{PLACK_ENV}||'') eq 'development' or !/^Can't locate /) {
             warn "Autoloading '$backend' backend failed. Falling back to the Standalone. ",
                 "(You might need to install Plack::Handler::$backend from CPAN.  Caught error was: $_)\n"
                     if $ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'development';
@@ -44,6 +44,7 @@ sub load {
             $error ||= $_;
         };
         last if $server_class;
+        last if $error && $error !~ /^Can't locate Plack::Handler::/;
     }
 
     if ($server_class) {
