@@ -434,7 +434,7 @@ Iterate through I<$body> which is an array reference or
 IO::Handle-like object and pass each line (which is NOT really
 guaranteed to be a I<line>) to the callback function.
 
-It internally sets the buffer length C<$/> to 4096 in case it reads
+It internally sets the buffer length C<$/> to 65536 in case it reads
 the binary file, unless otherwise set in the caller's code.
 
 =item load_psgi
