@@ -44,7 +44,7 @@ sub load {
             $error ||= $_;
         };
         last if $server_class;
-        last if $error && $error !~ /^Can't locate Plack::Handler::/;
+        last if $error && $error !~ /^Can't locate Plack\/Handler\//;
     }
 
     if ($server_class) {
