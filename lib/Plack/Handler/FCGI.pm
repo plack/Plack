@@ -61,7 +61,7 @@ sub run {
 
         if ($self->{manager}) {
             if (blessed $self->{manager}) {
-                for (qw(nproc pid)) {
+                for (qw(nproc pid proc_title)) {
                     die "Don't use '$_' when passing in a 'manager' object"
                         if $self->{$_};
                 }
@@ -268,6 +268,10 @@ Specify a FCGI::ProcManager sub-class
 =item daemonize
 
 Daemonize the process.
+
+=item proc-title
+
+Specify process title
 
 =item keep-stderr
 
