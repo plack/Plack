@@ -161,7 +161,7 @@ Apache's LogFormat templates.
 
   my $logger = Log::Dispatch->new(...);
   enable "Plack::Middleware::AccessLog",
-      logger => sub { $logger->log(debug => @_) };
+      logger => sub { $logger->log(level => 'debug', message => @_) };
 
 Sets a callback to print log message to. It prints to C<psgi.errors>
 output stream by default.
