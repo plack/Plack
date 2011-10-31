@@ -2,6 +2,11 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9985  Mon Oct 31 13:11:19 PDT 2011
+    [BUG FIXES]
+        - Short circuit Plack::Handler fallback to avoid %INC bugs in perl 5.8 (mst)
+        - Fixed Makefile.PL to avoid Test::SharedFork interferring with Module::Install (ambs)
+
 0.9984  Mon Oct  3 09:55:05 PDT 2011
     [BUG FIXES]
         - WrapCGI: Close wrapped CGI's STDIN handle (rwstauner)
