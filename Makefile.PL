@@ -35,7 +35,6 @@ author_tests 'xt';
 install_share 'share';
 install_script 'scripts/plackup';
 
-auto_install;
 auto_set_repository;
 
 resources
