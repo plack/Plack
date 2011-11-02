@@ -86,7 +86,7 @@ so, uses L<CGI::Compile> to compile a CGI script into a sub (like
 L<ModPerl::Registry>) and then run it as a persistent application
 using L<CGI::Emulate::PSGI>.
 
-If the give file is not a perl script, it executes the script just
+If the given file is not a perl script, it executes the script just
 like a normal CGI script with fork & exec. This is like a normal web
 server mode and no performance benefit is achieved.
 
@@ -97,11 +97,13 @@ as follows:
 
 =item *
 
-Check if the filename ends with C<.pl>
+Check if the filename ends with C<.pl>. If yes, it is a Perl script.
 
 =item *
 
-Open the file and see if the shebang (first line of the file) contains the word C<perl>
+Open the file and see if the shebang (first line of the file) contains
+the word C<perl> (like C<#!/usr/bin/perl>). If yes, it is a Perl
+script.
 
 =back
 
