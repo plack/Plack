@@ -23,12 +23,12 @@ sub call {
     return sub {
         my $respond = shift;
 
-        my $res = [ 404, [ 'Content-Type' => 'text/html' ], [ '404 Not Found' ] ];
-
         my $done;
         my $respond_wrapper = sub {
             my $res = shift;
             if ($self->codes->{$res->[0]}) {
+                # suppress output by giving the app an
+                # output spool which drops everything on the floor
                 return Plack::Util::inline_object
                     write => sub { }, close => sub { };
             } else {
@@ -37,8 +37,19 @@ sub call {
             }
         };
 
-        for my $app (@{$self->apps || []}) {
+        my @try = @{$self->apps || []};
+        my $tries_left = 0 + @try;
+
+        if (not $tries_left) {
+            return $respond->([ 404, [ 'Content-Type' => 'text/html' ], [ '404 Not Found' ] ])
+        }
+
+        for my $app (@try) {
             my $res = $app->($env);
+            if ($tries_left-- == 1) {
+                $respond_wrapper = sub { $respond->(shift) };
+            }
+
             if (ref $res eq 'CODE') {
                 $res->($respond_wrapper);
             } else {
@@ -46,8 +57,6 @@ sub call {
             }
             return if $done;
         }
-
-        $respond->($res);
     };
 }
 

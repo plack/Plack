@@ -15,7 +15,7 @@ $cascade->add( sub { my $env = shift;
                              $w->write("Hello");
                              $w->close;
                          } else {
-                             $r->([ 404, [ 'Content-Type', 'text/plain' ], [ "Not Found" ] ]);
+                             $r->([ 404, [ 'Content-Type', 'text/plain' ], [ 'Custom 404 Page' ] ]);
                          }
                      } });
 
@@ -30,6 +30,7 @@ test_psgi $cascade, sub {
 
     $res = $cb->(GET "http://localhost/xyz");
     is $res->code, 404;
+    is $res->content, 'Custom 404 Page';
 };
 
 done_testing;
