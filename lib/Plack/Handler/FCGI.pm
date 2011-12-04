@@ -332,7 +332,7 @@ To host the app in the root path, you're recommended to use lighttpd
   fastcgi.server = ( "/" =>
      ((
        "socket" => "/tmp/fcgi.sock",
-       "check-local" => "disable"
+       "check-local" => "disable",
        "fix-root-scriptname" => "enable",
      ))
 
@@ -347,9 +347,9 @@ To mount in the non-root path over TCP:
 
   fastcgi.server = ( "/foo" =>
      ((
-       "host" = "127.0.0.1"
-       "port" = "5000"
-       "check-local" => "disable"
+       "host" = "127.0.0.1",
+       "port" = "5000",
+       "check-local" => "disable",
      ))
 
 It's recommended that your mount path does B<NOT> have the trailing
