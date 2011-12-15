@@ -284,7 +284,15 @@ sub _parse_request_body {
 
     my $spin = 0;
     while ($cl) {
-        $input->read(my $chunk, $cl < 8192 ? $cl : 8192);
+        my $chunk;
+        eval {
+          $input->read($chunk, $cl < 8192 ? $cl : 8192);
+        };
+        if( $@ )
+        {
+          $chunk = $input->getline();
+        }# end if()
+        
         my $read = length $chunk;
         $cl -= $read;
         $body->add($chunk);
