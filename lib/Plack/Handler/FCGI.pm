@@ -281,6 +281,10 @@ Send STDERR to STDOUT instead of the webserver
 
 =head2 WEB SERVER CONFIGURATIONS
 
+In all cases, you will want to install L<FCGI> and L<FGCI::ProcManager>.
+You may find it most convenient to simply install L<Task::Plack> which
+includes both of these.
+
 =head3 nginx
 
 This is an example nginx configuration to run your FCGI daemon on a
@@ -318,11 +322,29 @@ See L<http://wiki.nginx.org/NginxFcgiExample> for more details.
 
 =head3 Apache mod_fastcgi
 
-You can use C<FastCgiExternalServer> as normal.
+After installing C<mod_fastcgi>, you should add the C<FastCgiExternalServer>
+directive to your Apache config:
 
   FastCgiExternalServer /tmp/myapp.fcgi -socket /tmp/fcgi.sock
 
-See L<http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html#FastCgiExternalServer> for more details.
+  ## Then set up the location that you want to be handled by fastcgi:
+
+  # EITHER from a given path
+  Alias /myapp/ /tmp/myapp.fcgi/
+
+  # OR at the root
+  Alias / /tmp/myapp.fcgi/
+
+Now you can use plackup to listen to the socket that you've just configured in Apache.
+
+  $  plackup -s FCGI --listen /tmp/myapp.sock psgi/myapp.psgi
+
+The above describes the "standalone" method, which is usually appropriate.
+There are other methods, described in more detail at 
+L<Catalyst::Engine::FastCGI/Standalone_server_mode> (with regards to Catalyst, but which may be set up similarly for Plack).
+
+See also L<http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html#FastCgiExternalServer>
+for more details.
 
 =head3 lighttpd
 
