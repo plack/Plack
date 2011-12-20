@@ -69,16 +69,22 @@ sub serve_path {
         return $self->return_dir_redirect($env);
     }
 
+    my $files = $self->parse_files($dir_url, $dir);
+
+    my $page = $self->to_html($env, $files);
+
+    return [ 200, ['Content-Type' => 'text/html; charset=utf-8'], [ $page ] ];
+}
+
+sub parse_files {
+    my $self = shift;
+    my ($dir_url, $dir) = @_;
+
     my @files = ([ "../", "Parent Directory", '', '', '' ]);
 
-    my $dh = DirHandle->new($dir);
-    my @children;
-    while (defined(my $ent = $dh->read)) {
-        next if $ent eq '.';
-        push @children, $ent;
-    }
+    my @children = $self->read_directory($dir);
 
-    for my $basename (sort { $a cmp $b } @children) {
+    for my $basename ($self->sort_files($dir, \@children)) {
         my $file = "$dir/$basename";
         my $url = $dir_url . $basename;
 
@@ -96,14 +102,41 @@ sub serve_path {
         push @files, [ $url, $basename, $stat[7], $mime_type, HTTP::Date::time2str($stat[9]) ];
     }
 
+    return \@files;
+}
+
+sub sort_files {
+    my $self = shift;
+    my ($dir, $files) = @_;
+
+    return sort { $a cmp $b } @$files;
+}
+
+sub read_directory {
+    my $self = shift;
+    my ($dir) = @_;
+
+    my $dh = DirHandle->new($dir);
+    my @children;
+    while (defined(my $ent = $dh->read)) {
+        next if $ent eq '.';
+        push @children, $ent;
+    }
+
+    return @children;
+}
+
+sub to_html {
+    my $self = shift;
+    my ($env, $files) = @_;
+
     my $path  = Plack::Util::encode_html("Index of $env->{PATH_INFO}");
-    my $files = join "\n", map {
+    $files = join "\n", map {
         my $f = $_;
         sprintf $dir_file, map Plack::Util::encode_html($_), @$f;
-    } @files;
-    my $page  = sprintf $dir_page, $path, $path, $files;
+    } @$files;
 
-    return [ 200, ['Content-Type' => 'text/html; charset=utf-8'], [ $page ] ];
+    return sprintf $dir_page, $path, $path, $files;
 }
 
 1;
