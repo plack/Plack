@@ -19,6 +19,16 @@ use base qw(HTTP::Error);
 sub code { 403 }
 sub as_string { "blah blah blah" }
 
+package MyMiddleware;
+use base 'Plack::Middleware';
+sub call {
+  my ( $self, $env ) = @_;
+  my $res = $self->app->($env);
+  $self->response_cb($res, sub {
+    return sub { die 'Unknown' if $env->{PATH_INFO} eq '/unknow_error'; return shift };
+  });
+}
+
 package main;
 
 my $app = sub {
@@ -46,8 +56,7 @@ my $app = sub {
 };
 
 use Plack::Middleware::HTTPExceptions;
-use Plack::Middleware::ErrorDocument;
-$app = 
+$app = MyMiddleware->wrap($app);
 $app = Plack::Middleware::HTTPExceptions->wrap($app);
 
 test_psgi $app, sub {
