@@ -33,17 +33,30 @@ my $app = sub {
             $w->close;
         };
     }
+    elsif ( $env->{PATH_INFO} eq '/unknow_error' ) {
+       return sub {
+            my $res = shift;
+            my $w = $res->([ 200, [ 'Content-Type', 'text/plain' ] ]);
+            $w->write("Hello");
+            $w->close;
+       };
+    }
 
     return sub { HTTP::Error::InternalServerError->throw };
 };
 
 use Plack::Middleware::HTTPExceptions;
+use Plack::Middleware::ErrorDocument;
+$app = 
 $app = Plack::Middleware::HTTPExceptions->wrap($app);
 
 test_psgi $app, sub {
     my $cb = shift;
 
     my $res = $cb->(GET "/");
+    is $res->code, 500;
+    is $res->content, 'Internal Server Error';
+    $res = $cb->(GET '/unknow_error');
     is $res->code, 500;
     is $res->content, 'Internal Server Error';
 
