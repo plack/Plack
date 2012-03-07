@@ -161,8 +161,8 @@ sub run {
 sub _handle_response {
     my ($self, $res) = @_;
 
-    *STDOUT->autoflush(1);
-    binmode STDOUT;
+    $self->{stdout}->autoflush(1);
+    binmode $self->{stdout};
 
     my $hdrs;
     my $message = status_message($res->[0]);
