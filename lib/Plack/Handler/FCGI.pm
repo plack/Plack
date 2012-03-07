@@ -47,10 +47,13 @@ sub run {
         die "STDIN is not a socket: specify a listen location";
     }
 
+    @{$self}{qw(stdin stdout stderr)} 
+      = (IO::Handle->new, IO::Handle->new, IO::Handle->new);
+
     my %env;
     my $request = FCGI::Request(
-        \*STDIN, \*STDOUT,
-        ($self->{keep_stderr} ? \*STDOUT : \*STDERR), \%env, $sock,
+        $self->{stdin}, $self->{stdout},
+        ($self->{keep_stderr} ? $self->{stdout} : $self->{stderr}), \%env, $sock,
         ($self->{nointr} ? 0 : &FCGI::FAIL_ACCEPT_ON_INTR),
     );
 
@@ -93,9 +96,9 @@ sub run {
             %env,
             'psgi.version'      => [1,1],
             'psgi.url_scheme'   => ($env{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
-            'psgi.input'        => *STDIN,
-            'psgi.errors'       => *STDERR, # FCGI.pm redirects STDERR in Accept() loop, so just print STDERR
-                                            # print to the correct error handle based on keep_stderr
+            'psgi.input'        => $self->{stdin},
+            'psgi.errors'       => $self->{stderr}, # FCGI.pm redirects STDERR in Accept() loop, so just print STDERR
+                                                    # print to the correct error handle based on keep_stderr
             'psgi.multithread'  => Plack::Util::FALSE,
             'psgi.multiprocess' => Plack::Util::TRUE,
             'psgi.run_once'     => Plack::Util::FALSE,
@@ -158,8 +161,8 @@ sub run {
 sub _handle_response {
     my ($self, $res) = @_;
 
-    *STDOUT->autoflush(1);
-    binmode STDOUT;
+    $self->{stdout}->autoflush(1);
+    binmode $self->{stdout};
 
     my $hdrs;
     my $message = status_message($res->[0]);
@@ -171,9 +174,9 @@ sub _handle_response {
     }
     $hdrs .= "\015\012";
 
-    print STDOUT $hdrs;
+    print { $self->{stdout} } $hdrs;
 
-    my $cb = sub { print STDOUT $_[0] };
+    my $cb = sub { print { $self->{stdout} } $_[0] };
     my $body = $res->[2];
     if (defined $body) {
         Plack::Util::foreach($body, $cb);
