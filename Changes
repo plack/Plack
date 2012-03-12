@@ -2,6 +2,12 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9986  Mon Mar 12 11:26:59 PDT 2012
+    [IMPROVEMENTS]
+        - Use I/O handles to FCGI::Request instead of global STDIN, STDOUT etc. (chansen)
+        - Improved FastCGI docs (osfameron)
+        - Cascade app now returns the last response code (aristotle)
+
 0.9985  Mon Oct 31 13:11:19 PDT 2011
     [BUG FIXES]
         - Short circuit Plack::Handler fallback to avoid %INC bugs in perl 5.8 (mst)
