@@ -16,7 +16,7 @@ my $handler = builder {
         return sub {
             my $r = shift;
             my $w = $r->([ $status, [ 'Content-Type' => 'text/plain' ]]);
-            $w->write("Error: $status\n") for 1..3;
+            $w->write("Error: $status\n");
             $w->close;
         };
     };
