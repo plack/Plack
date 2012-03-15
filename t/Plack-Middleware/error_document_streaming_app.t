@@ -22,6 +22,9 @@ my $handler = builder {
     };
 };
 
+my @impl = qw(MockHTTP Server);
+sub flip_backend { $Plack::Test::Impl = shift @impl }
+
 test_psgi app => $handler, client => sub {
     my $cb = shift;
     {
@@ -33,6 +36,6 @@ test_psgi app => $handler, client => sub {
         like $res->header('content_type'), qr!text/html!;
         like $res->content, qr/fancy 404/;
     }
-};
+} while flip_backend;
 
 done_testing;

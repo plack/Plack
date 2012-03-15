@@ -50,7 +50,14 @@ sub call {
             if ($r->[2]) {
                 $r->[2] = $fh;
             } else {
-                return sub { <$fh> };
+                my $done;
+                return sub {
+                    unless ($done) {
+                        return join '', <$fh>;
+                    }
+                    $done = 1;
+                    return defined $_[0] ? '' : undef;
+                };
             };
         }
     });
