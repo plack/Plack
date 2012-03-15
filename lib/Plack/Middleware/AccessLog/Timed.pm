@@ -21,8 +21,20 @@ sub call {
         my($status, $header, $body) = @$res;
 
         if (!defined $body) {
-            $logger->( $self->log_line($status, $header, $env) );
-            return;
+            my $length;
+
+            return sub {
+                my $line = shift;
+                
+                $length += length $line if defined $line;
+
+                unless( defined $line ) {
+                    my $now = Time::HiRes::gettimeofday;
+                    $logger->( $self->log_line($status, $header, $env, { time => $now - $time, content_length => $length }) );
+                }
+
+                return $line;
+            };
         }
 
         my $getline = ref $body eq 'ARRAY' ? sub { shift @$body } : sub { $body->getline };
