@@ -42,11 +42,16 @@ sub call {
             }
             # TODO: allow 302 here?
         } else {
-            open my $fh, "<", $path or die "$path: $!";
-            $r->[2] = $fh;
             my $h = Plack::Util::headers($r->[1]);
             $h->remove('Content-Length');
             $h->set('Content-Type', Plack::MIME->mime_type($path));
+
+            open my $fh, "<", $path or die "$path: $!";
+            if ($r->[2]) {
+                $r->[2] = $fh;
+            } else {
+                return sub { <$fh> };
+            };
         }
     });
 }
