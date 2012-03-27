@@ -12,13 +12,24 @@ sub call {
 
     $self->response_cb($res, sub {
         my $res = shift;
-        return unless $res->[2]; # do not support streaming interface
 
         my $h = Plack::Util::headers($res->[1]);
         if ( $self->etag_matches($h, $env) || $self->not_modified_since($h, $env) ) {
             $res->[0] = 304;
             $h->remove($_) for qw( Content-Type Content-Length Content-Disposition );
-            $res->[2] = [];
+            if ($res->[2]) {
+              $res->[2] = [];
+            }
+            else {
+              my $done;
+              return sub {
+                unless ($done) {
+                  return q{};
+                }
+                $done = 1;
+                return defined $_[0] ? q{} : undef;
+              };
+            }
         }
     });
 }
