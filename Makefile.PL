@@ -11,7 +11,7 @@ readme_from 'lib/Plack.pm';
 
 requires 'LWP::UserAgent', 5.814;           # Plack::Test
 requires 'HTTP::Message', 5.814;
-requires 'URI', 1.36;
+requires 'URI', 1.59;
 requires 'Pod::Usage', 1.36;                # plackup
 requires 'File::ShareDir', '1.00';          # Plack::Test::Suite
 requires 'Try::Tiny';
