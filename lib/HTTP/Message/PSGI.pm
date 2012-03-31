@@ -88,7 +88,7 @@ sub req_to_psgi {
         $env->{PATH_INFO} =~ s/^\/+/\//;
     }
 
-    if (!$env->{HTTP_HOST} && $req->uri->can('host')) {
+    if (!defined($env->{HTTP_HOST}) && $req->uri->can('host')) {
         $env->{HTTP_HOST} = $req->uri->host;
     }
 
