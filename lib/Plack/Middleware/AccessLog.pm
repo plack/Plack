@@ -8,8 +8,8 @@ use Carp ();
 use Plack::Util;
 
 my %formats = (
-    common => "%h %l %u %t \"%r\" %>s %b",
-    combined => "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"",
+    common => '%h %l %u %t "%r" %>s %b',
+    combined => '%h %l %u %t "%r" %>s %b "%{Referer}i" "%{User-agent}i"',
 );
 
 use POSIX ();
@@ -64,7 +64,7 @@ sub log_line {
         h => sub { $env->{REMOTE_ADDR} || '-' },
         l => sub { '-' },
         u => sub { $env->{REMOTE_USER} || '-' },
-        t => sub { "[" . $strftime->("%d/%b/%Y:%H:%M:%S %z", localtime) . "]" },
+        t => sub { "[" . $strftime->('%d/%b/%Y:%H:%M:%S %z', localtime) . "]" },
         r => sub { _safe($env->{REQUEST_METHOD}) . " " . _safe($env->{REQUEST_URI}) .
                    " " . $env->{SERVER_PROTOCOL} },
         s => sub { $status },
@@ -151,7 +151,7 @@ default C<development> environment.
 =item format
 
   enable "Plack::Middleware::AccessLog",
-      format => "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"";
+      format => '%h %l %u %t "%r" %>s %b "%{Referer}i" "%{User-agent}i"';
 
 Takes a format string (or a preset template C<combined> or C<custom>)
 to specify the log format. This middleware implements a subset of
