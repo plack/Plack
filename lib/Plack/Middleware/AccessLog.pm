@@ -154,8 +154,30 @@ default C<development> environment.
       format => "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"";
 
 Takes a format string (or a preset template C<combined> or C<custom>)
-to specify the log format. This middleware implements subset of
-Apache's LogFormat templates.
+to specify the log format. This middleware implements a subset of
+L<Apache's LogFormat templates|http://httpd.apache.org/docs/2.0/mod/mod_log_config.html>:
+
+   %%    a percent sign
+   %h    REMOTE_ADDR from the PSGI environment, or -
+   %l    remote logname not implemented (currently always -)
+   %u    REMOTE_USER from the PSGI environment, or -
+   %t    [local timestamp, in default format]
+   %r    REQUEST_METHOD, REQUEST_URI and SERVER_PROTOCOL from the PSGI environment
+   %s    the HTTP status code of the response
+   %b    content length
+   %T    custom field for handling times in subclasses
+   %D    custom field for handling sub-second times in subclasses
+   %v    SERVER_NAME from the PSGI environment, or -
+   %V    HTTP_HOST or SERVER_NAME from the PSGI environment, or -
+
+Some of these format fields are only supported by middleware that subclasses C<AccessLog>.
+
+In addition, custom values can be referenced, using C<%{name}>,
+with one of the mandatory modifier flags C<i>, C<o> or C<t>:
+
+   %{variable-name}i    HTTP_VARIABLE_NAME value from the PSGI environment
+   %{header-name}o      header-name header
+   %{time-format]t      localtime in the specified strftime format
 
 =item logger
 
