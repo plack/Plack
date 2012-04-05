@@ -32,15 +32,15 @@ Plack::Middleware::Conditional - Conditional wrapper for Plack middleware
   use Plack::Builder;
 
   builder {
-      enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' } 'StackTrace';
+      enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' } 'StackTrace', force => 1;
       $app;
   };
 
   # or using the OO interface:
   $app = Plack::Middleware::Conditional->wrap(
       $app,
-      condition  => sub { my $env = shift; $env->{HTTP_USER_AGENT} =~ /WebKit/ },
-      builder => sub { Plack::Middleware::SuperAdminConsole->wrap($_[0], @args) },
+      condition  => sub { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' },
+      builder => sub { Plack::Middleware::StackTrace->wrap($_[0], force => 1) },
   );
 
 =head1 DESCRIPTION
