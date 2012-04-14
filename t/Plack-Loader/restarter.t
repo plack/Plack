@@ -5,7 +5,7 @@ use LWP::UserAgent;
 use HTTP::Request::Common;
 use Plack::Loader::Restarter;
 
-plan skip_all => 'Dev test' unless -e 'inc/.author' or $ENV{TEST_RESTARTER};
+plan skip_all => 'Flakey test: developer only' unless -e '.git';
 
 my @return_bodies = ('Hi first', 'Hi second', 'Hi third');
 my @restartertestfiles = ('t/restartertestfile1.pl', 't/restartertestfile2.pl');
