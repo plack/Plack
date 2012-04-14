@@ -1,6 +1,9 @@
 use strict;
 use warnings;
 use Test::More;
+
+plan skip_all => "Requires lighttpd: author only" unless -e ".git";
+
 use Test::Requires qw(FCGI FCGI::ProcManager);
 use Plack;
 use Plack::Handler::FCGI;
