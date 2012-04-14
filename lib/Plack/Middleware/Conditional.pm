@@ -32,21 +32,21 @@ Plack::Middleware::Conditional - Conditional wrapper for Plack middleware
   use Plack::Builder;
 
   builder {
-      enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' } 'StackTrace';
+      enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' } 'StackTrace', force => 1;
       $app;
   };
 
-  # Or more raw version of it
+  # or using the OO interface:
   $app = Plack::Middleware::Conditional->wrap(
       $app,
-      condition  => sub { my $env = shift; $env->{HTTP_USER_AGENT} =~ /WebKit/ },
-      builder => sub { Plack::Middleware::SuperAdminConsole->wrap($_[0], @args) },
+      condition  => sub { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' },
+      builder => sub { Plack::Middleware::StackTrace->wrap($_[0], force => 1) },
   );
 
 =head1 DESCRIPTION
 
 Plack::Middleware::Conditional is a piece of meta-middleware, to run a
-specific middleware component under the runtime condition. The goal of
+specific middleware component under runtime conditions. The goal of
 this middleware is to avoid baking runtime configuration options in
 individual middleware components, and rather share them as another
 middleware component.
@@ -72,8 +72,8 @@ the explanation and might not exist.
   };
 
 Note that in the last example I<MobileDetector> should come first
-because the conditional check runs in I<pre-run> condition, which is
-from outer to inner and that is from the top to the bottom in the
+because the conditional check runs in I<pre-run> conditions, which is
+from outer to inner: that is, from the top to the bottom in the
 Builder DSL code.
 
 =head1 AUTHOR
