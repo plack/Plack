@@ -3,6 +3,8 @@ use warnings;
 use Test::More;
 
 use Plack::Middleware::IIS6ScriptNameFix;
+use URI::Escape;
+use URI;
 
 my %env = (
     'SCRIPT_NAME' => '/koo/blurb',
@@ -61,6 +63,18 @@ sub test_fix {
 }
 
 my $fixed_env = test_fix({ %env });
+
+is($fixed_env->{PATH_INFO}, '//blurb', 'check PATH_INFO');
+is($fixed_env->{SCRIPT_NAME}, '/koo', 'check SCRIPT_NAME');
+
+# From Plack::Handler::FCGI:
+## lighttpd munges multiple slashes in PATH_INFO into one. Try recovering it
+my $uri = URI->new("http://localhost" .  $env{REQUEST_URI});
+$env{PATH_INFO} = uri_unescape($uri->path);
+$env{PATH_INFO} =~ s/^\Q$env{SCRIPT_NAME}\E//;
+
+# And re-test!
+$fixed_env = test_fix({ %env });
 
 is($fixed_env->{PATH_INFO}, '//blurb', 'check PATH_INFO');
 is($fixed_env->{SCRIPT_NAME}, '/koo', 'check SCRIPT_NAME');
