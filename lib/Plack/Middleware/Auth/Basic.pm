@@ -1,7 +1,7 @@
 package Plack::Middleware::Auth::Basic;
 use strict;
 use parent qw(Plack::Middleware);
-use Plack::Util::Accessor qw( realm authenticator );
+use Plack::Util::Accessor qw( realm authenticator path );
 use Scalar::Util;
 use MIME::Base64;
 
@@ -14,10 +14,22 @@ sub prepare_app {
     } elsif (ref $auth ne 'CODE') {
         die 'authenticator should be a code reference or an object that responds to authenticate()';
     }
+
+    if(not $self->path) {
+        $self->path(qr{^/}); # match every path
+    }
+    elsif(ref $self->path ne 'Regexp') {
+        die 'path should be a regular expression';
+    }
 }
 
 sub call {
     my($self, $env) = @_;
+
+    my $path_regex = $self->path;
+    my $path_info  = $env->{PATH_INFO};
+    return $self->app->($env)
+        unless $path_info =~ $path_regex;
 
     my $auth = $env->{HTTP_AUTHORIZATION}
         or return $self->unauthorized;
@@ -92,6 +104,16 @@ backends for L<Authen::Simple> is perfect to use:
 =item realm
 
 Realm name to display in the basic authentication dialog. Defaults to I<restricted area>.
+
+=item path
+
+A regular expression to match against request path. Setting this option
+will let you to restrict access to certain parts of your application without
+passing a complex authenitcator callback.
+
+  use Authen::Simple::LDAP;
+  enable "Auth::Basic", authenticator => Authen::Simple::RADIUS->new(...),
+                        path          => qr{^/admin};
 
 =back
 
