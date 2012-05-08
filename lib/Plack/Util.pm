@@ -199,7 +199,9 @@ sub header_get {
         push @val, $_[1] if lc $_[0] eq $key;
     };
 
-    return wantarray ? @val : $val[0];
+    my $val  = join(', ', @val);
+
+    return wantarray ? ($val) : $val;
 }
 
 sub header_set {
