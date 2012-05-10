@@ -158,6 +158,7 @@ our $MIME_TYPES = {
     ".wma"     => "audio/x-ms-wma",
     ".wmv"     => "video/x-ms-wmv",
     ".wmx"     => "video/x-ms-wmx",
+    ".woff"    => "application/font-woff",
     ".wrl"     => "model/vrml",
     ".wsdl"    => "application/wsdl+xml",
     ".xbm"     => "image/x-xbitmap",
