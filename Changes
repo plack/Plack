@@ -2,6 +2,15 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9987  Thu May 10 07:06:32 CEST 2012
+    [IMPROVEMENTS]
+        - Support streaming in AccessLog::Timed (Peter Makholm)
+        - Support streaming in ErrorDocument
+        - Removed UTF8 hack in HTTP::Message::PSGI. Depends on URI.pm 1.59 (wreis)
+        - Set Host headers correctly in HTTP::Message::PSGI #177
+        - Added documentation on supported %-flags in AccessLog (ether)
+        - Skip unnecessary tests on non-developer environment
+
 0.9986  Mon Mar 12 11:26:59 PDT 2012
     [IMPROVEMENTS]
         - Use I/O handles to FCGI::Request instead of global STDIN, STDOUT etc. (chansen)

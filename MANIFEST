@@ -135,6 +135,7 @@ share/face.jpg
 t/00_compile.t
 t/FCGIUtils.pm
 t/HTTP-Message-PSGI/content_length.t
+t/HTTP-Message-PSGI/host.t
 t/HTTP-Message-PSGI/path_info.t
 t/HTTP-Message-PSGI/utf8_req.t
 t/HTTP-Server-PSGI/post.t
@@ -181,6 +182,7 @@ t/Plack-Middleware/conditionalget_writer.t
 t/Plack-Middleware/content_length.t
 t/Plack-Middleware/directory.t
 t/Plack-Middleware/error_document.t
+t/Plack-Middleware/error_document_streaming_app.t
 t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html
 t/Plack-Middleware/file.t
