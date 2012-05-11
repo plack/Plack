@@ -84,6 +84,8 @@ sub req_to_psgi {
 
     if (!defined($env->{HTTP_HOST}) && $req->uri->can('host')) {
         $env->{HTTP_HOST} = $req->uri->host;
+        $env->{HTTP_HOST} .= ':' . $req->uri->port
+            if $req->uri->port ne $req->uri->default_port;
     }
 
     return $env;
