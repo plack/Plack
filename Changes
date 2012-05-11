@@ -2,6 +2,10 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9988  Fri May 11 12:25:09 CEST 2012
+    [BUG FIXES]
+        - Fixes HTTP_HOST in HTTP::Message::PSGI #287 (doy)
+
 0.9987  Thu May 10 07:06:32 CEST 2012
     [IMPROVEMENTS]
         - Support streaming in AccessLog::Timed (Peter Makholm)
