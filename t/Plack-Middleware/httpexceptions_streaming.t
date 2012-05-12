@@ -2,6 +2,7 @@ use strict;
 use Plack::Test;
 use HTTP::Request::Common;
 use Test::More;
+BEGIN { $ENV{'PLACK_ENV'} = 'deployment' }
 
 package HTTP::Error;
 sub new { bless {}, shift }
@@ -19,6 +20,24 @@ use base qw(HTTP::Error);
 sub code { 403 }
 sub as_string { "blah blah blah" }
 
+{
+  no strict 'refs';
+  *Carp::cluck = sub {};
+}
+package MyMiddleware;
+use base 'Plack::Middleware';
+sub call {
+  my ( $self, $env ) = @_;
+  my $res = $self->app->($env);
+  $self->response_cb($res, sub {
+    return sub {
+      die 'Unknown error, but on test purpose'
+        if $env->{PATH_INFO} eq '/unknow_error';
+      return shift;
+    };
+  });
+}
+
 package main;
 
 my $app = sub {
@@ -33,17 +52,29 @@ my $app = sub {
             $w->close;
         };
     }
+    elsif ( $env->{PATH_INFO} eq '/unknow_error' ) {
+        return sub {
+            my $res = shift;
+            my $w = $res->([ 200, [ 'Content-Type', 'text/plain' ] ]);
+            $w->write("Hello");
+            $w->close;
+        };
+    }
 
     return sub { HTTP::Error::InternalServerError->throw };
 };
 
 use Plack::Middleware::HTTPExceptions;
+$app = MyMiddleware->wrap($app);
 $app = Plack::Middleware::HTTPExceptions->wrap($app);
 
 test_psgi $app, sub {
     my $cb = shift;
 
-    my $res = $cb->(GET "/");
+    my $res = $cb->(GET '/unknow_error');
+    is $res->code, 500;
+    is $res->content, 'Internal Server Error';
+    $res = $cb->(GET "/");
     is $res->code, 500;
     is $res->content, 'Internal Server Error';
 
