@@ -31,13 +31,8 @@ sub call {
         try {
             $res->(sub { return $writer = $respond->(@_) });
         } catch {
-            if ($writer) {
-                Carp::cluck $_;
-                $writer->close;
-            } else {
-                my $res = $self->transform_error($_, $env);
-                $respond->($res);
-            }
+            Carp::cluck $_;
+            $respond->( $self->transform_error($_, $env) );
         };
     };
 }
