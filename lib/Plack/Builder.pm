@@ -126,9 +126,10 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
   my $app = sub { ... };
 
   builder {
-      enable "Plack::Middleware::Foo";
-      enable "Plack::Middleware::Bar", opt => "val";
-      enable "Plack::Middleware::Baz";
+      enable "Deflater";
+      enable "Session", store => "File";
+      enable "Debug", panels => [ qw(DBITrace Memory Timer) ];
+      enable "+My::Plack::Middleware";
       $app;
   };
 
@@ -136,7 +137,7 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
 
   builder {
       mount "/foo" => builder {
-          enable "Plack::Middleware::Foo";
+          enable "Foo";
           $app;
       };
 
@@ -160,11 +161,12 @@ base class to use this DSL, inspired by Rack::Builder.
 
 Whenever you call C<enable> on any middleware, the middleware app is
 pushed to the stack inside the builder, and then reversed when it
-actually creates a wrapped application handler, so:
+actually creates a wrapped application handler. "Plack::Middleware::"
+is added as a prefix by default. So:
 
   builder {
-      enable "Plack::Middleware::Foo";
-      enable "Plack::Middleware::Bar", opt => "val";
+      enable "Foo";
+      enable "Bar", opt => "val";
       $app;
   };
 
@@ -215,7 +217,7 @@ Plack::Builder has a native support for L<Plack::App::URLMap> with C<mount> meth
   my $app = builder {
       mount "/foo" => $app1;
       mount "/bar" => builder {
-          enable "Plack::Middleware::Foo";
+          enable "Foo";
           $app2;
       };
   };
