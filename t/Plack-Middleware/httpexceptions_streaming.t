@@ -12,11 +12,11 @@ sub throw {
 }
 
 package HTTP::Error::InternalServerError;
-use base qw(HTTP::Error);
+use parent qw(HTTP::Error);
 sub code { 500 }
 
 package HTTP::Error::Forbidden;
-use base qw(HTTP::Error);
+use parent qw(HTTP::Error);
 sub code { 403 }
 sub as_string { "blah blah blah" }
 
@@ -25,17 +25,17 @@ sub as_string { "blah blah blah" }
   *Carp::cluck = sub {};
 }
 package MyMiddleware;
-use base 'Plack::Middleware';
+use parent 'Plack::Middleware';
 sub call {
-  my ( $self, $env ) = @_;
-  my $res = $self->app->($env);
-  $self->response_cb($res, sub {
-    return sub {
-      die 'Unknown error, but on test purpose'
-        if $env->{PATH_INFO} eq '/unknow_error';
-      return shift;
-    };
-  });
+    my ($self, $env) = @_;
+    my $res = $self->app->($env);
+    $self->response_cb($res, sub {
+        return sub {
+            die 'Unknown error, but on test purpose'
+                if $env->{PATH_INFO} eq '/unknow_error';
+            return shift;
+        };
+    });
 }
 
 package main;
