@@ -12,26 +12,26 @@ sub throw {
 }
 
 package HTTP::Error::InternalServerError;
-use base qw(HTTP::Error);
+use parent qw(HTTP::Error);
 sub code { 500 }
 
 package HTTP::Error::Forbidden;
-use base qw(HTTP::Error);
+use parent qw(HTTP::Error);
 sub code { 403 }
 sub as_string { "blah blah blah" }
 
 package HTTP::Error::Redirect;
-use base qw(HTTP::Error);
+use parent qw(HTTP::Error);
 sub code { 302 }
 sub location { "http://somewhere/else" }
 
 package MyMiddleware;
-use base 'Plack::Middleware';
+use parent 'Plack::Middleware';
 sub call {
-  my ( $self, $env ) = @_;
-  die 'Unknown error, but on test purpose'
-    if $env->{'PATH_INFO'} eq '/unknow_error';
-  return $self->app->($env);
+    my ($self, $env) = @_;
+    die 'Unknown error, but on test purpose'
+        if $env->{'PATH_INFO'} eq '/unknow_error';
+    return $self->app->($env);
 }
 
 package main;
