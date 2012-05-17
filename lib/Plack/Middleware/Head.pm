@@ -11,7 +11,19 @@ sub call {
 
     $self->response_cb($self->app->($env), sub {
         my $res = shift;
-        $res->[2] = [];
+        if ( $res->[2] ) {
+          $res->[2] = [];
+        }
+        else {
+          my $done;
+          return sub {
+            unless ($done) {
+              return q{};
+            }
+            $done = 1;
+            return defined $_[0] ? q{} : undef;
+          };
+        }
     });
 }
 
