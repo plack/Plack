@@ -18,17 +18,11 @@ sub call {
             $res->[0] = 304;
             $h->remove($_) for qw( Content-Type Content-Length Content-Disposition );
             if ($res->[2]) {
-              $res->[2] = [];
-            }
-            else {
-              my $done;
-              return sub {
-                unless ($done) {
-                  return q{};
-                }
-                $done = 1;
-                return defined $_[0] ? q{} : undef;
-              };
+                $res->[2] = [];
+            } else {
+                return sub {
+                    return defined $_[0] ? '' : undef;
+                };
             }
         }
     });
