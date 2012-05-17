@@ -29,13 +29,12 @@ test_psgi $handler, sub {
     is $res->code, 200, 'Response HTTP status';
     is $res->content, 'klingklangklong', 'Response content';
 
-    # the middleware does not support streaming interface but make it at least not die
     $res = $cb->( GET
         "http://localhost/streaming-klingklangklong",
         'If-None-Match' => 'DEADBEEF'
     );
-    is $res->code, 200, 'Response HTTP status';
-    is $res->content, 'klingklangklong', 'Response content';
+    is $res->code, 304, 'Response HTTP status';
+    ok(!$res->content);
 };
 
 done_testing;
