@@ -43,6 +43,13 @@ my @tests = (
       },
       uri => 'http://example.com/exec/',
       parameters => {} },
+
+    { add_env => {
+        HTTP_HOST => 'example.com',
+        SCRIPT_NAME => '/exec/'
+      },
+      uri => 'http://example.com/exec/',
+      parameters => {} },
     { add_env => {
         SERVER_NAME => 'example.com'
       },
@@ -71,7 +78,15 @@ my @tests = (
         PATH_INFO => "/baz quux",
       },
       uri => 'http://example.com/foo%20bar/baz%20quux',
-      parameters => {} }
+      parameters => {} },
+    { add_env => {
+        HTTP_HOST => 'example.com',
+        SCRIPT_NAME => "/path",
+        PATH_INFO => "/parameters;path=one,two",
+        QUERY_STRING => "query=foobar",
+      },
+      uri => 'http://example.com/path/parameters;path=one,two?query=foobar',
+      parameters => { query => "foobar" } },
 );
 
 plan tests => 2 * @tests;
