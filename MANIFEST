@@ -187,6 +187,7 @@ t/Plack-Middleware/errors/404.html
 t/Plack-Middleware/errors/500.html
 t/Plack-Middleware/file.t
 t/Plack-Middleware/head.t
+t/Plack-Middleware/head_streaming.t
 t/Plack-Middleware/htpasswd
 t/Plack-Middleware/httpexceptions.t
 t/Plack-Middleware/httpexceptions_streaming.t

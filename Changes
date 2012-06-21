@@ -2,6 +2,13 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9989  Thu Jun 21 13:39:11 PDT 2012
+    [IMPROVEMENTS]
+        - Support streaming in Head middleware (wreis)
+        - Document middleware prefixing (Jon Swartz)
+        - Make Basic authentication detection case insensitive per RFC (Mark Fowler)
+        - Added backlog option to FCGI handler (xaicron)
+
 0.9988  Fri May 11 12:25:09 CEST 2012
     [BUG FIXES]
         - Fixes HTTP_HOST in HTTP::Message::PSGI #287 (doy)
