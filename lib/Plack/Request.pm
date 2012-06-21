@@ -72,6 +72,9 @@ sub cookies {
         # trim leading trailing whitespace
         $pair =~ s/^\s+//; $pair =~ s/\s+$//;
 
+        # Apache2::Cookie encodes a space into a plus sign
+        $pair =~ tr/+/ /;
+
         my ($key, $value) = map URI::Escape::uri_unescape($_), split( "=", $pair, 2 );
 
         # Take the first one like CGI.pm or rack do
