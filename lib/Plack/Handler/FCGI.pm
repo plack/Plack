@@ -21,6 +21,7 @@ sub new {
     $self->{nproc}       ||= 1 unless blessed $self->{manager};
     $self->{pid}         ||= $self->{pidfile}; # compatibility
     $self->{listen}      ||= [ ":$self->{port}" ] if $self->{port}; # compatibility
+    $self->{backlog}     ||= 100;
     $self->{manager}     = 'FCGI::ProcManager' unless exists $self->{manager};
 
     $self;
@@ -38,7 +39,7 @@ sub run {
         unless ($self->{leave_umask}) {
             umask(0);
         }
-        $sock = FCGI::OpenSocket( $self->{listen}->[0], 100 )
+        $sock = FCGI::OpenSocket( $self->{listen}->[0], $self->{backlog} )
             or die "failed to open FastCGI socket: $!";
         unless ($self->{leave_umask}) {
             umask($old_umask);
@@ -279,6 +280,10 @@ Specify process title
 =item keep-stderr
 
 Send STDERR to STDOUT instead of the webserver
+
+=item backlog
+
+Maximum length of the queue of pending connections
 
 =back
 
