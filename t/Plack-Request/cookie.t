@@ -13,6 +13,7 @@ my $app = sub {
     is $req->cookies->{Bar}, 'Baz';
     is $req->cookies->{XXX}, 'Foo Bar';
     is $req->cookies->{YYY}, 0;
+    is $req->cookies->{ZZZ}, 'Bar Baz';
 
     $req->new_response(200)->finalize;
 };
@@ -20,7 +21,7 @@ my $app = sub {
 test_psgi $app, sub {
     my $cb = shift;
     my $req = HTTP::Request->new(GET => "/");
-    $req->header(Cookie => 'Foo=Bar; Bar=Baz; XXX=Foo%20Bar; YYY=0; YYY=3');
+    $req->header(Cookie => 'Foo=Bar; Bar=Baz; XXX=Foo%20Bar; YYY=0; YYY=3; ZZZ=Bar+Baz');
     $cb->($req);
 };
 
