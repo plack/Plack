@@ -83,7 +83,10 @@ sub cookies {
 
 sub query_parameters {
     my $self = shift;
-    $self->env->{'plack.request.query'} ||= Hash::MultiValue->new($self->uri->query_form);
+    my @combined = $self->uri->query_form;
+    @combined = (@combined, map { $_, '' } $self->uri->query_keywords);
+
+    $self->env->{'plack.request.query'} ||= Hash::MultiValue->new(@combined);
 }
 
 sub content {

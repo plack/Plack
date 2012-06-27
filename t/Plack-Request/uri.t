@@ -61,10 +61,24 @@ my @tests = (
     { add_env => {
         HTTP_HOST => 'example.com',
         SCRIPT_NAME => "",
+        QUERY_STRING => "foo_only"
+      },
+      uri => 'http://example.com/?foo_only',
+      parameters => { foo_only => '' } },
+    { add_env => {
+        HTTP_HOST => 'example.com',
+        SCRIPT_NAME => "",
+        QUERY_STRING => "foo&bar=baz"
+      },
+      uri => 'http://example.com/?foo&bar=baz',
+      parameters => { foo => '', bar => 'baz' } },
+    { add_env => {
+        HTTP_HOST => 'example.com',
+        SCRIPT_NAME => "",
         QUERY_STRING => 0
       },
       uri => 'http://example.com/?0',
-      parameters => {} },
+      parameters => { 0 => '' } },
     { add_env => {
         HTTP_HOST => 'example.com',
         SCRIPT_NAME => "/foo bar",
