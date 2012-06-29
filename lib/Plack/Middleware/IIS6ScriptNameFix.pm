@@ -7,7 +7,11 @@ sub call {
     my($self, $env) = @_;
 
     if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ /IIS\/[6-9]\.[0-9]/) {
-        my @script_name = split(m!/!, $env->{PATH_INFO});
+
+        my($path, $query) = ( $env->{REQUEST_URI} =~ /^([^?]*)(?:\?(.*))?$/s );
+        for ($path, $query) { s/\#.*$// if defined && length } # dumb clients sending URI fragments
+
+        my @script_name = split(m!/!, URI::Escape::uri_unescape($path));
         my @path_translated = split(m!/|\\\\?!, $env->{PATH_TRANSLATED});
         my @path_info;
 
