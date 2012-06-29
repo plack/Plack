@@ -7,7 +7,7 @@ sub call {
     my($self, $env) = @_;
 
     if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ /IIS\/[6-9]\.[0-9]/) {
-        my @script_name = split(m!/!, $env->{PATH_INFO});
+        my @script_name = split(m!/!, $env->{'plack.PATH_INFO_ORIGINAL'}||$env->{'PATH_INFO'} );
         my @path_translated = split(m!/|\\\\?!, $env->{PATH_TRANSLATED});
         my @path_info;
 
