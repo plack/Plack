@@ -276,7 +276,8 @@ Returns a hash reference containing cookies to be set in the
 response. The keys of the hash are the cookies' names, and their
 corresponding values are a plain string (for C<value> with everything
 else defaults) or a hash reference that can contain keys such as
-C<value>, C<domain>, C<expires>, C<path>, C<httponly>, C<secure>.
+C<value>, C<domain>, C<expires>, C<path>, C<httponly>, C<secure>,
+C<max-age>.
 
 C<expires> can take a string or an integer (as an epoch time) and
 B<does not> convert string formats such as C<+3M>.
