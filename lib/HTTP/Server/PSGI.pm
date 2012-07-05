@@ -101,7 +101,7 @@ sub setup_listener {
     $self->{listen_sock} ||= $class->new(%args)
         or die "failed to listen to port $self->{port}: $!";
 
-    $self->{server_ready}->($self);
+    $self->{server_ready}->({ %$self, proto => $self->{ssl} ? 'https' : 'http' });
 }
 
 sub accept_loop {
