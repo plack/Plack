@@ -525,6 +525,13 @@ Creates an instant object that can react to methods passed in the
 constructor. Handy to create when you need to create an IO stream
 object for input or errors.
 
+=item encode_html
+
+  my $encoded_string = Plack::Util::encode( $string );
+
+Entity encodes C<<>, C<< > >>, C<&>, C<"> and C<'> in the input string
+and returns it.
+
 =item response_cb
 
 See L<Plack::Middleware/RESPONSE CALLBACK> for details.
