@@ -133,6 +133,10 @@ sub run {
             $env->{PATH_INFO} = '';
         }
 
+	if (defined(my $HTTP_AUTHORIZATION = $env->{Authorization})) {
+	    $env->{HTTP_AUTHORIZATION} = $HTTP_AUTHORIZATION;
+	}
+
         my $res = Plack::Util::run_app $app, $env;
 
         if (ref $res eq 'ARRAY') {
