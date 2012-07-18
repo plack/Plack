@@ -393,6 +393,23 @@ B<PATH_INFO> values set by lighttpd.
 
 =cut
 
+=head2 Authorization
+
+Most fastcgi configuration does not pass C<Authorization> headers to
+C<HTTP_AUTHORIZATION> environment variable by default for security
+reasons. Authentication middleware such as L<Plack::Middleware::Auth::Basic> or
+L<Catalyst::Authentication::Credential::HTTP> requires the variable to
+be set up. Plack::Handler::FCGI supports extracting the C<Authorization> environment
+variable when it is configured that way.
+
+Apache2 with mod_fastcgi:
+
+  --pass-header Authorization
+
+mod_fcgid:
+
+  FcgiPassHeader Authorization
+
 =head1 SEE ALSO
 
 L<Plack>
