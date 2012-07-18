@@ -2,6 +2,17 @@ Revision history for Perl extension Plack
 
 Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
 
+0.9990  Wed Jul 18 11:12:07 PDT 2012
+    [INCOMPATIBILE CHANGES]
+        - Plack::Request changes the way it parses QUERY_STRING for valueless keys such as
+          "?a&b=1". Now "a" becomes part of query_parameters with empty string as its value (yannk)
+
+    [IMPROVEMENTS]
+        - Support max-age options in Plack::Response cookies (remorse)
+        - Pass correct protocol from HTTP::Server::PSGI to display https URL correctly (siracusa)
+        - Copy Authorization header from FastCGI handler (ray1729)
+        - Stop special casing COOKIE environment variable in Plack::Request headers (doy)
+
 0.9989  Thu Jun 21 13:39:11 PDT 2012
     [IMPROVEMENTS]
         - Support streaming in Head middleware (wreis)
