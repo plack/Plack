@@ -117,7 +117,7 @@ sub headers {
                 (my $field = $_) =~ s/^HTTPS?_//;
                 ( $field => $env->{$_} );
             }
-                grep { /^(?:HTTP|CONTENT|COOKIE)/i } keys %$env
+                grep { /^(?:HTTP|CONTENT)/i } keys %$env
             );
     }
     $self->{headers};
