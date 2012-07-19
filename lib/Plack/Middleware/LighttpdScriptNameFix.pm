@@ -86,7 +86,7 @@ Tatsuhiko Miyagawa
 =head1 SEE ALSO
 
 L<Plack::Handler::FCGI>
-L<http://github.com/miyagawa/Plack/issues#issue/68>
+L<http://github.com/plack/Plack/issues#issue/68>
 L<https://redmine.lighttpd.net/issues/729>
 
 =cut

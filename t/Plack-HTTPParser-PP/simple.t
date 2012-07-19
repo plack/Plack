@@ -63,7 +63,7 @@ is_deeply(\%env, {
     SERVER_PROTOCOL => 'HTTP/1.0',
 }, 'multiline');
 
-# dumb HTTP client: https://github.com/miyagawa/Plack/issues/213
+# dumb HTTP client: https://github.com/plack/Plack/issues/213
 $req = <<"EOT";
 GET /a/b#c HTTP/1.0\r
 \r

@@ -95,8 +95,8 @@ CONTRIBUTING
   Patches and Bug Fixes
     Small patches and bug fixes can be either submitted via nopaste on IRC
     <irc://irc.perl.org/#plack> or the github issue tracker
-    <http://github.com/miyagawa/Plack/issues>. Forking on github
-    <http://github.com/miyagawa/Plack> is another good way if you intend to
+    <http://github.com/plack/Plack/issues>. Forking on github
+    <http://github.com/plack/Plack> is another good way if you intend to
     make larger fixes.
 
     See also <http://contributing.appspot.com/plack> when you think this
@@ -175,9 +175,9 @@ SEE ALSO
 
     <http://plackperl.org/>
 
-    The Plack wiki: <https://github.com/miyagawa/Plack/wiki>
+    The Plack wiki: <https://github.com/plack/Plack/wiki>
 
-    The Plack FAQ: <https://github.com/miyagawa/Plack/wiki/Faq>
+    The Plack FAQ: <https://github.com/plack/Plack/wiki/Faq>
 
 LICENSE
     This library is free software; you can redistribute it and/or modify it

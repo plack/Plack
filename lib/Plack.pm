@@ -128,8 +128,8 @@ L<Plack::Test::Suite> is a test suite to test a new PSGI server backend.
 
 Small patches and bug fixes can be either submitted via nopaste on IRC
 L<irc://irc.perl.org/#plack> or L<the github issue
-tracker|http://github.com/miyagawa/Plack/issues>.  Forking on
-L<github|http://github.com/miyagawa/Plack> is another good way if you
+tracker|http://github.com/plack/Plack/issues>.  Forking on
+L<github|http://github.com/plack/Plack> is another good way if you
 intend to make larger fixes.
 
 See also L<http://contributing.appspot.com/plack> when you think this
@@ -214,9 +214,9 @@ The L<PSGI> specification upon which Plack is based.
 
 L<http://plackperl.org/>
 
-The Plack wiki: L<https://github.com/miyagawa/Plack/wiki>
+The Plack wiki: L<https://github.com/plack/Plack/wiki>
 
-The Plack FAQ: L<https://github.com/miyagawa/Plack/wiki/Faq>
+The Plack FAQ: L<https://github.com/plack/Plack/wiki/Faq>
 
 =head1 LICENSE
 

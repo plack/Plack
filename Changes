@@ -1,6 +1,6 @@
 Revision history for Perl extension Plack
 
-Take a look at http://github.com/miyagawa/Plack/issues for the planned changes before 1.0 release.
+Take a look at http://github.com/plack/Plack/issues for the planned changes before 1.0 release.
 
 0.9990  Wed Jul 18 11:12:07 PDT 2012
     [INCOMPATIBILE CHANGES]
@@ -428,7 +428,7 @@ Take a look at http://github.com/miyagawa/Plack/issues for the planned changes b
 
 0.99_21 Thu Mar 25 15:05:53 PDT 2010
         - INCOMPATIBLE: removed a workaround for lighttpd SCRIPT_NAME bug in FCGI handler
-          See http://github.com/miyagawa/Plack/issues#issue/68 for details.
+          See http://github.com/plack/Plack/issues#issue/68 for details.
         - HTTPException now logs standard exceptions to psgi.errors
         - micro optimization for Plack::Request content() method
 
