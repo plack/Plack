@@ -39,7 +39,7 @@ auto_set_repository;
 
 resources
   homepage      => "http://plackperl.org",
-  bugtracker    => "https://github.com/miyagawa/plack/issues";
+  bugtracker    => "https://github.com/miyagawa/Plack/issues";
 
 WriteAll;
 
