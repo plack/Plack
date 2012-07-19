@@ -172,11 +172,21 @@ otherwise.
 
 Copyright 2009-2011 Tatsuhiko Miyagawa
 
+=head1 CORE DEVELOPERS
+
+Tatsuhiko Miyagawa (miyagawa)
+
+Tokuhiro Matsuno (tokuhirom)
+
+Jesse Leuhrs (doy)
+
+Tomas Doran (bobtfish)
+
+Graham Knop (haarg)
+
 =head1 CONTRIBUTORS
 
 Yuval Kogman (nothingmuch)
-
-Tokuhiro Matsuno (tokuhirom)
 
 Kazuhiro Osawa (Yappo)
 
@@ -199,8 +209,6 @@ Shawn M Moore (Sartak)
 Stevan Little
 
 Hans Dieter Pearcey (confound)
-
-Tomas Doran (t0m)
 
 mala
 
