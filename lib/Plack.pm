@@ -178,7 +178,7 @@ Tatsuhiko Miyagawa (miyagawa)
 
 Tokuhiro Matsuno (tokuhirom)
 
-Jesse Leuhrs (doy)
+Jesse Luehrs (doy)
 
 Tomas Doran (bobtfish)
 
