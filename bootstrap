@@ -18,6 +18,21 @@ system "cpanm", qw(
 diag "Installing dependencies";
 system "cpanm", "--installdeps", ".";
 
+# FIXME should go to cpanfile/devel_requires or Plack::Devel bundle
+diag "Installing devel devependencies";
+system "cpanm", qw(
+  FCGI
+  FCGI::ProcManager
+  MIME::Types
+  Authen::Simple::Passwd
+  CGI::Emulate::PSGI
+  CGI::Compile
+  IO::Handle::Util
+  LWP::Protocol::http10
+  HTTP::Server::Simple::PSGI
+  HTTP::Request::AsCGI
+);
+
 diag "Running tests";
 system "prove", "-lr", "t";
 
