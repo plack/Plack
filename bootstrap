@@ -3,7 +3,7 @@
 use strict;
 
 sub diag {
-    warn "---> $_[0]\n";
+    warn "------> $_[0]\n";
 }
 
 diag "Installing Module::Install and plugins";
