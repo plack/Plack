@@ -1,6 +1,8 @@
-Revision history for Perl extension Plack
+Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
-Take a look at http://github.com/plack/Plack/issues for the planned changes before 1.0 release.
+0.9991  Thu Jul 19 17:27:52 PDT 2012
+    [NEW FEATURES]
+        - Added IIS7 fix middleware (t0m)
 
 0.9990  Wed Jul 18 11:12:07 PDT 2012
     [INCOMPATIBILE CHANGES]

@@ -135,10 +135,19 @@ COPYRIGHT
 
     Copyright 2009-2011 Tatsuhiko Miyagawa
 
-CONTRIBUTORS
-    Yuval Kogman (nothingmuch)
+CORE DEVELOPERS
+    Tatsuhiko Miyagawa (miyagawa)
 
     Tokuhiro Matsuno (tokuhirom)
+
+    Jesse Leuhrs (doy)
+
+    Tomas Doran (bobtfish)
+
+    Graham Knop (haarg)
+
+CONTRIBUTORS
+    Yuval Kogman (nothingmuch)
 
     Kazuhiro Osawa (Yappo)
 
@@ -161,8 +170,6 @@ CONTRIBUTORS
     Stevan Little
 
     Hans Dieter Pearcey (confound)
-
-    Tomas Doran (t0m)
 
     mala
 
