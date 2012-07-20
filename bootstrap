@@ -1,0 +1,26 @@
+#!/usr/bin/perl
+# boostrap development environment
+use strict;
+
+sub diag {
+    warn "---> $_[0]\n";
+}
+
+diag "Installing Module::Install and plugins";
+system "cpanm", qw(
+  Module::Install
+  Module::Install::AuthorTests
+  Module::Install::ReadmeFromPod
+  Module::Install::Repository
+  Module::Install::Authority
+);
+
+diag "Installing dependencies";
+system "cpanm", "--installdeps", ".";
+
+diag "Running tests";
+system "prove", "-lr", "t";
+
+warn "\nYour development environment is set up. Happy hacking!\n";
+
+

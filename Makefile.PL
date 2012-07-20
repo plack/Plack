@@ -1,13 +1,10 @@
-# install Module::Install Module::Install::AuthorTests Module::Install::ReadmeFromPod Module::Install::Repository
-sub author_tests  { }
-sub readme_from   { }
-sub auto_set_repository { }
-
+# See and run ./bootstrap when you get errors running Makefile.PL
 use inc::Module::Install;
 
 name 'Plack';
 all_from 'lib/Plack.pm';
 readme_from 'lib/Plack.pm';
+authority 'MIYAGAWA';
 
 requires 'LWP::UserAgent', 5.814;           # Plack::Test
 requires 'HTTP::Message', 5.814;
