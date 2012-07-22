@@ -11,7 +11,7 @@ use Hash::MultiValue;
 use HTTP::Body;
 
 use Plack::Request::Upload;
-use Plack::TempBuffer;
+use Stream::Buffered;
 use URI;
 use URI::Escape ();
 
@@ -251,7 +251,7 @@ sub _parse_request_body {
         # Just in case if input is read by middleware/apps beforehand
         $input->seek(0, 0);
     } else {
-        $buffer = Plack::TempBuffer->new($cl);
+        $buffer = Stream::Buffered->new($cl);
     }
 
     my $spin = 0;
