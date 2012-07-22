@@ -29,6 +29,7 @@ system "cpanm", qw(
   CGI::Compile
   IO::Handle::Util
   LWP::Protocol::http10
+  Log::Log4perl
   HTTP::Server::Simple::PSGI
   HTTP::Request::AsCGI
 );
