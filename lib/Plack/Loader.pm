@@ -37,15 +37,11 @@ sub load {
     my($class, $server, @args) = @_;
 
     my($server_class, $error);
-    for my $prefix (qw( Plack::Handler Plack::Server )) {
-        try {
-            $server_class = Plack::Util::load_class($server, $prefix);
-        } catch {
-            $error ||= $_;
-        };
-        last if $server_class;
-        last if $error && $error !~ /^Can't locate Plack\/Handler\//;
-    }
+    try {
+        $server_class = Plack::Util::load_class($server, 'Plack::Handler');
+    } catch {
+        $error ||= $_;
+    };
 
     if ($server_class) {
         $server_class->new(@args);
