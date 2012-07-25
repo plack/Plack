@@ -27,7 +27,7 @@ sub handler {
 # Overriding
 sub fixup_path {
     my ($class, $r, $env) = @_;
-    $env->{PATH_INFO} =~ s{^$env->{SCRIPT_NAME}}{};
+    $env->{PATH_INFO} =~ s/^\Q$env->{SCRIPT_NAME}\E//;
 }
 
 1;

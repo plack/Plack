@@ -2,12 +2,15 @@ package Plack::Middleware::IIS6ScriptNameFix;
 
 use strict;
 use parent 'Plack::Middleware';
+use URI::Escape;
+use URI;
 
 sub call {
     my($self, $env) = @_;
 
     if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ /IIS\/[6-9]\.[0-9]/) {
-        my @script_name = split(m!/!, $env->{PATH_INFO});
+        my $uri = URI->new("http://localhost" .  $env->{REQUEST_URI});
+        my @script_name = split(m!/!, uri_unescape($uri->path));
         my @path_translated = split(m!/|\\\\?!, $env->{PATH_TRANSLATED});
         my @path_info;
 
