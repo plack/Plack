@@ -15,12 +15,6 @@ use Plack::TempBuffer;
 use URI;
 use URI::Escape ();
 
-sub _deprecated {
-    my $alt = shift;
-    my $method = (caller(1))[3];
-    Carp::carp("$method is deprecated. Use '$alt' instead.");
-}
-
 sub new {
     my($class, $env) = @_;
     Carp::croak(q{$env is required})
@@ -160,22 +154,6 @@ sub uploads {
     return $self->env->{'plack.request.upload'};
 }
 
-sub hostname     { _deprecated 'remote_host';      $_[0]->remote_host || $_[0]->address }
-sub url_scheme   { _deprecated 'scheme';           $_[0]->scheme }
-sub params       { _deprecated 'parameters';       shift->parameters(@_) }
-sub query_params { _deprecated 'query_parameters'; shift->query_parameters(@_) }
-sub body_params  { _deprecated 'body_parameters';  shift->body_parameters(@_) }
-
-sub cookie {
-    my $self = shift;
-    _deprecated 'cookies';
-
-    return keys %{ $self->cookies } if @_ == 0;
-
-    my $name = shift;
-    return $self->cookies->{$name};
-}
-
 sub param {
     my $self = shift;
 
@@ -194,16 +172,6 @@ sub upload {
     my $key = shift;
     return $self->uploads->{$key} unless wantarray;
     return $self->uploads->get_all($key);
-}
-
-sub raw_uri {
-    my $self = shift;
-    _deprecated 'base';
-
-    my $base = $self->base;
-    $base->path_query($self->env->{REQUEST_URI});
-
-    $base;
 }
 
 sub uri {
@@ -646,10 +614,6 @@ C</app/logout?signoff=1>.
 
 In version 0.99, many utility methods are removed or deprecated, and
 most methods are made read-only.
-
-The following methods are deprecated: C<hostname>, C<url_scheme>,
-C<params>, C<query_params>, C<body_params>, C<cookie> and
-C<raw_uri>. They will be removed in the next major release.
 
 All parameter-related methods such as C<parameters>,
 C<body_parameters>, C<query_parameters> and C<uploads> now contains
