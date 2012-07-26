@@ -64,7 +64,6 @@ our $_add = our $_add_if = our $_mount = sub {
     Carp::croak("enable/mount should be called inside builder {} block");
 };
 
-sub add      { Carp::carp("add is deprecated. Use 'enable'"); $_add->(@_) }
 sub enable         { $_add->(@_) }
 sub enable_if(&$@) { $_add_if->(@_) }
 
