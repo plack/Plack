@@ -613,7 +613,8 @@ C</app/logout?signoff=1>.
 =head1 INCOMPATIBILITIES
 
 In version 0.99, many utility methods are removed or deprecated, and
-most methods are made read-only.
+most methods are made read-only. These methods were deleted in version
+1.0001.
 
 All parameter-related methods such as C<parameters>,
 C<body_parameters>, C<query_parameters> and C<uploads> now contains
