@@ -46,13 +46,6 @@ sub new {
         ssl_cert_file      => $args{ssl_cert_file},
     }, $class;
 
-    if ($args{max_workers} && $args{max_workers} > 1) {
-        Carp::carp(
-            "Preforking in $class is deprecated. Falling back to the non-forking mode. ",
-            "If you need preforking, use Starman or Starlet instead and run like `plackup -s Starlet`",
-        );
-    }
-
     $self;
 }
 
