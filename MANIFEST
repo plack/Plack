@@ -1,5 +1,6 @@
 benchmarks/ab.pl
 benchmarks/fcgi.pl
+bootstrap
 Changes
 eg/dot-psgi/cgi-pm.psgi
 eg/dot-psgi/cgi-script.psgi
@@ -30,6 +31,7 @@ eg/dot-psgi/static/test.css
 eg/dot-psgi/static/test.js
 eg/dot-psgi/twitter-stream.psgi
 inc/Module/Install.pm
+inc/Module/Install/Authority.pm
 inc/Module/Install/AuthorTests.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -98,7 +100,6 @@ lib/Plack/Middleware/SimpleContentFilter.pm
 lib/Plack/Middleware/SimpleLogger.pm
 lib/Plack/Middleware/StackTrace.pm
 lib/Plack/Middleware/Static.pm
-lib/Plack/Middleware/Writer.pm
 lib/Plack/Middleware/XFramework.pm
 lib/Plack/Middleware/XSendfile.pm
 lib/Plack/MIME.pm
@@ -106,15 +107,6 @@ lib/Plack/Request.pm
 lib/Plack/Request/Upload.pm
 lib/Plack/Response.pm
 lib/Plack/Runner.pm
-lib/Plack/Server.pm
-lib/Plack/Server/Apache1.pm
-lib/Plack/Server/Apache2.pm
-lib/Plack/Server/CGI.pm
-lib/Plack/Server/FCGI.pm
-lib/Plack/Server/README
-lib/Plack/Server/ServerSimple.pm
-lib/Plack/Server/Standalone.pm
-lib/Plack/Server/Standalone/Prefork.pm
 lib/Plack/TempBuffer.pm
 lib/Plack/TempBuffer/Auto.pm
 lib/Plack/TempBuffer/File.pm
@@ -260,7 +252,6 @@ t/Plack-Response/new.t
 t/Plack-Response/redirect.t
 t/Plack-Response/response.t
 t/Plack-Runner/options.t
-t/Plack-Server/compat.t
 t/Plack-TempBuffer/print.t
 t/Plack-Test/2args.t
 t/Plack-Test/cookie.t
