@@ -6,13 +6,6 @@ use parent qw(Plack::Component);
 use Plack::Util;
 use Plack::Util::Accessor qw( app );
 
-sub import {
-    my $class = shift;
-    if (@_) {
-        Carp::carp("use Plack::Middleware qw(Foo) is deprecated. See perldoc Plack::Builder");
-    }
-}
-
 sub wrap {
     my($self, $app, @args) = @_;
     if (ref $self) {
