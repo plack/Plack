@@ -217,11 +217,11 @@ HTTP::Message::PSGI - Converts HTTP::Request and HTTP::Response from/to PSGI env
 
 =head1 DESCRIPTION
 
-HTTP::Message::PSGI gives you convenient methods convert HTTP::Request
-object to PSGI env hash and convert PSGI response array ref to
-HTTP::Response object.
+HTTP::Message::PSGI gives you convenient methods to convert an L<HTTP::Request>
+object to a PSGI env hash and convert a PSGI response arrayref to
+a L<HTTP::Response> object.
 
-If you want the other way round, see L<Plack::Request> and
+If you want the other way around, see L<Plack::Request> and
 L<Plack::Response>.
 
 =head1 METHODS
@@ -232,7 +232,7 @@ L<Plack::Response>.
 
   my $env = req_to_psgi($req [, $key => $val ... ]);
 
-Converts HTTP::Request object into PSGI env hash reference.
+Converts a L<HTTP::Request> object into a PSGI env hash reference.
 
 =item HTTP::Request::to_psgi
 
@@ -244,13 +244,13 @@ Same as C<req_to_psgi> but an instance method in L<HTTP::Request>.
 
   my $res = res_from_psgi([ $status, $headers, $body ]);
 
-Creates HTTP::Response object from PSGI response array ref.
+Creates a L<HTTP::Response> object from a PSGI response array ref.
 
 =item HTTP::Response->from_psgi
 
   my $res = HTTP::Response->from_psgi([ $status, $headers, $body ]);
 
-Same as C<res_from_psgi> but a class method in L<HTTP::Response>.
+Same as C<res_from_psgi>, but is a class method in L<HTTP::Response>.
 
 =back
 

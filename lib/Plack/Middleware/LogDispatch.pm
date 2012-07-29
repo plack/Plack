@@ -55,8 +55,8 @@ Plack::Middleware::LogDispatch - Uses Log::Dispatch to configure logger
 
 =head1 DESCRIPTION
 
-LogDispatch is a Plack::Middleware component that allows you to use
-L<Log::Dispatch> to configure logging object.
+LogDispatch is a L<Plack::Middleware> component that allows you to use
+L<Log::Dispatch> to configure the logging object, C<psgix.logger>.
 
 =head1 CONFIGURATION
 
@@ -64,7 +64,7 @@ L<Log::Dispatch> to configure logging object.
 
 =item logger
 
-Log::Dispatch object to send logs to. Required.
+L<Log::Dispatch> object to send logs to. Required.
 
 =back
 
@@ -76,5 +76,8 @@ Tatsuhiko Miyagawa
 
 L<Log::Dispatch>
 
+L<Plack::Middleware::Log4perl>
+
+L<Plack::Middleware::Log::Contextual>
 =cut
 

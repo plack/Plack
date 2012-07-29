@@ -59,8 +59,8 @@ Plack::Middleware::Log4perl - Uses Log::Log4perl to configure logger
 
 =head1 DESCRIPTION
 
-Log4perl is a Plack::Middleware component that allows you to use
-L<Log::Log4perl> to configure logging object.
+Log4perl is a L<Plack::Middleware> component that allows you to use
+L<Log::Log4perl> to configure the logging object, C<psgix.logger>.
 
 =head1 CONFIGURATION
 
@@ -68,13 +68,13 @@ L<Log::Log4perl> to configure logging object.
 
 =item category
 
-The log4perl category to send logs to. Defaults to C<''> which means
+The C<log4perl> category to send logs to. Defaults to C<''> which means
 it send to the root logger.
 
 =item conf
 
 The configuration file path (or a scalar ref containing the config
-string) for Log::Log4perl to automatically configure.
+string) for L<Log::Log4perl> to automatically configure.
 
 =back
 
@@ -84,7 +84,11 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<Log::Dispatch>
+L<Log::Log4perl>
+
+L<Plack::Middleware::LogDispatch>
+
+L<Plack::Middleware::Log::Contextual>
 
 =cut
 

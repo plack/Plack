@@ -33,7 +33,7 @@ Plack::Middleware::Runtime - Sets an X-Runtime response header
 =head1 DESCRIPTION
 
 Plack::Middleware::Runtime is a Plack middleware component that sets
-application's response time, in seconds to I<X-Runtime> HTTP response
+the application's response time (in seconds) in the I<X-Runtime> HTTP response
 header.
 
 =head1 OPTIONS

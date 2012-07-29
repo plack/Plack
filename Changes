@@ -3,7 +3,7 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 1.0001  Thu Jul 26 16:24:13 PDT 2012
     [INCOMPATIBLE CHANGES]
         - Deleted lots of code, methods and warnings that have been deprecated since 0.99
-          (which should've been done in 1.0000 release)
+          (which should have been done in the 1.0000 release)
 
     [DEVELOPERS]
         - Added bootstrap script to install devel dependencies
