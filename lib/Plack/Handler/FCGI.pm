@@ -281,7 +281,7 @@ Maximum length of the queue of pending connections
 
 =head2 WEB SERVER CONFIGURATIONS
 
-In all cases, you will want to install L<FCGI> and L<FGCI::ProcManager>.
+In all cases, you will want to install L<FCGI> and L<FCGI::ProcManager>.
 You may find it most convenient to simply install L<Task::Plack> which
 includes both of these.
 
