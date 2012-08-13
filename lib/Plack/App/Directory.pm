@@ -74,7 +74,7 @@ sub serve_path {
     my $dh = DirHandle->new($dir);
     my @children;
     while (defined(my $ent = $dh->read)) {
-        next if $ent eq '.';
+        next if $ent eq '.' or $ent eq '..';
         push @children, $ent;
     }
 
