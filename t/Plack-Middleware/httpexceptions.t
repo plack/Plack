@@ -26,14 +26,24 @@ sub location { "http://somewhere/else" }
 
 package main;
 
+my $psgi_errors;
+
 my $app = sub {
     my $env = shift;
+
+    $env->{'psgi.errors'} = do { open my $io, ">>", \$psgi_errors; $io };
+
     if ($env->{PATH_INFO} eq '/secret') {
         HTTP::Error::Forbidden->throw;
     }
     if ($env->{PATH_INFO} eq '/redirect') {
         HTTP::Error::Redirect->throw;
     }
+
+    if ($env->{PATH_INFO} eq '/uncaught') {
+        die 'ugly stack trace here';
+    }
+
     HTTP::Error::InternalServerError->throw;
 };
 
@@ -54,6 +64,10 @@ test_psgi $app, sub {
     $res = $cb->(GET '/redirect');
     is $res->code, 302;
     is $res->header('Location'), 'http://somewhere/else';
+
+    $res = $cb->(GET '/uncaught');
+    is $res->code, 500;
+    like $psgi_errors, qr/ugly stack trace here/;
 };
 
 done_testing;
