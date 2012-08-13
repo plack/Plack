@@ -55,11 +55,11 @@ Plack::Middleware - Base class for easy-to-use PSGI middleware
 
 Plack::Middleware is a utility base class to write PSGI
 middleware. All you have to do is to inherit from Plack::Middleware
-and then implement the callback C<call> method (or C<to_app> method
+and then implement the callback C<call> method (or the C<to_app> method
 that would return the PSGI code reference) to do the actual work. You
 can use C<< $self->app >> to call the original (wrapped) application.
 
-Your middleware object is created at a PSGI application compile time
+Your middleware object is created at the the PSGI application compile time
 and is persistent during the web server life cycle (unless it is a
 non-persistent environment such as CGI), so you should never set or
 cache per-request data like C<$env> in your middleware object. See
@@ -67,7 +67,7 @@ also L<Plack::Component/"OBJECT LIFECYCLE">.
 
 See L<Plack::Builder> how to actually enable middleware in your
 I<.psgi> application file using the DSL. If you do not like our
-builder DSL, you can also use C<wrap> method to wrap your application
+builder DSL, you can also use the C<wrap> method to wrap your application
 with a middleware:
 
   use Plack::Middleware::Foo;
@@ -91,7 +91,7 @@ The typical middleware is written like this:
       return $res;
   }
 
-The tricky thing about post processing the response is that it could
+The tricky thing about post-processing the response is that it could
 either be an immediate 3 element array ref, or a code reference that
 implements the delayed (streaming) interface.
 
@@ -107,8 +107,7 @@ middleware.
   });
 
 The callback function gets a PSGI response as a 3 element array
-reference, and you can update the reference to implement the post
-processing.
+reference, and you can update the reference to implement the post-processing.
 
   package Plack::Middleware::Always500;
   use parent qw(Plack::Middleware);
@@ -152,9 +151,9 @@ do:
       return;
   });
 
-The third element of PSGI response array ref is a body, and it could
-be either array ref or IO::Handle-ish object. The application could
-also make use of C<$writer> object if C<psgi.streaming> is in
+The third element of the PSGI response array ref is a body, and it could
+be either an arrayref or L<IO::Handle>-ish object. The application could
+also make use of the C<$writer> object if C<psgi.streaming> is in
 effect. Dealing with these variants is again really painful, and
 C<response_cb> can take care of that too, by allowing you to return a
 content filter as a code reference.

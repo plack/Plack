@@ -105,7 +105,7 @@ Plack::App::URLMap is a PSGI application that can dispatch multiple
 applications based on URL path and hostnames (a.k.a "virtual hosting")
 and takes care of rewriting C<SCRIPT_NAME> and C<PATH_INFO> (See
 L</"HOW THIS WORKS"> for details). This module is inspired by
-Rack::URLMap.
+Ruby's Rack::URLMap.
 
 =head1 METHODS
 
@@ -117,14 +117,15 @@ Rack::URLMap.
   $urlmap->map("http://bar.example.com/" => $another_app);
 
 Maps URL path or an absolute URL to a PSGI application. The match
-order is sorted by host name length and then path length.
+order is sorted by host name length and then path length (longest strings
+first).
 
 URL paths need to match from the beginning and should match completely
-till the path separator (or the end of the path). For example, if you
-register the path C</foo>, it B<will> match with the request C</foo>,
-C</foo/> or C</foo/bar> but it B<won't> match with C</foox>.
+until the path separator (or the end of the path). For example, if you
+register the path C</foo>, it I<will> match with the request C</foo>,
+C</foo/> or C</foo/bar> but it I<won't> match with C</foox>.
 
-Mapping URL with host names is also possible, and in that case the URL
+Mapping URLs with host names is also possible, and in that case the URL
 mapping works like a virtual host.
 
 Mappings will nest.  If $app is already mapped to C</baz> it will

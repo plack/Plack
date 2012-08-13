@@ -154,13 +154,13 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
 =head1 DESCRIPTION
 
 Plack::Builder gives you a quick domain specific language (DSL) to
-wrap your application with Plack::Middleware subclasses. The
+wrap your application with L<Plack::Middleware> subclasses. The
 middleware you're trying to use should use L<Plack::Middleware> as a
 base class to use this DSL, inspired by Rack::Builder.
 
 Whenever you call C<enable> on any middleware, the middleware app is
 pushed to the stack inside the builder, and then reversed when it
-actually creates a wrapped application handler. "Plack::Middleware::"
+actually creates a wrapped application handler. C<"Plack::Middleware::">
 is added as a prefix by default. So:
 
   builder {
@@ -182,8 +182,8 @@ Plack::Builder allows you to code middleware inline using a nested
 code reference.
 
 If the first argument to C<enable> is a code reference, it will be
-passed an C<$app> and is supposed to return another code reference
-which is PSGI application that consumes C<$env> in runtime. So:
+passed an C<$app> and should return another code reference
+which is a PSGI application that consumes C<$env> at runtime. So:
 
   builder {
       enable sub {
@@ -210,7 +210,7 @@ is equal to:
 
 =head1 URLMap support
 
-Plack::Builder has a native support for L<Plack::App::URLMap> with C<mount> method.
+Plack::Builder has a native support for L<Plack::App::URLMap> via the C<mount> method.
 
   use Plack::Builder;
   my $app = builder {
@@ -222,7 +222,7 @@ Plack::Builder has a native support for L<Plack::App::URLMap> with C<mount> meth
   };
 
 See L<Plack::App::URLMap>'s C<map> method to see what they mean. With
-builder you can't use C<map> as a DSL, for the obvious reason :)
+C<builder> you can't use C<map> as a DSL, for the obvious reason :)
 
 B<NOTE>: Once you use C<mount> in your builder code, you have to use
 C<mount> for all the paths, including the root path (C</>). You can't
@@ -255,12 +255,12 @@ Note that the C<builder> DSL returns a whole new PSGI application, which means
 
 C<builder { ... }> should normally the last statement of a C<.psgi>
 file, because the return value of C<builder> is the application that
-actually is executed.
+is actually executed.
 
 =item *
 
-You can nest your C<builder> block, mixed with C<mount> (see URLMap
-support above):
+You can nest your C<builder> blocks, mixed with C<mount> statements (see L</"URLMap support">
+above):
 
   builder {
       mount "/foo" => builder {
@@ -268,8 +268,8 @@ support above):
       }
   }
 
-will locate the C<$app> under C</foo/bar> since the inner C<builder>
-block puts it under C</bar> and it results a new PSGI application
+will locate the C<$app> under C</foo/bar>, since the inner C<builder>
+block puts it under C</bar> and it results in a new PSGI application
 which is located under C</foo> because of the outer C<builder> block.
 
 =back
