@@ -88,7 +88,5 @@ L<Log::Log4perl>
 
 L<Plack::Middleware::LogDispatch>
 
-L<Plack::Middleware::Log::Contextual>
-
 =cut
 

@@ -78,6 +78,5 @@ L<Log::Dispatch>
 
 L<Plack::Middleware::Log4perl>
 
-L<Plack::Middleware::Log::Contextual>
 =cut
 
