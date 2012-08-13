@@ -70,8 +70,8 @@ Plack::Component - Base class for PSGI endpoints
 
 =head1 DESCRIPTION
 
-Plack::Component is the base class shared between Plack::Middleware
-and Plack::App::* modules. If you are writing middleware, you should
+Plack::Component is the base class shared between L<Plack::Middleware>
+and C<Plack::App::*> modules. If you are writing middleware, you should
 inherit from L<Plack::Middleware>, but if you are writing a
 Plack::App::* you should inherit from this directly.
 
@@ -93,8 +93,8 @@ as an argument and is expected to return a proper PSGI response value.
 
 =item new (%opts | \%opts)
 
-The constructor accepts either a hash or a hash-ref and uses that to
-create the instance with. It will call no other methods and simply return
+The constructor accepts either a hash or a hashref and uses that to
+create the instance. It will call no other methods and simply return
 the instance that is created.
 
 =item prepare_app
@@ -106,7 +106,7 @@ prepare your component before it is packaged as a PSGI C<$app>.
 
 This is the method used in several parts of the Plack infrastructure to
 convert your component into a PSGI C<$app>. You should not ever need to
-override this method, it is recommended to use C<prepare_app> and C<call>
+override this method; it is recommended to use C<prepare_app> and C<call>
 instead.
 
 =item response_cb

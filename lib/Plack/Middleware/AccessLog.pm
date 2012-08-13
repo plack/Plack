@@ -134,8 +134,8 @@ can be specified using Apache-like format strings (or C<combined> or
 C<common> for the default formats). If none is specified C<combined> is
 used.
 
-This middleware uses calculable content-length by checking body type,
-and can not log the time taken to serve requests. It also logs the
+This middleware uses calculable Content-Length by checking body type,
+and cannot log the time taken to serve requests. It also logs the
 request B<before> the response is actually sent to the client. Use
 L<Plack::Middleware::AccessLog::Timed> if you want to log details
 B<after> the response is transmitted (more like a real web server) to
@@ -185,7 +185,7 @@ with one of the mandatory modifier flags C<i>, C<o> or C<t>:
   enable "Plack::Middleware::AccessLog",
       logger => sub { $logger->log(level => 'debug', message => @_) };
 
-Sets a callback to print log message to. It prints to C<psgi.errors>
+Sets a callback to print log message to. It prints to the C<psgi.errors>
 output stream by default.
 
 =back
