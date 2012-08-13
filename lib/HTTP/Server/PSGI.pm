@@ -315,8 +315,11 @@ This server should be great for the development and testing, but might
 not be suitable for a production use.
 
 Some features in HTTP/1.1, notably chunked requests, responses and
-pipeline requests are B<NOT> supported. See L<Starman> if you want
-those features.
+pipeline requests are B<NOT> supported, and it also does not support
+HTTP/0.9.
+
+See L<Starman> or uWSGI server if you want HTTP/1.1 and other features
+ready for a production use.
 
 =head1 PREFORKING
 
