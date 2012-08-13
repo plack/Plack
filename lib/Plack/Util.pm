@@ -373,6 +373,13 @@ already fully qualified.
   my $class = Plack::Util::load_class("Baz", "Foo::Bar");       # Foo::Bar::Baz
   my $class = Plack::Util::load_class("+XYZ::ZZZ", "Foo::Bar"); # XYZ::ZZZ
 
+Note that this function doesn't validate (or "sanitize") the passed
+string, hence if you pass a user input to this function (which is an
+insecure thing to do in the first place) it might lead to unexpected
+behavior of loading files outside your C<@INC> path. If you want a
+generic module loading function, you should check out CPAN modules
+such as L<Module::Runtime>.
+
 =item is_real_fh
 
   if ( Plack::Util::is_real_fh($fh) ) { }
