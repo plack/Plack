@@ -12,6 +12,7 @@ sub new {
         loader   => 'Plack::Loader',
         includes => [],
         modules  => [],
+        default_middleware => 1,
         @_,
     }, $class;
 }
@@ -56,6 +57,7 @@ sub parse_options {
         "access-log=s" => \$self->{access_log},
         "h|help"       => \$self->{help},
         "v|version"    => \$self->{version},
+        "default-middleware!" => \$self->{default_middleware},
     );
 
     my(@options, @argv);
@@ -193,10 +195,12 @@ sub apply_middleware {
 sub prepare_devel {
     my($self, $app) = @_;
 
-    $app = $self->apply_middleware($app, 'Lint');
-    $app = $self->apply_middleware($app, 'StackTrace');
-    if (!$ENV{GATEWAY_INTERFACE} and !$self->{access_log}) {
-        $app = $self->apply_middleware($app, 'AccessLog');
+    if ($self->{default_middleware}) {
+        $app = $self->apply_middleware($app, 'Lint');
+        $app = $self->apply_middleware($app, 'StackTrace');
+        if (!$ENV{GATEWAY_INTERFACE} and !$self->{access_log}) {
+            $app = $self->apply_middleware($app, 'AccessLog');
+        }
     }
 
     push @{$self->{options}}, server_ready => sub {

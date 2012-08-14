@@ -166,7 +166,13 @@ or frameworks to tell which environment setting the application is running on.
 
 Common values are C<development>, C<deployment>, and C<test>. The default value
 is C<development>, which causes C<plackup> to load the middleware components:
-I<AccessLog>, I<StackTrace> and I<Lint>.
+I<AccessLog>, I<StackTrace> and I<Lint> unless when C<--no-default-middleware>
+is set.
+
+=item --no-default-middleware
+
+This prevents loading default middleware stack even when Plack
+environment (i.e. C<-E> or C<PLACK_ENV>) is set to C<development>.
 
 =item -r, --reload
 
