@@ -1,5 +1,18 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0002  Mon Aug 13 17:04:25 PDT 2012
+    [NEW FEATURES]
+        - Added --no-default-middleware option to plackup #290
+
+    [BUG FIXES]
+        - Use C locale for AccessLog strftime #313
+        - Escape Plack::Request URI path using RFC 3986 definition (ssmccoy)
+
+    [IMPROVEMENTS]
+        - Documentation improvements (ether, Tom Heady)
+        - Skip displaying ".." in Plack::App::Directory #277
+        - Document load_class() doesn't validate user input. #285
+
 1.0001  Thu Jul 26 16:24:13 PDT 2012
     [INCOMPATIBLE CHANGES]
         - Deleted lots of code, methods and warnings that have been deprecated since 0.99
