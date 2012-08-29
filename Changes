@@ -1,5 +1,11 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0003  Wed Aug 29 13:44:53 PDT 2012
+    [BUG FIXES]
+        - Fix Basic authentication error in case password contains a colon #319
+        - Fix AccessLog middleware in platforms where %z strftime is not supported #318
+        - Escape $_ in Plack::Request path method due to a possible URI::Escape bug
+
 1.0002  Mon Aug 13 17:04:25 PDT 2012
     [NEW FEATURES]
         - Added --no-default-middleware option to plackup #290
