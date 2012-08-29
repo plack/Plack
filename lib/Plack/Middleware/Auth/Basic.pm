@@ -25,7 +25,7 @@ sub call {
     # note the 'i' on the regex, as, accoring to RFC2617 this is a 
     # "case-insensitive token to identify the authentication scheme"
     if ($auth =~ /^Basic (.*)$/i) {
-        my($user, $pass) = split /:/, (MIME::Base64::decode($1) || ":");
+        my($user, $pass) = split /:/, (MIME::Base64::decode($1) || ":"), 2;
         $pass = '' unless defined $pass;
         if ($self->authenticator->($user, $pass, $env)) {
             $env->{REMOTE_USER} = $user;

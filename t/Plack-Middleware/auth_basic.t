@@ -9,9 +9,14 @@ $app = builder {
     $app;
 };
 
+my %map = (
+  admin => 's3cr3t',
+  john  => 'foo:bar',
+);
+
 sub cb {
     my($username, $password) = @_;
-    return $username eq 'admin' && $password eq 's3cr3t';
+    return $map{$username} && $password eq $map{$username};
 }
 
 test_psgi app => $app, client => sub {
@@ -24,6 +29,11 @@ test_psgi app => $app, client => sub {
     $res = $cb->($req);
     is $res->code, 200;
     is $res->content, "Hello admin";
+
+    my $req = GET "http://localhost/", "Authorization" => "Basic am9objpmb286YmFy";
+    $res = $cb->($req);
+    is $res->code, 200;
+    is $res->content, "Hello john";
 };
 done_testing;
 
