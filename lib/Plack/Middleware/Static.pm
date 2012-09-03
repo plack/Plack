@@ -68,6 +68,10 @@ response will be returned.
 The content type returned will be determined from the file extension
 based on L<Plack::MIME>.
 
+Note that if you are building an app using L<Plack::App::URLMap>, you should
+consider using L<Plack::App::File> to serve static files instead. This makes
+the overall routing of your application simpler to understand.
+
 =head1 CONFIGURATIONS
 
 =over 4
