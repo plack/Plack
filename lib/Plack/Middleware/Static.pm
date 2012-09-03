@@ -53,24 +53,21 @@ Plack::Middleware::Static - serve static files with Plack
 
 =head1 DESCRIPTION
 
-Enable this middleware to allow your Plack-based application to serve
-static files.
-
-If the given request matches with the pattern defined in C<path>, this
-middleware will try to locate the file in C<root>. If the file exists
-it will be served but otherwise C<404> response will be returned. See
-C<pass_through> option below to change this behavior.
-
-If the requested document is not within the C<root> (i.e. directory
-traversal) or the file is there but not readable, a 403 Forbidden
-response will be returned.
-
-The content type returned will be determined from the file extension
-based on L<Plack::MIME>.
+This middleware allows your Plack-based application to serve static files.
 
 Note that if you are building an app using L<Plack::App::URLMap>, you should
 consider using L<Plack::App::File> to serve static files instead. This makes
 the overall routing of your application simpler to understand.
+
+With this middleware, if a static file exists for the requested path, it will
+be served. If it does not exist, by default this middleware returns a 404, but
+you can set the C<pass_through> option to change this behavior.
+
+If the requested document is not within the C<root> or the file is there but
+not readable, this middleware will return a 403 Forbidden response.
+
+The content type returned will be determined from the file extension by using
+L<Plack::MIME>.
 
 =head1 CONFIGURATIONS
 
@@ -81,35 +78,38 @@ the overall routing of your application simpler to understand.
   enable "Plack::Middleware::Static",
       path => qr{^/static/}, root => 'htdocs/';
 
-C<path> specifies the URL pattern (regular expression) or a callback
-to match with requests to serve static files for. C<root> specifies
-the root directory to serve those static files from. The default value
-of C<root> is the current directory.
+The C<path> option specifies the URL pattern (regular expression) or a
+callback to match against requests. If the <path> option matches, the
+middleware looks in C<root> to find the static files to serve. The default
+value of C<root> is the current directory.
 
-This examples configuration serves C</static/foo.jpg> from
-C<htdocs/static/foo.jpg>. Note that the matched C</static/> portion is
-still appears in the local mapped path. If you don't like it, use a
-callback instead to munge C<$_>:
+This example configuration serves C</static/foo.jpg> from
+C<htdocs/static/foo.jpg>. Note that the matched portion of the path,
+C</static/>, still appears in the locally mapped path under C<root>. If you
+don't want this to happen, you can use a callback to munge the path as you
+match it:
 
   enable "Plack::Middleware::Static",
       path => sub { s!^/static/!! }, root => 'static-files/';
 
-This configuration would serve C</static/foo.png> from
-C<static-files/foo.png> (not C<static-files/static/foo.png>). The
-callback specified in C<path> option matches against C<$_> and then
-updates the value since it does s///, and returns the number of
-matches, so it will pass through when C</static/> doesn't match.
+The callback should operate on C<$_> and return a true or false value. Any
+changes it makes to C<$_> are used when looking for the static file in the
+C<root>.
 
-If you want to map multiple static directories from different root,
-simply add "this", middleware multiple times with different
-configuration options.
+The configuration above serves C</static/foo.png> from
+C<static-files/foo.png>, not C<static-files/static/foo.png>. The callback
+specified in the C<path> option matches against C<$_> munges this value using
+C<s///>. The subsitution operator returns the number of matches it made, so it
+will return true when the path matches C<^/static>.
+
+If you want to map multiple static directories from different roots, simply
+add this middleware multiple times with different configuration options.
 
 =item pass_through
 
-By turning on this option, this middleware will pass the request
-back to the application for further processing, if the incoming
-request path matches with the C<path> but the requested file is not
-found on the file system.
+When this option is set to a true value, then this middleware will never
+return a 404 if it cannot find a matching file. Instead, it will simply pass
+the request on to the application it is wrapping.
 
 =back
 
