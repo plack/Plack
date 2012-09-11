@@ -1,8 +1,10 @@
 package Plack::TempBuffer;
 use strict;
 use warnings;
-use Plack::Util;
 use FileHandle; # for seek etc.
+use Plack::TempBuffer::PerlIO ();
+use Plack::TempBuffer::File ();
+use Plack::TempBuffer::Auto ();
 
 our $MaxMemoryBufferSize = 1024 * 1024;
 
@@ -29,7 +31,8 @@ sub new {
 
 sub create {
     my($class, $backend, $length, $max) = @_;
-    Plack::Util::load_class($backend, $class)->new($length, $max);
+    my $package = "$class\::$backend";
+    $package->new($length, $max);
 }
 
 sub print;
