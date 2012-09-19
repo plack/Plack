@@ -23,11 +23,17 @@ test_tcp(
                     );
                     last unless $rlen > 0;
                 }
-                return [
-                    200,
-                    [ 'Content-Type' => 'text/plain' ],
-                    [ $buf ],
-                ];
+                return $env->{PATH_INFO} =~ m[^/_KILL] 
+                  ? [ 200,
+                      [ 'Content-Type' => 'text/plain',
+                        'harakiri.commit'  => 1],
+                      [ "sorry, dude, this was your last request" ]
+                    ]
+                  : [
+                      200,
+                      [ 'Content-Type' => 'text/plain' ],
+                      [ $buf ],
+                    ];
             },
         );
     },
@@ -51,6 +57,16 @@ EOT
         ok $res->is_success;
         is $res->code, 200;
         is $res->content, 'a=1';
+
+        note 'send kill request';
+        $res = $ua->post("http://127.0.0.1:$port/_KILL", { a => 1 });
+        ok $res->is_success, "got response";
+        is $res->code, 200, "response OK";
+        like $res->content, qr/last request/, "was last request";
+
+        note 'check that the server is dead';
+        $res = $ua->post("http://127.0.0.1:$port/", { a => 1 });
+        ok !$res->is_success, "no response";
     },
 );
 

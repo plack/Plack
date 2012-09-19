@@ -120,12 +120,14 @@ sub accept_loop {
                 'psgi.multiprocess' => Plack::Util::FALSE,
                 'psgi.streaming'    => Plack::Util::TRUE,
                 'psgi.nonblocking'  => Plack::Util::FALSE,
+                'psgix.harakiri'    => Plack::Util::TRUE,
                 'psgix.input.buffered' => Plack::Util::TRUE,
                 'psgix.io'          => $conn,
             };
 
             $self->handle_connection($env, $conn, $app);
             $conn->close;
+            last if $self->{"HARAKIRI.COMMIT"};
         }
     }
 }
@@ -200,6 +202,10 @@ sub _handle_response {
         my ($k, $v) = @_;
         push @lines, "$k: $v\015\012";
     });
+
+    # tell the accept loop to stop if the client wants to commit harakiri
+    $self->{"HARAKIRI.COMMIT"} = 1
+      if Plack::Util::header_get($res->[1], 'harakiri.commit');
 
     unshift @lines, "HTTP/1.0 $res->[0] @{[ HTTP::Status::status_message($res->[0]) ]}\015\012";
     push @lines, "\015\012";
@@ -325,6 +331,20 @@ ready for a production use.
 
 L<HTTP::Server::PSGI> does B<NOT> support preforking. See L<Starman>
 or L<Starlet> if you want a multi-process prefork web servers.
+
+=head1 STOPPING THE SERVER
+
+For stopping the server, the application hosted by the call to
+C<< $server->run($app) >> should issue a response containing
+a special header named C<harakiri.commit>, with a true value.
+
+This may be useful if you want a program to become a HTTP server at some
+point, until a specific request ends the service and the program
+resumes normal execution.  This is what happens for example in
+L<Tree::Navigator::App::PerlDebug>, where a call to C<debug()> stops
+normal program execution, starts a web server to browse through
+datastructures and packages, until the web server is stopped through a
+C<_KILL> http request.
 
 =head1 AUTHOR
 
