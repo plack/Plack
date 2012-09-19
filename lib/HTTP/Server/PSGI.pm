@@ -332,6 +332,20 @@ ready for a production use.
 L<HTTP::Server::PSGI> does B<NOT> support preforking. See L<Starman>
 or L<Starlet> if you want a multi-process prefork web servers.
 
+=head1 STOPPING THE SERVER
+
+For stopping the server, the application hosted by the call to
+C<< $server->run($app) >> should issue a response containing
+a special header named C<harakiri.commit>, with a true value.
+
+This may be useful if you want a program to become a HTTP server at some
+point, until a specific request ends the service and the program
+resumes normal execution.  This is what happens for example in
+L<Tree::Navigator::App::PerlDebug>, where a call to C<debug()> stops
+normal program execution, starts a web server to browse through
+datastructures and packages, until the web server is stopped through a
+C<_KILL> http request.
+
 =head1 AUTHOR
 
 Kazuho Oku
