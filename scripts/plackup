@@ -36,7 +36,7 @@ line.
 
 plackup automatically figures out the environment it is run in, and
 runs your application in that environment. FastCGI, CGI, AnyEvent and
-others can all be detected. See L<Plack::Loader> for the authorative
+others can all be detected. See L<Plack::Loader> for the authoritative
 list.
 
 C<plackup> assumes you have an C<app.psgi> script in your current directory.
@@ -100,7 +100,7 @@ is equivalent to the PSGI application:
 
 Note that when you use C<-e> option to enable middleware, plackup
 doesn't assume the implicit C<app.psgi> path. You must either pass the
-path to your C<.psgi> file in the command line arguments, or load the
+path to your C<.psgi> file in the command line arguments or load the
 application inside C<-e> after the C<enable>.
 
   plackup                                # Runs app.psgi
@@ -110,8 +110,8 @@ application inside C<-e> after the C<enable>.
 
 =item -o, --host
 
-Binds to a TCP interface. Defauts to undef, which lets most server backends
-bind the any (*) interface. This option is only valid for servers which support
+Binds to a TCP interface. Defaults to undef, which lets most server backends
+bind to the any (*) interface. This option is only valid for servers which support
 TCP sockets.
 
 =item -p, --port
@@ -166,12 +166,12 @@ or frameworks to tell which environment setting the application is running on.
 
 Common values are C<development>, C<deployment>, and C<test>. The default value
 is C<development>, which causes C<plackup> to load the middleware components:
-I<AccessLog>, I<StackTrace> and I<Lint> unless when C<--no-default-middleware>
+I<AccessLog>, I<StackTrace>, and I<Lint> unless C<--no-default-middleware>
 is set.
 
 =item --no-default-middleware
 
-This prevents loading default middleware stack even when Plack
+This prevents loading the default middleware stack even when Plack
 environment (i.e. C<-E> or C<PLACK_ENV>) is set to C<development>.
 
 =item -r, --reload
@@ -198,7 +198,7 @@ paths:
 
 Specifies the server loading subclass that implements how to run the server.
 Available options are I<Plack::Loader> (default), I<Restarter> (automatically
-set when C<-r> or C<-R> is used), I<Delayed> and I<Shotgun>.
+set when C<-r> or C<-R> is used), I<Delayed>, and I<Shotgun>.
 
 See L<Plack::Loader::Delayed> and L<Plack::Loader::Shotgun> for more details.
 
