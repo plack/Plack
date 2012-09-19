@@ -120,12 +120,14 @@ sub accept_loop {
                 'psgi.multiprocess' => Plack::Util::FALSE,
                 'psgi.streaming'    => Plack::Util::TRUE,
                 'psgi.nonblocking'  => Plack::Util::FALSE,
+                'psgix.harakiri'    => Plack::Util::TRUE,
                 'psgix.input.buffered' => Plack::Util::TRUE,
                 'psgix.io'          => $conn,
             };
 
             $self->handle_connection($env, $conn, $app);
             $conn->close;
+            last if $env->{'psgix.harakiri.commit'};
         }
     }
 }
@@ -325,6 +327,21 @@ ready for a production use.
 
 L<HTTP::Server::PSGI> does B<NOT> support preforking. See L<Starman>
 or L<Starlet> if you want a multi-process prefork web servers.
+
+=head1 HARAKIRI SUPPORT
+
+This web server supports `psgix.harakiri` extension defined in the
+L<PSGI::Extensions>.
+
+This application is a non-forking single process web server
+(i.e. `psgi.multiprocess` is false), and if your application commits
+harakiri, the entire web server stops too. In case this behavior is
+not what you want, be sure to check `psgi.multiprocess` as well to
+enable harakiri only in the preforking servers such as L<Starman>.
+
+On the other hand, this behavior might be handy if you want to embed
+this module in your application and serve HTTP requests for only short
+period of time, then go back to your main program.
 
 =head1 AUTHOR
 
