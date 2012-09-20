@@ -1,5 +1,13 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0004  Thu Sep 20 08:36:11 JST 2012
+    [NEW FEATURES]
+        - Added psgix.harakiri support in HTTP::Server::PSGI
+
+    [IMPROVEMENTS]
+        - Preload TempBuffer modules (avar)
+        - Documentation fixes (autarch)
+
 1.0003  Wed Aug 29 13:44:53 PDT 2012
     [BUG FIXES]
         - Fix Basic authentication error in case password contains a colon #319
