@@ -30,7 +30,7 @@ tests 't/*.t t/*/*.t';
 author_tests 'xt';
 
 install_share 'share';
-install_script 'scripts/plackup';
+install_script 'bin/plackup';
 
 auto_set_repository;
 

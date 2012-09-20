@@ -1,6 +1,6 @@
 benchmarks/ab.pl
 benchmarks/fcgi.pl
-bootstrap
+bin/plackup
 Changes
 eg/dot-psgi/cgi-pm.psgi
 eg/dot-psgi/cgi-script.psgi
@@ -121,7 +121,7 @@ Makefile.PL
 MANIFEST			This list of files
 META.yml
 README
-scripts/plackup
+script/bootstrap
 share/#foo
 share/baybridge.jpg
 share/face.jpg
