@@ -6,6 +6,10 @@ sub diag {
     warn "------> $_[0]\n";
 }
 
+if (`cpanm --version` !~ /cpanminus/) {
+    die "cpanm: not found. Install it first with: curl -L cpanmin.us | perl - App::cpanminus\n";
+}
+
 diag "Installing Module::Install and plugins";
 system "cpanm", qw(
   Module::Install
