@@ -61,7 +61,7 @@ sub cookies {
     $self->env->{'plack.cookie.string'} = $self->env->{HTTP_COOKIE};
 
     my %results;
-    my @pairs = grep /=/, split "[;,] ?", $self->env->{'plack.cookie.string'};
+    my @pairs = grep m/=/, split "[;,] ?", $self->env->{'plack.cookie.string'};
     for my $pair ( @pairs ) {
         # trim leading trailing whitespace
         $pair =~ s/^\s+//; $pair =~ s/\s+$//;
