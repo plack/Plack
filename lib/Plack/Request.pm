@@ -47,15 +47,18 @@ sub session         { $_[0]->env->{'psgix.session'} }
 sub session_options { $_[0]->env->{'psgix.session.options'} }
 sub logger          { $_[0]->env->{'psgix.logger'} }
 
-sub cookies {
+my $all_or_single_cookies = sub {
     my $self = shift;
+    my %args = @_;
+    my $mode = $args{mode};
+    my $cache_key = $args{cache_key};
 
     return {} unless $self->env->{HTTP_COOKIE};
 
     # HTTP_COOKIE hasn't changed: reuse the parsed cookie
-    if (   $self->env->{'plack.cookie.parsed'}
+    if (   $self->env->{"plack.$cache_key.parsed"}
         && $self->env->{'plack.cookie.string'} eq $self->env->{HTTP_COOKIE}) {
-        return $self->env->{'plack.cookie.parsed'};
+        return $self->env->{"plack.$cache_key.parsed"};
     }
 
     $self->env->{'plack.cookie.string'} = $self->env->{HTTP_COOKIE};
@@ -68,11 +71,33 @@ sub cookies {
 
         my ($key, $value) = map URI::Escape::uri_unescape($_), split( "=", $pair, 2 );
 
-        # Take the first one like CGI.pm or rack do
-        $results{$key} = $value unless exists $results{$key};
+        if ($mode eq 'single') {
+            # Take the first one like CGI.pm or rack do
+            $results{$key} = $value unless exists $results{$key};
+        } elsif ($mode eq 'all') {
+            push @{$results{$key}} => $value;
+        } else {
+            die "PANIC: Unknown cookie parsing mode '$mode'";
+        }
     }
 
-    $self->env->{'plack.cookie.parsed'} = \%results;
+    $self->env->{"plack.$cache_key.parsed"} = \%results;
+};
+
+sub cookies {
+    return $all_or_single_cookies->(
+        @_,
+        mode      => 'single',
+        cache_key => 'cookie',
+    );
+}
+
+sub all_cookies {
+    return $all_or_single_cookies->(
+        @_,
+        mode      => 'all',
+        cache_key => 'all_cookies',
+    );
 }
 
 sub query_parameters {
@@ -434,6 +459,27 @@ using:
 
 Returns a reference to a hash containing the cookies. Values are
 strings that are sent by clients and are URI decoded.
+
+If the request contains multiple cookies for a single value, e.g.:
+
+    Cookie plack_cookie=first_value; plack_cookie=second_value
+
+The I<first_value> will be returned and the rest discarded. If you
+need to return all the values use L</all_cookies> instead.
+
+=item all_cookies
+
+Like L</cookies> except it returns a hash where the values are array
+references that contain all values for provided cookies, E.g. for:
+
+    Cookie plack_cookie=first_value; plack_cookie=second_value; other_cookie=foobar
+
+It'll return:
+
+    {
+        plack_cookie => [ qw(first_value second_value) ],
+        other_cookie => [ 'foobar' ],
+    }
 
 =item query_parameters
 
