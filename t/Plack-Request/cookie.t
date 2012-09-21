@@ -8,11 +8,17 @@ use Plack::Request;
 my $app = sub {
     my $req = Plack::Request->new(shift);
 
-    is $req->cookies->{undef}, undef;
+    is $req->cookies->{undef}, undef, "non-existing keys return undef";
     is $req->cookies->{Foo}, 'Bar';
     is $req->cookies->{Bar}, 'Baz';
     is $req->cookies->{XXX}, 'Foo Bar';
-    is $req->cookies->{YYY}, 0;
+    is $req->cookies->{YYY}, 0, "When we get multiple values we return the first one (which e.g. Apache does too)";
+
+    is $req->all_cookies->{undef}, undef, "non-existing keys return undef";
+    is_deeply $req->all_cookies->{Foo}, ['Bar'];
+    is_deeply $req->all_cookies->{Bar}, ['Baz'];
+    is_deeply $req->all_cookies->{XXX}, ['Foo Bar'];
+    is_deeply $req->all_cookies->{YYY}, [0, 3], "When we get multiple values we return all of them";
 
     $req->new_response(200)->finalize;
 };
