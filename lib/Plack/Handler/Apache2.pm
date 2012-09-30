@@ -50,16 +50,18 @@ sub call_app {
 
     my $env = {
         %ENV,
-        'psgi.version'        => [ 1, 1 ],
-        'psgi.url_scheme'     => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
-        'psgi.input'          => $r,
-        'psgi.errors'         => *STDERR,
-        'psgi.multithread'    => Plack::Util::FALSE,
-        'psgi.multiprocess'   => Plack::Util::TRUE,
-        'psgi.run_once'       => Plack::Util::FALSE,
-        'psgi.streaming'      => Plack::Util::TRUE,
-        'psgi.nonblocking'    => Plack::Util::FALSE,
-        'psgix.harakiri'      => Plack::Util::TRUE,
+        'psgi.version'           => [ 1, 1 ],
+        'psgi.url_scheme'        => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
+        'psgi.input'             => $r,
+        'psgi.errors'            => *STDERR,
+        'psgi.multithread'       => Plack::Util::FALSE,
+        'psgi.multiprocess'      => Plack::Util::TRUE,
+        'psgi.run_once'          => Plack::Util::FALSE,
+        'psgi.streaming'         => Plack::Util::TRUE,
+        'psgi.nonblocking'       => Plack::Util::FALSE,
+        'psgix.harakiri'         => Plack::Util::TRUE,
+        'psgix.cleanup'          => Plack::Util::TRUE,
+        'psgix.cleanup.handlers' => [],
     };
 
     if (defined(my $HTTP_AUTHORIZATION = $r->headers_in->{Authorization})) {
@@ -87,8 +89,22 @@ sub call_app {
         die "Bad response $res";
     }
 
-    if ($env->{'psgix.harakiri.commit'}) {
-        $r->child_terminate;
+    if (@{ $env->{'psgix.cleanup.handlers'} }) {
+        $r->push_handlers(
+            PerlCleanupHandler => sub {
+                for my $cleanup_handler (@{ $env->{'psgix.cleanup.handlers'} }) {
+                    $cleanup_handler->($env);
+                }
+
+                if ($env->{'psgix.harakiri.commit'}) {
+                    $r->child_terminate;
+                }
+            },
+        );
+    } else {
+        if ($env->{'psgix.harakiri.commit'}) {
+            $r->child_terminate;
+        }
     }
 
     return Apache2::Const::OK;
