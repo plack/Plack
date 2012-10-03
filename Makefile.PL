@@ -21,7 +21,7 @@ requires 'Filesys::Notify::Simple';         # plackup -r
 
 requires 'Hash::MultiValue', 0.05;          # Plack::Request
 requires 'HTTP::Body', 1.06;                # Plack::Request
-requires 'Test::TCP', 0.11;                 # Plack::Test needs to be installed
+requires 'Test::TCP', 0.12;                 # Plack::Test needs to be installed
 
 build_requires 'Test::More', 0.88;
 test_requires 'Test::Requires';
