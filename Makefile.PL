@@ -13,6 +13,7 @@ requires 'Pod::Usage', 1.36;                # plackup
 requires 'File::ShareDir', '1.00';          # Plack::Test::Suite
 requires 'Try::Tiny';
 requires 'parent';
+requires 'Stream::Buffered', '0.02';
 
 requires 'Devel::StackTrace', 1.23;         # Middleware::StackTrace
 requires 'Devel::StackTrace::AsHTML', 0.11; # Middleware::StackTrace

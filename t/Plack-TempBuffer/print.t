@@ -2,6 +2,9 @@ use strict;
 use Test::More;
 use Plack::TempBuffer;
 
+my $warn = '';
+$SIG{__WARN__} = sub { $warn .= $_[0] };
+
 {
     my $b = Plack::TempBuffer->new(-1);
     $b->print("foo");
@@ -20,6 +23,8 @@ use Plack::TempBuffer;
     my $fh = $b->rewind;
     isa_ok $fh, 'IO::File';
     is do { local $/; <$fh> }, ('foo' x 5);
+    like $warn, qr/MaxMemoryBufferSize.*deprecated/;
+    $warn = '';
 }
 
 {
@@ -30,6 +35,8 @@ use Plack::TempBuffer;
     my $fh = $b->rewind;
     isa_ok $fh, 'IO::File';
     is do { local $/; <$fh> }, "foo\n";
+    like $warn, qr/MaxMemoryBufferSize.*deprecated/;
+    $warn = '';
 }
 
 done_testing;
