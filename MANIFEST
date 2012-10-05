@@ -108,9 +108,6 @@ lib/Plack/Request/Upload.pm
 lib/Plack/Response.pm
 lib/Plack/Runner.pm
 lib/Plack/TempBuffer.pm
-lib/Plack/TempBuffer/Auto.pm
-lib/Plack/TempBuffer/File.pm
-lib/Plack/TempBuffer/PerlIO.pm
 lib/Plack/Test.pm
 lib/Plack/Test/MockHTTP.pm
 lib/Plack/Test/Server.pm
