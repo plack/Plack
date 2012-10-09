@@ -1,5 +1,16 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0005  Tue Oct  9 13:33:47 PDT 2012
+    [NEW FEATURES]
+        - Support psgix.cleanup handlers in Apache2 (avar)
+        - Added REMOTE_PORT environment variable to HTTP::Server::PSGI (dex4er)        
+
+    [IMPROVEMENTS]
+        - Documentation fix for multiple cookie values (miyagawa)
+        - Delete MOD_PERL environment variable for better compatibilities (avar)
+        - Split out Plack::TempBuffer as a standalone Stream::Buffered module (doy)
+        - Bump Test::TCP dep
+
 1.0004  Thu Sep 20 08:36:11 JST 2012
     [NEW FEATURES]
         - Added psgix.harakiri support in HTTP::Server::PSGI
