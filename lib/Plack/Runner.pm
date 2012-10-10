@@ -55,6 +55,7 @@ sub parse_options {
         'R|Reload=s'   => sub { $self->{loader} = "Restarter"; $self->loader->watch(split ",", $_[1]) },
         'L|loader=s'   => \$self->{loader},
         "access-log=s" => \$self->{access_log},
+        "path=s"       => \$self->{path},
         "h|help"       => \$self->{help},
         "v|version"    => \$self->{version},
         "default-middleware!" => \$self->{default_middleware},
@@ -175,7 +176,14 @@ sub locate_app {
 
     require File::Basename;
     $self->loader->watch( File::Basename::dirname($psgi) . "/lib", $psgi );
-    build { Plack::Util::load_psgi $psgi };
+    my $app = Plack::Util::load_psgi($psgi);
+    if ($self->{path}) {
+        require Plack::App::URLMap;
+        my $urlmap = Plack::App::URLMap->new;
+        $app = $urlmap->mount($self->{path} => $app);
+        $app = $urlmap->to_app($app);
+    }
+    return build { $app };
 }
 
 sub watch {
