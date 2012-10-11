@@ -55,6 +55,7 @@ sub parse_options {
         'R|Reload=s'   => sub { $self->{loader} = "Restarter"; $self->loader->watch(split ",", $_[1]) },
         'L|loader=s'   => \$self->{loader},
         "access-log=s" => \$self->{access_log},
+        "path=s"       => \$self->{path},
         "h|help"       => \$self->{help},
         "v|version"    => \$self->{version},
         "default-middleware!" => \$self->{default_middleware},
@@ -247,6 +248,15 @@ sub run {
     $self->setup;
 
     my $app = $self->locate_app(@args);
+
+    if ($self->{path}) {
+        require Plack::App::URLMap;
+        $app = build {
+            my $urlmap = Plack::App::URLMap->new;
+            $urlmap->mount($self->{path} => $_[0]);
+            $urlmap->to_app;
+        } $app;
+    }
 
     $ENV{PLACK_ENV} ||= $self->{env} || 'development';
     if ($ENV{PLACK_ENV} eq 'development') {
