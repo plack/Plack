@@ -38,7 +38,24 @@ sub call {
             my $sub_r = $self->app->($env);
             if ($sub_r->[0] == 200) {
                 $r->[1] = $sub_r->[1];
-                $r->[2] = $sub_r->[2];
+                if (@$r == 3) {
+                    $r->[2] = $sub_r->[2];
+                }
+                else {
+                    my $full_sub_response = '';
+                    Plack::Util::foreach($sub_r->[2], sub {
+                        $full_sub_response .= $_[0];
+                    });
+
+                    my $returned;
+                    return sub {
+                        if ($returned) {
+                            return defined($_[0]) ? '' : undef;
+                        }
+                        $returned = 1;
+                        return $full_sub_response;
+                    }
+                }
             }
             # TODO: allow 302 here?
         } else {
