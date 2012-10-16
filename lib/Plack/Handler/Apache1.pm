@@ -154,6 +154,16 @@ Plack::Handler::Apache1 - Apache 1.3.x handlers to run PSGI application
 
 This is a handler module to run any PSGI application with mod_perl on Apache 1.3.x.
 
+=head1 STATUS OF THIS MODULE
+
+Due to lack of people using Apache 1.3.x this module has not had
+recent patches (applied to L<Plack::Handler::Apache2>) added to it, as
+no one working on the Plack project has the right test environment.
+
+If you have issues with this code please consider looking at the
+patches for L<Plack::Handler::Apache2> and if they work under Apache
+1.3.x submitting them back to the Plack project.
+
 =head1 AUTHOR
 
 Aaron Trevena
