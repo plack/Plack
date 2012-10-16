@@ -50,18 +50,19 @@ sub call_app {
 
     my $env = {
         %ENV,
-        'psgi.version'           => [ 1, 1 ],
-        'psgi.url_scheme'        => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
-        'psgi.input'             => $r,
-        'psgi.errors'            => *STDERR,
-        'psgi.multithread'       => Plack::Util::FALSE,
-        'psgi.multiprocess'      => Plack::Util::TRUE,
-        'psgi.run_once'          => Plack::Util::FALSE,
-        'psgi.streaming'         => Plack::Util::TRUE,
-        'psgi.nonblocking'       => Plack::Util::FALSE,
-        'psgix.harakiri'         => Plack::Util::TRUE,
-        'psgix.cleanup'          => Plack::Util::TRUE,
-        'psgix.cleanup.handlers' => [],
+        'plack.handler.apache.request.object' => $r,
+        'psgi.version'                        => [ 1, 1 ],
+        'psgi.url_scheme'                     => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
+        'psgi.input'                          => $r,
+        'psgi.errors'                         => *STDERR,
+        'psgi.multithread'                    => Plack::Util::FALSE,
+        'psgi.multiprocess'                   => Plack::Util::TRUE,
+        'psgi.run_once'                       => Plack::Util::FALSE,
+        'psgi.streaming'                      => Plack::Util::TRUE,
+        'psgi.nonblocking'                    => Plack::Util::FALSE,
+        'psgix.harakiri'                      => Plack::Util::TRUE,
+        'psgix.cleanup'                       => Plack::Util::TRUE,
+        'psgix.cleanup.handlers'              => [],
     };
 
     if (defined(my $HTTP_AUTHORIZATION = $r->headers_in->{Authorization})) {
