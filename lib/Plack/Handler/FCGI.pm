@@ -23,6 +23,7 @@ sub new {
     $self->{listen}      ||= [ ":$self->{port}" ] if $self->{port}; # compatibility
     $self->{backlog}     ||= 100;
     $self->{manager}     = 'FCGI::ProcManager' unless exists $self->{manager};
+    $self->{manager_args} = [split /\s+/, ($self->{manager_args} || '')];
 
     $self;
 }
@@ -77,6 +78,7 @@ sub run {
                     pid_fname   => $self->{pid},
                     (exists $self->{proc_title}
                          ? (pm_title => $self->{proc_title}) : ()),
+                    @{$self->{manager_args}},
                 });
             }
 
