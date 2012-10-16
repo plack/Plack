@@ -23,7 +23,15 @@ sub new {
     $self->{listen}      ||= [ ":$self->{port}" ] if $self->{port}; # compatibility
     $self->{backlog}     ||= 100;
     $self->{manager}     = 'FCGI::ProcManager' unless exists $self->{manager};
-    $self->{manager_args} = [split /\s+/, ($self->{manager_args} || '')];
+    $self->{manager_args} ||= [];
+
+    if (!ref $self->{manager_args}) {
+        $self->{manager_args} = [split /\s+/, ($self->{manager_args} || '')];
+    } elsif (ref $self->{manager_args} eq 'HASH') {
+        $self->{manager_args} = [%{$self->{manager_args}}];
+    } elsif (ref $self->{manager_args} ne 'ARRAY') {
+        die 'Invalid manager_args value';
+    }
 
     $self;
 }
