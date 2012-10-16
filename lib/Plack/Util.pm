@@ -123,12 +123,17 @@ package Plack::Sandbox::%s;
 END_EVAL
 }
 
+sub _relativize {
+    my $file = shift;
+    $file =~ m!^/! ? $file : "./$file";
+}
+
 sub load_psgi {
     my $stuff = shift;
 
     local $ENV{PLACK_ENV} = $ENV{PLACK_ENV} || 'development';
 
-    my $file = $stuff =~ /^[a-zA-Z0-9\_\:]+$/ ? class_to_file($stuff) : $stuff;
+    my $file = $stuff =~ /^[a-zA-Z0-9\_\:]+$/ ? class_to_file($stuff) : _relativize($stuff);
     my $app = _load_sandbox($file);
     die "Error while loading $file: $@" if $@;
 

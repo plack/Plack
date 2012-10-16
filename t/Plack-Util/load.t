@@ -52,4 +52,19 @@ use Test::More;
     }
 }
 
+{
+    require Cwd;
+    my $cwd = Cwd::cwd();
+
+    chdir "t/Plack-Util";
+    local @INC = ("./inc", @INC);
+    my $app = Plack::Util::load_psgi("hello.psgi");
+    ok $app;
+    test_psgi $app, sub {
+        is $_[0]->(GET "/")->content, "Hello";
+    };
+
+    chdir $cwd;
+}
+
 done_testing;
