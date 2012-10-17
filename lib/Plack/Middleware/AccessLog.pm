@@ -17,8 +17,9 @@ use POSIX ();
 my $tzoffset = POSIX::strftime("%z", localtime) !~ /^[+-]\d{4}$/ && do {
     require Time::Local;
     my @t = localtime;
-    my $s = int(Time::Local::timegm(@t) - Time::Local::timelocal(@t)) / 60;
-    sprintf '%+03d%02u', $s / 60, $s % 60;
+    my $seconds = Time::Local::timegm(@t) - Time::Local::timelocal(@t);
+    my $min_offset = int($seconds / 60);
+    sprintf '%+03d%02u', $min_offset / 60, $min_offset % 60;
 };
 
 sub call {
