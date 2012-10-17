@@ -13,12 +13,12 @@ my %formats = (
 );
 
 use POSIX ();
-use Time::Local ();
 
 my $tzoffset = POSIX::strftime("%z", localtime) !~ /^[+-]\d{4}$/ && do {
-    my @t = localtime(time);
-    my $s = Time::Local::timegm(@t) - Time::Local::timelocal(@t);
-    sprintf '%+03d%02u', int($s/3600), $s % 3600;
+    require Time::Local;
+    my @t = localtime;
+    my $s = int(Time::Local::timegm(@t) - Time::Local::timelocal(@t)) / 60;
+    sprintf '%+03d%02u', $s / 60, $s % 60;
 };
 
 sub call {
