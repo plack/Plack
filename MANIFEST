@@ -250,6 +250,7 @@ t/Plack-Response/new.t
 t/Plack-Response/redirect.t
 t/Plack-Response/response.t
 t/Plack-Runner/options.t
+t/Plack-Runner/path.t
 t/Plack-TempBuffer/print.t
 t/Plack-Test/2args.t
 t/Plack-Test/cookie.t
@@ -265,6 +266,7 @@ t/Plack-Util/headers.t
 t/Plack-Util/headers_obj.t
 t/Plack-Util/Hello.pm
 t/Plack-Util/hello.psgi
+t/Plack-Util/inc/hello.psgi
 t/Plack-Util/inline_object.t
 t/Plack-Util/io_with_path.t
 t/Plack-Util/is_real_fh.t
