@@ -8,3 +8,5 @@ blib
 .*
 !.gitignore
 !.shipit
+MYMETA.*
+
