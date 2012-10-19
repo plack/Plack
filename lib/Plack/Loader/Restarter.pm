@@ -47,7 +47,7 @@ sub _kill_child {
 
 sub valid_file {
     my($self, $file) = @_;
-    File::Basename::basename($file->{path}) !~ m!^[\._]|\.bak$|~$|_flymake\.p[lm]!;
+    File::Basename::basename($file->{path}) !~ m!^\.|\.bak$|~$|_flymake\.p[lm]!;
 }
 
 sub run {
