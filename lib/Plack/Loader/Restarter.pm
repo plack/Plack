@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use parent qw(Plack::Loader);
 use Plack::Util;
+use File::Basename;
 use Try::Tiny;
 
 sub new {
@@ -46,7 +47,7 @@ sub _kill_child {
 
 sub valid_file {
     my($self, $file) = @_;
-    $file->{path} !~ m![/\\][\._]|\.bak$|~$|_flymake\.p[lm]!;
+    File::Basename::basename($file->{path}) !~ m!^[\._]|\.bak$|~$|_flymake\.p[lm]!;
 }
 
 sub run {
