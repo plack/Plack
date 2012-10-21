@@ -6,15 +6,6 @@ use Plack::Response;
 {
     my $res = Plack::Response->new;
     $res->code(200);
-    $res->header("Foo:Bar" => "baz");
-    $res->body("Hello");
-
-    is_deeply $res->finalize, [ 200, [ 'Foo:Bar' => 'baz' ], ["Hello"] ];
-}
-
-{
-    my $res = Plack::Response->new;
-    $res->code(200);
     $res->header("Foo\000Bar" => "baz");
     $res->header("Qux\177Quux" => "42");
     $res->body("Hello");
