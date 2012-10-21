@@ -1,5 +1,10 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0007  Sat Oct 20 23:20:20 PDT 2012
+    [IMPROVEMENTS]
+        - Fix test failures with HTTP::Message 6.06. #345
+        - relaxed plackup -R ignore files and directoris. #260
+
 1.0006  Thu Oct 18 16:06:15 PDT 2012
     [INCOMPATIBLE CHANGES]
         - plackup foo.psgi will not search the file in @INC anymore before the current directory
