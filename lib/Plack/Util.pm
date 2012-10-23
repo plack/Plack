@@ -125,7 +125,7 @@ END_EVAL
 
 sub _relativize {
     my $file = shift;
-    $file =~ m!^/! ? $file : "./$file";
+    $file =~ m!^(?:/|[A-Za-z]:)! ? $file : "./$file";
 }
 
 sub load_psgi {

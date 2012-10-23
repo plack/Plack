@@ -67,4 +67,10 @@ use Test::More;
     chdir $cwd;
 }
 
+{
+    is Plack::Util::_relativize("/foo/bar.psgi"), "/foo/bar.psgi";
+    is Plack::Util::_relativize("foo.psgi"), "./foo.psgi";
+    is Plack::Util::_relativize('C:\x\y.psgi'), 'C:\x\y.psgi';
+}
+
 done_testing;
