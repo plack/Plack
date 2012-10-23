@@ -1,5 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0008  Mon Oct 22 18:52:29 PDT 2012
+    [BUG FIXES]
+        - Allow drive letters for absolute paths for plackup and load_psgi #343
+
 1.0007  Sat Oct 20 23:20:20 PDT 2012
     [IMPROVEMENTS]
         - Fix test failures with HTTP::Message 6.06. #345
