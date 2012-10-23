@@ -4,6 +4,7 @@ use Carp ();
 use Scalar::Util;
 use IO::Handle;
 use overload ();
+use File::Spec ();
 
 sub TRUE()  { 1==1 }
 sub FALSE() { !TRUE }
@@ -123,17 +124,12 @@ package Plack::Sandbox::%s;
 END_EVAL
 }
 
-sub _relativize {
-    my $file = shift;
-    $file =~ m!^(?:/|[A-Za-z]:)! ? $file : "./$file";
-}
-
 sub load_psgi {
     my $stuff = shift;
 
     local $ENV{PLACK_ENV} = $ENV{PLACK_ENV} || 'development';
 
-    my $file = $stuff =~ /^[a-zA-Z0-9\_\:]+$/ ? class_to_file($stuff) : _relativize($stuff);
+    my $file = $stuff =~ /^[a-zA-Z0-9\_\:]+$/ ? class_to_file($stuff) : File::Spec->rel2abs($stuff);
     my $app = _load_sandbox($file);
     die "Error while loading $file: $@" if $@;
 
