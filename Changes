@@ -1,5 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0009  Tue Oct 23 00:57:16 PDT 2012
+    [BUG FIXES]
+        - Correct fix to address drive letters for Win32
+
 1.0008  Mon Oct 22 18:52:29 PDT 2012
     [BUG FIXES]
         - Allow drive letters for absolute paths for plackup and load_psgi #343
