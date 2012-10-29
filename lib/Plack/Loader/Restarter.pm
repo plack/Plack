@@ -46,7 +46,7 @@ sub _kill_child {
 
 sub valid_file {
     my($self, $file) = @_;
-    $file->{path} !~ m!\.(?:git|svn)[/\\]|\.bak$|~$|_flymake\.p[lm]!;
+    $file->{path} !~ m!\.(?:git|svn)[/\\]|\.(?:bak|swp)$|~$|_flymake\.p[lm]!;
 }
 
 sub run {
