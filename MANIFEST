@@ -187,6 +187,7 @@ t/Plack-Middleware/iis6_script_name_fix.t
 t/Plack-Middleware/iis7_keep_alive_fix.t
 t/Plack-Middleware/jsonp.t
 t/Plack-Middleware/lint.t
+t/Plack-Middleware/lint_env.t
 t/Plack-Middleware/lint_utf8_false_alarm.t
 t/Plack-Middleware/log4perl.t
 t/Plack-Middleware/log_dispatch.t

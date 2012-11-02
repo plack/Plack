@@ -1,5 +1,10 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0010  Fri Nov  2 13:30:50 PDT 2012
+    [IMPROVEMENTS]
+        - Added vim .swp files to the default ignore list in Restarter
+        - Check if PATH_INFO begins with / in Lint
+
 1.0009  Tue Oct 23 00:57:16 PDT 2012
     [BUG FIXES]
         - Correct fix to address drive letters for Win32
