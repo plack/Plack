@@ -31,7 +31,7 @@ test_psgi $app, sub {
 
     $res = $cb->(GET "/die");
     is $res->code, 500;
-    like $res->content, qr/Foo at t/;
+    like $res->content, qr/Foo at /;
 };
 
 done_testing;
