@@ -23,7 +23,7 @@ my $port = empty_port();
 my $pid = fork;
 if ($pid == 0) {
     close STDERR;
-    exec($^X, 'bin/plackup', '-p', $port, '--path', '/app/', '-a', $psgi_file) or die $@;
+    exec($^X, '-Ilib', 'bin/plackup', '-p', $port, '--path', '/app/', '-a', $psgi_file) or die $@;
 } else {
     $SIG{INT} = 'IGNORE';
     sleep 1;
