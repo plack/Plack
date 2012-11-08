@@ -68,6 +68,15 @@ sub call_app {
         $env->{HTTP_AUTHORIZATION} = $HTTP_AUTHORIZATION;
     }
 
+    # If you supply more than one Content-Length header Apache will
+    # happily concat the values with ", ", e.g. "72, 72". This
+    # violates the PSGI spec so fix this up and just take the first
+    # one.
+    if (exists $env->{CONTENT_LENGTH} && $env->{CONTENT_LENGTH} =~ /,/) {
+        no warnings qw(numeric);
+        $env->{CONTENT_LENGTH} = int $env->{CONTENT_LENGTH};
+    }
+
     # Actually, we can not trust PATH_INFO from mod_perl because mod_perl squeezes multiple slashes into one slash.
     my $uri = URI->new("http://".$r->hostname.$r->unparsed_uri);
 
