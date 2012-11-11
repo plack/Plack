@@ -1,7 +1,7 @@
 package Plack::Response;
 use strict;
 use warnings;
-our $VERSION = '1.0010';
+our $VERSION = '1.0011';
 $VERSION = eval $VERSION;
 
 use Plack::Util::Accessor qw(body status);

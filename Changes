@@ -1,5 +1,10 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0011  Sun Nov 11 11:05:30 PST 2012
+    [BUG FIXES]
+        - Fix bad Content-Length that could be caused with mod_perl (avar)
+        - Allow an empty PATH_INFO in Lint per PSGI spec
+
 1.0010  Fri Nov  2 13:30:50 PDT 2012
     [IMPROVEMENTS]
         - Added vim .swp files to the default ignore list in Restarter
