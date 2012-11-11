@@ -11,6 +11,10 @@ my $app = sub {
 
 $app = Plack::Middleware::Lint->wrap($app);
 
+my @good_env = (
+    { PATH_INFO => '' },
+);
+
 my @bad_env = (
     [ { REQUEST_METHOD => undef }, qr/Missing env param: REQUEST_METHOD/ ],
     [ { REQUEST_METHOD => "foo" },, qr/Invalid env param: REQUEST_METHOD/ ],
@@ -20,6 +24,14 @@ my @bad_env = (
     [ { "psgi.version" => 2 }, qr/psgi\.version should be ArrayRef/ ],
     [ { HTTP_CONTENT_TYPE => "text/plain" }, qr/HTTP_CONTENT_TYPE should not exist/ ],
 );
+
+for my $good (@good_env) {
+    my $env = req_to_psgi( HTTP::Request->new(GET => "/") );
+    eval {
+        $app->({ %$env, %$good });
+    };
+    ok !$@;
+}
 
 for my $bad (@bad_env) {
     my($inject, $err) = @$bad;
