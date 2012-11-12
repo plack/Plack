@@ -3,6 +3,7 @@ use strict;
 no warnings;
 use Carp;
 use Plack::Util;
+use Plack::Util::Accessor qw(force);
 use Scalar::Util qw(weaken);
 use parent qw(Plack::Middleware);
 
@@ -13,7 +14,7 @@ sub call {
     $env->{'psgi.streaming'} = Plack::Util::TRUE;
 
     my $res = $self->app->($env);
-    return $res if $caller_supports_streaming;
+    return $res if $caller_supports_streaming && !$self->force;
 
     if ( ref($res) eq 'CODE' ) {
         my $ret;
@@ -62,7 +63,18 @@ run on the servers that do not support the interface, by buffering the
 writer output to a temporary buffer.
 
 This middleware doesn't do anything and bypass the application if the
-server supports C<psgi.streaming> interface.
+server supports C<psgi.streaming> interface, unless you set C<force>
+option (see below).
+
+=head1 OPTIONS
+
+=over 4
+
+=item force
+
+Force enable this middleware only if the container supports C<psgi.streaming>.
+
+=back
 
 =head1 AUTHOR
 
