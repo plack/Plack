@@ -4,12 +4,9 @@ use parent qw(Plack::Middleware);
 
 use Plack::Util::Accessor qw( condition middleware builder );
 
-sub new {
-    my $class = shift;
-    my $self = $class->SUPER::new(@_);
-
+sub prepare_app {
+    my $self = shift;
     $self->middleware( $self->builder->($self->app) );
-    $self;
 }
 
 sub call {
