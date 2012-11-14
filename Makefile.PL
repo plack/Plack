@@ -1,4 +1,4 @@
-# See and run ./bootstrap when you get errors running Makefile.PL
+# See and run ./script/bootstrap when you get errors running Makefile.PL
 use inc::Module::Install;
 
 name 'Plack';
