@@ -1,5 +1,10 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0012  Wed Nov 14 12:00:17 PST 2012
+    [IMPROVEMENTS]
+        - Make conditional middleware work with initialization without an app (doy)
+        - Added force option to BufferedStreaming 
+
 1.0011  Sun Nov 11 11:05:30 PST 2012
     [BUG FIXES]
         - Fix bad Content-Length that could be caused with mod_perl (avar)
