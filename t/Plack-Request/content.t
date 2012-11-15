@@ -5,8 +5,17 @@ use Plack::Test;
 use Plack::Request;
 
 my $app = sub {
-    my $req = Plack::Request->new(shift);
+    my $env = shift;
+
+    my $req = Plack::Request->new($env);
     is $req->content, 'body';
+
+    # emulate other PSGI apps that reads from input, but not reset
+    $env->{'psgi.input'}->read(my($dummy), $env->{CONTENT_LENGTH}, 0);
+
+    $req = Plack::Request->new($env);
+    is $req->content, 'body';
+
     $req->new_response(200)->finalize;
 };
 
