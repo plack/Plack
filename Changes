@@ -1,5 +1,10 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0013  Wed Nov 14 19:46:49 PST 2012
+    [BUG FIXES]
+        - Make sure psgi.input is seeked even when the input is buffered (Getty, leedo)
+        - Delete invalid (empty) CONTENT_LENGTH and CONTENT_TYPE in FCGI (Getty, leedo)
+
 1.0012  Wed Nov 14 12:00:17 PST 2012
     [IMPROVEMENTS]
         - Make conditional middleware work with initialization without an app (doy)
