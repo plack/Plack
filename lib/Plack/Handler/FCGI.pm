@@ -121,6 +121,12 @@ sub run {
             $env->{PATH_INFO} = '';
         }
 
+        # typical fastcgi_param from nginx might get empty values
+        for my $key (qw(CONTENT_TYPE CONTENT_LENGTH)) {
+            no warnings;
+            delete $env->{$key} if exists $env->{$key} && $env->{$key} eq '';
+        }
+
         if (defined(my $HTTP_AUTHORIZATION = $env->{Authorization})) {
             $env->{HTTP_AUTHORIZATION} = $HTTP_AUTHORIZATION;
         }
