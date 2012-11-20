@@ -83,6 +83,8 @@ sub log_line {
         D => sub { $opts->{time} ? $opts->{time} * 1000000 : "-" },
         v => sub { $env->{SERVER_NAME} || '-' },
         V => sub { $env->{HTTP_HOST} || $env->{SERVER_NAME} || '-' },
+        p => sub { $env->{SERVER_PORT} },
+        P => sub { $$ },
     );
 
     my $char_handler = sub {
@@ -180,6 +182,8 @@ L<Apache's LogFormat templates|http://httpd.apache.org/docs/2.0/mod/mod_log_conf
    %D    custom field for handling sub-second times in subclasses
    %v    SERVER_NAME from the PSGI environment, or -
    %V    HTTP_HOST or SERVER_NAME from the PSGI environment, or -
+   %p    SERVER_PORT from the PSGI environment
+   %P    the worker's process id
 
 Some of these format fields are only supported by middleware that subclasses C<AccessLog>.
 
