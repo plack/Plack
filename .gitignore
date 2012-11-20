@@ -10,3 +10,5 @@ blib
 !.shipit
 MYMETA.*
 .proverc
+pod2htmd.tmp
+pod2htmi.tmp
