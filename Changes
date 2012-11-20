@@ -1,5 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+    [IMPROVEMENTS]
+        - Plack::Middleware::AccessLog can now log the worker pid and server
+          port (ether)
+
 1.0013  Wed Nov 14 19:46:49 PST 2012
     [BUG FIXES]
         - Make sure psgi.input is seeked even when the input is buffered (Getty, leedo)
