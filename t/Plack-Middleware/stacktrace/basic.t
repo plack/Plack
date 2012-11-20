@@ -13,17 +13,23 @@ my $app = sub {
     return $ret;
 };
 
-test_psgi $app, sub {
-    my $cb = shift;
+my @backends = ($Plack::Middleware::StackTrace::StackTraceClass);
+push @backends, "Devel::StackTrace" if $backends[0] eq 'Devel::StackTrace::WithLexicals';
 
-    my $req = GET "/";
-    $req->header(Accept => "text/html,*/*");
-    my $res = $cb->($req);
+for my $be (@backends) {
+    local $Plack::Middleware::StackTrace::StackTraceClass = $be;
+    test_psgi $app, sub {
+        my $cb = shift;
 
-    ok $res->is_error;
-    is_deeply [ $res->content_type ], [ 'text/html', 'charset=utf-8' ];
-    like $res->content, qr/<title>Error: orz/;
-};
+        my $req = GET "/";
+        $req->header(Accept => "text/html,*/*");
+        my $res = $cb->($req);
+
+        ok $res->is_error;
+        is_deeply [ $res->content_type ], [ 'text/html', 'charset=utf-8' ];
+        like $res->content, qr/<title>Error: orz/;
+    }
+}
 
 done_testing;
 
