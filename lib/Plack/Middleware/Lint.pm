@@ -164,9 +164,10 @@ sub _has_wide_strings {
 
     my $warnings = '';
     {
+        use warnings;
         local $SIG{__WARN__} = sub { $warnings .= $_[0] };
         open my $io, ">", \(my $null);
-        $io->print($str);
+        print {$io} $str;
     }
 
     $warnings =~ /Wide character in print/;
