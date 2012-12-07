@@ -8,6 +8,8 @@ use Plack::Builder;
 my $log;
 my $handler = builder {
     enable "Plack::Middleware::AccessLog::Timed",
+        # 'combined', plus %T right before "request"
+        format => '%h %l %u %t %T "%r" %>s %b "%{Referer}i" "%{User-agent}i"',
         logger => sub { $log .= "@_" };
     sub { [ 200, [ 'Content-Type' => 'text/plain' ], [ 'OK' ] ] };
 };
@@ -23,13 +25,13 @@ my $test_req = sub {
 
 {
     $test_req->(GET "http://localhost/");
-    like $log, qr@^127\.0\.0\.1 - - \[.*?\] "GET / HTTP/1\.1" 200 2@;
+    like $log, qr@^127\.0\.0\.1 - - \[.*?\] [\d.]+ "GET / HTTP/1\.1" 200 2@;
 }
 
 {
     $log = "";
     $test_req->(POST "http://localhost/foo", { foo => "bar" });
-    like $log, qr@^127\.0\.0\.1 - - \[.*?\] "POST /foo HTTP/1\.1" 200 2@;
+    like $log, qr@^127\.0\.0\.1 - - \[.*?\] [\d.]+ "POST /foo HTTP/1\.1" 200 2@;
 }
 
 {
@@ -84,6 +86,8 @@ $test_req = sub {
 $log = "";
 $handler = builder {
     enable "Plack::Middleware::AccessLog::Timed",
+        # 'combined', plus %T right before "request"
+        format => '%h %l %u %t %T "%r" %>s %b "%{Referer}i" "%{User-agent}i"',
         logger => sub { $log .= "@_" };
     
     sub { 
@@ -106,13 +110,13 @@ $test_req = sub {
 
 {
     $test_req->(GET "http://localhost/");
-    like $log, qr@^127\.0\.0\.1 - - \[.*?\] "GET / HTTP/1\.1" 200 2@;
+    like $log, qr@^127\.0\.0\.1 - - \[.*?\] [\d.]+ "GET / HTTP/1\.1" 200 2@;
 }
 
 {
     $log = "";
     $test_req->(POST "http://localhost/foo", { foo => "bar" });
-    like $log, qr@^127\.0\.0\.1 - - \[.*?\] "POST /foo HTTP/1\.1" 200 2@;
+    like $log, qr@^127\.0\.0\.1 - - \[.*?\] [\d.]+ "POST /foo HTTP/1\.1" 200 2@;
 }
 
 {

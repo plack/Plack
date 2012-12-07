@@ -1,5 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+    [IMPROVEMENTS]
+        - Plack::Middleware::AccessLog::Timed now logs to microsecond
+          precision, via Time::HiRes::time (ether)
+
 1.0014 Mon Dec  3 10:27:43 PST 2012
     [BUG FIXES]
         - Fixed Hash order in tests for perl 5.17 (doy)
