@@ -10,7 +10,7 @@ sub call {
     my $self = shift;
     my($env) = @_;
 
-    my $time = Time::HiRes::gettimeofday;
+    my $time = Time::HiRes::time;
     my $length = 0;
     my $logger = $self->logger || sub { $env->{'psgi.errors'}->print(@_) };
 
@@ -29,7 +29,7 @@ sub call {
                 $length += length $line if defined $line;
 
                 unless( defined $line ) {
-                    my $now = Time::HiRes::gettimeofday;
+                    my $now = Time::HiRes::time;
                     $logger->( $self->log_line($status, $header, $env, { time => $now - $time, content_length => $length }) );
                 }
 
@@ -81,8 +81,8 @@ Plack::Middleware::AccessLog::Timed - Logs requests with time and accurate body 
 Plack::Middleware::AccessLog::Timed is a subclass of
 Plack::Middleware::AccessLog but uses a wrapped body handle to get the
 actual response body size C<%b> (even if it's not a chunk of array or
-a real filehandle) and the time taken to serve the request: C<%T> or
-C<%D>.
+a real filehandle) and the time taken (to microsecond precision) to serve the
+request: C<%T> or C<%D>,
 
 This wraps the response body output stream so some server
 optimizations like sendfile(2) will be disabled if you use this
