@@ -164,7 +164,7 @@ sub validate_res {
 # print, so there's no need to give warnings about it.
 sub _has_wide_char {
     my $str = shift;
-    $str =~ /[^\x00-\xff]/;
+    utf8::is_utf8($str) && $str =~ /[^\x00-\xff]/;
 }
 
 1;
