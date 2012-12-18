@@ -31,6 +31,11 @@ my @good = map { Plack::Middleware::Lint->wrap($_) } (
         open my $io, "<", \"foo";
         return [ 200, [ "Content-Type", "text/plain" ], $io ];
     },
+    sub {
+        my $body = "L\x{e9}on";
+        utf8::upgrade $body;
+        return [ 200, [ "Content-Type", "text/html; charset=latin-1" ], [ $body ] ];
+    },
 );
 
 push @bad, builder {

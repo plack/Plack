@@ -152,7 +152,7 @@ sub validate_res {
         die("Body should be an array ref or filehandle: $res->[2]");
     }
 
-    if (ref $res->[2] eq 'ARRAY' && grep _is_really_utf8($_), @{$res->[2]}) {
+    if (ref $res->[2] eq 'ARRAY' && grep _has_wide_char($_), @{$res->[2]}) {
         die("Body must be bytes and should not contain wide characters (UTF-8 strings)");
     }
 
@@ -160,11 +160,11 @@ sub validate_res {
 }
 
 # NOTE: Some modules like HTML:: or XML:: could possibly generate
-# ASCII only strings with utf8 flags on. They're actually safe to
+# ASCII/Latin-1 strings with utf8 flags on. They're actually safe to
 # print, so there's no need to give warnings about it.
-sub _is_really_utf8 {
+sub _has_wide_char {
     my $str = shift;
-    utf8::is_utf8($str) && $str =~ /[^\x00-\x7f]/;
+    $str =~ /[^\x00-\xff]/;
 }
 
 1;
