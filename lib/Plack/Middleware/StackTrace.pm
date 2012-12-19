@@ -6,6 +6,7 @@ use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
 use Try::Tiny;
 use Plack::Util::Accessor qw( force no_print_errors );
+use Scalar::Util 'refaddr';
 
 our $StackTraceClass = "Devel::StackTrace";
 
@@ -18,11 +19,16 @@ sub call {
     my($self, $env) = @_;
 
     my $trace;
+    my %seen;
     local $SIG{__DIE__} = sub {
-        $trace = $StackTraceClass->new(
-            indent => 1, message => munge_error($_[0], [ caller ]),
-            ignore_package => __PACKAGE__,
-        );
+        my $key = _make_key($_[0]);
+        if (!$seen{$key}) {
+            $trace = $StackTraceClass->new(
+                indent => 1, message => munge_error($_[0], [ caller ]),
+                ignore_package => __PACKAGE__,
+            );
+        }
+        $seen{$key} = 1;
         die @_;
     };
 
@@ -93,6 +99,19 @@ sub utf8_safe {
     }
 
     $str;
+}
+
+sub _make_key {
+    my ($val) = @_;
+    if (!defined($val)) {
+        return 'undef';
+    }
+    elsif (ref($val)) {
+        return 'ref:' . refaddr($val);
+    }
+    else {
+        return "str:$val";
+    }
 }
 
 1;
