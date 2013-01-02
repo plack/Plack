@@ -1,5 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+        - HTTP::Message::PSGI::res_from_psgi now always returns empty string
+          for an empty response body, so streamed responses are consistent with
+          non-streamed (ether)
+
 1.0014 Mon Dec  3 10:27:43 PST 2012
     [BUG FIXES]
         - Fixed Hash order in tests for perl 5.17 (doy)

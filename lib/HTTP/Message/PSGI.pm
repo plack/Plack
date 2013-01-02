@@ -120,7 +120,7 @@ sub _res_from_psgi {
             $res->content(join '', grep defined, @$body);
         } else {
             local $/ = \4096;
-            my $content;
+            my $content = '';
             while (defined(my $buf = $body->getline)) {
                 $content .= $buf;
             }
