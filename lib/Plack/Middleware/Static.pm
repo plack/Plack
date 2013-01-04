@@ -4,7 +4,7 @@ use warnings;
 use parent qw/Plack::Middleware/;
 use Plack::App::File;
 
-use Plack::Util::Accessor qw( path root encoding pass_through );
+use Plack::Util::Accessor qw( path root encoding pass_through content_type );
 
 sub call {
     my $self = shift;
@@ -29,7 +29,7 @@ sub _handle_static {
         return unless $matched;
     }
 
-    $self->{file} ||= Plack::App::File->new({ root => $self->root || '.', encoding => $self->encoding });
+    $self->{file} ||= Plack::App::File->new({ root => $self->root || '.', encoding => $self->encoding, content_type => $self->content_type });
     local $env->{PATH_INFO} = $path; # rewrite PATH
     return $self->{file}->call($env);
 }

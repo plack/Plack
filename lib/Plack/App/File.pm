@@ -86,6 +86,10 @@ sub serve_path {
     my $content_type = $self->content_type || Plack::MIME->mime_type($file)
                        || 'text/plain';
 
+    if ("CODE" eq ref $content_type) {
+		$content_type = $content_type->($file);
+    }
+
     if ($content_type =~ m!^text/!) {
         $content_type .= "; charset=" . ($self->encoding || "utf-8");
     }
