@@ -1,5 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0015 Thu Jan 10 15:19:17 PST 2013
+    [BUG FIXES]
+        - Fixed Lint complaining about Latin-1 range characters stored internally with
+          utf8 flag on (Mark Fowler)
         - HTTP::Message::PSGI::res_from_psgi now always returns empty string
           for an empty response body, so streamed responses are consistent with
           non-streamed (ether)

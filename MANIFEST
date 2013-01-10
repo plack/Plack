@@ -125,6 +125,7 @@ share/face.jpg
 t/00_compile.t
 t/FCGIUtils.pm
 t/HTTP-Message-PSGI/content_length.t
+t/HTTP-Message-PSGI/empty_streamed_response.t
 t/HTTP-Message-PSGI/host.t
 t/HTTP-Message-PSGI/path_info.t
 t/HTTP-Message-PSGI/utf8_req.t
