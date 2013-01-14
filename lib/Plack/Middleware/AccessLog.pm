@@ -101,12 +101,12 @@ sub log_line {
     my $fmt = $self->format || "combined";
     $fmt = $formats{$fmt} if exists $formats{$fmt};
 
-    $fmt =~ s{
+    $fmt =~ s!
         (?:
          \%\{(.+?)\}([a-z]) |
          \%(?:[<>])?([a-zA-Z\%])
         )
-    }{ $1 ? $block_handler->($1, $2) : $char_handler->($3) }egx;
+    ! $1 ? $block_handler->($1, $2) : $char_handler->($3) !egx;
 
     return $fmt . "\n";
 }
