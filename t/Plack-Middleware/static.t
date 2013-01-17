@@ -15,6 +15,10 @@ my $handler = builder {
     enable "Plack::Middleware::Static",
         path => sub { s!^/share/!!}, root => "share";
     enable "Plack::Middleware::Static",
+        pass_env_not_path_info => 1,
+        path => sub { s!^/more_share/!! if $_[0]->{PATH_INFO} =~ m!^/more_share/!  },
+        root => "share";
+    enable "Plack::Middleware::Static",
         path => sub { s!^/share-pass/!!}, root => "share", pass_through => 1;
     enable "Plack::Middleware::Static",
         path => qr{\.(t|PL|txt)$}i, root => '.';
@@ -55,6 +59,11 @@ my %test = (
 
         {
             my $res = $cb->(GET "http://localhost/share/face.jpg");
+            is $res->content_type, 'image/jpeg';
+        }
+
+        {
+            my $res = $cb->(GET "http://localhost/more_share/face.jpg");
             is $res->content_type, 'image/jpeg';
         }
 
