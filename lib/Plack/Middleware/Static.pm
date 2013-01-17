@@ -4,7 +4,7 @@ use warnings;
 use parent qw/Plack::Middleware/;
 use Plack::App::File;
 
-use Plack::Util::Accessor qw( path root encoding pass_through );
+use Plack::Util::Accessor qw( path root encoding pass_through pass_env_not_path_info);
 
 sub call {
     my $self = shift;
@@ -23,9 +23,10 @@ sub _handle_static {
 
     my $path_match = $self->path or return;
     my $path = $env->{PATH_INFO};
+    my $pass_env_not_path_info = $self->pass_env_not_path_info;
 
     for ($path) {
-        my $matched = 'CODE' eq ref $path_match ? $path_match->($_) : $_ =~ $path_match;
+        my $matched = 'CODE' eq ref $path_match ? $path_match->($pass_env_not_path_info ? $env : $_) : $_ =~ $path_match;
         return unless $matched;
     }
 
@@ -36,6 +37,8 @@ sub _handle_static {
 
 1;
 __END__
+
+=encoding utf8
 
 =head1 NAME
 
@@ -111,11 +114,20 @@ When this option is set to a true value, then this middleware will never
 return a 404 if it cannot find a matching file. Instead, it will simply pass
 the request on to the application it is wrapping.
 
+=item pass_env_not_path_info
+
+When this option is set to a true value callbacks specified via the
+C<path> argument will get the C<$env> as an argument rather than
+C<$env->{PATH_INFO}>.
+
+C<$_> will always be set to C<$env->{PATH_INFO}> regardless of this
+option.
+
 =back
 
 =head1 AUTHOR
 
-Tokuhiro Matsuno, Tatsuhiko Miyagawa
+Tokuhiro Matsuno, Tatsuhiko Miyagawa, Ævar Arnfjörð Bjarmason
 
 =head1 SEE ALSO
 
