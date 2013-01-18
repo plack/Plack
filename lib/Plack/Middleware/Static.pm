@@ -25,7 +25,7 @@ sub _handle_static {
     my $path = $env->{PATH_INFO};
 
     for ($path) {
-        my $matched = 'CODE' eq ref $path_match ? $path_match->($_) : $_ =~ $path_match;
+        my $matched = 'CODE' eq ref $path_match ? $path_match->($_, $env) : $_ =~ $path_match;
         return unless $matched;
     }
 
@@ -36,6 +36,8 @@ sub _handle_static {
 
 1;
 __END__
+
+=encoding utf8
 
 =head1 NAME
 
@@ -96,6 +98,11 @@ The callback should operate on C<$_> and return a true or false value. Any
 changes it makes to C<$_> are used when looking for the static file in the
 C<root>.
 
+In addition to C<$_> being set the callback receives two arguments,
+C<$_> and C<$env>. You can inspect C<$env> for more advanced static
+handling, e.g. giving different static assets to different user
+agents.
+
 The configuration above serves C</static/foo.png> from
 C<static-files/foo.png>, not C<static-files/static/foo.png>. The callback
 specified in the C<path> option matches against C<$_> munges this value using
@@ -115,7 +122,7 @@ the request on to the application it is wrapping.
 
 =head1 AUTHOR
 
-Tokuhiro Matsuno, Tatsuhiko Miyagawa
+Tokuhiro Matsuno, Tatsuhiko Miyagawa, Ævar Arnfjörð Bjarmason
 
 =head1 SEE ALSO
 
