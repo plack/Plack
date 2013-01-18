@@ -96,16 +96,15 @@ The callback should operate on C<$_> and return a true or false value. Any
 changes it makes to C<$_> are used when looking for the static file in the
 C<root>.
 
-In addition to C<$_> being set the callback receives two arguments,
-C<$_> and C<$env>. You can inspect C<$env> for more advanced static
-handling, e.g. giving different static assets to different user
-agents.
-
 The configuration above serves C</static/foo.png> from
 C<static-files/foo.png>, not C<static-files/static/foo.png>. The callback
 specified in the C<path> option matches against C<$_> munges this value using
 C<s///>. The subsitution operator returns the number of matches it made, so it
 will return true when the path matches C<^/static>.
+
+For more complex static handling in the C<path> callback, in addition
+to C<$_> being set the callback receives two arguments, C<PATH_INFO>
+(same as C<$_>) and C<$env>.
 
 If you want to map multiple static directories from different roots, simply
 add this middleware multiple times with different configuration options.
