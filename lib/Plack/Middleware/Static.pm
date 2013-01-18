@@ -37,8 +37,6 @@ sub _handle_static {
 1;
 __END__
 
-=encoding utf8
-
 =head1 NAME
 
 Plack::Middleware::Static - serve static files with Plack
@@ -122,7 +120,7 @@ the request on to the application it is wrapping.
 
 =head1 AUTHOR
 
-Tokuhiro Matsuno, Tatsuhiko Miyagawa, Ævar Arnfjörð Bjarmason
+Tokuhiro Matsuno, Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
