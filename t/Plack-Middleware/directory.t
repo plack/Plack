@@ -24,6 +24,9 @@ my %test = (
         $res = $cb->(GET "/..%00foo");
         is $res->code, 400;
 
+        $res = $cb->(GET "/..%5cfoo");
+        is $res->code, 403;
+
         $res = $cb->(GET "/");
         like $res->content, qr/Index of \//;
 
