@@ -135,7 +135,7 @@ __END__
 
 =head1 NAME
 
-Plack::Handler::Apache1 - Apache 1.3.x handlers to run PSGI application
+Plack::Handler::Apache1 - Apache 1.3.x mod_perl handlers to run PSGI application
 
 =head1 SYNOPSIS
 
@@ -152,7 +152,12 @@ Plack::Handler::Apache1 - Apache 1.3.x handlers to run PSGI application
 
 =head1 DESCRIPTION
 
-This is a handler module to run any PSGI application with mod_perl on Apache 1.3.x.
+This is a mod_perl handler module to run any PSGI application with mod_perl on Apache 1.3.x.
+
+If you want to run PSGI applications I<behind> Apache instead of using
+mod_perl, see L<Plack::Handler::FCGI> to run with FastCGI, or use
+standalone HTTP servers such as L<Starman> or L<Starlet> proxied with
+mod_proxy.
 
 =head1 AUTHOR
 

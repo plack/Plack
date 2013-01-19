@@ -198,7 +198,7 @@ __END__
 
 =head1 NAME
 
-Plack::Handler::Apache2 - Apache 2.0 handlers to run PSGI application
+Plack::Handler::Apache2 - Apache 2.0 mod_perl handler to run PSGI application
 
 =head1 SYNOPSIS
 
@@ -216,7 +216,12 @@ Plack::Handler::Apache2 - Apache 2.0 handlers to run PSGI application
 
 =head1 DESCRIPTION
 
-This is a handler module to run any PSGI application with mod_perl on Apache 2.x.
+This is a mod_perl handler module to run any PSGI application with mod_perl on Apache 2.x.
+
+If you want to run PSGI applications I<behind> Apache instead of using
+mod_perl, see L<Plack::Handler::FCGI> to run with FastCGI, or use
+standalone HTTP servers such as L<Starman> or L<Starlet> proxied with
+mod_proxy.
 
 =head1 CREATING CUSTOM HANDLER
 
