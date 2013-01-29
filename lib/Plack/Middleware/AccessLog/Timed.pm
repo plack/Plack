@@ -79,7 +79,7 @@ Plack::Middleware::AccessLog::Timed - Logs requests with time and accurate body 
 =head1 DESCRIPTION
 
 Plack::Middleware::AccessLog::Timed is a subclass of
-Plack::Middleware::AccessLog but uses a wrapped body handle to get the
+L<Plack::Middleware::AccessLog> but uses a wrapped body handle to get the
 actual response body size C<%b> (even if it's not a chunk of array or
 a real filehandle) and the time taken to serve the request: C<%T> or
 C<%D>.
@@ -87,6 +87,10 @@ C<%D>.
 This wraps the response body output stream so some server
 optimizations like sendfile(2) will be disabled if you use this
 middleware.
+
+If you really want to preseve your 3-element array response, consider
+instead applying L<Plack::Middleware::Runtime> and using
+L<Plack::Middleware::AccessLog> to log the C<X-Runtime> header.
 
 =head1 CONFIGURATION
 
@@ -99,5 +103,7 @@ Tatsuhiko Miyagawa
 =head1 SEE ALSO
 
 L<Plack::Middleware::AccessLog>
+
+L<Plack::Middleware::Runtime>
 
 =cut
