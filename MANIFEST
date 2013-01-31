@@ -210,6 +210,7 @@ t/Plack-Middleware/stacktrace/force.t
 t/Plack-Middleware/stacktrace/sigdie.t
 t/Plack-Middleware/stacktrace/streaming.t
 t/Plack-Middleware/stacktrace/utf8.t
+t/Plack-Middleware/static.foo
 t/Plack-Middleware/static.t
 t/Plack-Middleware/static.txt
 t/Plack-Middleware/static_env.t

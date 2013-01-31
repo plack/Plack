@@ -1,5 +1,23 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0016 Thu Jan 31 13:21:14 PST 2013
+    [SECURITY]
+        - Fixed directory traversal bug in Plack::App::File on win32 environments
+
+    [INCOMPATIBLE CHANGES]
+        - Updated Plack::Builder OO interface to be more natural. Still keeps backward
+          compatible to the old ->mount() and ->to_app() interface.
+
+    [NEW FEATURES]
+        - Static middleware 'path' callback now takes $env as a 2nd argument (avar)
+        - Static middleware takes 'content_type' callback to determine custom MIME (pstadt)
+
+    [IMPROVEMENTS]
+        - Fixed regexp warning for blead (doy)
+        - Documentation update for AccessLog::Timed to suggest Runtime (ether)
+        - Ignore vim swap files on restarter (nihen)
+        - Major doucmentation overhaul on Apache2 startup files (rkitover, avar)
+
 1.0015 Thu Jan 10 15:19:17 PST 2013
     [BUG FIXES]
         - Fixed Lint complaining about Latin-1 range characters stored internally with
