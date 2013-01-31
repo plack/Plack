@@ -23,29 +23,31 @@ sub new {
     bless { env => $env }, $class;
 }
 
-sub env { $_[0]->{env} }
+my $does_not_take_any_arguments_error = "This method doesn't take any arguments";
 
-sub address     { $_[0]->env->{REMOTE_ADDR} }
-sub remote_host { $_[0]->env->{REMOTE_HOST} }
-sub protocol    { $_[0]->env->{SERVER_PROTOCOL} }
-sub method      { $_[0]->env->{REQUEST_METHOD} }
-sub port        { $_[0]->env->{SERVER_PORT} }
-sub user        { $_[0]->env->{REMOTE_USER} }
-sub request_uri { $_[0]->env->{REQUEST_URI} }
-sub path_info   { $_[0]->env->{PATH_INFO} }
-sub path        { $_[0]->env->{PATH_INFO} || '/' }
-sub script_name { $_[0]->env->{SCRIPT_NAME} }
-sub scheme      { $_[0]->env->{'psgi.url_scheme'} }
-sub secure      { $_[0]->scheme eq 'https' }
-sub body        { $_[0]->env->{'psgi.input'} }
-sub input       { $_[0]->env->{'psgi.input'} }
+sub env { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->{env} }
 
-sub content_length   { $_[0]->env->{CONTENT_LENGTH} }
-sub content_type     { $_[0]->env->{CONTENT_TYPE} }
+sub address     { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{REMOTE_ADDR} }
+sub remote_host { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{REMOTE_HOST} }
+sub protocol    { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{SERVER_PROTOCOL} }
+sub method      { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{REQUEST_METHOD} }
+sub port        { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{SERVER_PORT} }
+sub user        { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{REMOTE_USER} }
+sub request_uri { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{REQUEST_URI} }
+sub path_info   { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{PATH_INFO} }
+sub path        { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{PATH_INFO} || '/' }
+sub script_name { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{SCRIPT_NAME} }
+sub scheme      { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{'psgi.url_scheme'} }
+sub secure      { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->scheme eq 'https' }
+sub body        { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{'psgi.input'} }
+sub input       { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{'psgi.input'} }
 
-sub session         { $_[0]->env->{'psgix.session'} }
-sub session_options { $_[0]->env->{'psgix.session.options'} }
-sub logger          { $_[0]->env->{'psgix.logger'} }
+sub content_length   { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{CONTENT_LENGTH} }
+sub content_type     { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{CONTENT_TYPE} }
+
+sub session         { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{'psgix.session'} }
+sub session_options { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{'psgix.session.options'} }
+sub logger          { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->env->{'psgix.logger'} }
 
 sub cookies {
     my $self = shift;
@@ -100,7 +102,7 @@ sub content {
     return $content;
 }
 
-sub raw_body { $_[0]->content }
+sub raw_body { my $self = shift; die $does_not_take_any_arguments_error if @_; $self->content }
 
 # XXX you can mutate headers with ->headers but it's not written through to the env
 
