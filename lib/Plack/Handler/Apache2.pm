@@ -196,7 +196,7 @@ sub _handle_response {
 
 __END__
 
-=encoding UTF-8
+=encoding utf-8
 
 =head1 NAME
 
@@ -211,24 +211,8 @@ Plack::Handler::Apache2 - Apache 2.0 mod_perl handler to run PSGI application
   PerlSetVar psgi_app /path/to/app.psgi
   </Location>
 
+  # Optionally preload your apps in startup
   PerlPostConfigRequire /etc/httpd/startup.pl
-
-  # In your startup.pl
-  use Apache2::ServerUtil ();
-
-  BEGIN {
-      return unless Apache2::ServerUtil::restart_count() > 1;
-
-      require Plack::Handler::Apache2;
-
-      my @psgis = ('/path/to/app1.psgi', '/path/to/app2.psgi');
-
-      foreach my $psgi (@psgis) {
-          Plack::Handler::Apache2->preload($psgi);
-      }
-  }
-
-  1;
 
 See L</STARTUP FILE> for more details on writing a C<startup.pl>.
 
@@ -280,8 +264,6 @@ will not be available when your app is loading the first time.
 
 Use the example below as a template.
 
-Thanks to avar (Ævar Arnfjörð Bjarmason) for this info!
-
 =item * C<@INC>
 
 The C<startup.pl> file is a good place to add entries to your C<@INC>.
@@ -332,8 +314,8 @@ app/module you are using.
 As an optimization, you can dump C<%INC> from a request to see if you are using
 any such modules and preload them in your C<startup.pl>.
 
-Another method is dumping the difference between the C<%INC> on process start
-and process exit (suggested by avar.) You can use something like this to
+Another method is dumping the difference between the C<%INC> on
+process start and process exit. You can use something like this to
 accomplish this:
 
     my $start_inc = { %INC };
@@ -370,7 +352,6 @@ Here is an example C<startup.pl>:
         require Plack::Handler::Apache2;
 
         my @psgis = ('/path/to/app1.psgi', '/path/to/app2.psgi');
-  
         foreach my $psgi (@psgis) {
             Plack::Handler::Apache2->preload($psgi);
         }
@@ -385,6 +366,10 @@ Tatsuhiko Miyagawa
 =head1 CONTRIBUTORS
 
 Paul Driver
+
+Ævar Arnfjörð Bjarmason
+
+Rafael Kitover
 
 =head1 SEE ALSO
 
