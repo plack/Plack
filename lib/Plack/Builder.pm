@@ -160,21 +160,28 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
   my $builder = Plack::Builder->new;
   $builder->add_middleware('Foo', opt => 1);
   $builder->add_middleware('Bar');
-  $wrapped_app = $builder->wrap($app)
+  $builder->wrap($app);
 
   # With mount
   my $builder = Plack::Builder->new;
   $builder->add_middleware('Foo', opt => 1);
   $builder->mount('/foo' => $foo_app);
   $builder->mount('/' => $root_app);
-  $wrapped_app = $builder->to_app;
+  $builder->to_app;
 
-  # Nested builders
+  # Nested builders. Equivalent to:
+  # builder {
+  #     mount '/foo' => builder {
+  #         enable 'Foo';
+  #         $app;
+  #     };
+  #     mount '/' => $app2;
+  # };
   my $builder_out = Plack::Builder->new;
   my $builder_in  = Plack::Builder->new;
   $builder_in->add_middleware('Foo');
   $builder_out->mount("/foo" => $builder_in->wrap($app));
-  $builder_out->mount("/bar" => $app2);
+  $builder_out->mount("/" => $app2);
   $builder_out->to_app;
 
 =head1 DESCRIPTION
