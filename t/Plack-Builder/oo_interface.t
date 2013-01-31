@@ -38,4 +38,20 @@ sub test_app {
     test_app $builder->to_app;
 }
 
+{
+    my $builder = Plack::Builder->new;
+    $builder->add_middleware('Runtime');
+    eval { $builder->to_app };
+    like $@, qr/called without mount/, $@;
+}
+
+{
+    my @warn;
+    local $SIG{__WARN__} = sub { push @warn, @_ };
+    my $builder = Plack::Builder->new;
+    $builder->mount('/bar' => sub { [ 200, [], [''] ] });
+    $builder->wrap($app);
+    like $warn[0], qr/mappings to be ignored/;
+}
+
 done_testing;

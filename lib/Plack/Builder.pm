@@ -54,13 +54,20 @@ sub to_app {
 
     if ($app) {
         $self->wrap($app);
-    } else {
+    } elsif ($self->{_urlmap}) {
         $self->wrap($self->{_urlmap});
+    } else {
+        Carp::croak("to_app() is called without mount(). No application to build.");
     }
 }
 
 sub wrap {
     my($self, $app) = @_;
+
+    if ($self->{_urlmap} && $app ne $self->{_urlmap}) {
+        Carp::carp("WARNING: wrap() and mount() can't be used altogether in Plack::Builder.\n" .
+                   "WARNING: This causes all previous mount() mappings to be ignored.");
+    }
 
     for my $mw (reverse @{$self->{middlewares}}) {
         $app = $mw->($app);
@@ -109,8 +116,8 @@ sub builder(&) {
 
     if ($mount_is_called) {
         if ($app ne $urlmap) {
-            Carp::carp("You used mount() in a builder block, but the last line (app) isn't using mount().\n" .
-                       "This causes all mount() mappings to be ignored. See perldoc Plack::Builder for details.");
+            Carp::carp("WARNING: You used mount() in a builder block, but the last line (app) isn't using mount().\n" .
+                       "WARNING: This causes all mount() mappings to be ignored.\n");
         } else {
             $app = $app->to_app;
         }
