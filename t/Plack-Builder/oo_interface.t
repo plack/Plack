@@ -40,6 +40,14 @@ sub test_app {
 
 {
     my $builder = Plack::Builder->new;
+    $builder->add_middleware_if(sub { $_[0]->{HTTP_HOST} eq 'localhost' }, 'Runtime');
+    $builder->add_middleware('XFramework', framework => 'Plack::Builder');
+    $builder->mount('/app/foo/bar' => $app);
+    test_app $builder->to_app;
+}
+
+{
+    my $builder = Plack::Builder->new;
     $builder->add_middleware('Runtime');
     eval { $builder->to_app };
     like $@, qr/called without mount/, $@;
