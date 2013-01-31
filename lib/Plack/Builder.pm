@@ -46,11 +46,28 @@ sub _mount {
     }
 
     $self->{_urlmap}->map($location => $app);
-    $self->{_urlmap};
+    $self->{_urlmap}; # for backward compat.
 }
 
 sub to_app {
     my($self, $app) = @_;
+
+    if ($app) {
+        $self->wrap($app);
+    } elsif ($self->{_urlmap}) {
+        $self->wrap($self->{_urlmap});
+    } else {
+        Carp::croak("to_app() is called without mount(). No application to build.");
+    }
+}
+
+sub wrap {
+    my($self, $app) = @_;
+
+    if ($self->{_urlmap} && $app ne $self->{_urlmap}) {
+        Carp::carp("WARNING: wrap() and mount() can't be used altogether in Plack::Builder.\n" .
+                   "WARNING: This causes all previous mount() mappings to be ignored.");
+    }
 
     for my $mw (reverse @{$self->{middlewares}}) {
         $app = $mw->($app);
@@ -99,8 +116,8 @@ sub builder(&) {
 
     if ($mount_is_called) {
         if ($app ne $urlmap) {
-            Carp::carp("You used mount() in a builder block, but the last line (app) isn't using mount().\n" .
-                       "This causes all mount() mappings to be ignored. See perldoc Plack::Builder for details.");
+            Carp::carp("WARNING: You used mount() in a builder block, but the last line (app) isn't using mount().\n" .
+                       "WARNING: This causes all mount() mappings to be ignored.\n");
         } else {
             $app = $app->to_app;
         }
@@ -145,11 +162,10 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
   };
 
   # using OO interface
-
-  my $builder = Plack::Builder->new();
+  my $builder = Plack::Builder->new;
   $builder->add_middleware('Foo', opt => 1);
-  $app = $builder->mount('/app' => $app);
-  $app = $builder->to_app($app);
+  $builder->add_middleware('Bar');
+  $builder->wrap($app);
 
 =head1 DESCRIPTION
 
@@ -277,8 +293,46 @@ which is located under C</foo> because of the outer C<builder> block.
 =head1 CONDITIONAL MIDDLEWARE SUPPORT
 
 You can use C<enable_if> to conditionally enable middleware based on
-the runtime environment. See L<Plack::Middleware::Conditional> for
-details.
+the runtime environment.
+
+  builder {
+      enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' } 'StackTrace', force => 1;
+      $app;
+  };
+
+See L<Plack::Middleware::Conditional> for details.
+
+=head1 OBJECT ORIENTED INTERFACE
+
+Object oriented interface supports the same functionality with the DSL
+version in a clearer interace, probably with more typing required.
+
+  # With mount
+  my $builder = Plack::Builder->new;
+  $builder->add_middleware('Foo', opt => 1);
+  $builder->mount('/foo' => $foo_app);
+  $builder->mount('/' => $root_app);
+  $builder->to_app;
+
+  # Nested builders. Equivalent to:
+  # builder {
+  #     mount '/foo' => builder {
+  #         enable 'Foo';
+  #         $app;
+  #     };
+  #     mount '/' => $app2;
+  # };
+  my $builder_out = Plack::Builder->new;
+  my $builder_in  = Plack::Builder->new;
+  $builder_in->add_middleware('Foo');
+  $builder_out->mount("/foo" => $builder_in->wrap($app));
+  $builder_out->mount("/" => $app2);
+  $builder_out->to_app;
+
+  # conditional. You can also directly use Plack::Middleware::Conditional
+  my $builder = Plack::Builder->new;
+  $builder->add_middleware_if(sub { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' }, 'StackTrace');
+  $builder->wrap($app);
 
 =head1 SEE ALSO
 
