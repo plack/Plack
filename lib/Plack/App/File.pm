@@ -86,6 +86,10 @@ sub serve_path {
     my $content_type = $self->content_type || Plack::MIME->mime_type($file)
                        || 'text/plain';
 
+    if ("CODE" eq ref $content_type) {
+		$content_type = $content_type->($file);
+    }
+
     if ($content_type =~ m!^text/!) {
         $content_type .= "; charset=" . ($self->encoding || "utf-8");
     }
@@ -174,6 +178,8 @@ Set the file encoding for text files. Defaults to C<utf-8>.
 
 Set the file content type. If not set L<Plack::MIME> will try to detect it
 based on the file extension or fall back to C<text/plain>.
+Can be set to a callback which should work on $_[0] to check full path file 
+name.
 
 =back
 
