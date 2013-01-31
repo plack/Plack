@@ -46,10 +46,20 @@ sub _mount {
     }
 
     $self->{_urlmap}->map($location => $app);
-    $self->{_urlmap};
+    $self->{_urlmap}; # for backward compat.
 }
 
 sub to_app {
+    my($self, $app) = @_;
+
+    if ($app) {
+        $self->wrap($app);
+    } else {
+        $self->wrap($self->{_urlmap});
+    }
+}
+
+sub wrap {
     my($self, $app) = @_;
 
     for my $mw (reverse @{$self->{middlewares}}) {
@@ -146,10 +156,26 @@ Plack::Builder - OO and DSL to enable Plack Middlewares
 
   # using OO interface
 
-  my $builder = Plack::Builder->new();
+  # Just add middleware
+  my $builder = Plack::Builder->new;
   $builder->add_middleware('Foo', opt => 1);
-  $app = $builder->mount('/app' => $app);
-  $app = $builder->to_app($app);
+  $builder->add_middleware('Bar');
+  $wrapped_app = $builder->wrap($app)
+
+  # With mount
+  my $builder = Plack::Builder->new;
+  $builder->add_middleware('Foo', opt => 1);
+  $builder->mount('/foo' => $foo_app);
+  $builder->mount('/' => $root_app);
+  $wrapped_app = $builder->to_app;
+
+  # Nested builders
+  my $builder_out = Plack::Builder->new;
+  my $builder_in  = Plack::Builder->new;
+  $builder_in->add_middleware('Foo');
+  $builder_out->mount("/foo" => $builder_in->wrap($app));
+  $builder_out->mount("/bar" => $app2);
+  $builder_out->to_app;
 
 =head1 DESCRIPTION
 
