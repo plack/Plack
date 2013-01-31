@@ -9,16 +9,6 @@ eg/dot-psgi/echo-stream-sync.psgi
 eg/dot-psgi/echo-stream.psgi
 eg/dot-psgi/echo.psgi
 eg/dot-psgi/error.psgi
-eg/dot-psgi/frameworks/Angelos.psgi
-eg/dot-psgi/frameworks/Ark.psgi
-eg/dot-psgi/frameworks/Catalyst.psgi
-eg/dot-psgi/frameworks/CGI-Application.psgi
-eg/dot-psgi/frameworks/HTML-Mason.psgi
-eg/dot-psgi/frameworks/HTTP-Engine.psgi
-eg/dot-psgi/frameworks/Maypole.psgi
-eg/dot-psgi/frameworks/Mojo.psgi
-eg/dot-psgi/frameworks/Schenker.psgi
-eg/dot-psgi/frameworks/Squatting.psgi
 eg/dot-psgi/Hello.psgi
 eg/dot-psgi/image.psgi
 eg/dot-psgi/nonblock-hello.psgi
