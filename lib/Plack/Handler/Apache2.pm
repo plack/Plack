@@ -247,10 +247,6 @@ run your application.
 
 =head1 STARTUP FILE
 
-See L<http://perl.apache.org/docs/2.0/user/handlers/server.html#Startup_File>
-for information on the C<startup.pl> file for preloading perl modules and your
-apps.
-
 Here is an example C<startup.pl> to preload PSGI applications:
 
     #!/usr/bin/env perl
@@ -275,6 +271,10 @@ Here is an example C<startup.pl> to preload PSGI applications:
 
     1; # file must return true!
 
+See L<http://perl.apache.org/docs/2.0/user/handlers/server.html#Startup_File>
+for general information on the C<startup.pl> file for preloading perl modules
+and your apps.
+
 Some things to keep in mind when writing this file:
 
 =over 4
@@ -286,7 +286,7 @@ otherwise your app will load twice and the env vars you set with
 L<PerlSetEnv|http://perl.apache.org/docs/2.0/user/config/config.html#C_PerlSetEnv_>
 will not be available when your app is loading the first time.
 
-Use the example below as a template.
+Use the example above as a template.
 
 =item * C<@INC>
 
@@ -295,7 +295,7 @@ Use L<lib> to add entries, they can be in your app or C<.psgi> as well, but if
 your modules are in a L<local::lib> or some such, you will need to add the path
 for anything to load.
 
-Alternately, if you follow the example below, you can use:
+Alternately, if you follow the example above, you can use:
 
     PerlSetEnv PERL5LIB /some/path
 
