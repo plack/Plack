@@ -251,6 +251,30 @@ See L<http://perl.apache.org/docs/2.0/user/handlers/server.html#Startup_File>
 for information on the C<startup.pl> file for preloading perl modules and your
 apps.
 
+Here is an example C<startup.pl> to preload PSGI applications:
+
+    #!/usr/bin/env perl
+
+    use strict;
+    use warnings;
+    use Apache2::ServerUtil ();
+
+    BEGIN {
+        return unless Apache2::ServerUtil::restart_count() > 1;
+
+        require lib;
+        lib->import('/path/to/my/perl/libs');
+
+        require Plack::Handler::Apache2;
+
+        my @psgis = ('/path/to/app1.psgi', '/path/to/app2.psgi');
+        foreach my $psgi (@psgis) {
+            Plack::Handler::Apache2->preload($psgi);
+        }
+    }
+
+    1; # file must return true!
+
 Some things to keep in mind when writing this file:
 
 =over 4
@@ -334,30 +358,6 @@ accomplish this:
     }
 
 =back
-
-Here is an example C<startup.pl>:
-
-    #!/usr/bin/env perl
-
-    use strict;
-    use warnings;
-    use Apache2::ServerUtil ();
-
-    BEGIN {
-        return unless Apache2::ServerUtil::restart_count() > 1;
-
-        require lib;
-        lib->import('/path/to/my/perl/libs');
-
-        require Plack::Handler::Apache2;
-
-        my @psgis = ('/path/to/app1.psgi', '/path/to/app2.psgi');
-        foreach my $psgi (@psgis) {
-            Plack::Handler::Apache2->preload($psgi);
-        }
-    }
-
-    1; # file must return true!
 
 =head1 AUTHOR
 
