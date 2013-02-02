@@ -21,4 +21,16 @@ test_psgi app => $app, client => sub {
     is $res->content, "Hello bar counter=2";
 };
 
+$app = Plack::App::WrapCGI->new(
+  script => "t/Plack-Middleware/cgi-bin/cgi_dir.cgi",
+  execute => 1)->to_app;
+
+test_psgi app => $app, client => sub {
+    my $cb = shift;
+
+    my $res = $cb->(GET "http://localhost/?");
+    is $res->code, 200;
+    is $res->content, "MATCH";
+};
+
 done_testing;
