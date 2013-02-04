@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use parent qw(Plack::Component);
 use Plack::Util::Accessor qw(script execute _app);
+use File::Spec;
 use CGI::Emulate::PSGI;
 use CGI::Compile;
 use Carp;
@@ -12,6 +13,8 @@ sub prepare_app {
     my $self = shift;
     my $script = $self->script
         or croak "'script' is not set";
+
+    $script = File::Spec->rel2abs($script);
 
     if ($self->execute) {
         my $app = sub {
@@ -41,6 +44,7 @@ sub prepare_app {
                 open( STDIN, "<&=" . fileno($stdinr) )
                   or Carp::croak "Cannot dup STDIN: $!";
 
+                chdir(File::Basename::dirname($script));
                 exec($script) or Carp::croak("cannot exec: $!");
 
                 exit(2);

@@ -43,4 +43,15 @@ test_psgi app => $app, client => sub {
     is $res->content, "\xe1\x83\xb7\n";
 };
 
+my $app = Plack::App::CGIBin->new(
+    root => "t/Plack-Middleware/cgi-bin",
+    exec_cb => sub { 1 } )->to_app;
+
+test_psgi app => $app, client => sub {
+    my $cb = shift;
+    my $res = $cb->(GET "http://localhost/cgi_dir.cgi");
+    is $res->code, 200;
+    is $res->content, "MATCH";
+};
+
 done_testing;
