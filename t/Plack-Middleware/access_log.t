@@ -38,4 +38,20 @@ my $test = sub {
     is $log, '-';
 }
 
+{
+    my $req = GET "http://example.com/";
+    my $fmt = "%m %U %q %H";
+    $test->($fmt)->($req);
+    chomp $log;
+    is $log, "GET /  HTTP/1.1";
+}
+
+{
+    my $req = GET "http://example.com/foo?bar=baz";
+    my $fmt = "%m %U %q %H";
+    $test->($fmt)->($req);
+    chomp $log;
+    is $log, "GET /foo bar=baz HTTP/1.1";
+}
+
 done_testing;
