@@ -38,4 +38,22 @@ my $test = sub {
     is $log, '-';
 }
 
+{
+    my $req = GET "http://example.com/";
+    my $fmt = "%r == %m %U%q %H";
+    $test->($fmt)->($req);
+    chomp $log;
+    my ($r, $rs) = split / == /, $log;
+    is $r, $rs;
+}
+
+{
+    my $req = GET "http://example.com/foo?bar=baz";
+    my $fmt = "%r == %m %U%q %H";
+    $test->($fmt)->($req);
+    chomp $log;
+    my ($r, $rs) = split / == /, $log;
+    is $r, $rs;
+}
+
 done_testing;
