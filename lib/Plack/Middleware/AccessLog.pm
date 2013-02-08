@@ -193,7 +193,6 @@ L<Apache's LogFormat templates|http://httpd.apache.org/docs/2.0/mod/mod_log_conf
    %q    QUERY_STRING from the PSGI environment (not padding '-')
    %H    SERVER_PROTOCOL from the PSGI environment
 
-
 Some of these format fields are only supported by middleware that subclasses C<AccessLog>.
 
 In addition, custom values can be referenced, using C<%{name}>,
