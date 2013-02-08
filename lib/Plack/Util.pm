@@ -136,19 +136,6 @@ sub load_psgi {
     return $app;
 }
 
-sub convert_to_app {
-    my $app = shift;
-
-    if (Scalar::Util::blessed($app) && overload::Method($app, '&{}')) {
-        if (($ENV{PLACK_ENV} || '') eq 'development') {
-            warn "WARNING: Converting $app to PSGI code reference using &{} overloading. You probably forgot to call ->to_app etc. in your .psgi file!\n";
-        }
-        $app = \&$app;
-    }
-
-    $app;
-}
-
 sub run_app($$) {
     my($app, $env) = @_;
 

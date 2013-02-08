@@ -124,7 +124,7 @@ sub builder(&) {
         }
     }
 
-    $app = Plack::Util::convert_to_app($app);
+    $app = $app->to_app if $app and Scalar::Util::blessed($app) and $app->can('to_app');
 
     $self->to_app($app);
 }

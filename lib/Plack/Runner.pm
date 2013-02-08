@@ -21,7 +21,7 @@ sub new {
 sub build(&;$) {
     my $block = shift;
     my $app   = shift || sub { };
-    return sub { Plack::Util::convert_to_app($block->($app->())) };
+    return sub { $block->($app->()) };
 }
 
 sub parse_options {
