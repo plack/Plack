@@ -149,6 +149,7 @@ t/Plack-Middleware/auth_basic_simple.t
 t/Plack-Middleware/bufferedstreaming.t
 t/Plack-Middleware/cascade/basic.t
 t/Plack-Middleware/cascade/streaming.t
+t/Plack-Middleware/cgi-bin/cgi_dir.cgi
 t/Plack-Middleware/cgi-bin/hello.cgi
 t/Plack-Middleware/cgi-bin/hello.py
 t/Plack-Middleware/cgi-bin/hello2.cgi

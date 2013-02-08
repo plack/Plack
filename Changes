@@ -1,5 +1,15 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+1.0017 Thu Feb  7 19:21:24 PST 2013
+    [INCOMPATIBLE CHANGES]
+        - Gives you warnings when you use one of Plack::App objects in `plackup -e` or
+          in .psgi files but forgot to call ->to_app to make it a PSGI application (#369)
+          Still automatically converts them for backward compatibility, but in the
+          loading time inside Plack::Builder.
+
+    [BUG FIXES]
+        - chdir to the CGI path when executing CGIBin (#338, #368)
+
 1.0016 Thu Jan 31 13:21:14 PST 2013
     [SECURITY]
         - Fixed directory traversal bug in Plack::App::File on win32 environments
