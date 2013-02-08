@@ -85,6 +85,10 @@ sub log_line {
         V => sub { $env->{HTTP_HOST} || $env->{SERVER_NAME} || '-' },
         p => sub { $env->{SERVER_PORT} },
         P => sub { $$ },
+        m => sub { _safe($env->{REQUEST_METHOD}) },
+        U => sub { _safe($env->{PATH_INFO}) },
+        q => sub { _safe($env->{QUERY_STRING}) },
+        H => sub { $env->{SERVER_PROTOCOL} },
     );
 
     my $char_handler = sub {
@@ -184,6 +188,10 @@ L<Apache's LogFormat templates|http://httpd.apache.org/docs/2.0/mod/mod_log_conf
    %V    HTTP_HOST or SERVER_NAME from the PSGI environment, or -
    %p    SERVER_PORT from the PSGI environment
    %P    the worker's process id
+   %m    REQUEST_METHOD from the PSGI environment
+   %U    PATH_INFO from the PSGI environment
+   %q    QUERY_STRING from the PSGI environment (not padding '-')
+   %H    SERVER_PROTOCOL from the PSGI environment
 
 Some of these format fields are only supported by middleware that subclasses C<AccessLog>.
 
