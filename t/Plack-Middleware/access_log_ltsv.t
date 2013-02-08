@@ -4,7 +4,6 @@ use Test::More;
 use HTTP::Request::Common;
 use Plack::Test;
 use Plack::Builder;
-use POSIX;
 
 my $log;
 
@@ -29,8 +28,6 @@ my $test = sub {
     $test->('ltsv')->($req);
     chomp $log;
     my %record = map { split ':', $_, 2 } split "\t", $log;
-
-    my $month_year = POSIX::strftime('%m %y', localtime);
     is $record{host}, '127.0.0.1';
     is $record{user}, '-';
     is $record{req}, 'GET / HTTP/1.1';
