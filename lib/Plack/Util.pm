@@ -133,7 +133,6 @@ sub load_psgi {
     my $app = _load_sandbox($file);
     die "Error while loading $file: $@" if $@;
 
-    return $app->to_app if $app and Scalar::Util::blessed($app) and $app->can('to_app');
     return $app;
 }
 
