@@ -13,6 +13,7 @@ sub call {
     $self->response_cb($res, sub {
         my $res = shift;
         my $h = Plack::Util::headers($res->[1]);
+        return unless $h->get('Content-Type');
         if ($h->get('Content-Type') =~ m!^text/!) {
             return sub {
                 my $chunk = shift;
