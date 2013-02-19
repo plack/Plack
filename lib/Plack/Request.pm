@@ -91,7 +91,7 @@ sub content {
     }
 
     my $fh = $self->input                 or return '';
-    my $cl = $self->env->{CONTENT_LENGTH} or return'';
+    my $cl = $self->env->{CONTENT_LENGTH} or return '';
 
     $fh->seek(0, 0); # just in case middleware/apps read it without seeking back
     $fh->read(my($content), $cl, 0);
