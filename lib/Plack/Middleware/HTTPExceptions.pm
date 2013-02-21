@@ -135,8 +135,8 @@ catch and display, but you can also implement your own exception class
 to throw.
 
 If the thrown exception is not an object that implements either a
-C<code> or an C<as_psgi> method, a 500 error will be returned, and the
-exception is printed to the psgi.errors stream.
+C<code> or an C<as_psgi> method, a C<500> error will be returned, and the
+exception is printed to the C<psgi.errors> stream.
 Alternatively, you can pass a true value for the C<rethrow> parameter
 for this middleware, and the exception will instead be rethrown. This is
 enabled by default when C<PLACK_ENV> is set to C<development>, so that
