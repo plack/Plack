@@ -1,6 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [IMPROVEMENTS]
+        - Plack::Middleware::HTTPExceptions can now optionally send uncaught
+          exceptions to psgix.logger, instead of psgi.errors. (ether)
 
 1.0024  2013-05-01 10:05:56 PDT
     [IMPROVEMENTS]

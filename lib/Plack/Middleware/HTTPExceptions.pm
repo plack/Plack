@@ -1,7 +1,7 @@
 package Plack::Middleware::HTTPExceptions;
 use strict;
 use parent qw(Plack::Middleware);
-use Plack::Util::Accessor qw(rethrow);
+use Plack::Util::Accessor qw(rethrow use_logger);
 
 use Carp ();
 use Try::Tiny;
@@ -60,7 +60,18 @@ sub transform_error {
         }
         else {
             $code = 500;
-            $env->{'psgi.errors'}->print($e);
+            if ($self->use_logger) {
+                if (defined $env->{'psgix.logger'}) {
+                    $env->{'psgix.logger'}->({level=>'fatal',message=>$e});
+                }
+                else {
+                    $env->{'psgi.errors'}->print('no psgix.logger set - falling back to psgi.errors!');
+                    $env->{'psgi.errors'}->print($e);
+                }
+            }
+            else {
+                $env->{'psgi.errors'}->print($e);
+            }
         }
     }
 
@@ -136,7 +147,8 @@ to throw.
 
 If the thrown exception is not an object that implements either a
 C<code> or an C<as_psgi> method, a C<500> error will be returned, and the
-exception is printed to the C<psgi.errors> stream.
+exception is sent as a fatal message to C<psgix.logger> if the C<use_logger>
+option is set, or printed to the C<psgi.errors> stream otherwise.
 Alternatively, you can pass a true value for the C<rethrow> parameter
 for this middleware, and the exception will instead be rethrown. This is
 enabled by default when C<PLACK_ENV> is set to C<development>, so that
