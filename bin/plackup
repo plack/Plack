@@ -207,6 +207,14 @@ See L<Plack::Loader::Delayed> and L<Plack::Loader::Shotgun> for more details.
 Specifies the pathname of a file where the access log should be written.  By
 default, in the development environment access logs will go to STDERR.
 
+=item --path
+
+Specify the root path of your app (C<SCRIPT_NAME> in PSGI env) to
+run. The following two commands are roughly the same.
+
+  plackup --path /foo app.psgi
+  plackup -e 'mount "/foo" => Plack::Util::load_psgi("app.psgi")'
+
 =back
 
 Other options that starts with C<--> are passed through to the backend server.
