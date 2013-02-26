@@ -265,7 +265,12 @@ Specify a filename for the pid file
 
 =item manager
 
-Specify a FCGI::ProcManager sub-class
+Specify either a FCGI::ProcManager subclass, or an actual FCGI::ProcManager-compatible object.
+
+  use FCGI::ProcManager::Dynamic;
+  Plack::Handler::FCGI->new(
+      manager => FCGI::ProcManager::Dynamic->new(...),
+  );
 
 =item daemonize
 
