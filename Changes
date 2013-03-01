@@ -1,5 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+    [NEW FEATURES]
+        - Plack::Middleware::AccessLog now supports more customization by using
+          handler subs for new formats (ether)
+
 1.0017 Thu Feb  7 19:21:24 PST 2013
     [INCOMPATIBLE CHANGES]
         - Gives you warnings when you use one of Plack::App objects in `plackup -e` or
