@@ -199,7 +199,7 @@ In addition, custom values can be referenced, using C<%{name}>,
 with one of the mandatory modifier flags C<i>, C<o> or C<t>:
 
    %{variable-name}i    HTTP_VARIABLE_NAME value from the PSGI environment
-   %{header-name}o      header-name header
+   %{header-name}o      header-name header in the response
    %{time-format]t      localtime in the specified strftime format
 
 =item logger
