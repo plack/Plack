@@ -77,10 +77,30 @@ sub cookies {
 
 sub query_parameters {
     my $self = shift;
-    my @combined = $self->uri->query_form;
-    @combined = (@combined, map { $_, '' } $self->uri->query_keywords);
 
-    $self->env->{'plack.request.query'} ||= Hash::MultiValue->new(@combined);
+    my $env = $self->env;
+    my $query = $env->{'plack.request.query'};
+    if ($query) {
+        return $query;
+    }
+
+    my @query;
+    my $query_string = $env->{QUERY_STRING};
+    if (defined $query_string) {
+        if ($query_string =~ /=/) {
+            # Handle  ?foo=bar&bar=foo type of query
+            @query =
+                map { s/\+/ /g; URI::Escape::uri_unescape($_) }
+                map { /=/ ? split(/=/, $_, 2) : ($_ => '')}
+                split(/[&;]/, $query_string);
+        } else {
+            # Handle ...?dog+bones type of query
+            @query =
+                map { (URI::Escape::uri_unescape($_), '') }
+                split(/\+/, $query_string, -1);
+        }
+    }
+    $env->{'plack.request.query'} ||= Hash::MultiValue->new(@query);
 }
 
 sub content {
