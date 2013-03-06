@@ -100,7 +100,7 @@ sub query_parameters {
                 split(/\+/, $query_string, -1);
         }
     }
-    $env->{'plack.request.query'} ||= Hash::MultiValue->new(@query);
+    $env->{'plack.request.query'} = Hash::MultiValue->new(@query);
 }
 
 sub content {
