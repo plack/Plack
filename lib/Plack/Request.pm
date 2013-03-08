@@ -77,15 +77,14 @@ sub cookies {
 
 sub query_parameters {
     my $self = shift;
+    $self->env->{'plack.request.query'} ||= $self->_parse_query;
+}
 
-    my $env = $self->env;
-    my $query = $env->{'plack.request.query'};
-    if ($query) {
-        return $query;
-    }
+sub _parse_query {
+    my $self = shift;
 
     my @query;
-    my $query_string = $env->{QUERY_STRING};
+    my $query_string = $self->env->{QUERY_STRING};
     if (defined $query_string) {
         if ($query_string =~ /=/) {
             # Handle  ?foo=bar&bar=foo type of query
@@ -100,7 +99,8 @@ sub query_parameters {
                 split(/\+/, $query_string, -1);
         }
     }
-    $env->{'plack.request.query'} = Hash::MultiValue->new(@query);
+
+    Hash::MultiValue->new(@query);
 }
 
 sub content {
