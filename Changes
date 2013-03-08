@@ -1,6 +1,16 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
-1.0017 Thu Feb  7 19:21:24 PST 2013
+1.0018 Fri Mar  8 10:43:45 PST 2013
+    [IMPROVEMENTS]
+        - Performance boost in Plack::Request#query_parameters (lestrrat)
+        - Added custom log formats for %m, %U, %q and %H (Hiroshi Sakai)
+        - Fixed warnings in SimpleContentFilter (earino)
+
+    [DOCUMENTATION]
+        - Added docs about plackup --path
+        - Added docs about using manager object in Plack::Handler::FCGI
+
+1.0017-TRIAL Thu Feb  7 19:21:24 PST 2013
     [INCOMPATIBLE CHANGES]
         - Gives you warnings when you use one of Plack::App objects in `plackup -e` or
           in .psgi files but forgot to call ->to_app to make it a PSGI application (#369)
