@@ -2,7 +2,7 @@ package Plack::Middleware::AccessLog;
 use strict;
 use warnings;
 use parent qw( Plack::Middleware );
-use Plack::Util::Accessor qw( logger format );
+use Plack::Util::Accessor qw( logger format handlers );
 
 use Carp ();
 use Plack::Util;
@@ -21,6 +21,14 @@ my $tzoffset = POSIX::strftime("%z", localtime) !~ /^[+-]\d{4}$/ && do {
     my $min_offset = int($seconds / 60);
     sprintf '%+03d%02u', $min_offset / 60, $min_offset % 60;
 };
+
+sub prepare_app {
+    my $self = shift;
+
+    $self->{handlers} = {} if not defined $self->{handlers};
+    my @reserved = grep { exists $self->{handlers}{$_} } qw(i o t C e n P);
+    Carp::carp("use of reserved handler type(s): @reserved") if @reserved;
+}
 
 sub call {
     my $self = shift;
@@ -62,6 +70,8 @@ sub log_line {
             return scalar $h->get($block) || "-";
         } elsif ($type eq 't') {
             return "[" . $strftime->($block, localtime) . "]";
+        } elsif (my $handler = $self->handlers->{$type}) {
+           return $handler->($block, $type, $h, $env);
         } else {
             Carp::carp("{$block}$type not supported");
             return "-";
@@ -199,8 +209,10 @@ In addition, custom values can be referenced, using C<%{name}>,
 with one of the mandatory modifier flags C<i>, C<o> or C<t>:
 
    %{variable-name}i    HTTP_VARIABLE_NAME value from the PSGI environment
-   %{header-name}o      header-name header
+   %{header-name}o      header-name header in the response
    %{time-format]t      localtime in the specified strftime format
+
+You can also define your own custom entries with handler subs with the C<handlers> option (see below).
 
 =item logger
 
@@ -210,6 +222,27 @@ with one of the mandatory modifier flags C<i>, C<o> or C<t>:
 
 Sets a callback to print log message to. It prints to the C<psgi.errors>
 output stream by default.
+
+=item handlers
+
+  enable "Plack::Middleware::AccessLog",
+      format => '... %{FOO|BAR}x ...',
+      handlers => {
+          x => sub {
+              my ($args, $type, $h, $env) = @_;
+              my ($main, $alt) = split('\|', $args);
+              $env->{$main} // $env->{$alt};
+          },
+      };
+
+You can define your own custom formats which run arbitrary code that you
+provide. Any single letter can be used other than: i, o, t, C, e, n, and P
+(which have special meaning in the Apache log format).  Your sub is called with
+four arguments: the content inside the C<{}> from the format, the identifying
+letter, an object produced by C<Plack::Util::headers>), and the PSGI
+environment (C<$env>).  It should return the string to be logged.
+
+The example above logs FOO from the environment when available, falling back to BAR when not set.
 
 =back
 
