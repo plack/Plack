@@ -2,13 +2,14 @@ package HTTP::Message::PSGI;
 use strict;
 use warnings;
 use parent qw(Exporter);
-our @EXPORT = qw( req_to_psgi res_from_psgi res_to_psgi );
+our @EXPORT = qw( req_to_psgi res_from_psgi res_to_psgi req_from_psgi );
 
 use Carp ();
 use HTTP::Status qw(status_message);
 use URI::Escape ();
 use Plack::Util;
 use Try::Tiny;
+use Plack::Request;
 
 my $TRUE  = (1 == 1);
 my $FALSE = !$TRUE;
@@ -91,6 +92,22 @@ sub req_to_psgi {
     return $env;
 }
 
+sub req_from_psgi {
+    my $env = shift;
+
+    unless (ref $env eq 'HASH') {
+        Carp::croak("env is not HashRef: $env");
+    }
+
+    my $req = Plack::Request->new($env);
+    return HTTP::Request->new(
+        $req->method,
+        $req->uri,
+        $req->headers,
+        $req->content,
+    );
+}
+
 sub res_from_psgi {
     my ($psgi_res) = @_;
 
@@ -164,6 +181,11 @@ sub res_to_psgi {
 
 sub HTTP::Request::to_psgi {
     req_to_psgi(@_);
+}
+
+sub HTTP::Request::from_psgi {
+    my $class = shift;
+    req_from_psgi(@_);
 }
 
 sub HTTP::Response::from_psgi {
@@ -261,6 +283,18 @@ Converts a L<HTTP::Request> object into a PSGI env hash reference.
   my $env = $req->to_psgi;
 
 Same as C<req_to_psgi> but an instance method in L<HTTP::Request>.
+
+=item req_from_psgi
+
+  my $req = req_from_psgi($env);
+
+Converts a PSGI env hash reference into a L<HTTP::Request>.
+
+=item HTTP::Request::from_psgi
+
+  my $req = HTTP::Request->from_psgi($env);
+
+Same as C<req_from_psgi> but a class method in L<HTTP::Request>.
 
 =item res_from_psgi
 
