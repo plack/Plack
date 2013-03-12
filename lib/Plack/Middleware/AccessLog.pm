@@ -181,7 +181,7 @@ L<Apache's LogFormat templates|http://httpd.apache.org/docs/2.0/mod/mod_log_conf
    %t    [local timestamp, in default format]
    %r    REQUEST_METHOD, REQUEST_URI and SERVER_PROTOCOL from the PSGI environment
    %s    the HTTP status code of the response
-   %b    content length
+   %b    content length of the response
    %T    custom field for handling times in subclasses
    %D    custom field for handling sub-second times in subclasses
    %v    SERVER_NAME from the PSGI environment, or -
