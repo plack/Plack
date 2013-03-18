@@ -38,43 +38,61 @@ sub call {
 }
 
 sub log_line {
-    my($self, $status, $headers, $env, $opts) = @_;
+    my($self, $status, $response_headers, $env, $opts) = @_;
 
-    my $h = Plack::Util::headers($headers);
+    my $h = Plack::Util::headers($response_headers);
 
-    my $strftime = sub {
-        my ($fmt, @time) = @_;
-        $fmt =~ s/%z/$tzoffset/g if $tzoffset;
-        my $old_locale = POSIX::setlocale(&POSIX::LC_ALL);
-        POSIX::setlocale(&POSIX::LC_ALL, 'C');
-        my $out = POSIX::strftime($fmt, @time);
-        POSIX::setlocale(&POSIX::LC_ALL, $old_locale);
-        return $out;
-    };
+    my $fmt = $self->format || "combined";
+    $fmt = $formats{$fmt} if exists $formats{$fmt};
 
-    my $block_handler = sub {
-        my($block, $type) = @_;
-        if ($type eq 'i') {
-            $block =~ s/-/_/g;
-            my $val = _safe($env->{"HTTP_" . uc($block)});
-            return defined $val ? $val : "-";
-        } elsif ($type eq 'o') {
-            return scalar $h->get($block) || "-";
-        } elsif ($type eq 't') {
-            return "[" . $strftime->($block, localtime) . "]";
-        } else {
-            Carp::carp("{$block}$type not supported");
-            return "-";
-        }
-    };
+    $fmt =~ s!
+        (?:
+         \%\{(.+?)\}([a-zA-Z]) |
+         \%(?:[<>])?([a-zA-Z\%])
+        )
+    ! $1
+        ? $self->_block_handler($1, $2, $status, $h, $env, $opts)
+        : $self->_char_handler($3, $status, $h, $env, $opts)
+    !egx;
 
+    return $fmt . "\n";
+}
+
+sub _strftime {
+    my ($self, $fmt, @time) = @_;
+    $fmt =~ s/%z/$tzoffset/g if $tzoffset;
+    my $old_locale = POSIX::setlocale(&POSIX::LC_ALL);
+    POSIX::setlocale(&POSIX::LC_ALL, 'C');
+    my $out = POSIX::strftime($fmt, @time);
+    POSIX::setlocale(&POSIX::LC_ALL, $old_locale);
+    return $out;
+}
+
+sub _block_handler {
+    my ($self, $block, $type, $status, $h, $env, $opts) = @_;
+    if ($type eq 'i') {
+        $block =~ s/-/_/g;
+        my $val = _safe($env->{"HTTP_" . uc($block)});
+        return defined $val ? $val : "-";
+    } elsif ($type eq 'o') {
+        return scalar $h->get($block) || "-";
+    } elsif ($type eq 't') {
+        return "[" . $self->_strftime($block, localtime) . "]";
+    } else {
+        Carp::carp("{$block}$type not supported");
+        return "-";
+    }
+}
+
+sub _char_handler {
+    my ($self, $char, $status, $h, $env, $opts) = @_;
 
     my %char_handler = (
         '%' => sub { '%' },
         h => sub { $env->{REMOTE_ADDR} || '-' },
         l => sub { '-' },
         u => sub { $env->{REMOTE_USER} || '-' },
-        t => sub { "[" . $strftime->('%d/%b/%Y:%H:%M:%S %z', localtime) . "]" },
+        t => sub { "[" . $self->_strftime('%d/%b/%Y:%H:%M:%S %z', localtime) . "]" },
         r => sub { _safe($env->{REQUEST_METHOD}) . " " . _safe($env->{REQUEST_URI}) .
                    " " . $env->{SERVER_PROTOCOL} },
         s => sub { $status },
@@ -91,28 +109,12 @@ sub log_line {
         H => sub { $env->{SERVER_PROTOCOL} },
     );
 
-    my $char_handler = sub {
-        my $char = shift;
-
-        my $cb = $char_handler{$char};
-        unless ($cb) {
-            Carp::carp "\%$char not supported.";
-            return "-";
-        }
-        $cb->($char);
-    };
-
-    my $fmt = $self->format || "combined";
-    $fmt = $formats{$fmt} if exists $formats{$fmt};
-
-    $fmt =~ s!
-        (?:
-         \%\{(.+?)\}([a-z]) |
-         \%(?:[<>])?([a-zA-Z\%])
-        )
-    ! $1 ? $block_handler->($1, $2) : $char_handler->($3) !egx;
-
-    return $fmt . "\n";
+    my $cb = $char_handler{$char};
+    unless ($cb) {
+        Carp::carp "\%$char not supported.";
+        return "-";
+    }
+    $cb->($char);
 }
 
 sub _safe {
