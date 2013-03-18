@@ -38,9 +38,9 @@ sub call {
 }
 
 sub log_line {
-    my($self, $status, $headers, $env, $opts) = @_;
+    my($self, $status, $response_headers, $env, $opts) = @_;
 
-    my $h = Plack::Util::headers($headers);
+    my $h = Plack::Util::headers($response_headers);
 
     my $fmt = $self->format || "combined";
     $fmt = $formats{$fmt} if exists $formats{$fmt};
