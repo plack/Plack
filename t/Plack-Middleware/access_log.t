@@ -15,7 +15,7 @@ my $test = sub {
         my $app = builder {
             enable "Plack::Middleware::AccessLog",
                 logger => sub { $log = "@_" }, format => $format;
-            sub { [ 200, [ 'Content-Type' => 'text/plain' ], [ 'OK' ] ] };
+            sub { [ 200, [ 'Content-Type' => 'text/plain', 'Content-Length', 2 ], [ 'OK' ] ] };
         };
         test_psgi $app, sub { $_[0]->($req) };
     };
@@ -54,6 +54,17 @@ my $test = sub {
     chomp $log;
     my ($r, $rs) = split / == /, $log;
     is $r, $rs;
+}
+
+{
+    my $req = POST "http://example.com/foo", [ "bar", "baz" ];
+    my $fmt = "cti=%{Content-Type}i cli=%{Content-Length}i cto=%{Content-Type}o clo=%{Content-Length}o";
+    $test->($fmt)->($req);
+    chomp $log;
+
+    my %vals = split /[= ]/, $log;
+    is_deeply \%vals, { cti => "application/x-www-form-urlencoded", cli => 7,
+                        cto => 'text/plain', clo => 2 };
 }
 
 done_testing;

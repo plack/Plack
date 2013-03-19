@@ -22,6 +22,8 @@ my $tzoffset = POSIX::strftime("%z", localtime) !~ /^[+-]\d{4}$/ && do {
     sprintf '%+03d%02u', $min_offset / 60, $min_offset % 60;
 };
 
+my $psgi_reserved = { CONTENT_LENGTH => 1, CONTENT_TYPE => 1 };
+
 sub call {
     my $self = shift;
     my($env) = @_;
@@ -56,7 +58,9 @@ sub log_line {
         my($block, $type) = @_;
         if ($type eq 'i') {
             $block =~ s/-/_/g;
-            my $val = _safe($env->{"HTTP_" . uc($block)});
+            $block = uc($block);
+            $block = "HTTP_${block}" unless $psgi_reserved->{$block};
+            my $val = _safe($env->{$block});
             return defined $val ? $val : "-";
         } elsif ($type eq 'o') {
             return scalar $h->get($block) || "-";
