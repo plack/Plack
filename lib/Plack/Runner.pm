@@ -36,7 +36,7 @@ sub parse_options {
 
     require Getopt::Long;
     my $parser = Getopt::Long::Parser->new(
-        config => [ "posix_default", "gnu_compat", "no_ignore_case", "pass_through" ],
+        config => [ "no_ignore_case", "pass_through" ],
     );
 
     $parser->getoptions(
