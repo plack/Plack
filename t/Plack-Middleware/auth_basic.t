@@ -30,7 +30,7 @@ test_psgi app => $app, client => sub {
     is $res->code, 200;
     is $res->content, "Hello admin";
 
-    my $req = GET "http://localhost/", "Authorization" => "Basic am9objpmb286YmFy";
+    $req = GET "http://localhost/", "Authorization" => "Basic am9objpmb286YmFy";
     $res = $cb->($req);
     is $res->code, 200;
     is $res->content, "Hello john";
