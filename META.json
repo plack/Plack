@@ -74,7 +74,7 @@
          }
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/plack/Plack/issues"
@@ -86,7 +86,8 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0018",
+   "version" : "1.0019",
+   "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
       "Alex J. G. Burzy\u00c5\u0084ski <ajgb@cpan.org>",
