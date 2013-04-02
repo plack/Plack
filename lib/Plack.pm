@@ -3,7 +3,7 @@ package Plack;
 use strict;
 use warnings;
 use 5.008_001;
-our $VERSION = '1.0018';
+our $VERSION = '1.0019';
 $VERSION = eval $VERSION;
 
 1;
@@ -170,7 +170,7 @@ The following copyright notice applies to all the files provided in
 this distribution, including binary files, unless explicitly noted
 otherwise.
 
-Copyright 2009-2011 Tatsuhiko Miyagawa
+Copyright 2009-2013 Tatsuhiko Miyagawa
 
 =head1 CORE DEVELOPERS
 

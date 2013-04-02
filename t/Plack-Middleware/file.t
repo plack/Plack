@@ -4,7 +4,7 @@ use Test::More;
 use HTTP::Request::Common;
 use Plack::App::File;
 
-my $app = Plack::App::File->new(file => 'README');
+my $app = Plack::App::File->new(file => 'Changes');
 
 test_psgi $app, sub {
     my $cb = shift;
@@ -19,8 +19,8 @@ test_psgi $app, sub {
 };
 
 my $app_content_type = Plack::App::File->new(
-    file => 'README',
-    content_type => 'text/x-readme'
+    file => 'Changes',
+    content_type => 'text/x-changes'
 );
 
 test_psgi $app_content_type, sub {
@@ -31,7 +31,7 @@ test_psgi $app_content_type, sub {
     like $res->content, qr/Plack/;
 
     $res = $cb->(GET "/whatever");
-    is $res->content_type, 'text/x-readme';
+    is $res->content_type, 'text/x-changes';
     is $res->code, 200;
 };
 
