@@ -2,6 +2,14 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0022  2013-04-02 12:37:42 PDT
+    [BUG FIXES]
+        - Fixed a major bug in 1.0020-1.0021 where posix_default prevents arbitrary arguments
+          for plackup-compat (e.g. starman) to handle them (Thanks to justnoxx) Starman#66
+
+    [IMPROVEMENTS]
+        - Fixed test warnings (Keedi Kim)
+
 1.0021  2013-04-02 11:20:00 PDT
         - Repackage with Milla v0.9.6 #392
 

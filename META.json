@@ -86,7 +86,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0021",
+   "version" : "1.0022",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
@@ -122,6 +122,7 @@
       "Kang-min Liu <gugod@gugod.org>",
       "Karen Etheridge <ether@cpan.org>",
       "Kazuho Oku <kazuhooku@gmail.com>",
+      "Keedi Kim <keedi.k@gmail.com>",
       "Lee Aylward <lee@laylward.com>",
       "Leo Lapworth <leo@cuckoo.org>",
       "Mark Fowler <mark@twoshortplanks.com>",
