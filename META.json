@@ -74,7 +74,7 @@
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/plack/Plack/issues"
@@ -86,15 +86,15 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0019",
+   "version" : "1.0020",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
-      "Alex J. G. Burzy\u00c5\u0084ski <ajgb@cpan.org>",
+      "Alex J. G. Burzy\u0144ski <ajgb@cpan.org>",
       "Andrew Rodland <andrew@cleverdomain.org>",
       "Andy Wardley <abw@wardley.org>",
       "Aristotle Pagaltzis <pagaltzis@gmx.de>",
-      "Ask Bj\u00c3\u00b8rn Hansen <ask@develooper.com>",
+      "Ask Bj\u00f8rn Hansen <ask@develooper.com>",
       "Bernhard Graf <augensalat@gmail.com>",
       "Chia-liang Kao <clkao@clkao.org>",
       "Christian Walde <walde.christian@googlemail.com>",
@@ -132,7 +132,7 @@
       "Nobuo Danjou <nobuo.danjou@gmail.com>",
       "Oliver Gorwits <oliver@cpan.org>",
       "Oliver Paukstadt <pstadt@sourcentral.org>",
-      "Olivier Mengu\u00c3\u00a9 <dolmen@cpan.org>",
+      "Olivier Mengu\u00e9 <dolmen@cpan.org>",
       "Panu Ervamaa <panu.ervamaa@frantic.com>",
       "Paul Driver <frodwith@gmail.com>",
       "Pedro Melo <melo@simplicidade.org>",
@@ -172,8 +172,8 @@
       "vti <viacheslav.t@gmail.com>",
       "xaicron <xaicron@gmail.com>",
       "yappo <yappo@shibuya.pl>",
-      "\u00c3\u0086var Arnfj\u00c3\u00b6r\u00c3\u00b0 Bjarmason <avarab@gmail.com>",
-      "\u00e5\u0094\u0090\u00e9\u00b3\u00b3 <audreyt@audreyt.org>"
+      "\u00c6var Arnfj\u00f6r\u00f0 Bjarmason <avarab@gmail.com>",
+      "\u5510\u9cf3 <audreyt@audreyt.org>"
    ]
 }
 

@@ -2,6 +2,16 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0020  2013-04-01 19:34:54 PDT
+    [INCOMPATIBLE CHANGES]
+        - Enable posix_default and gnu_compat in plackup Getopt, so that ambiguous
+          option names do not match with long options accidentally
+
+    [IMPROVEMENTS]
+        - Document fix for the AccessLog (ether)
+        - Special-case Content-Length and Content-Type for %{}i in AccessLog format #387
+
+
 1.0019  2013-04-01 17:58:25 PDT
         - Trial release with Milla
 
