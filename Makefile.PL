@@ -1,56 +1,91 @@
-# See and run ./script/bootstrap when you get errors running Makefile.PL
-use inc::Module::Install;
 
-name 'Plack';
-all_from 'lib/Plack.pm';
-readme_from 'lib/Plack.pm';
-authority 'MIYAGAWA';
+use strict;
+use warnings;
 
-requires 'LWP::UserAgent', 5.814;           # Plack::Test
-requires 'HTTP::Message', 5.814;
-requires 'URI', 1.59;
-requires 'Pod::Usage', 1.36;                # plackup
-requires 'File::ShareDir', '1.00';          # Plack::Test::Suite
-requires 'Try::Tiny';
-requires 'parent';
-requires 'Stream::Buffered', '0.02';
+use 5.008001;
 
-requires 'Devel::StackTrace', 1.23;         # Middleware::StackTrace
-requires 'Devel::StackTrace::AsHTML', 0.11; # Middleware::StackTrace
+use ExtUtils::MakeMaker 6.30;
 
-requires 'Filesys::Notify::Simple';         # plackup -r
+use File::ShareDir::Install;
+install_share dist => "share";
 
-requires 'Hash::MultiValue', 0.05;          # Plack::Request
-requires 'HTTP::Body', 1.06;                # Plack::Request
-requires 'Test::TCP', 1.02;                 # Plack::Test needs to be installed
 
-build_requires 'Test::More', 0.88;
-test_requires 'Test::Requires';
+my %WriteMakefileArgs = (
+  "ABSTRACT" => "Perl Superglue for Web frameworks and Web Servers (PSGI toolkit)",
+  "AUTHOR" => "Tatsuhiko Miyagawa <miyagawa\@bulknews.net>",
+  "BUILD_REQUIRES" => {},
+  "CONFIGURE_REQUIRES" => {
+    "ExtUtils::MakeMaker" => "6.30",
+    "File::ShareDir::Install" => "0.03"
+  },
+  "DISTNAME" => "Plack",
+  "EXE_FILES" => [
+    "script/plackup"
+  ],
+  "LICENSE" => "perl",
+  "NAME" => "Plack",
+  "PREREQ_PM" => {
+    "Devel::StackTrace" => "1.23",
+    "Devel::StackTrace::AsHTML" => "0.11",
+    "File::ShareDir" => "1.00",
+    "Filesys::Notify::Simple" => 0,
+    "HTTP::Body" => "1.06",
+    "HTTP::Message" => "5.814",
+    "Hash::MultiValue" => "0.05",
+    "LWP::UserAgent" => "5.814",
+    "Pod::Usage" => "1.36",
+    "Stream::Buffered" => "0.02",
+    "Test::TCP" => "1.02",
+    "Try::Tiny" => 0,
+    "URI" => "1.59",
+    "parent" => 0
+  },
+  "TEST_REQUIRES" => {
+    "Test::More" => "0.88",
+    "Test::Requires" => 0
+  },
+  "VERSION" => "1.0018",
+  "test" => {
+    "TESTS" => "t/*.t t/HTTP-Message-PSGI/*.t t/HTTP-Server-PSGI/*.t t/Plack-Builder/*.t t/Plack-HTTPParser-PP/*.t t/Plack-Handler/*.t t/Plack-Loader/*.t t/Plack-MIME/*.t t/Plack-Middleware/*.t t/Plack-Middleware/cascade/*.t t/Plack-Middleware/recursive/*.t t/Plack-Middleware/stacktrace/*.t t/Plack-Request/*.t t/Plack-Response/*.t t/Plack-Runner/*.t t/Plack-TempBuffer/*.t t/Plack-Test/*.t t/Plack-Util/*.t"
+  }
+);
 
-tests 't/*.t t/*/*.t';
-author_tests 'xt';
 
-install_share 'share';
-install_script 'bin/plackup';
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
+  my $tr = delete $WriteMakefileArgs{TEST_REQUIRES};
+  my $br = $WriteMakefileArgs{BUILD_REQUIRES};
+  for my $mod ( keys %$tr ) {
+    if ( exists $br->{$mod} ) {
+      $br->{$mod} = $tr->{$mod} if $tr->{$mod} > $br->{$mod};
+    }
+    else {
+      $br->{$mod} = $tr->{$mod};
+    }
+  }
+}
 
-auto_set_repository;
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
+  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
+  my $pp = $WriteMakefileArgs{PREREQ_PM};
+  for my $mod ( keys %$br ) {
+    if ( exists $pp->{$mod} ) {
+      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
+    }
+    else {
+      $pp->{$mod} = $br->{$mod};
+    }
+  }
+}
 
-resources
-  homepage      => "http://plackperl.org",
-  bugtracker    => "https://github.com/plack/Plack/issues";
+delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
 
-WriteAll;
+WriteMakefile(%WriteMakefileArgs);
 
-warn <<RECOMMENDS;
+{
+package
+MY;
+use File::ShareDir::Install qw(postamble);
+}
 
-  This is Plack, PSGI toolkit containing servers, middleware and utils.
 
-  To run the default backends faster with XS extensions, as well as run some server
-  backends like Prefork and FCGI, you need to install additional Perl module dependencies,
-  that are included in Task::Plack bundle. You're recommended to run
-
-    cpan> install Task::Plack
-
-  once this distribution is installed. Enjoy!
-
-RECOMMENDS
