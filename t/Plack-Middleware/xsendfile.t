@@ -21,10 +21,10 @@ test_psgi app => $handler, client => sub {
     my $cb = shift;
 
     {
-        my $req = GET "http://localhost/t/00_compile.t", 'X-Sendfile-Type' => 'X-Sendfile';
+        my $req = GET "http://localhost/t/test.txt", 'X-Sendfile-Type' => 'X-Sendfile';
         my $res = $cb->($req);
-        is $res->content_type, 'text/troff';;
-        is_wo_case $res->header('X-Sendfile'), Cwd::realpath("t/00_compile.t"); # wo_case for Win32--
+        is $res->content_type, 'text/plain';;
+        is_wo_case $res->header('X-Sendfile'), Cwd::realpath("t/test.txt"); # wo_case for Win32--
         is $res->content, '';
     }
 };

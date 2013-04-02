@@ -21,8 +21,8 @@ $app = Plack::Middleware::AccessLog->wrap($app, logger => sub { $line = shift })
 test_psgi app => $app, client => sub {
     my $cb = shift;
 
-    my $res = $cb->(GET "http://localhost/t/00_compile.t", Authorization => "Basic YWRtaW46czNjcjN0");
-    like $res->content, qr/use Test/;
+    my $res = $cb->(GET "http://localhost/t/test.txt", Authorization => "Basic YWRtaW46czNjcjN0");
+    like $res->content, qr/foo/;
 
     like $line, qr/ admin /;
 };

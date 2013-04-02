@@ -1,5 +1,10 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
+{{$NEXT}}
+
+1.0019  2013-04-01 17:58:25 PDT
+        - Trial release with Milla
+
 1.0018 Fri Mar  8 10:43:45 PST 2013
     [IMPROVEMENTS]
         - Performance boost in Plack::Request#query_parameters (lestrrat)

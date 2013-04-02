@@ -1,13 +1,12 @@
 use Test::More;
 use Plack::Util;
 
-open my $fh, "<", "t/00_compile.t";
-Plack::Util::set_io_path($fh, "/path/to/00_compile.t");
+open my $fh, "<", "t/test.txt";
+Plack::Util::set_io_path($fh, "/path/to/test.txt");
 
-is $fh->path, "/path/to/00_compile.t";
+is $fh->path, "/path/to/test.txt";
 
-like scalar <$fh>, qr/use strict/;
-like $fh->getline, qr/use Test::More/;
+like scalar <$fh>, qr/foo/;
 ok fileno $fh;
 
 isa_ok $fh, 'IO::Handle';

@@ -1,14 +1,11 @@
 META.yml
 Makefile
-inc/
-!t/Plack-Util/inc/
 pm_to_blib
 blib
 *~
-.*
 !.gitignore
-!.shipit
 MYMETA.*
 .proverc
-pod2htmd.tmp
-pod2htmi.tmp
+/Plack-*
+!META.json
+/.build
