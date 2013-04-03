@@ -2,27 +2,20 @@ package Plack::Middleware::AccessLog;
 use strict;
 use warnings;
 use parent qw( Plack::Middleware );
-use Plack::Util::Accessor qw( logger format );
-
-use Carp ();
-use Plack::Util;
+use Plack::Util::Accessor qw( logger format compiled_format);
+use Apache::LogFormat::Compiler;
 
 my %formats = (
     common => '%h %l %u %t "%r" %>s %b',
     combined => '%h %l %u %t "%r" %>s %b "%{Referer}i" "%{User-agent}i"',
 );
 
-use POSIX ();
-
-my $tzoffset = POSIX::strftime("%z", localtime) !~ /^[+-]\d{4}$/ && do {
-    require Time::Local;
-    my @t = localtime;
-    my $seconds = Time::Local::timegm(@t) - Time::Local::timelocal(@t);
-    my $min_offset = int($seconds / 60);
-    sprintf '%+03d%02u', $min_offset / 60, $min_offset % 60;
-};
-
-my $psgi_reserved = { CONTENT_LENGTH => 1, CONTENT_TYPE => 1 };
+sub prepare_app {
+    my $self = shift;
+    my $fmt = $self->format || "combined";
+    $fmt = $formats{$fmt} if exists $formats{$fmt};
+    $self->compiled_format(Apache::LogFormat::Compiler->new($fmt));
+}
 
 sub call {
     my $self = shift;
@@ -30,100 +23,40 @@ sub call {
 
     my $res = $self->app->($env);
 
+    if ( ref($res) && ref($res) eq 'ARRAY' ) {
+        my $content_length = Plack::Util::content_length($res->[2]);
+        my $log_line = $self->log_line($res->[0], $res->[1], $env, { content_length => $content_length });
+        if ( my $logger = $self->logger ) {
+            $logger->($log_line);
+        }
+        else {
+            $env->{'psgi.errors'}->print($log_line);
+        }  
+        return $res;
+    }
+
     return $self->response_cb($res, sub {
         my $res = shift;
-        my $logger = $self->logger || sub { $env->{'psgi.errors'}->print(@_) };
-
         my $content_length = Plack::Util::content_length($res->[2]);
-        $logger->( $self->log_line($res->[0], $res->[1], $env, { content_length => $content_length }) );
+        my $log_line = $self->log_line($res->[0], $res->[1], $env, { content_length => $content_length });
+        if ( my $logger = $self->logger ) {
+            $logger->($log_line);
+        }
+        else {
+            $env->{'psgi.errors'}->print($log_line);
+        }  
     });
 }
 
 sub log_line {
     my($self, $status, $headers, $env, $opts) = @_;
 
-    my $h = Plack::Util::headers($headers);
-
-    my $strftime = sub {
-        my ($fmt, @time) = @_;
-        $fmt =~ s/%z/$tzoffset/g if $tzoffset;
-        my $old_locale = POSIX::setlocale(&POSIX::LC_ALL);
-        POSIX::setlocale(&POSIX::LC_ALL, 'C');
-        my $out = POSIX::strftime($fmt, @time);
-        POSIX::setlocale(&POSIX::LC_ALL, $old_locale);
-        return $out;
-    };
-
-    my $block_handler = sub {
-        my($block, $type) = @_;
-        if ($type eq 'i') {
-            $block =~ s/-/_/g;
-            $block = uc($block);
-            $block = "HTTP_${block}" unless $psgi_reserved->{$block};
-            my $val = _safe($env->{$block});
-            return defined $val ? $val : "-";
-        } elsif ($type eq 'o') {
-            return scalar $h->get($block) || "-";
-        } elsif ($type eq 't') {
-            return "[" . $strftime->($block, localtime) . "]";
-        } else {
-            Carp::carp("{$block}$type not supported");
-            return "-";
-        }
-    };
-
-
-    my %char_handler = (
-        '%' => sub { '%' },
-        h => sub { $env->{REMOTE_ADDR} || '-' },
-        l => sub { '-' },
-        u => sub { $env->{REMOTE_USER} || '-' },
-        t => sub { "[" . $strftime->('%d/%b/%Y:%H:%M:%S %z', localtime) . "]" },
-        r => sub { _safe($env->{REQUEST_METHOD}) . " " . _safe($env->{REQUEST_URI}) .
-                   " " . $env->{SERVER_PROTOCOL} },
-        s => sub { $status },
-        b => sub { $opts->{content_length} || $h->get('Content-Length') || "-" },
-        T => sub { $opts->{time} ? int($opts->{time}) : "-" },
-        D => sub { $opts->{time} ? $opts->{time} * 1000000 : "-" },
-        v => sub { $env->{SERVER_NAME} || '-' },
-        V => sub { $env->{HTTP_HOST} || $env->{SERVER_NAME} || '-' },
-        p => sub { $env->{SERVER_PORT} },
-        P => sub { $$ },
-        m => sub { _safe($env->{REQUEST_METHOD}) },
-        U => sub { _safe($env->{PATH_INFO}) },
-        q => sub { ($env->{QUERY_STRING} ne '') ? '?' . _safe($env->{QUERY_STRING}) : '' },
-        H => sub { $env->{SERVER_PROTOCOL} },
+    $self->compiled_format->log_line(
+        $env,
+        [$status,$headers],
+        $opts->{content_length},
+        $opts->{time}
     );
-
-    my $char_handler = sub {
-        my $char = shift;
-
-        my $cb = $char_handler{$char};
-        unless ($cb) {
-            Carp::carp "\%$char not supported.";
-            return "-";
-        }
-        $cb->($char);
-    };
-
-    my $fmt = $self->format || "combined";
-    $fmt = $formats{$fmt} if exists $formats{$fmt};
-
-    $fmt =~ s!
-        (?:
-         \%\{(.+?)\}([a-z]) |
-         \%(?:[<>])?([a-zA-Z\%])
-        )
-    ! $1 ? $block_handler->($1, $2) : $char_handler->($3) !egx;
-
-    return $fmt . "\n";
-}
-
-sub _safe {
-    my $string = shift;
-    $string =~ s/([^[:print:]])/"\\x" . unpack("H*", $1)/eg
-        if defined $string;
-    $string;
 }
 
 1;
