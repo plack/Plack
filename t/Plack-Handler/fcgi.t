@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan skip_all => "Requires lighttpd: author only" unless -e '.git';
+plan skip_all => "release test only" unless $ENV{RELEASE_TESTING};
 
 use Test::Requires qw(FCGI FCGI::ProcManager);
 use Plack;

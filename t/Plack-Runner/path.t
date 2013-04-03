@@ -6,7 +6,7 @@ use LWP::UserAgent;
 use Test::More;
 use Test::TCP qw(empty_port);
 
-plan skip_all => "developer only" unless -e '.git';
+plan skip_all => "release test only" unless $ENV{RELEASE_TESTING};
 
 sub write_file($$){
     my ( $path, $content ) = @_;
