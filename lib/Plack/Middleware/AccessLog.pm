@@ -108,8 +108,8 @@ default C<development> environment.
       format => '%h %l %u %t "%r" %>s %b "%{Referer}i" "%{User-agent}i"';
 
 Takes a format string (or a preset template C<combined> or C<custom>)
-to specify the log format. This middleware implements a subset of
-L<Apache's LogFormat templates|http://httpd.apache.org/docs/2.0/mod/mod_log_config.html>:
+to specify the log format. This middleware uses L<Apache::LogFormat::Compiler> to
+generate access_log lines. See more details on perldoc L<Apache::LogFormat::Compiler>
 
    %%    a percent sign
    %h    REMOTE_ADDR from the PSGI environment, or -
@@ -152,7 +152,7 @@ output stream by default.
 
 =head1 SEE ALSO
 
-L<http://httpd.apache.org/docs/2.2/mod/mod_log_config.html> Rack::CustomLogger
+L<Apache::LogFormat::Compiler>, L<http://httpd.apache.org/docs/2.2/mod/mod_log_config.html> Rack::CustomLogger
 
 =cut
 
