@@ -38,7 +38,8 @@ my %WriteMakefileArgs = (
     "Test::TCP" => "1.02",
     "Try::Tiny" => 0,
     "URI" => "1.59",
-    "parent" => 0
+    "parent" => 0,
+    "Apache::LogFormat::Compiler" => "0.12",
   },
   "TEST_REQUIRES" => {
     "Test::More" => "0.88",
