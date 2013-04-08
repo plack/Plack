@@ -1,10 +1,10 @@
 {
    "abstract" : "Perl Superglue for Web frameworks and Web Servers (PSGI toolkit)",
    "author" : [
-      "Tatsuhiko Miyagawa <miyagawa@bulknews.net>"
+      "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v0.9.6, Dist::Zilla version 4.300032, CPAN::Meta::Converter version 2.130880",
+   "generated_by" : "Dist::Milla version v0.9.7, Dist::Zilla version 4.300032, CPAN::Meta::Converter version 2.130880",
    "license" : [
       "perl_5"
    ],
@@ -50,6 +50,7 @@
       },
       "runtime" : {
          "requires" : {
+            "Apache::LogFormat::Compiler" : "0.12",
             "Devel::StackTrace" : "1.23",
             "Devel::StackTrace::AsHTML" : "0.11",
             "File::ShareDir" : "1.00",
@@ -128,6 +129,7 @@
       "Mark Fowler <mark@twoshortplanks.com>",
       "Mark Stosberg <mark@stosberg.com>",
       "Masahiro Chiba <chiba@everqueue.com>",
+      "Masahiro Nagano <kazeburo@gmail.com>",
       "Michael G. Schwern <schwern@pobox.com>",
       "Nick Wellnhofer <wellnhofer@aevum.de>",
       "Nobuo Danjou <nobuo.danjou@gmail.com>",

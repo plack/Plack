@@ -12,7 +12,7 @@ install_share dist => "share";
 
 my %WriteMakefileArgs = (
   "ABSTRACT" => "Perl Superglue for Web frameworks and Web Servers (PSGI toolkit)",
-  "AUTHOR" => "Tatsuhiko Miyagawa <miyagawa\@bulknews.net>",
+  "AUTHOR" => "Tatsuhiko Miyagawa",
   "BUILD_REQUIRES" => {},
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30",
@@ -25,6 +25,7 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "NAME" => "Plack",
   "PREREQ_PM" => {
+    "Apache::LogFormat::Compiler" => "0.12",
     "Devel::StackTrace" => "1.23",
     "Devel::StackTrace::AsHTML" => "0.11",
     "File::ShareDir" => "1.00",
@@ -38,8 +39,7 @@ my %WriteMakefileArgs = (
     "Test::TCP" => "1.02",
     "Try::Tiny" => 0,
     "URI" => "1.59",
-    "parent" => 0,
-    "Apache::LogFormat::Compiler" => "0.12",
+    "parent" => 0
   },
   "TEST_REQUIRES" => {
     "Test::More" => "0.88",
