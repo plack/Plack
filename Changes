@@ -2,6 +2,10 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0023  2013-04-08 11:13:11 PDT
+    [IMPROVEMENTS]
+        - Use Apache::LogFormat::Compiler in AccessLog (kazeburo)
+
 1.0022  2013-04-02 12:37:42 PDT
     [BUG FIXES]
         - Fixed a major bug in 1.0020-1.0021 where posix_default prevents arbitrary arguments
