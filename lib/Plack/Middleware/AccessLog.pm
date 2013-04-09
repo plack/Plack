@@ -150,6 +150,12 @@ output stream by default.
 
 =back
 
+=head1 AUTHORS
+
+Tatsuhiko Miyagawa
+
+Masahiro Nagano
+
 =head1 SEE ALSO
 
 L<Apache::LogFormat::Compiler>, L<http://httpd.apache.org/docs/2.2/mod/mod_log_config.html> Rack::CustomLogger
