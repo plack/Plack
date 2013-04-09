@@ -67,7 +67,7 @@ Plack::Middleware::Auth::Basic - Simple basic authentication middleware
   };
 
   sub authen_cb {
-      my($username, $password) = @_;
+      my($username, $password, $env) = @_;
       return $username eq 'admin' && $password eq 's3cr3t';
   }
 
@@ -81,8 +81,8 @@ Plack::Middleware::Auth::Basic is a basic authentication handler for Plack.
 
 =item authenticator
 
-A callback function that takes username and password supplied and
-returns whether the authentication succeeds. Required.
+A callback function that takes username, password and PSGI environment
+supplied and returns whether the authentication succeeds. Required.
 
 Authenticator can also be an object that responds to C<authenticate>
 method that takes username and password and returns boolean, so
