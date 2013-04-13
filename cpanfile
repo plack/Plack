@@ -19,18 +19,22 @@ requires 'Apache::LogFormat::Compiler', '0.12';
 on test => sub {
     requires 'Test::More', '0.88';
     requires 'Test::Requires';
+    suggests 'Authen::Simple::Passwd';
+    suggests 'MIME::Types';
+    suggests 'CGI::Emulate::PSGI';
+    suggests 'CGI::Compile';
+    suggests 'IO::Handle::Util';
+    suggests 'LWP::Protocol::http10';
+    suggests 'Log::Log4perl';
+    suggests 'HTTP::Server::Simple::PSGI';
+    suggests 'HTTP::Request::AsCGI';
 };
 
-on develop => sub {
-    recommends 'FCGI';
-    recommends 'FCGI::ProcManager';
-    recommends 'MIME::Types';
-    recommends 'Authen::Simple::Passwd';
-    recommends 'CGI::Emulate::PSGI';
-    recommends 'CGI::Compile';
-    recommends 'IO::Handle::Util';
-    recommends 'LWP::Protocol::http10';
-    recommends 'Log::Log4perl';
-    recommends 'HTTP::Server::Simple::PSGI';
-    recommends 'HTTP::Request::AsCGI';
-};
+on runtime => sub {
+    suggests 'FCGI';
+    suggests 'FCGI::ProcManager';
+    suggests 'CGI::Emulate::PSGI';
+    suggests 'CGI::Compile';
+    suggests 'IO::Handle::Util';
+}
+
