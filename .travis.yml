@@ -8,4 +8,4 @@ install:
   - cpanm -nq App::mymeta_requires
   - mymeta-requires | cpanm -nq
 script:
-  - prove -lbr -j9 xt
+  - prove -lbr -j9 t
