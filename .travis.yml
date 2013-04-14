@@ -4,3 +4,8 @@ perl:
   - 5.14
   - 5.12
   - 5.10
+install:
+  - cpanm -nq App::mymeta_requires
+  - mymeta-requires | cpanm -nq
+script:
+  - prove -lbr -j9 xt
