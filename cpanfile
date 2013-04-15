@@ -36,5 +36,5 @@ on runtime => sub {
     suggests 'CGI::Emulate::PSGI';
     suggests 'CGI::Compile';
     suggests 'IO::Handle::Util';
-}
+};
 
