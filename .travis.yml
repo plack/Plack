@@ -8,7 +8,7 @@ before_install:
   - cpanm -nq App::mymeta_requires
 install:
   - mymeta-requires | cpanm -nq
-  - cpanm Devel::Cover::Report::Coveralls  
+  - cpanm -nq Devel::Cover::Report::Coveralls
 script:
   - perl Makefile.PL && cover -test
 after_success:
