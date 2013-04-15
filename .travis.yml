@@ -7,5 +7,9 @@ perl:
 install:
   - cpanm -nq App::mymeta_requires
   - mymeta-requires | cpanm -nq
+after_install:
+  - cpanm git://github.com/kan/coveralls-perl.git
 script:
-  - prove -lbr -j9 t
+  - "cover -test"
+after_success:
+  - "cover -report coveralls"
