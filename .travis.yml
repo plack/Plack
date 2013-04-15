@@ -4,10 +4,10 @@ perl:
   - 5.14
   - 5.12
   - 5.10
-install:
+before_install:
   - cpanm -nq App::mymeta_requires
+install:
   - mymeta-requires | cpanm -nq
-after_install:
   - cpanm git://github.com/kan/coveralls-perl.git
 script:
   - "cover -test"
