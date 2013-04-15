@@ -10,6 +10,6 @@ install:
   - mymeta-requires | cpanm -nq
   - cpanm -nq git://github.com/kan/coveralls-perl.git
 script:
-  - "cover -test"
+  - perl Makefile.PL && cover -test
 after_success:
-  - "cover -report coveralls"
+  - cover -report coveralls
