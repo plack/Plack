@@ -308,7 +308,7 @@ See L<Plack::Middleware::Conditional> for details.
 =head1 OBJECT ORIENTED INTERFACE
 
 Object oriented interface supports the same functionality with the DSL
-version in a clearer interace, probably with more typing required.
+version in a clearer interface, probably with more typing required.
 
   # With mount
   my $builder = Plack::Builder->new;
