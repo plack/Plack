@@ -12,6 +12,7 @@ my @ignore = qw(
     .git/123 .svn/abc Foo.pm~ _flymake.pl /Users/joe/foo.pl~ /foo/bar/x.txt.bak
     /path/to/foo.swp /path/to/foo.swpx /path/to/foo.swx
     /path/to/4913 /path/to/5036
+    /path/to/.#Foo.pm
 );
 
 ok $r->valid_file({ path => $_ }), "$_ is valid" for @match;
