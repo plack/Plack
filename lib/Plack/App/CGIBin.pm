@@ -46,7 +46,7 @@ sub serve_path {
 
     my $app = $self->{_compiled}->{$file} ||= Plack::App::WrapCGI->new(
         script => $file, execute => $self->would_exec($file),
-    );
+    )->to_app;
     $app->($env);
 }
 
