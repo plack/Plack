@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.0, Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.130880",
+   "generated_by" : "Dist::Milla version v1.0.2, Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.130880",
    "license" : [
       "perl_5"
    ],
@@ -92,7 +92,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0023",
+   "version" : "1.0024",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
@@ -118,7 +118,7 @@
       "Henry Baragar <Henry.Baragar@Instantiated.Ca>",
       "Hiroshi Sakai <ziguzagu@gmail.com>",
       "Jay Hannah <jay.hannah@iinteractive.com>",
-      "Jesse Luehrs <doy@tozt.net>",
+      "Jesse Luehrs <doy@cpan.org>",
       "Jiro Nishiguchi <jiro@cpan.org>",
       "Johannes Plunien <johannes.plunien@xing.com>",
       "John Beppu <john.beppu@gmail.com>",
@@ -131,6 +131,7 @@
       "Keedi Kim <keedi.k@gmail.com>",
       "Lee Aylward <lee@laylward.com>",
       "Leo Lapworth <leo@cuckoo.org>",
+      "Marian Schubert <maio@netsafe.cz>",
       "Mark Fowler <mark@twoshortplanks.com>",
       "Mark Stosberg <mark@stosberg.com>",
       "Masahiro Chiba <chiba@everqueue.com>",
@@ -148,7 +149,7 @@
       "Peter Makholm <peter@makholm.net>",
       "Piotr Roszatycki <piotr.roszatycki@gmail.com>",
       "Rafael Kitover <rkitover@cpan.org>",
-      "Randy Stauner <randy@magnificent-tears.com>",
+      "Randy Stauner <rwstauner@cpan.org>",
       "Ray Miller <rm7@sanger.ac.uk>",
       "Ricky Morse <remorse@partners.org>",
       "Rob Hoelz <rob@hoelz.ro>",
@@ -169,6 +170,7 @@
       "chansen <chansen@cpan.org>",
       "cho45 <cho45@lowreal.net>",
       "chromatic <chromatic@wgz.org>",
+      "fREW Schmidt <frioux@gmail.com>",
       "fayland <fayland@gmail.com>",
       "franck cuny <franck@lumberjaph.net>",
       "hiratara <hiratara@cpan.org>",

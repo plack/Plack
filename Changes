@@ -2,6 +2,13 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0024  2013-05-01 10:05:56 PDT
+    [IMPROVEMENTS]
+        - Fix warnings for Plack::App::WrapCGI (frioux)
+        - Ignore emacs lock file from restarter (maio)
+        - Add documentation for environment variable in Auth::Basic
+        - Some Metadata cleanup and Travis CI
+
 1.0023  2013-04-08 11:13:11 PDT
     [IMPROVEMENTS]
         - Use Apache::LogFormat::Compiler in AccessLog (kazeburo)
