@@ -4,6 +4,8 @@ use Test::More;
 use Plack::Test::Suite;
 use Plack::Loader::Shotgun;
 
+plan skip_all => "Skip on Win32" if $^O eq 'MSWin32';
+
 Plack::Test::Suite->run_server_tests(
     sub {
         my($port, $app) = @_;
