@@ -5,6 +5,16 @@ use Storable;
 use Try::Tiny;
 use Plack::Middleware::BufferedStreaming;
 
+die <<DIE if $^O eq 'MSWin32' && !$ENV{PLACK_SHOTGUN_MEMORY_LEAK};
+
+Shotgun loader uses fork(2) system call to create a fresh Perl interpreter, that is known to not work
+properly in a fork-emulation layer on Windows and cause huge memory leaks.
+
+If you're aware of this and still want to run the loader, run it with the environment variable
+PLACK_SHOTGUN_MEMORY_LEAK on.
+
+DIE
+
 sub preload_app {
     my($self, $builder) = @_;
     $self->{builder} = sub { Plack::Middleware::BufferedStreaming->wrap($builder->()) };
