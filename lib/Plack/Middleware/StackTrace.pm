@@ -84,7 +84,7 @@ sub utf8_safe {
 
     # NOTE: I know messing with utf8:: in the code is WRONG, but
     # because we're running someone else's code that we can't
-    # guarnatee which encoding an exception is encoded, there's no
+    # guarantee which encoding an exception is encoded, there's no
     # better way than doing this. The latest Devel::StackTrace::AsHTML
     # (0.08 or later) encodes high-bit chars as HTML entities, so this
     # path won't be executed.
@@ -113,7 +113,7 @@ This middleware catches exceptions (run-time errors) happening in your
 application and displays nice stack trace screen. The stack trace is
 also stored in the environment as a plaintext and HTML under the key
 C<plack.stacktrace.text> and C<plack.stacktrace.html> respectively, so
-that middleware futher up the stack can reference it.
+that middleware further up the stack can reference it.
 
 This middleware is enabled by default when you run L<plackup> in the
 default I<development> mode.

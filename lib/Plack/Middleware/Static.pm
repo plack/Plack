@@ -99,7 +99,7 @@ C<root>.
 The configuration above serves C</static/foo.png> from
 C<static-files/foo.png>, not C<static-files/static/foo.png>. The callback
 specified in the C<path> option matches against C<$_> munges this value using
-C<s///>. The subsitution operator returns the number of matches it made, so it
+C<s///>. The substitution operator returns the number of matches it made, so it
 will return true when the path matches C<^/static>.
 
 For more complex static handling in the C<path> callback, in addition

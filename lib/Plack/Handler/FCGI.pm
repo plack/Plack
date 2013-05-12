@@ -370,8 +370,8 @@ To host the app in the root path, you're recommended to use lighttpd
      ))
 
 If you use lighttpd older than 1.4.22 where you don't have
-C<fix-root-scriptname>, mouting apps under the root causes wrong
-C<SCRIPT_NAME> and C<PATH_INFO> set. Also, mouting under the empty
+C<fix-root-scriptname>, mounting apps under the root causes wrong
+C<SCRIPT_NAME> and C<PATH_INFO> set. Also, mounting under the empty
 root (C<"">) or a path that has a trailing slash would still cause
 weird values set even with C<fix-root-scriptname>. In such cases you
 can use L<Plack::Middleware::LighttpdScriptNameFix> to fix it.

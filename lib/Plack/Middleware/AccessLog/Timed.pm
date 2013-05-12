@@ -87,7 +87,7 @@ C<%D>.
 This wraps the response body output stream to capture the time taken
 for the PSGI server to read the whole response body.
 
-This would mean, if the middlware is in use, it will prevent some
+This would mean, if the middleware is in use, it will prevent some
 server-side optimizations like sendfile(2) from working, as well as
 middleware like L<Plack::Middleware::ContentLength> can't guess the
 body size out of the file handle.

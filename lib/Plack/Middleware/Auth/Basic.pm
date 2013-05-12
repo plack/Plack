@@ -22,7 +22,7 @@ sub call {
     my $auth = $env->{HTTP_AUTHORIZATION}
         or return $self->unauthorized;
 
-    # note the 'i' on the regex, as, accoring to RFC2617 this is a 
+    # note the 'i' on the regex, as, according to RFC2617 this is a 
     # "case-insensitive token to identify the authentication scheme"
     if ($auth =~ /^Basic (.*)$/i) {
         my($user, $pass) = split /:/, (MIME::Base64::decode($1) || ":"), 2;
