@@ -209,7 +209,7 @@ This is a handler module to run any PSGI application as a CGI script.
   my $env = Plack::Handler::CGI->setup_env(\%override_env);
 
 Sets up the PSGI environment hash for a CGI request from C<< %ENV >>> and returns it.
-You can can provide a hashref of key/value pairs to override the defaults if you would like.
+You can provide a hashref of key/value pairs to override the defaults if you would like.
 
 =head1 SEE ALSO
 
