@@ -59,7 +59,7 @@ and then implement the callback C<call> method (or the C<to_app> method
 that would return the PSGI code reference) to do the actual work. You
 can use C<< $self->app >> to call the original (wrapped) application.
 
-Your middleware object is created at the the PSGI application compile time
+Your middleware object is created at the PSGI application compile time
 and is persistent during the web server life cycle (unless it is a
 non-persistent environment such as CGI), so you should never set or
 cache per-request data like C<$env> in your middleware object. See
