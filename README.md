@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/plack/Plack.png)](https://travis-ci.org/plack/Plack)
+[![Test coverage](https://coveralls.io/repos/plack/Plack/badge.png?branch=master)](https://coveralls.io/r/plack/Plack)
+
 # NAME
 
 Plack - Perl Superglue for Web frameworks and Web Servers (PSGI toolkit)
