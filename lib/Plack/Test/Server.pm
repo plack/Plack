@@ -29,6 +29,7 @@ sub test_psgi {
             my $port = shift;
             my $server = Plack::Loader->auto(port => $port, host => ($args{host} || '127.0.0.1'));
             $server->run($app);
+            exit;
         },
     );
 }
