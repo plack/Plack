@@ -56,6 +56,8 @@ sub to_app {
     if ($app) {
         $self->wrap($app);
     } elsif ($self->{_urlmap}) {
+        $self->{_urlmap} = $self->{_urlmap}->to_app
+            if Scalar::Util::blessed($self->{_urlmap});
         $self->wrap($self->{_urlmap});
     } else {
         Carp::croak("to_app() is called without mount(). No application to build.");
