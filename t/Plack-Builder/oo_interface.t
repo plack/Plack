@@ -62,4 +62,16 @@ sub test_app {
     like $warn[0], qr/mappings to be ignored/;
 }
 
+{
+    local $ENV{PLACK_ENV} = 'development';
+    my @warn;
+    local $SIG{__WARN__} = sub { push @warn, @_ };
+    my $builder = Plack::Builder->new;
+    $builder->add_middleware('Runtime');
+    $builder->add_middleware('XFramework', framework => 'Plack::Builder');
+    $builder->mount('/app/foo/bar' => $app);
+    test_app $builder->to_app;
+    is_deeply(\@warn, [], "no warnings");
+}
+
 done_testing;
