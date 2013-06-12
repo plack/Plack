@@ -7,7 +7,7 @@ use Plack::Test;
 use Plack::Builder;
 
 $Plack::Test::Impl = undef;
-my @impl = ('MockHTTP', 'Server');
+my @impl = ('Server', 'MockHTTP');
 sub flip_backend {
     push @impl, $Plack::Test::Impl;
     $Plack::Test::Impl = shift @impl;

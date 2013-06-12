@@ -33,7 +33,6 @@ my %WriteMakefileArgs = (
     "HTTP::Body" => "1.06",
     "HTTP::Message" => "5.814",
     "Hash::MultiValue" => "0.05",
-    "LWP::UserAgent" => "5.814",
     "Pod::Usage" => "1.36",
     "Stream::Buffered" => "0.02",
     "Test::TCP" => "1.02",

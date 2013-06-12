@@ -94,6 +94,8 @@ sub req_to_psgi {
 sub res_from_psgi {
     my ($psgi_res) = @_;
 
+    require HTTP::Response;
+
     my $res;
     if (ref $psgi_res eq 'ARRAY') {
         _res_from_psgi($psgi_res, \$res);

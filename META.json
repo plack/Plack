@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.2, Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.130880",
+   "generated_by" : "Dist::Milla version v1.0.2, Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.131560",
    "license" : [
       "perl_5"
    ],
@@ -45,7 +45,6 @@
             "HTTP::Body" : "1.06",
             "HTTP::Message" : "5.814",
             "Hash::MultiValue" : "0.05",
-            "LWP::UserAgent" : "5.814",
             "Pod::Usage" : "1.36",
             "Stream::Buffered" : "0.02",
             "Test::TCP" : "1.02",
@@ -59,7 +58,8 @@
             "CGI::Emulate::PSGI" : "0",
             "FCGI" : "0",
             "FCGI::ProcManager" : "0",
-            "IO::Handle::Util" : "0"
+            "IO::Handle::Util" : "0",
+            "LWP::UserAgent" : "5.814"
          }
       },
       "test" : {
@@ -75,6 +75,7 @@
             "HTTP::Server::Simple::PSGI" : "0",
             "IO::Handle::Util" : "0",
             "LWP::Protocol::http10" : "0",
+            "LWP::UserAgent" : "5.814",
             "Log::Log4perl" : "0",
             "MIME::Types" : "0"
          }
@@ -109,6 +110,7 @@
       "Daisuke Murase <typester@cpan.org>",
       "Dave Rolsky <autarch@urth.org>",
       "David E. Wheeler <david@justatheory.com>",
+      "David Steinbrunner <dsteinbrunner@MountainBook-Pro.local>",
       "Eduardo Arino de la Rubia <earino@rent.com>",
       "Florian Ragwitz <rafl@debian.org>",
       "Graham Knop <haarg@haarg.org>",
