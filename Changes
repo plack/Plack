@@ -1,6 +1,8 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [IMPROVEMENTS]
+        - $res->to_app shortcut (ether)
 
 1.0024  2013-05-01 10:05:56 PDT
     [IMPROVEMENTS]
