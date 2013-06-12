@@ -1,8 +1,20 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+
+1.0025  2013-06-12 13:08:58 PDT
+    [INCOMPATIBLE CHANGES]
+        - No XS! Eliminates dependency to LWP::UserAgent by making it completely optional for
+          testing. If you run Plack::Test with Server implemenetation or run Plack::Test::Suite
+          (for PSGI handlers) without LWP installed, the tests will automatically be skipped.
+          This removes the eventual sub-dependency to HTML::Parser, which is the only XS dependency
+          in Plack. #408
+
     [IMPROVEMENTS]
-        - $res->to_app shortcut (ether)
+        - Fixed the warning in OO usage of Plack::Builder (doy) #407
+        - Shotgun loader now dies if used in Win32 since it leaks memory #320, #400
+        - Suppress warnings for Test::TCP (kazeburo) #406
+        - $res->to_app shortcut (ether) #409
 
 1.0024  2013-05-01 10:05:56 PDT
     [IMPROVEMENTS]
