@@ -3,31 +3,13 @@ use strict;
 use warnings;
 use HTTP::Tiny;
 use HTTP::Response;
+use Hash::MultiValue;
 
 sub new {
     my $class = shift;
     my $self  = bless {}, $class;
     $self->{http} = @_ == 1 ? $_[0] : HTTP::Tiny->new(@_);
     $self;
-}
-
-sub _multiply_headers {
-    my($self, $headers) = @_;
-
-    my $hdrs;
-    $headers->scan(sub {
-        if (exists $hdrs->{$_[0]}) {
-            push @{$hdrs->{$_[0]}}, $_[1];
-        } else {
-            $hdrs->{$_[0]} = [ $_[1] ];
-        }
-    });
-
-    while (my($k, $v) = each %$hdrs) {
-        $hdrs->{$k} = $v->[0] if @$v == 1;
-    }
-
-    $hdrs;
 }
 
 sub _flatten_headers {
@@ -48,9 +30,12 @@ sub _flatten_headers {
 sub request {
     my($self, $req) = @_;
 
+    my @headers;
+    $req->headers->scan(sub { push @headers, @_ });
+
     my $response = $self->{http}->request(
         $req->method, $req->url, {
-            headers => $self->_multiply_headers($req->headers),
+            headers => Hash::MultiValue->new(@headers)->mixed,
             content => $req->content,
         },
     );
@@ -58,7 +43,7 @@ sub request {
     my $res = HTTP::Response->new(
         $response->{status},
         $response->{reason},
-        $self->_flatten_headers($response->{headers}),
+        [ Hash::MultiValue->from_mixed($response->{headers})->flatten ],
         $response->{content},
     );
     $res->request($req);
