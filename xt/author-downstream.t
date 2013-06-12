@@ -7,7 +7,7 @@ plan skip_all => "AUTHOR_TESTING is required." unless $ENV{AUTHOR_TESTING};
 
 my @downstream = qw(
   Starman Starlet Twiggy Monoceros
-  OX Dancer2 Catalyst
+  Amon2 Tatsumaki OX Dancer2 Catalyst Web::Machine Web::Request
 );
 
 for my $module (@downstream) {
