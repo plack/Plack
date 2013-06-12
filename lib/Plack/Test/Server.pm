@@ -2,12 +2,14 @@ package Plack::Test::Server;
 use strict;
 use warnings;
 use Carp;
-use LWP::UserAgent;
 use Test::TCP;
 use Plack::Loader;
+use Test::Requires ();
 
 sub test_psgi {
     my %args = @_;
+
+    Test::Requires::test_requires('LWP::UserAgent');
 
     my $client = delete $args{client} or croak "client test code needed";
     my $app    = delete $args{app}    or croak "app needed";
