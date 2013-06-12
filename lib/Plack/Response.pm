@@ -108,6 +108,12 @@ sub finalize {
     ];
 }
 
+sub to_app {
+    my $self = shift;
+    return sub { $self->finalize };
+}
+
+
 sub _body {
     my $self = shift;
     my $body = $self->body;
@@ -295,6 +301,13 @@ B<does not> convert string formats such as C<+3M>.
 
 Returns the status code, headers, and body of this response as a PSGI
 response array reference.
+
+=item to_app
+
+  $app = $res->to_app;
+
+A helper shortcut for C<< sub { $res->finalize } >>.
+
 
 =back
 
