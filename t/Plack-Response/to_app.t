@@ -5,22 +5,10 @@ use HTTP::Request::Common;
 use Plack::Test;
 use Plack::Response;
 
-sub res {
-    my $res = Plack::Response->new;
-    my %v = @_;
-    while (my($k, $v) = each %v) {
-        $res->$k($v);
-    }
-    $res;
-}
+my $res = Plack::Response->new(200);
+$res->body("hello");
 
-my $res = res(
-    status => 200,
-    body => 'hello',
-);
-
-
-test_psgi $res->to_app(), sub {
+test_psgi $res->to_app, sub {
     my $cb = shift;
 
     my $res = $cb->(GET "/");
