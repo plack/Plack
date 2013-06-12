@@ -2,7 +2,7 @@ use strict;
 use Cwd;
 use File::Spec;
 use File::Temp;
-use LWP::UserAgent;
+use Test::Requires qw(LWP::UserAgent);
 use Test::More;
 use Test::TCP qw(empty_port);
 

@@ -1,10 +1,10 @@
 use strict;
 use warnings;
 
-use LWP::UserAgent;
 use Plack::Runner;
 use Test::More;
 use Test::TCP;
+use Test::Requires qw(LWP::UserAgent);
 
 test_tcp(
     server => sub {

@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use File::Path;
 use Test::TCP;
-use LWP::UserAgent;
+use Test::Requires qw(LWP::UserAgent);
 use HTTP::Request::Common;
 use Test::More;
 

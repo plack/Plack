@@ -3,7 +3,7 @@ use warnings;
 use Test::More;
 use Plack;
 use Test::TCP;
-use LWP::UserAgent;
+use Test::Requires qw(LWP::UserAgent);
 use FindBin;
 use Plack::Test::Suite;
 

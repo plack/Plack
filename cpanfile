@@ -7,7 +7,6 @@ requires 'Filesys::Notify::Simple';
 requires 'HTTP::Body', '1.06';
 requires 'HTTP::Message', '5.814';
 requires 'Hash::MultiValue', '0.05';
-requires 'LWP::UserAgent', '5.814';
 requires 'Pod::Usage', '1.36';
 requires 'Stream::Buffered', '0.02';
 requires 'Test::TCP', '1.02';
@@ -28,6 +27,7 @@ on test => sub {
     suggests 'Log::Log4perl';
     suggests 'HTTP::Server::Simple::PSGI';
     suggests 'HTTP::Request::AsCGI';
+    suggests 'LWP::UserAgent', '5.814';
 };
 
 on runtime => sub {
@@ -36,5 +36,6 @@ on runtime => sub {
     suggests 'CGI::Emulate::PSGI';
     suggests 'CGI::Compile';
     suggests 'IO::Handle::Util';
+    suggests 'LWP::UserAgent', '5.814';
 };
 

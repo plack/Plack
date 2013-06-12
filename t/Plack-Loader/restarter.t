@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 use Test::TCP;
-use LWP::UserAgent;
+use Test::Requires qw(LWP::UserAgent);
 use HTTP::Request::Common;
 use Plack::Loader::Restarter;
 
