@@ -12,21 +12,6 @@ sub new {
     $self;
 }
 
-sub _flatten_headers {
-    my($self, $headers) = @_;
-
-    my @hdrs;
-    while (my($k, $v) = each %$headers) {
-        if (ref $v eq 'ARRAY') {
-            push @hdrs, map { ($k => $_) } @$v;
-        } else {
-            push @hdrs, $k => $v;
-        }
-    }
-
-    return \@hdrs;
-}
-
 sub request {
     my($self, $req) = @_;
 
