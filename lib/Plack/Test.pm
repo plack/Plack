@@ -59,7 +59,7 @@ Plack::Test is a unified interface to test PSGI applications using
 L<HTTP::Request> and L<HTTP::Response> objects. It also allows you to run PSGI
 applications in various ways. The default backend is C<Plack::Test::MockHTTP>,
 but you may also use any L<Plack::Handler> implementation to run live HTTP
-requests against at web server
+requests against a web server.
 
 =head1 FUNCTIONS
 
