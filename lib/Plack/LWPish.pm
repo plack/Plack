@@ -1,4 +1,4 @@
-package HTTP::Tiny::LWPLike;
+package Plack::LWPish;
 use strict;
 use warnings;
 use HTTP::Tiny;
@@ -42,15 +42,15 @@ __END__
 
 =head1 NAME
 
-HTTP::Tiny::LWPLike - HTTP::Request/Response compatible interface with HTTP::Tiny backend
+Plack::LWPish - HTTP::Request/Response compatible interface with HTTP::Tiny backend
 
 =head1 SYNOPSIS
 
-  use HTTP::Tiny::LWPLike;
+  use Plack::LWPish;
 
   my $request = HTTP::Request->new(GET => 'http://perl.com/');
 
-  my $ua = HTTP::Tiny::LWPLike->new;
+  my $ua = Plack::LWPish->new;
   my $res = $ua->request($request); # returns HTTP::Response
 
 =head1 DESCRIPTION
@@ -59,22 +59,9 @@ This module is an adapter object that implements one method,
 C<request> that acts like L<LWP::UserAgent>'s request method
 i.e. takes HTTP::Request object and returns HTTP::Response object.
 
-=head1 INCOMPATIBILITIES
-
-=over 4
-
-=item *
-
-SSL is not supported unless required modules are installed.
-
-=item *
-
-authentication is not handled via the UA methods. You can encode the
-C<Authorization> headers in the C<$request> by yourself.
-
-=cut
-
-There might be more - see L<HTTP::Tiny> for the details.
+This module is used solely inside L<PLack::Test::Suite> and
+L<Plack::Test::Server>, and you are recommended to take a look at
+L<HTTP::Thin> if you would like to use this outside Plack.
 
 =back
 
@@ -84,6 +71,6 @@ Tatsuhiko Miyagawa
 
 =head1 SEE ALSO
 
-L<HTTP::Tiny> L<LWP::UserAgent>
+L<HTTP::Thin> L<HTTP::Tiny> L<LWP::UserAgent>
 
 =cut

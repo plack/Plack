@@ -12,7 +12,7 @@ use Plack::Middleware::Lint;
 use Plack::Util;
 use Plack::Request;
 use Try::Tiny;
-use HTTP::Tiny::LWPLike;
+use Plack::LWPish;
 
 my $share_dir = try { File::ShareDir::dist_dir('Plack') } || 'share';
 
@@ -755,7 +755,7 @@ sub run_server_tests {
         client => sub {
             my $port = shift;
 
-            my $ua = HTTP::Tiny::LWPLike->new;
+            my $ua = Plack::LWPish->new;
             for my $i (0..$#TEST) {
                 my $test = $TEST[$i];
                 note $test->[0];

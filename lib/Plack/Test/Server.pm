@@ -6,14 +6,14 @@ use HTTP::Request;
 use HTTP::Response;
 use Test::TCP;
 use Plack::Loader;
-use HTTP::Tiny::LWPLike;
+use Plack::LWPish;
 
 sub test_psgi {
     my %args = @_;
 
     my $client = delete $args{client} or croak "client test code needed";
     my $app    = delete $args{app}    or croak "app needed";
-    my $ua     = delete $args{ua} || HTTP::Tiny::LWPLike->new;
+    my $ua     = delete $args{ua} || Plack::LWPish->new;
 
     test_tcp(
         client => sub {
