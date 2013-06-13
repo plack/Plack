@@ -1,5 +1,7 @@
 use strict;
 use Test::More;
+plan skip_all => "Hangs on Windows"
+  if $^O eq 'MSWin32';
 use Test::Requires { 'CGI::Emulate::PSGI' => 0.10, 'CGI::Compile' => 0.03 };
 use Plack::Test;
 use HTTP::Request::Common;
