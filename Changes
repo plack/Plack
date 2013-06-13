@@ -2,6 +2,10 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0026  2013-06-12 23:00:21 PDT
+    [INCOMPATIBLECHANGES]
+        - use HTTP::Tiny in Plack::Test::Suite and Plack::Test::Server rather than skipping it.
+
 1.0025  2013-06-12 13:08:58 PDT
     [INCOMPATIBLE CHANGES]
         - No XS! Eliminates dependency to LWP::UserAgent by making it completely optional for

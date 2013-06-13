@@ -82,7 +82,7 @@
          }
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/plack/Plack/issues"
@@ -94,7 +94,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0025",
+   "version" : "1.0026",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
