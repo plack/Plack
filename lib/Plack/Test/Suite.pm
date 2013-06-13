@@ -12,7 +12,7 @@ use Plack::Middleware::Lint;
 use Plack::Util;
 use Plack::Request;
 use Try::Tiny;
-use Test::Requires ();
+use Plack::LWPish;
 
 my $share_dir = try { File::ShareDir::dist_dir('Plack') } || 'share';
 
@@ -741,8 +741,6 @@ sub runtests {
 sub run_server_tests {
     my($class, $server, $server_port, $http_port, %args) = @_;
 
-    Test::Requires::test_requires('LWP::UserAgent');
-
     if (ref $server ne 'CODE') {
         my $server_class = $server;
         $server = sub {
@@ -757,7 +755,7 @@ sub run_server_tests {
         client => sub {
             my $port = shift;
 
-            my $ua = LWP::UserAgent->new;
+            my $ua = Plack::LWPish->new;
             for my $i (0..$#TEST) {
                 my $test = $TEST[$i];
                 note $test->[0];
