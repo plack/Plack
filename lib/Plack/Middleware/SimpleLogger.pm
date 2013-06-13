@@ -61,6 +61,10 @@ SimpleLogger is a middleware component that formats the log message
 with information such as the time and PID and prints them to
 I<psgi.errors> stream, which is mostly STDERR or server log output.
 
+=head1 SEE ALSO
+
+L<Plack::Middleware::LogErrors>, essentially the opposite of this module
+
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
