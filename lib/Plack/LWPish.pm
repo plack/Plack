@@ -63,8 +63,6 @@ This module is used solely inside L<PLack::Test::Suite> and
 L<Plack::Test::Server>, and you are recommended to take a look at
 L<HTTP::Thin> if you would like to use this outside Plack.
 
-=back
-
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
