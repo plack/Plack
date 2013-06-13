@@ -1,5 +1,7 @@
 use strict;
 use Test::More;
+plan skip_all => "release test only" unless $ENV{RELEASE_TESTING};
+
 use Test::Requires { 'CGI::Emulate::PSGI' => 0.10, 'CGI::Compile' => 0.03 };
 use Plack::Test;
 use HTTP::Request::Common;
