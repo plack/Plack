@@ -2,18 +2,18 @@ package Plack::Test::Server;
 use strict;
 use warnings;
 use Carp;
+use HTTP::Request;
+use HTTP::Response;
 use Test::TCP;
 use Plack::Loader;
-use Test::Requires ();
+use Plack::LWPish;
 
 sub test_psgi {
     my %args = @_;
 
-    Test::Requires::test_requires('LWP::UserAgent');
-
     my $client = delete $args{client} or croak "client test code needed";
     my $app    = delete $args{app}    or croak "app needed";
-    my $ua     = delete $args{ua} || LWP::UserAgent->new;
+    my $ua     = delete $args{ua} || Plack::LWPish->new;
 
     test_tcp(
         client => sub {
