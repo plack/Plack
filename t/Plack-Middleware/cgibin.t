@@ -43,7 +43,7 @@ test_psgi app => $app, client => sub {
     is $res->content, "\xe1\x83\xb7\n";
 };
 
-my $app = Plack::App::CGIBin->new(
+$app = Plack::App::CGIBin->new(
     root => "t/Plack-Middleware/cgi-bin",
     exec_cb => sub { 1 } )->to_app;
 
