@@ -18,12 +18,12 @@ sub request {
     my @headers;
     $req->headers->scan(sub { push @headers, @_ });
 
-    my $response = $self->{http}->request(
-        $req->method, $req->url, {
-            headers => Hash::MultiValue->new(@headers)->mixed,
-            content => $req->content,
-        },
-    );
+    my $options = {
+        headers => Hash::MultiValue->new(@headers)->mixed,
+    };
+    $options->{content} = $req->content if defined $req->content && length($req->content);
+
+    my $response = $self->{http}->request($req->method, $req->url, $options);
 
     my $res = HTTP::Response->new(
         $response->{status},
