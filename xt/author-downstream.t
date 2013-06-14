@@ -6,7 +6,7 @@ use File::Temp qw(tempdir);
 plan skip_all => "AUTHOR_TESTING is required." unless $ENV{AUTHOR_TESTING};
 
 my @downstream = qw(
-  Starman Starlet Twiggy Monoceros
+  Starman Starlet Twiggy Monoceros Feersum Corona
   Amon2 Tatsumaki OX Dancer2 Catalyst Web::Machine Web::Request
 );
 
