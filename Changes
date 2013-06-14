@@ -2,6 +2,11 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0027  2013-06-13 21:30:12 PDT
+    [IMPROVEMENTS]
+        - Not a dev release, including XS free version of Plack::Test*
+        - Fix cgibin tests that often fail on Win32 #375
+
 1.0026  2013-06-12 23:00:21 PDT
     [INCOMPATIBLE CHANGES]
         - use HTTP::Tiny in Plack::Test::Suite and Plack::Test::Server rather than skipping it.
