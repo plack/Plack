@@ -14,4 +14,4 @@ script:
   - perl Makefile.PL && cover -test
 after_success:
   - cover -report coveralls
-env: AUTHOR_TESTING=1 RELEASE_TESTING=1 AUTOMATED_TESTING=1
+env: RELEASE_TESTING=1 AUTOMATED_TESTING=1
