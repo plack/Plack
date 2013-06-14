@@ -2,9 +2,10 @@ use strict;
 use warnings;
 use Test::More;
 use Plack::Test::Suite;
-use Plack::Loader::Shotgun;
 
 plan skip_all => "Skip on Win32" if $^O eq 'MSWin32';
+
+require Plack::Loader::Shotgun;
 
 Plack::Test::Suite->run_server_tests(
     sub {
