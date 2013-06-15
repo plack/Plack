@@ -94,11 +94,12 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0027",
+   "version" : "1.0028",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
       "Alex J. G. Burzy\u0144ski <ajgb@cpan.org>",
+      "Alexandr Ciornii <alexchorny@gmail.com>",
       "Andrew Rodland <andrew@cleverdomain.org>",
       "Andy Wardley <abw@wardley.org>",
       "Aristotle Pagaltzis <pagaltzis@gmx.de>",
