@@ -160,6 +160,10 @@ sub locate_app {
         return sub { $psgi };
     }
 
+    if (ref $psgi eq 'REF' and ref $$psgi eq 'CODE') {
+        return $$psgi;
+    }
+
     if ($self->{eval}) {
         $self->loader->watch("lib");
         return build {
@@ -294,6 +298,20 @@ Plack::Runner - plackup core
   my $runner = Plack::Runner->new;
   $runner->parse_options(@ARGV);
   $runner->run($app);
+
+  # use app builder instead of app
+  use Plack::Runner;
+  my $app_builder => sub {
+          # do some thing here will run every time server loaded
+
+          return sub  {
+                # the real app code here
+          }
+  };
+
+  my $runner = Plack::Runner->new;
+  $runner->parse_options(@ARGV);
+  $runner->run(\$app_builder); # use code ref ref
 
 =head1 DESCRIPTION
 
