@@ -28,11 +28,11 @@ our @TEST = (
         sub {
             my $cb = shift;
             my $res = $cb->(GET "http://127.0.0.1/");
-            is $res->content, $ENV{PLACK_TEST_SCRIPT_NAME};
+            is $res->content, "script_name=$ENV{PLACK_TEST_SCRIPT_NAME}";
         },
         sub {
             my $env = shift;
-            return [ 200, ["Content-Type", "text/plain"], [ $env->{SCRIPT_NAME} ] ];
+            return [ 200, ["Content-Type", "text/plain"], [ "script_name=$env->{SCRIPT_NAME}" ] ];
         },
     ],
     [
@@ -697,7 +697,7 @@ our @TEST = (
                     );
                     my $res = $cb->($req);
                     is $res->header('X-AUTHORIZATION'), 0;
-                    is $res->content, '';
+                    is $res->content, 'no_auth';
                 };
             };
         },
@@ -706,7 +706,7 @@ our @TEST = (
             return [
                 200,
                 [ 'Content-Type' => 'text/plain', 'X-AUTHORIZATION' => exists($env->{HTTP_AUTHORIZATION}) ? 1 : 0 ],
-                [ $env->{HTTP_AUTHORIZATION} || '' ],
+                [ $env->{HTTP_AUTHORIZATION} || 'no_auth' ],
             ];
         },
     ],
