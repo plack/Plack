@@ -15,6 +15,7 @@ requires 'URI', '1.59';
 requires 'parent';
 requires 'Apache::LogFormat::Compiler', '0.12';
 requires 'HTTP::Tiny', 0.024;
+requires 'HTTP::Cookies', '6.01';
 
 on test => sub {
     requires 'Test::More', '0.88';
