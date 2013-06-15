@@ -1,8 +1,8 @@
 use strict;
 use Plack::Test;
 use HTTP::Request::Common;
-use HTTP::Cookies;
 use Test::More;
+use Test::Requires qw(HTTP::Cookies);
 
 my $app = sub {
     return [ 200, [ 'Content-Type' => 'text/html', 'Set-Cookie' => "ID=123; path=/" ], [ "Hi" ] ];
