@@ -8,9 +8,9 @@ perl:
   - 5.10
   - 5.8
 before_install:
-  - cpanm -nq App::mymeta_requires
+  - perlbrew install-cpanm -f
 install:
-  - mymeta-requires | cpanm -nq
+  - cpanm -nq --installdeps --with-recommends --with-suggests .
   - cpanm -nq Devel::Cover::Report::Coveralls
 script:
   - perl Makefile.PL && cover -test
