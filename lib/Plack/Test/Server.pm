@@ -8,32 +8,36 @@ use Test::TCP;
 use Plack::Loader;
 use Plack::LWPish;
 
-sub test_psgi {
-    my %args = @_;
+sub new {
+    my($class, $app, %args) = @_;
 
-    my $client = delete $args{client} or croak "client test code needed";
-    my $app    = delete $args{app}    or croak "app needed";
-    my $ua     = delete $args{ua} || Plack::LWPish->new( no_proxy => [qw/127.0.0.1/] );
-
-    test_tcp(
-        client => sub {
-            my $port = shift;
-            my $cb = sub {
-                my $req = shift;
-                $req->uri->scheme('http');
-                $req->uri->host($args{host} || '127.0.0.1');
-                $req->uri->port($port);
-                return $ua->request($req);
-            };
-            $client->($cb);
-        },
-        server => $args{server} || sub {
+    my $server = Test::TCP->new(
+        code => sub {
             my $port = shift;
             my $server = Plack::Loader->auto(port => $port, host => ($args{host} || '127.0.0.1'));
             $server->run($app);
             exit;
         },
     );
+
+    bless { server => $server, %args }, $class;
+}
+
+sub port {
+    my $self = shift;
+    $self->{server}->port;
+}
+
+sub request {
+    my($self, $req) = @_;
+
+    my $ua = $self->{ua} || Plack::LWPish->new( no_proxy => [qw/127.0.0.1/] );
+
+    $req->uri->scheme('http');
+    $req->uri->host($self->{host} || '127.0.0.1');
+    $req->uri->port($self->port);
+
+    return $ua->request($req);
 }
 
 1;

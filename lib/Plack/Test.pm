@@ -1,20 +1,34 @@
 package Plack::Test;
 use strict;
 use warnings;
+use Carp;
 use parent qw(Exporter);
 our @EXPORT = qw(test_psgi);
 
 our $Impl;
 $Impl ||= $ENV{PLACK_TEST_IMPL} || "MockHTTP";
 
-sub test_psgi {
-    eval "require Plack::Test::$Impl;";
+sub create {
+    my($class, $app, @args) = @_;
+
+    my $subclass = "Plack::Test::$Impl";
+    eval "require $subclass";
     die $@ if $@;
-    no strict 'refs';
+
+    $subclass->new($app, @args);
+}
+
+sub test_psgi {
     if (ref $_[0] && @_ == 2) {
         @_ = (app => $_[0], client => $_[1]);
     }
-    &{"Plack::Test::$Impl\::test_psgi"}(@_);
+    my %args = @_;
+
+    my $app    = delete $args{app}    or Carp::croak "app needed";
+    my $client = delete $args{client} or Carp::croak "client test code needed";
+
+    my $tester = Plack::Test->create($app, %args);
+    $client->(sub { $tester->request(@_) });
 }
 
 1;
