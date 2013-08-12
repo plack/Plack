@@ -29,6 +29,7 @@ on test => sub {
     suggests 'HTTP::Server::Simple::PSGI';
     suggests 'HTTP::Request::AsCGI';
     suggests 'LWP::UserAgent', '5.814';
+    suggests 'Module::Refresh';
 };
 
 on runtime => sub {
