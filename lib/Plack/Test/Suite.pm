@@ -754,8 +754,7 @@ sub run_server_tests {
     test_tcp(
         client => sub {
             my $port = shift;
-
-            my $ua = Plack::LWPish->new;
+            my $ua = Plack::LWPish->new( no_proxy => [qw/127.0.0.1/] );
             for my $i (0..$#TEST) {
                 my $test = $TEST[$i];
                 note $test->[0];
