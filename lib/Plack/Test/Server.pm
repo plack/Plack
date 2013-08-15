@@ -13,7 +13,7 @@ sub test_psgi {
 
     my $client = delete $args{client} or croak "client test code needed";
     my $app    = delete $args{app}    or croak "app needed";
-    my $ua     = delete $args{ua} || Plack::LWPish->new;
+    my $ua     = delete $args{ua} || Plack::LWPish->new( no_proxy => [qw/127.0.0.1/] );
 
     test_tcp(
         client => sub {
