@@ -1,20 +1,34 @@
 package Plack::Test;
 use strict;
 use warnings;
+use Carp;
 use parent qw(Exporter);
 our @EXPORT = qw(test_psgi);
 
 our $Impl;
 $Impl ||= $ENV{PLACK_TEST_IMPL} || "MockHTTP";
 
-sub test_psgi {
-    eval "require Plack::Test::$Impl;";
+sub create {
+    my($class, $app, @args) = @_;
+
+    my $subclass = "Plack::Test::$Impl";
+    eval "require $subclass";
     die $@ if $@;
-    no strict 'refs';
+
+    $subclass->new($app, @args);
+}
+
+sub test_psgi {
     if (ref $_[0] && @_ == 2) {
         @_ = (app => $_[0], client => $_[1]);
     }
-    &{"Plack::Test::$Impl\::test_psgi"}(@_);
+    my %args = @_;
+
+    my $app    = delete $args{app}    or Carp::croak "app needed";
+    my $client = delete $args{client} or Carp::croak "client test code needed";
+
+    my $tester = Plack::Test->create($app, %args);
+    $client->(sub { $tester->request(@_) });
 }
 
 1;
@@ -28,8 +42,16 @@ Plack::Test - Test PSGI applications with various backends
 =head1 SYNOPSIS
 
   use Plack::Test;
+  use HTTP::Request::Common;
 
-  # named params
+  # Simple OO interface
+  my $app = sub { return [ 200, [], [ "Hello "] ] };
+  my $test = Plack::Test->create($app);
+
+  my $res = $test->request(GET "/");
+  is $res->content, "Hello";
+
+  # traditional - named params
   test_psgi
       app => sub {
           my $env = shift;
@@ -42,16 +64,13 @@ Plack::Test - Test PSGI applications with various backends
           like $res->content, qr/Hello World/;
       };
 
-   use HTTP::Request::Common;
-
-   # positional params (app, client)
-   my $app = sub { return [ 200, [], [ "Hello "] ] };
-   test_psgi $app, sub {
-       my $cb  = shift;
-       my $res = $cb->(GET "/");
-       is $res->content, "Hello";
-   };
-
+  # positional params (app, client)
+  my $app = sub { return [ 200, [], [ "Hello "] ] };
+  test_psgi $app, sub {
+      my $cb  = shift;
+      my $res = $cb->(GET "/");
+      is $res->content, "Hello";
+  };
 
 =head1 DESCRIPTION
 
@@ -61,7 +80,31 @@ applications in various ways. The default backend is C<Plack::Test::MockHTTP>,
 but you may also use any L<Plack::Handler> implementation to run live HTTP
 requests against a web server.
 
+=head1 METHODS
+
+=over 4
+
+=item create
+
+  $test = Plack::Test->create($app, %options);
+
+creates an instance of Plack::Test implementation class. C<$app> has
+to be a valid PSGI application code reference.
+
+=item request
+
+  $res = $test->request($request);
+
+takes an HTTP::Request object, runs it through the PSGI application to
+test and returns an HTTP::Response object.
+
+=back
+
 =head1 FUNCTIONS
+
+Plack::Test also provides a functional interface that takes two
+callbacks, each of which represents PSGI application and HTTP client
+code that tests the application.
 
 =over 4
 
