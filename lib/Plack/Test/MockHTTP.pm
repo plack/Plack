@@ -8,29 +8,26 @@ use HTTP::Response;
 use HTTP::Message::PSGI;
 use Try::Tiny;
 
-sub test_psgi {
-    my %args = @_;
+sub new {
+    my($class, $app) = @_;
+    bless { app => $app }, $class;
+}
 
-    my $client = delete $args{client} or croak "client test code needed";
-    my $app    = delete $args{app}    or croak "app needed";
+sub request {
+    my($self, $req) = @_;
 
-    my $cb = sub {
-        my $req = shift;
-        $req->uri->scheme('http')    unless defined $req->uri->scheme;
-        $req->uri->host('localhost') unless defined $req->uri->host;
-        my $env = $req->to_psgi;
+    $req->uri->scheme('http')    unless defined $req->uri->scheme;
+    $req->uri->host('localhost') unless defined $req->uri->host;
+    my $env = $req->to_psgi;
 
-        my $res = try {
-            HTTP::Response->from_psgi($app->($env));
-        } catch {
-            HTTP::Response->from_psgi([ 500, [ 'Content-Type' => 'text/plain' ], [ $_ ] ]);
-        };
-
-        $res->request($req);
-        return $res;
+    my $res = try {
+        HTTP::Response->from_psgi($self->{app}->($env));
+    } catch {
+        HTTP::Response->from_psgi([ 500, [ 'Content-Type' => 'text/plain' ], [ $_ ] ]);
     };
 
-    $client->($cb);
+    $res->request($req);
+    return $res;
 }
 
 1;
