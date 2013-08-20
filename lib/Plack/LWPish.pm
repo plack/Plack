@@ -59,7 +59,7 @@ This module is an adapter object that implements one method,
 C<request> that acts like L<LWP::UserAgent>'s request method
 i.e. takes HTTP::Request object and returns HTTP::Response object.
 
-This module is used solely inside L<PLack::Test::Suite> and
+This module is used solely inside L<Plack::Test::Suite> and
 L<Plack::Test::Server>, and you are recommended to take a look at
 L<HTTP::Thin> if you would like to use this outside Plack.
 
