@@ -15,6 +15,11 @@ sub create {
     eval "require $subclass";
     die $@ if $@;
 
+    no strict 'refs';
+    if (defined &{"Plack::Test::$Impl\::test_psgi"}) {
+        return \&{"Plack::Test::$Impl\::test_psgi"};
+    }
+
     $subclass->new($app, @args);
 }
 
@@ -28,6 +33,8 @@ sub test_psgi {
     my $client = delete $args{client} or Carp::croak "client test code needed";
 
     my $tester = Plack::Test->create($app, %args);
+    return $tester->(@_) if ref $tester eq 'CODE'; # compatibility
+
     $client->(sub { $tester->request(@_) });
 }
 
