@@ -2,6 +2,19 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0029  2013-08-22 14:05:44 PDT
+    [NEW FEATURES]
+        - Plack::Test now has a simpler object-oriented interface that doesn't
+          take multiple callbacks. #420
+
+    [IMPROVEMENTS]
+        - bump dependencies for Test::TCP and HTTP::Tiny
+        - Set no_proxy for HTTP::Tiny in tests (kazeburo)
+
+    [INCOMPATIBLE CHANGES]
+        - Split HTTP::Server::Simple handler from Plack distribution and merge to
+          HTTP-Server-Simple-PSGI distribution
+
 1.0028  2013-06-15 01:42:52 PDT
     [IMPROVEMENTS]
         - Skip cgi related tests for Win32 (chorny) #413

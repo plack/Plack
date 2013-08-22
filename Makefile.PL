@@ -32,11 +32,11 @@ my %WriteMakefileArgs = (
     "Filesys::Notify::Simple" => 0,
     "HTTP::Body" => "1.06",
     "HTTP::Message" => "5.814",
-    "HTTP::Tiny" => "0.024",
+    "HTTP::Tiny" => "0.034",
     "Hash::MultiValue" => "0.05",
     "Pod::Usage" => "1.36",
     "Stream::Buffered" => "0.02",
-    "Test::TCP" => "1.02",
+    "Test::TCP" => "2.00",
     "Try::Tiny" => 0,
     "URI" => "1.59",
     "parent" => 0
@@ -45,7 +45,7 @@ my %WriteMakefileArgs = (
     "Test::More" => "0.88",
     "Test::Requires" => 0
   },
-  "VERSION" => "1.0028",
+  "VERSION" => "1.0029",
   "test" => {
     "TESTS" => "t/*.t t/HTTP-Message-PSGI/*.t t/HTTP-Server-PSGI/*.t t/Plack-Builder/*.t t/Plack-HTTPParser-PP/*.t t/Plack-Handler/*.t t/Plack-Loader/*.t t/Plack-MIME/*.t t/Plack-Middleware/*.t t/Plack-Middleware/cascade/*.t t/Plack-Middleware/recursive/*.t t/Plack-Middleware/stacktrace/*.t t/Plack-Request/*.t t/Plack-Response/*.t t/Plack-Runner/*.t t/Plack-TempBuffer/*.t t/Plack-Test/*.t t/Plack-Util/*.t"
   }
