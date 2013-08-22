@@ -24,7 +24,7 @@ sub test_psgi {
     }
     my %args = @_;
 
-    my $app    = delete $args{app}    or Carp::croak "app needed";
+    my $app    = delete $args{app}; # Backward compat: some implementations don't need app
     my $client = delete $args{client} or Carp::croak "client test code needed";
 
     my $tester = Plack::Test->create($app, %args);
