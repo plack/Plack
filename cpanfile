@@ -1,5 +1,7 @@
 requires 'perl', '5.008001';
 
+requires 'Plack::Runner', '1.0030';
+
 requires 'Devel::StackTrace', '1.23';
 requires 'Devel::StackTrace::AsHTML', '0.11';
 requires 'File::ShareDir', '1.00';

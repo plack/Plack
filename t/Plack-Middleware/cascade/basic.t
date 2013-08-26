@@ -14,7 +14,7 @@ test_psgi $cascade, sub {
 };
 
 $cascade->add( Plack::App::File->new(root => "t/Plack-Middleware")->to_app );
-$cascade->add( Plack::App::File->new(root => "t/Plack-Util")->to_app );
+$cascade->add( Plack::App::File->new(root => "t/Plack-MIME")->to_app );
 $cascade->add( sub { [ 404, [], [ 'Custom 404 Page' ] ] } );
 
 test_psgi $cascade, sub {
@@ -27,7 +27,7 @@ test_psgi $cascade, sub {
     is $res->code, 404;
     is $res->content, 'Custom 404 Page';
 
-    $res = $cb->(GET "http://localhost/foreach.t");
+    $res = $cb->(GET "http://localhost/add_type.t");
     is $res->code, 200;
 };
 
