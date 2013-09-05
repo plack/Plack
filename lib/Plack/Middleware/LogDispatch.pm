@@ -17,6 +17,11 @@ sub call {
     $env->{'psgix.logger'} = sub {
         my $args = shift;
         $args->{level} = 'critical' if $args->{level} eq 'fatal';
+
+        if ( ref $args->{message} && ref $args->{message} ne 'CODE' ) {
+            $args->{message} .= q{};
+        }
+
         $self->logger->log(%$args);
     };
 
