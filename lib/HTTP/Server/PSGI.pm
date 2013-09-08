@@ -280,6 +280,7 @@ sub write_timeout {
 sub write_all {
     my ($self, $sock, $buf, $timeout) = @_;
     return 0 unless defined $buf;
+    _encode($buf);
     my $off = 0;
     while (my $len = length($buf) - $off) {
         my $ret = $self->write_timeout($sock, $buf, $len, $off, $timeout)
@@ -287,6 +288,14 @@ sub write_all {
         $off += $ret;
     }
     return length $buf;
+}
+
+# syswrite() will crash when given wide characters
+sub _encode {
+    if ($_[0] =~ /[^\x00-\xff]/) {
+        Carp::carp("Wide character outside byte range in response. Encoding data as UTF-8");
+        utf8::encode($_[0]);
+    }
 }
 
 1;
