@@ -61,6 +61,8 @@ sub call {
         } else {
             my $h = Plack::Util::headers($r->[1]);
             $h->remove('Content-Length');
+            $h->remove('Content-Encoding');
+            $h->remove('Transfer-Encoding');
             $h->set('Content-Type', Plack::MIME->mime_type($path));
 
             open my $fh, "<", $path or die "$path: $!";
