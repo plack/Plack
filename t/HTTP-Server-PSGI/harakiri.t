@@ -6,6 +6,8 @@ use Test::More;
 use Test::TCP;
 use Test::Requires qw(LWP::UserAgent);
 
+my $ua_timeout = 3;
+
 test_tcp(
     server => sub {
         my $port = shift;
@@ -24,11 +26,11 @@ test_tcp(
                 ];
             },
         );
-        sleep 5; # to block
+        sleep $ua_timeout + 2; # to block
     },
     client => sub {
         my $port = shift;
-        my $ua = LWP::UserAgent->new;
+        my $ua = LWP::UserAgent->new( timeout => $ua_timeout );
         my $res = $ua->get("http://127.0.0.1:$port/");
         ok $res->is_success;
         is $res->code, 200;
