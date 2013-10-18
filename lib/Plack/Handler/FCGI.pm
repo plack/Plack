@@ -53,8 +53,8 @@ sub run {
 
     my %env;
     my $request = FCGI::Request(
-        $self->{stdin}, $self->{stdout},
-        ($self->{keep_stderr} ? $self->{stdout} : $self->{stderr}), \%env, $sock,
+        $self->{stdin}, $self->{stdout}, $self->{stderr},
+        \%env, $sock,
         ($self->{nointr} ? 0 : &FCGI::FAIL_ACCEPT_ON_INTR),
     );
 
@@ -98,8 +98,8 @@ sub run {
             'psgi.version'      => [1,1],
             'psgi.url_scheme'   => ($env{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
             'psgi.input'        => $self->{stdin},
-            'psgi.errors'       => $self->{stderr}, # FCGI.pm redirects STDERR in Accept() loop, so just print STDERR
-                                                    # print to the correct error handle based on keep_stderr
+            'psgi.errors'       => 
+                ($self->{keep_stderr} ? \*STDERR : $self->{stderr}),
             'psgi.multithread'  => Plack::Util::FALSE,
             'psgi.multiprocess' => Plack::Util::TRUE,
             'psgi.run_once'     => Plack::Util::FALSE,
@@ -282,7 +282,7 @@ Specify process title
 
 =item keep-stderr
 
-Send STDERR to STDOUT instead of the webserver
+Send psgi.errors to STDERR instead of to the FCGI error stream.
 
 =item backlog
 
