@@ -45,6 +45,7 @@ SHOGUN
 
     is slurp($req->upload('yappo')), 'SHOGUN';
     is $req->upload('yappo')->filename, 'osawa.txt';
+    isa_ok $req->upload('yappo')->headers, 'HTTP::Headers';
 };
 
 subtest 'OctetStream' => sub {

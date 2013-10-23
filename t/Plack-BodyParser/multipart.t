@@ -46,6 +46,9 @@ Content-Type: text/plain
 SHOGUN4
 ------BOUNDARY
 Content-Disposition: form-data; name="test_upload_file6"; filename="yappo6.txt"
+Foo: bar
+  baz
+X: Y:Z
 Content-Type: text/plain
 
 SHOGUN6
@@ -79,6 +82,11 @@ is slurp($test_upload_file[1]), 'SHOGUN2';
 
     my @test_upload_file6 = $uploads->{'test_upload_file6'};
     is slurp($test_upload_file6[0]), 'SHOGUN6';
+    isa_ok $test_upload_file6[0]->headers, 'HTTP::Headers';
+    is $test_upload_file6[0]->headers->header('Content-Type'), 'text/plain';
+    is $test_upload_file6[0]->content_type, 'text/plain';
+    is $test_upload_file6[0]->headers->header('X'), 'Y:Z';
+    is $test_upload_file6[0]->headers->header('Foo'), 'bar baz';
 }
 
 done_testing;

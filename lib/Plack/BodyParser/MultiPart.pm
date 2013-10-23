@@ -9,6 +9,7 @@ use File::Temp;
 use Hash::MultiValue;
 use Carp ();
 use Plack::Request::Upload;
+use HTTP::Headers;
 
 sub new {
     my ($class, $env, $opts) = @_;
@@ -87,9 +88,13 @@ sub new {
                 if ($final) {
                     seek($fh, 0, SEEK_SET)
                         or die qq/Could not rewind file handle: '$!'/;
-                    # TODO: parse headers.
+
+                    my $headers = HTTP::Headers->new(
+                        map { split(/\s*:\s*/, $_, 2) }
+                        @{$part->{headers}}
+                    );
                     $uploads->add($part->{name}, Plack::Request::Upload->new(
-                        headers  => $part->{headers},
+                        headers  => $headers,
                         size     => -s $part->{fh},
                         filename => $part->{filename},
                         tempname => $part->{tempname},
