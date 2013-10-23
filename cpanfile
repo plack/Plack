@@ -4,7 +4,6 @@ requires 'Devel::StackTrace', '1.23';
 requires 'Devel::StackTrace::AsHTML', '0.11';
 requires 'File::ShareDir', '1.00';
 requires 'Filesys::Notify::Simple';
-requires 'HTTP::Body', '1.06';
 requires 'HTTP::Message', '5.814';
 requires 'Hash::MultiValue', '0.05';
 requires 'Pod::Usage', '1.36';

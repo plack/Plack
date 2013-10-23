@@ -3,9 +3,38 @@ use strict;
 use warnings;
 use utf8;
 use 5.008_001;
+use Hash::MultiValue;
+use Stream::Buffered;
+
+use Plack::BodyParser::OctetStream;
+
+sub new {
+    my $class = shift;
+    bless { handlers => [] }, $class;
+}
+
+sub register {
+    my ($self, $content_type, $klass, $opts) = @_;
+    push @{$self->{handlers}}, [$content_type, $klass, $opts];
+}
+
+sub get_parser {
+    my ($self, $env) = @_;
+
+    if (defined $env->{CONTENT_TYPE}) {
+        for my $handler (@{$self->{handlers}}) {
+            if (index($env->{CONTENT_TYPE}, $handler->[0]) == 0) {
+                return $handler->[1]->new($env, $handler->[2]);
+            }
+        }
+    }
+    return Plack::BodyParser::OctetStream->new();
+}
 
 sub parse {
-    my ($class, $env, $parser) = @_;
+    my ($self, $env) = @_;
+
+    my $parser = $self->get_parser($env);
 
     my $ct = $env->{CONTENT_TYPE};
     my $cl = $env->{CONTENT_LENGTH};
@@ -54,4 +83,9 @@ sub parse {
 
 
 1;
+__END__
+
+=head1 NAME
+
+Plack::BodyParser - HTTP request body parser
 

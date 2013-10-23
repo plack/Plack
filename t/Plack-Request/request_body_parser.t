@@ -60,6 +60,11 @@ done_testing;
 sub make_request {
     my ($content_type, $content) = @_;
 
+    my $parser = Plack::BodyParser->new();
+    $parser->register('application/json', 'Plack::BodyParser::JSON');
+    $parser->register('application/x-www-form-urlencoded', 'Plack::BodyParser::UrlEncoded');
+    $parser->register('multipart/form-data', 'Plack::BodyParser::MultiPart');
+
     open my $input, '<', \$content;
     my $req = Plack::Request->new(
         +{
@@ -67,24 +72,9 @@ sub make_request {
             CONTENT_TYPE   => $content_type,
             CONTENT_LENGTH => length($content),
         },
-        parse_request_body => \&parse_request_body,
+        request_body_parser => $parser,
     );
     return $req;
-}
-
-sub parse_request_body {
-    my $req = shift;
-
-    my $parser =
-        $req->content_type =~ m{\Aapplication/json}
-            ? Plack::BodyParser::JSON->new()
-        : $req->content_type =~ m{\Aapplication/x-www-form-urlencoded}
-            ? Plack::BodyParser::UrlEncoded->new()
-        : $req->content_type =~ m{\Amultipart/form-data}
-            ? Plack::BodyParser::MultiPart->new($req->env)
-            : Plack::BodyParser::OctetStream->new()
-    ;
-    Plack::BodyParser->parse($req->env, $parser);
 }
 
 sub slurp {

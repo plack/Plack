@@ -7,11 +7,11 @@ our $VERSION = '1.0029';
 use HTTP::Headers;
 use Carp ();
 use Hash::MultiValue;
-use HTTP::Body;
 
 use Plack::Request::Upload;
 use Plack::BodyParser;
-use Plack::BodyParser::HTTPBody;
+use Plack::BodyParser::UrlEncoded;
+use Plack::BodyParser::MultiPart;
 use Stream::Buffered;
 use URI;
 use URI::Escape ();
@@ -23,15 +23,31 @@ sub new {
 
     bless {
         env => $env,
-        parse_request_body => $opts{parse_request_body} || \&_parse_request_body_by_http_body,
+        ($opts{request_body_parser} ? (request_body_parser => $opts{request_body_parser}) : ()),
     }, $class;
 }
 
-sub _parse_request_body_by_http_body {
+sub request_body_parser {
+    my $self = shift;
+    unless (exists $self->{request_body_parser}) {
+        $self->{request_body_parser} = $self->_build_request_body_parser();
+    }
+    return $self->{request_body_parser};
+}
+
+sub _build_request_body_parser {
     my $self = shift;
 
-    my $parser = Plack::BodyParser::HTTPBody->new($self->env);
-    Plack::BodyParser->parse($self->env, $parser);
+    my $parser = Plack::BodyParser->new();
+    $parser->register(
+        'application/x-www-form-urlencoded',
+        'Plack::BodyParser::UrlEncoded'
+    );
+    $parser->register(
+        'multipart/form-data',
+        'Plack::BodyParser::MultiPart'
+    );
+    $parser;
 }
 
 sub env { $_[0]->{env} }
@@ -257,7 +273,7 @@ sub new_response {
 
 sub _parse_request_body {
     my $self = shift;
-    return $self->{parse_request_body}->($self);
+    return $self->request_body_parser->parse($self->env);
 }
 
 1;
