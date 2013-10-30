@@ -30,11 +30,12 @@ sub new {
 sub run {
     my ($self, $app) = @_;
 
+    my $running_on_server_starter = exists $ENV{SERVER_STARTER_PORT};
     my $sock = 0;
     if (-S STDIN) {
         # running from web server. Do nothing
         # Note it should come before listen check because of plackup's default
-    } elsif ($ENV{SERVER_STARTER_PORT}) {
+    } elsif ($running_on_server_starter) {
         # Runing under Server::Starter
         require Server::Starter;
         my %socks = %{Server::Starter::server_ports()};
@@ -68,7 +69,7 @@ sub run {
 
     my $proc_manager;
 
-    if ($self->{listen}) {
+    if ($self->{listen} or $running_on_server_starter) {
         $self->daemon_fork if $self->{daemonize};
 
         if ($self->{manager}) {
