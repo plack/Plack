@@ -2,7 +2,6 @@ package Plack::BodyParser::JSON;
 use strict;
 use warnings;
 use utf8;
-use 5.010_001;
 use JSON ();
 use Encode qw(encode_utf8);
 use Hash::MultiValue;
