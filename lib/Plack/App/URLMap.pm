@@ -147,6 +147,16 @@ should also work.
 
 =back
 
+=head1 PERFORMANCE
+
+If you C<map> (or C<mount> with Plack::Builder) N applications,
+Plack::App::URLMap will need to at most iterate through N paths to
+match incoming requests.
+
+It is a good idea to use C<map> only for a known, limited amount of
+applications, since mounting hundreds of applications could affect
+runtime request performance.
+
 =head1 DEBUGGING
 
 You can set the environment variable C<PLACK_URLMAP_DEBUG> to see how
