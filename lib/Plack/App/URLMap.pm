@@ -23,14 +23,14 @@ sub map {
     }
     $location =~ s!/$!!;
 
-    push @{$self->{_mapping}}, [ $host, $location, $app ];
+    push @{$self->{_mapping}}, [ $host, $location, qr/^\Q$location\E/, $app ];
 }
 
 sub prepare_app {
     my $self = shift;
     # sort by path length
     $self->{_sorted_mapping} = [
-        map  { [ @{$_}[2..4] ] }
+        map  { [ @{$_}[2..5] ] }
         sort { $b->[0] <=> $a->[0] || $b->[1] <=> $a->[1] }
         map  { [ ($_->[0] ? length $_->[0] : 0), length($_->[1]), @$_ ] } @{$self->{_mapping}},
     ];
@@ -49,14 +49,14 @@ sub call {
     }
 
     for my $map (@{ $self->{_sorted_mapping} }) {
-        my($host, $location, $app) = @$map;
+        my($host, $location, $location_re, $app) = @$map;
         my $path = $path_info; # copy
         no warnings 'uninitialized';
         DEBUG && warn "Matching request (Host=$http_host Path=$path) and the map (Host=$host Path=$location)\n";
         next unless not defined $host     or
                     $http_host   eq $host or
                     $server_name eq $host;
-        next unless $location eq '' or $path =~ s!^\Q$location\E!!;
+        next unless $location eq '' or $path =~ s!$location_re!!;
         next unless $path eq '' or $path =~ m!^/!;
         DEBUG && warn "-> Matched!\n";
 
