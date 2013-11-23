@@ -2,6 +2,18 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0030  2013-11-23 08:54:01 CET
+    [IMPROVEMENTS]
+        - Middleware::LogDispatch stringifies objects (oalders) #427
+        - Encode wide character strings as UTF-8 in HTTP::Server::PSGI #429
+        - Optimize Plack::Response->finalize performance (kazeburo) #433
+        - Optimize mount() performance in Plack::App::URLMap
+
+    [BUG FIXES]
+        - ErrorDocument: remove Content-Encoding and Transfer-Encoding (kazeburo) #430
+        - Fix harakiri test hang on win32 (wchristian) #431
+        - Handler::FCGI: Restore --keep-stderr option (mauzo) #432
+
 1.0029  2013-08-22 14:05:44 PDT
     [NEW FEATURES]
         - Plack::Test now has a simpler object-oriented interface that doesn't

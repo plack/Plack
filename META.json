@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.3, Dist::Zilla version 4.300035, CPAN::Meta::Converter version 2.132140",
+   "generated_by" : "Dist::Milla version v1.0.4, Dist::Zilla version 5.006, CPAN::Meta::Converter version 2.132830",
    "license" : [
       "perl_5"
    ],
@@ -95,7 +95,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0029",
+   "version" : "1.0030",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
@@ -105,6 +105,7 @@
       "Andy Wardley <abw@wardley.org>",
       "Aristotle Pagaltzis <pagaltzis@gmx.de>",
       "Ask Bj\u00f8rn Hansen <ask@develooper.com>",
+      "Ben Morrow <ben@morrow.me.uk>",
       "Bernhard Graf <augensalat@gmail.com>",
       "Chia-liang Kao <clkao@clkao.org>",
       "Christian Walde <walde.christian@googlemail.com>",
@@ -145,6 +146,7 @@
       "Michael G. Schwern <schwern@pobox.com>",
       "Nick Wellnhofer <wellnhofer@aevum.de>",
       "Nobuo Danjou <nobuo.danjou@gmail.com>",
+      "Olaf Alders <olaf@wundersolutions.com>",
       "Oliver Gorwits <oliver@cpan.org>",
       "Oliver Paukstadt <pstadt@sourcentral.org>",
       "Olivier Mengu\u00e9 <dolmen@cpan.org>",
