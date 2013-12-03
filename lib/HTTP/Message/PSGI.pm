@@ -105,6 +105,10 @@ sub res_from_psgi {
             _res_from_psgi($_[0], \$res);
         });
     }
+    else {
+        my $response = defined $psgi_res ? "'$psgi_res'" : 'undef';
+        die "Bad response $response";
+    }
 
     return $res;
 }
