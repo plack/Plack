@@ -99,15 +99,12 @@ sub res_from_psgi {
     my $res;
     if (ref $psgi_res eq 'ARRAY') {
         _res_from_psgi($psgi_res, \$res);
-    }
-    elsif (ref $psgi_res eq 'CODE') {
+    } elsif (ref $psgi_res eq 'CODE') {
         $psgi_res->(sub {
             _res_from_psgi($_[0], \$res);
         });
-    }
-    else {
-        my $response = defined $psgi_res ? "'$psgi_res'" : 'undef';
-        die "Bad response $response";
+    } else {
+        Carp::croak("Bad response: ", defined $psgi_res ? $psgi_res : 'undef');
     }
 
     return $res;
