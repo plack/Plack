@@ -19,16 +19,18 @@ sub call {
     my($self, $env) = @_;
 
     my $trace;
-    my %seen;
+    my $last_key = '';
     local $SIG{__DIE__} = sub {
         my $key = _make_key($_[0]);
-        if (!$seen{$key}) {
+        # If we get the same keys, the exception may be rethrown and
+        # we keep the original stacktrace.
+        if ($key ne $last_key) {
             $trace = $StackTraceClass->new(
                 indent => 1, message => munge_error($_[0], [ caller ]),
                 ignore_package => __PACKAGE__,
             );
+            $last_key = $key;
         }
-        $seen{$key} = 1;
         die @_;
     };
 
