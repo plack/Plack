@@ -42,7 +42,7 @@ sub call {
         [ 500, [ "Content-Type", "text/plain; charset=utf-8" ], [ no_trace_error(utf8_safe($caught)) ] ];
     };
 
-    if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
+    if ($trace && ($caught ? (_make_key($caught) eq $last_key) : ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
         my $text = $trace->as_string;
         my $html = $trace->as_html;
         $env->{'plack.stacktrace.text'} = $text;
