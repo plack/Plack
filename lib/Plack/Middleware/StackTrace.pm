@@ -42,7 +42,7 @@ sub call {
         [ 500, [ "Content-Type", "text/plain; charset=utf-8" ], [ no_trace_error(utf8_safe($caught)) ] ];
     };
 
-    if ($trace && ($caught ? (_make_key($caught) eq $last_key) : ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
+    if ($trace && $self->should_show_trace($caught, $last_key, $res)) {
         my $text = $trace->as_string;
         my $html = $trace->as_html;
         $env->{'plack.stacktrace.text'} = $text;
@@ -61,6 +61,15 @@ sub call {
     undef $trace;
 
     return $res;
+}
+
+sub should_show_trace {
+    my ($self, $err, $key, $res) = @_;
+    if ($err) {
+        return _make_key($err) eq $key;
+    } else {
+        return $self->force && ref $res eq 'ARRAY' && $res->[0] == 500;
+    }
 }
 
 sub no_trace_error {
