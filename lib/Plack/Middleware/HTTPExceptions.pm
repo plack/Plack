@@ -47,7 +47,7 @@ sub transform_error {
 
     my($code, $message);
     if (blessed $e && $e->can('as_psgi')) {
-        return $e->as_psgi;
+        return $e->as_psgi($env);
     }
     if (blessed $e && $e->can('code')) {
         $code = $e->code;
@@ -123,7 +123,8 @@ the status message of the error code, such as I<Service Unavailable> for
 C<503>.
 
 Finally, the exception object may implement C<as_psgi>, and the result
-of this will be returned directly as the PSGI response.
+of this will be returned directly as the PSGI response.  When calling
+the C<as_psgi> method, the PSGI C<$env> will be passed.
 
 If the code is in the 3xx range and the exception implements the 'location'
 method (HTTP::Exception::3xx does), the Location header will be set in the
