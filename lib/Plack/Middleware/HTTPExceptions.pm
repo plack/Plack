@@ -24,21 +24,27 @@ sub call {
 
     return $res if ref $res eq 'ARRAY';
 
-    return sub {
-        my $respond = shift;
-
+    my $unroll_coderef_responses;
+    $unroll_coderef_responses = sub {
+        my ($responder, $response)  = @_;
         my $writer;
         try {
-            $res->(sub { return $writer = $respond->(@_) });
+            $response->(sub { return $writer = $responder->(@_) });
         } catch {
             if ($writer) {
                 Carp::cluck $_;
                 $writer->close;
             } else {
-                my $res = $self->transform_error($_, $env);
-                $respond->($res);
+                my $error_psgi_response = $self->transform_error($_, $env);
+                return $responder->($error_psgi_response) if ref $error_psgi_response eq 'ARRAY';
+                return $unroll_coderef_responses->($responder, $error_psgi_response);
             }
         };
+    };
+
+    return sub {
+        my $responder = shift;
+        return $unroll_coderef_responses->($responder, $res);
     };
 }
 
