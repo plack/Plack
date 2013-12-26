@@ -166,6 +166,59 @@ test_psgi $psgi_app_delayed, sub {
     is $res->content, 'Bad Request', 'BAD REQUEST';
 };
 
+ok my $psgi_app_delayed_with_write = sub {
+  my $env = shift;
+  return sub {
+    my $responder = shift;
+    my $writer = $responder->([200, ['content-type'=>'text/html']]);
+    $writer->write('ok');
+
+    die MyApp::Exception::Tuple->new(
+      404, ['content-type'=>'text/plain'], ['Not Found'])
+        if $env->{PATH_INFO} eq '/tuple';
+
+    die MyApp::Exception::CodeRef->new(
+      303, ['content-type'=>'text/plain'], ['See Other'])
+        if $env->{PATH_INFO} eq '/coderef';
+
+    die MyApp::Exception::CodeRefWithWrite->new(
+      400, ['content-type'=>'text/plain'], ['Bad Request'])
+        if $env->{PATH_INFO} eq '/coderefwithwrite';
+
+    return $writer->close if $env->{PATH_INFO} eq '/ok';  };
+};
+
+ok $psgi_app_delayed_with_write = Plack::Middleware::HTTPExceptions->wrap($psgi_app_delayed_with_write);
+
+test_psgi $psgi_app_delayed_with_write, sub {
+    my $cb = shift;
+    my $res = $cb->(GET "/tuple");
+    is $res->code, 200;
+    is $res->content, 'ok', 'OK';
+};
+
+test_psgi $psgi_app_delayed_with_write, sub {
+    my $cb = shift;
+    my $res = $cb->(GET "/ok");
+    is $res->code, 200;
+    is $res->content, 'ok', 'OK';
+};
+
+test_psgi $psgi_app_delayed_with_write, sub {
+    my $cb = shift;
+    my $res = $cb->(GET "/coderef");
+    is $res->code, 200;
+    is $res->content, 'ok', 'OK';
+};
+
+test_psgi $psgi_app_delayed_with_write, sub {
+    my $cb = shift;
+    my $res = $cb->(GET "/coderefwithwrite");
+    is $res->code, 200;
+    is $res->content, 'ok', 'OK';
+};
+
+
 # need to list the expected test number because of the test case in the
 # exception class.
-done_testing(26);
+done_testing(36);
