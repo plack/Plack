@@ -106,8 +106,11 @@ middleware.
       # do something with $res;
   });
 
-The callback function gets a PSGI response as a 3 element array
-reference, and you can update the reference to implement the post-processing.
+The callback function gets a response as an array reference, and you can
+update the reference to implement the post-processing. In the normal
+case, this arrayref will have three elements (as described by the PSGI
+spec), but will have only two elements when using a C<$writer> as
+described below.
 
   package Plack::Middleware::Always500;
   use parent qw(Plack::Middleware);
@@ -151,12 +154,13 @@ do:
       return;
   });
 
-The third element of the PSGI response array ref is a body, and it could
+The third element of the response array ref is a body, and it could
 be either an arrayref or L<IO::Handle>-ish object. The application could
 also make use of the C<$writer> object if C<psgi.streaming> is in
-effect. Dealing with these variants is again really painful, and
-C<response_cb> can take care of that too, by allowing you to return a
-content filter as a code reference.
+effect, and in this case, the third element will not exist
+(C<@$res == 2>). Dealing with these variants is again really painful,
+and C<response_cb> can take care of that too, by allowing you to return
+a content filter as a code reference.
 
   # replace all "Foo" in content body with "Bar"
   Plack::Util::response_cb($res, sub {
