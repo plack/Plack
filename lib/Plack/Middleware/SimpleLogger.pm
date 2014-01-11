@@ -29,10 +29,10 @@ sub call {
 }
 
 sub format_time {
-    my $old_locale = POSIX::setlocale(&POSIX::LC_ALL);
-    POSIX::setlocale(&POSIX::LC_ALL, 'C');
+    my $old_locale = eval { POSIX::setlocale(&POSIX::LC_ALL) };
+    eval { POSIX::setlocale(&POSIX::LC_ALL, 'C') };
     my $out = POSIX::strftime(@_);
-    POSIX::setlocale(&POSIX::LC_ALL, $old_locale);
+    eval { POSIX::setlocale(&POSIX::LC_ALL, $old_locale) };
     return $out;
 }
 
