@@ -1,6 +1,7 @@
 package Plack::Middleware::SimpleLogger;
 use strict;
 use parent qw(Plack::Middleware);
+use Config ();
 use Plack::Util::Accessor qw(level);
 use POSIX ();
 use Scalar::Util ();
@@ -29,10 +30,15 @@ sub call {
 }
 
 sub format_time {
-    my $old_locale = POSIX::setlocale(&POSIX::LC_ALL);
-    POSIX::setlocale(&POSIX::LC_ALL, 'C');
+    my $old_locale;
+    if ( $Config::config{d_setlocale} ) {
+        $old_locale = POSIX::setlocale(&POSIX::LC_ALL);
+        POSIX::setlocale(&POSIX::LC_ALL, 'C');
+    }
     my $out = POSIX::strftime(@_);
-    POSIX::setlocale(&POSIX::LC_ALL, $old_locale);
+    if ( $Config::config{d_setlocale} ) {
+        POSIX::setlocale(&POSIX::LC_ALL, $old_locale);
+    };
     return $out;
 }
 
