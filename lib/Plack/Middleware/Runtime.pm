@@ -10,11 +10,12 @@ sub call {
 
     my $start = [ Time::HiRes::gettimeofday ];
     my $res = $self->app->($env);
+    my $header = $self->header_name || 'X-Runtime';
 
     $self->response_cb($res, sub {
         my $res = shift;
         my $req_time = sprintf '%.6f', Time::HiRes::tv_interval($start);
-        Plack::Util::header_set($res->[1], 'X-Runtime', $req_time);
+        Plack::Util::header_set($res->[1], $header, $req_time);
     });
 }
 
