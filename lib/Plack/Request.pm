@@ -85,18 +85,10 @@ sub _parse_query {
     my @query;
     my $query_string = $self->env->{QUERY_STRING};
     if (defined $query_string) {
-        if ($query_string =~ /=/) {
-            # Handle  ?foo=bar&bar=foo type of query
-            @query =
-                map { s/\+/ /g; URI::Escape::uri_unescape($_) }
-                map { /=/ ? split(/=/, $_, 2) : ($_ => '')}
-                split(/[&;]/, $query_string);
-        } else {
-            # Handle ...?dog+bones type of query
-            @query =
-                map { (URI::Escape::uri_unescape($_), '') }
-                split(/\+/, $query_string, -1);
-        }
+        @query =
+            map { s/\+/ /g; URI::Escape::uri_unescape($_) }
+            map { /=/ ? split(/=/, $_, 2) : ($_ => '')}
+            split(/[&;]/, $query_string);
     }
 
     Hash::MultiValue->new(@query);
