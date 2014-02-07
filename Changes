@@ -1,6 +1,17 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [SECURITY]
+        - Plack::App::File would previously strip trailing slashes off
+          provided paths.
+
+          This in combination with the common pattern of dynamically
+          generating some files in a tree and serving the rest up with
+          Plack::Middleware::Static could allow an attacker to bypass
+          a whitelist of generated files by just requesting
+          /file.disallowed/ instead of /file.disallowed, provided that
+          Plack::Middleware::Static was used for all paths except
+          those matching /\.disallowed$/
 
 1.0030  2013-11-23 08:54:01 CET
     [IMPROVEMENTS]

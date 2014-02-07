@@ -44,7 +44,7 @@ sub locate_file {
     }
 
     my $docroot = $self->root || ".";
-    my @path = split /[\\\/]/, $path;
+    my @path = split /[\\\/]/, $path, -1; # -1 *MUST* be here to avoid security issues!
     if (@path) {
         shift @path if $path[0] eq '';
     } else {
