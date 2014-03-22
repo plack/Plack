@@ -813,6 +813,9 @@ test script would look like:
 
   Plack::Test::Suite->run_server_tests('Foo');
 
+Developers writing Plack applications should look at C<Plack::Test> for testing,
+as subclassing C<Plack::Handler> is for developing server implementations.
+
 =head1 AUTHOR
 
 Tokuhiro Matsuno
