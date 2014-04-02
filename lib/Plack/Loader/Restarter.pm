@@ -56,9 +56,9 @@ sub valid_file {
 }
 
 sub run {
-    my($self, $server, $builder) = @_;
+    my($self, $server) = @_;
 
-    $self->_fork_and_start($server, $builder);
+    $self->_fork_and_start($server);
     return unless $self->{pid};
 
     require Filesys::Notify::Simple;
@@ -86,7 +86,7 @@ sub run {
 
         $self->_kill_child;
         warn "Successfully killed! Restarting the new server process.\n";
-        $self->_fork_and_start($server, $builder);
+        $self->_fork_and_start($server);
         return unless $self->{pid};
     }
 }
