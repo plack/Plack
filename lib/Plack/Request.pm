@@ -451,7 +451,7 @@ strings that are sent by clients and are URI decoded.
 If there are multiple cookies with the same name in the request, this
 method will ignore the duplicates and return only the first value. If
 that causes issues for you, you may have to use modules like
-CGI::Simple::Cookie to parse C<$request->header('Cookies')> by
+CGI::Simple::Cookie to parse C<<$request->header('Cookies')>> by
 yourself.
 
 =item query_parameters
