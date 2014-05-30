@@ -39,6 +39,7 @@ sub new {
         port               => $args{port} || 8080,
         timeout            => $args{timeout} || 300,
         server_software    => $args{server_software} || $class,
+        no_server_tokens   => $args{no_server_tokens} || 0,
         server_ready       => $args{server_ready} || sub {},
         ssl                => $args{ssl},
         ipv6               => $args{ipv6},
@@ -196,8 +197,10 @@ sub _handle_response {
 
     my @lines = (
         "Date: @{[HTTP::Date::time2str()]}\015\012",
-        "Server: $self->{server_software}\015\012",
     );
+
+    $self->{no_server_tokens}
+        or push @lines, "Server: $self->{server_software}\015\012";
 
     Plack::Util::header_iter($res->[1], sub {
         my ($k, $v) = @_;
