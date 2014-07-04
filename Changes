@@ -13,6 +13,9 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
           Plack::Middleware::Static was used for all paths except
           those matching /\.disallowed$/
 
+    [IMPROVEMENTS]
+        - Plack::App::WrapCGI no longer warns under 5.19.9 (frew)
+
 1.0030  2013-11-23 08:54:01 CET
     [IMPROVEMENTS]
         - Middleware::LogDispatch stringifies objects (oalders) #427

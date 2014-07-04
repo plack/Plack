@@ -63,9 +63,9 @@ sub prepare_app {
 
             my $res = '';
             while (waitpid($pid, WNOHANG) <= 0) {
-                $res .= do { local $/; <$stdoutr> };
+                $res .= do { local $/; <$stdoutr> } || '';
             }
-            $res .= do { local $/; <$stdoutr> };
+            $res .= do { local $/; <$stdoutr> } || '';
 
             if (POSIX::WIFEXITED($?)) {
                 return CGI::Parse::PSGI::parse_cgi_output(\$res);
