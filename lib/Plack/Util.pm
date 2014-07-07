@@ -309,7 +309,8 @@ package Plack::Util::Prototype;
 
 our $AUTOLOAD;
 sub can {
-    $_[0]->{$_[1]};
+    return $_[0]->{$_[1]} if Scalar::Util::blessed($_[0]);
+    goto &UNIVERSAL::can;
 }
 
 sub AUTOLOAD {
