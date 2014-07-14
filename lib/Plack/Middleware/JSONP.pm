@@ -27,7 +27,7 @@ sub call {
                 if ($cb =~ /^[\w\.\[\]]+$/) {
                     my $body;
                     Plack::Util::foreach($res->[2], sub { $body .= $_[0] });
-                    my $jsonp = "$cb($body)";
+                    my $jsonp = "/**/$cb($body)";
                     $res->[2] = [ $jsonp ];
                     $h->set('Content-Length', length $jsonp);
                     $h->set('Content-Type', 'text/javascript');
