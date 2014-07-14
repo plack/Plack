@@ -50,7 +50,7 @@ for my $test ( @tests ) {
         is $res->content, $json;
         $res = $cb->(HTTP::Request->new(GET => 'http://localhost/?'.$callback_key.'=foo'));
         is $res->content_type, 'text/javascript';
-        is $res->content, "foo($json)";
+        is $res->content, "/**/foo($json)";
     };
 }
 
