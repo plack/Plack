@@ -33,6 +33,7 @@ sub user        { $_[0]->env->{REMOTE_USER} }
 sub request_uri { $_[0]->env->{REQUEST_URI} }
 sub path_info   { $_[0]->env->{PATH_INFO} }
 sub path        { $_[0]->env->{PATH_INFO} || '/' }
+sub query_string{ $_[0]->env->{QUERY_STRING} }
 sub script_name { $_[0]->env->{SCRIPT_NAME} }
 sub scheme      { $_[0]->env->{'psgi.url_scheme'} }
 sub secure      { $_[0]->scheme eq 'https' }
@@ -408,6 +409,11 @@ path for the requests.
 Similar to C<path_info> but returns C</> in case it is empty. In other
 words, it returns the virtual path of the request URI after C<<
 $req->base >>. See L</"DISPATCHING"> for details.
+
+=item query_string
+
+Returns B<QUERY_STRING> in the environment. This is the undecoded
+query string in the request URI.
 
 =item script_name
 
