@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.4, Dist::Zilla version 5.006, CPAN::Meta::Converter version 2.132830",
+   "generated_by" : "Dist::Milla version v1.0.5, Dist::Zilla version 5.020, CPAN::Meta::Converter version 2.142060",
    "license" : [
       "perl_5"
    ],
@@ -26,8 +26,8 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "6.30",
-            "File::ShareDir::Install" : "0.03"
+            "ExtUtils::MakeMaker" : "0",
+            "File::ShareDir::Install" : "0.06"
          }
       },
       "develop" : {
@@ -95,18 +95,20 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0030",
+   "version" : "1.0031",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
-      "Alex J. G. Burzy\u0144ski <ajgb@cpan.org>",
+      "Alex J. G. Burzyński <ajgb@cpan.org>",
       "Alexandr Ciornii <alexchorny@gmail.com>",
       "Andrew Rodland <andrew@cleverdomain.org>",
       "Andy Wardley <abw@wardley.org>",
       "Aristotle Pagaltzis <pagaltzis@gmx.de>",
-      "Ask Bj\u00f8rn Hansen <ask@develooper.com>",
+      "Arthur Axel 'fREW' Schmidt <frioux@gmail.com>",
+      "Ask Bjørn Hansen <ask@develooper.com>",
       "Ben Morrow <ben@morrow.me.uk>",
       "Bernhard Graf <augensalat@gmail.com>",
+      "Chad Granum <chad.granum@dreamhost.com>",
       "Chia-liang Kao <clkao@clkao.org>",
       "Christian Walde <walde.christian@googlemail.com>",
       "Cosimo Streppone <cosimo@cpan.org>",
@@ -124,6 +126,7 @@
       "Henry Baragar <Henry.Baragar@Instantiated.Ca>",
       "Hiroshi Sakai <ziguzagu@gmail.com>",
       "Jakob Voss <jakob@nichtich.de>",
+      "Jakob Voss <voss@gbv.de>",
       "Jay Hannah <jay.hannah@iinteractive.com>",
       "Jesse Luehrs <doy@cpan.org>",
       "Jiro Nishiguchi <jiro@cpan.org>",
@@ -149,7 +152,7 @@
       "Olaf Alders <olaf@wundersolutions.com>",
       "Oliver Gorwits <oliver@cpan.org>",
       "Oliver Paukstadt <pstadt@sourcentral.org>",
-      "Olivier Mengu\u00e9 <dolmen@cpan.org>",
+      "Olivier Mengué <dolmen@cpan.org>",
       "Panu Ervamaa <panu.ervamaa@frantic.com>",
       "Paul Driver <frodwith@gmail.com>",
       "Pedro Melo <melo@simplicidade.org>",
@@ -162,6 +165,7 @@
       "Ricky Morse <remorse@partners.org>",
       "Rob Hoelz <rob@hoelz.ro>",
       "Ryo Miyake <ryo.studiom@gmail.com>",
+      "Sawyer X <xsawyerx@cpan.org>",
       "Scott S. McCoy <smccoy@saymedia.com>",
       "Shawn M Moore <sartak@gmail.com>",
       "Stephen Clouse <stephenclouse@gmail.com>",
@@ -190,8 +194,8 @@
       "vti <viacheslav.t@gmail.com>",
       "xaicron <xaicron@gmail.com>",
       "yappo <yappo@shibuya.pl>",
-      "\u00c6var Arnfj\u00f6r\u00f0 Bjarmason <avarab@gmail.com>",
-      "\u5510\u9cf3 <audreyt@audreyt.org>"
+      "Ævar Arnfjörð Bjarmason <avarab@gmail.com>",
+      "唐鳳 <audreyt@audreyt.org>"
    ]
 }
 

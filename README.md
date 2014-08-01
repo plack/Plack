@@ -116,7 +116,8 @@ callbacks.
 ## Patches and Bug Fixes
 
 Small patches and bug fixes can be either submitted via nopaste on IRC
-[irc://irc.perl.org/#plack](irc://irc.perl.org/#plack) or [the github issue tracker](http://github.com/plack/Plack/issues).  Forking on
+[irc://irc.perl.org/#plack](irc://irc.perl.org/#plack) or [the github issue
+tracker](http://github.com/plack/Plack/issues).  Forking on
 [github](http://github.com/plack/Plack) is another good way if you
 intend to make larger fixes.
 
@@ -143,7 +144,7 @@ examples of these ([Plack::App::File](https://metacpan.org/pod/Plack::App::File)
 It is recommended that you inherit from [Plack::Component](https://metacpan.org/pod/Plack::Component) for these
 types of modules.
 
-__DO NOT USE__ Plack:: namespace to build a new web application or a
+**DO NOT USE** Plack:: namespace to build a new web application or a
 framework. It's like naming your application under CGI:: namespace if
 it's supposed to run on CGI and that is a really bad choice and
 would confuse people badly.

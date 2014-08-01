@@ -1,20 +1,24 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+
+1.0031  2014-08-01 13:19:14 PDT
     [SECURITY]
         - Plack::App::File would previously strip trailing slashes off
-          provided paths.
-
-          This in combination with the common pattern of dynamically
-          generating some files in a tree and serving the rest up with
-          Plack::Middleware::Static could allow an attacker to bypass
-          a whitelist of generated files by just requesting
-          /file.disallowed/ instead of /file.disallowed, provided that
-          Plack::Middleware::Static was used for all paths except
-          those matching /\.disallowed$/
+          provided paths. This in combination with the common pattern
+          of serving files with Plack::Middleware::Static could allow
+          an attacker to bypass a whitelist of generated files (avar) #446
 
     [IMPROVEMENTS]
+        - Let HTTP::Message::PSGI warn in case of invalid PSGI response (wchristian) #437
+        - Update documentation on how response_cb works with writer (doy)
+        - Make AccessLog work on non-POSIX environment (dex4er) #442
         - Plack::App::WrapCGI no longer warns under 5.19.9 (frew)
+        - Avoid Rosetta Flash attack in JSONP middleware (nichtich) #464
+        - Fix Plack::Util::inline_object to make it work with can() as a class method
+
+    [NEW FEATURES]
+        - Add $req->query_string shortcut to access QUERY_STRING in PSGI environment
 
 1.0030  2013-11-23 08:54:01 CET
     [IMPROVEMENTS]
