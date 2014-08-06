@@ -143,7 +143,7 @@ Plack::App::File - Serve static files from root directory
   # Or map the path to a specific file
   use Plack::Builder;
   builder {
-      mount "/favicon.ico" => Plack::App::File->new(file => '/path/to/favicon.ico');
+      mount "/favicon.ico" => Plack::App::File->new(file => '/path/to/favicon.ico')->to_app;
   };
 
 =head1 DESCRIPTION
