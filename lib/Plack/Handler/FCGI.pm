@@ -30,10 +30,19 @@ sub new {
 sub run {
     my ($self, $app) = @_;
 
+    my $running_on_server_starter = exists $ENV{SERVER_STARTER_PORT};
     my $sock = 0;
     if (-S STDIN) {
         # running from web server. Do nothing
         # Note it should come before listen check because of plackup's default
+    } elsif ($running_on_server_starter) {
+        # Runing under Server::Starter
+        require Server::Starter;
+        my %socks = %{Server::Starter::server_ports()};
+        if (scalar(keys(%socks)) > 1) {
+            die "More than one socket are specified by Server::Starter";
+        }
+        $sock = (values %socks)[0];
     } elsif ($self->{listen}) {
         my $old_umask = umask;
         unless ($self->{leave_umask}) {
@@ -60,7 +69,7 @@ sub run {
 
     my $proc_manager;
 
-    if ($self->{listen}) {
+    if ($self->{listen} or $running_on_server_starter) {
         $self->daemon_fork if $self->{daemonize};
 
         if ($self->{manager}) {
@@ -408,6 +417,14 @@ Apache2 with mod_fastcgi:
 mod_fcgid:
 
   FcgiPassHeader Authorization
+
+=head2 Server::Starter
+
+This plack handler supports L<Server::Starter> as a superdaemon.
+Simply launch plackup from start_server with a path option.
+The listen option is ignored when launched from Server::Starter.
+
+  start_server --path=/tmp/socket -- plackup -s FCGI app.psgi 
 
 =head1 SEE ALSO
 
