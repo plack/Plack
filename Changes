@@ -2,6 +2,11 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0032  2014-10-04 11:13:24 PDT
+    [IMPROVEMENTS]
+        - Support Server::Starter in FCGI handler (yuryu) #435
+        - Various documentation fixes
+
 1.0031  2014-08-01 13:19:14 PDT
     [SECURITY]
         - Plack::App::File would previously strip trailing slashes off
