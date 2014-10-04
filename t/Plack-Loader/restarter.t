@@ -5,7 +5,7 @@ use Test::Requires qw(LWP::UserAgent);
 use HTTP::Request::Common;
 use Plack::Loader::Restarter;
 
-plan skip_all => "release test only" unless $ENV{AUTHOR_TESTING};
+plan skip_all => "author test only" unless $ENV{AUTHOR_TESTING};
 
 my @return_bodies = ('Hi first', 'Hi second', 'Hi third');
 my @restartertestfiles = ('t/restartertestfile1.pl', 't/restartertestfile2.pl');
