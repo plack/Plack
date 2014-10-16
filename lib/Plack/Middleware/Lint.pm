@@ -58,7 +58,7 @@ sub validate_env {
         die('SERVER_PORT must not be empty string');
     }
     if (defined($env->{SERVER_PROTOCOL}) and $env->{SERVER_PROTOCOL} !~ m{^HTTP/1.\d$}) {
-        die("Invalid SERVER_PROTOCOL: $env->{SEREVR_PROTOCOL}");
+        die("Invalid SERVER_PROTOCOL: $env->{SERVER_PROTOCOL}");
     }
     for my $param (qw/version url_scheme input errors multithread multiprocess/) {
         unless (exists $env->{"psgi.$param"}) {
