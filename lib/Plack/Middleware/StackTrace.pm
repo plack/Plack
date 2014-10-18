@@ -34,7 +34,9 @@ sub call {
         [ 500, [ "Content-Type", "text/plain; charset=utf-8" ], [ no_trace_error(utf8_safe($caught)) ] ];
     };
 
-    if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
+    my $force = defined $self->force ? $self->force : $env->{"plack.stacktrace.force"};
+
+    if ($trace && ($caught || ($force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
         my $text = $trace->as_string;
         my $html = $trace->as_html;
         $env->{'plack.stacktrace.text'} = $text;
