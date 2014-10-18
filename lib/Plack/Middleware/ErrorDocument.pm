@@ -72,9 +72,9 @@ sub call {
                 my $done;
                 return sub {
                     unless ($done) {
+                        $done = 1;
                         return join '', <$fh>;
                     }
-                    $done = 1;
                     return defined $_[0] ? '' : undef;
                 };
             };
