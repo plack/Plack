@@ -6,6 +6,7 @@ use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
 use Try::Tiny;
 use Plack::Util::Accessor qw( force no_print_errors );
+use Scalar::Util 'refaddr';
 
 our $StackTraceClass = "Devel::StackTrace";
 
@@ -18,11 +19,18 @@ sub call {
     my($self, $env) = @_;
 
     my $trace;
+    my $last_key = '';
     local $SIG{__DIE__} = sub {
-        $trace = $StackTraceClass->new(
-            indent => 1, message => munge_error($_[0], [ caller ]),
-            ignore_package => __PACKAGE__,
-        );
+        my $key = _make_key($_[0]);
+        # If we get the same keys, the exception may be rethrown and
+        # we keep the original stacktrace.
+        if ($key ne $last_key) {
+            $trace = $StackTraceClass->new(
+                indent => 1, message => munge_error($_[0], [ caller ]),
+                ignore_package => __PACKAGE__,
+            );
+            $last_key = $key;
+        }
         die @_;
     };
 
@@ -34,7 +42,7 @@ sub call {
         [ 500, [ "Content-Type", "text/plain; charset=utf-8" ], [ no_trace_error(utf8_safe($caught)) ] ];
     };
 
-    if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
+    if ($trace && $self->should_show_trace($caught, $last_key, $res)) {
         my $text = $trace->as_string;
         my $html = $trace->as_html;
         $env->{'plack.stacktrace.text'} = $text;
@@ -53,6 +61,15 @@ sub call {
     undef $trace;
 
     return $res;
+}
+
+sub should_show_trace {
+    my ($self, $err, $key, $res) = @_;
+    if ($err) {
+        return _make_key($err) eq $key;
+    } else {
+        return $self->force && ref $res eq 'ARRAY' && $res->[0] == 500;
+    }
 }
 
 sub no_trace_error {
@@ -93,6 +110,19 @@ sub utf8_safe {
     }
 
     $str;
+}
+
+sub _make_key {
+    my ($val) = @_;
+    if (!defined($val)) {
+        return 'undef';
+    }
+    elsif (ref($val)) {
+        return 'ref:' . refaddr($val);
+    }
+    else {
+        return "str:$val";
+    }
 }
 
 1;
