@@ -22,7 +22,7 @@ sub call {
     local $SIG{__DIE__} = sub {
         $trace = $StackTraceClass->new(
             indent => 1, message => munge_error($_[0], [ caller ]),
-            ignore_package => __PACKAGE__,
+            ignore_package => __PACKAGE__, no_refs => 1,
         );
         if (ref $_[0]) {
             $ref_traces{refaddr($_[0])} ||= $trace;

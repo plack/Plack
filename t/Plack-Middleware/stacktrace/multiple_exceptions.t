@@ -17,6 +17,9 @@ use HTTP::Request::Common;
     }
 }
 
+# Tracks how often the destructor was called
+my $dtor_count;
+
 {
     # A class similar to DBIx::Class::Storage::TxnScopeGuard where the
     # destructor might throw and catch another exception.
@@ -29,6 +32,7 @@ use HTTP::Request::Common;
 
     sub DESTROY {
         my $self = shift;
+        ++$dtor_count;
         eval { die $self->{exception}; };
     }
 }
@@ -48,12 +52,14 @@ sub test_dtor_exception {
     test_psgi $trace_app, sub {
         my $cb = shift;
 
+        $dtor_count = 0;
         my $req = GET "/";
         my $res = $cb->($req);
 
         is $res->code, 500, "Status code is 500";
         like $res->content, qr/^\Q$orig_exception\E at /,
              "Original exception returned";
+        is $dtor_count, 1, "Destructor called only once";
     };
 }
 
