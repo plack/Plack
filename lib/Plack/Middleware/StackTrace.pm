@@ -4,6 +4,7 @@ use warnings;
 use parent qw/Plack::Middleware/;
 use Devel::StackTrace;
 use Devel::StackTrace::AsHTML;
+use Scalar::Util qw( refaddr );
 use Try::Tiny;
 use Plack::Util::Accessor qw( force no_print_errors );
 
@@ -17,12 +18,18 @@ if (try { require Devel::StackTrace::WithLexicals; Devel::StackTrace::WithLexica
 sub call {
     my($self, $env) = @_;
 
-    my $trace;
+    my ($trace, %string_traces, %ref_traces);
     local $SIG{__DIE__} = sub {
         $trace = $StackTraceClass->new(
             indent => 1, message => munge_error($_[0], [ caller ]),
-            ignore_package => __PACKAGE__,
+            ignore_package => __PACKAGE__, no_refs => 1,
         );
+        if (ref $_[0]) {
+            $ref_traces{refaddr($_[0])} ||= $trace;
+        }
+        else {
+            $string_traces{$_[0]} ||= $trace;
+        }
         die @_;
     };
 
@@ -33,6 +40,20 @@ sub call {
         $caught = $_;
         [ 500, [ "Content-Type", "text/plain; charset=utf-8" ], [ no_trace_error(utf8_safe($caught)) ] ];
     };
+
+    if ($caught) {
+        # Try to find the correct trace for the caught exception
+        my $caught_trace;
+        if (ref $caught) {
+            $caught_trace = $ref_traces{refaddr($caught)};
+        }
+        else {
+            # This is not guaranteed to work if multiple exceptions with
+            # the same message are thrown.
+            $caught_trace = $string_traces{$caught};
+        }
+        $trace = $caught_trace if $caught_trace;
+    }
 
     if ($trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
         my $text = $trace->as_string;
