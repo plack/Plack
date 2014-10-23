@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.8, Dist::Zilla version 5.020, CPAN::Meta::Converter version 2.142690",
+   "generated_by" : "Dist::Milla version v1.0.8, Dist::Zilla version 5.021, CPAN::Meta::Converter version 2.142690",
    "license" : [
       "perl_5"
    ],
@@ -96,7 +96,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0032",
+   "version" : "1.0033",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
@@ -122,6 +122,7 @@
       "David Steinbrunner <dsteinbrunner@MountainBook-Pro.local>",
       "Eduardo Arino de la Rubia <earino@rent.com>",
       "Eric Johnson <eric.git@iijo.org>",
+      "Fabrice Gabolde <fabrice.gabolde@gmail.com>",
       "Florian Ragwitz <rafl@debian.org>",
       "Graham Knop <haarg@haarg.org>",
       "Grant McLean <grant@catalyst.net.nz>",

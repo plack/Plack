@@ -2,6 +2,15 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0033  2014-10-23 12:33:18 PDT
+    [BUG FIXES]
+        - Lint: Fix error messages (fgabolde) #473
+        - ErrorDocument: Reverse the $done filtering (nwellnhof) #474
+
+    [IMPROVEMENTS]
+        - StackTrace: Improve the accuracy of thrown exceptions in case where an excpetion
+          is thrown in destructors (nwellnhof) #476
+
 1.0032  2014-10-04 11:13:24 PDT
     [IMPROVEMENTS]
         - Support Server::Starter in FCGI handler (yuryu) #435
