@@ -24,6 +24,7 @@ my $dtor_count;
     # A class similar to DBIx::Class::Storage::TxnScopeGuard where the
     # destructor might throw and catch another exception.
     package Plack::Middleware::StackTrace::Guard;
+    use Try::Tiny;
 
     sub new {
         my ($class, $exception) = @_;
@@ -33,7 +34,7 @@ my $dtor_count;
     sub DESTROY {
         my $self = shift;
         ++$dtor_count;
-        eval { die $self->{exception}; };
+        try { die $self->{exception}; };
     }
 }
 
@@ -73,11 +74,15 @@ test_dtor_exception(
     # A middleware that rethrows exceptions
     package Plack::Middleware::StackTrace::Rethrow;
     use parent qw(Plack::Middleware);
+    use Try::Tiny;
 
     sub call {
         my ($self, $env) = @_;
-        eval { $self->app->($env); };
-        die $@;
+        try {
+            $self->app->($env);
+        } catch {
+            die $_;
+        };
     }
 }
 
