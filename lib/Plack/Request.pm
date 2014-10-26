@@ -325,7 +325,7 @@ Plack::Request - Portable HTTP request object from PSGI env hash
       my $req = Plack::Request->new($env);
 
       my $path_info = $req->path_info;
-      my $query     = $req->param('query');
+      my $query     = $req->parameters->{query};
 
       my $res = $req->new_response(200); # new Plack::Response
       $res->finalize;
@@ -538,8 +538,15 @@ Shortcut to $req->headers->user_agent.
 
 Returns GET and POST parameters with a CGI.pm-compatible param
 method. This is an alternative method for accessing parameters in
-$req->parameters. Unlike CGI.pm, it does I<not> allow
-setting or modifying query parameters.
+$req->parameters just in case you want the compatibility with
+CGI.pm objects.
+
+You are B<not recommended> to use this method since it is easy to
+misuse in a list context such as inside a hash constructor or method
+arguments. Use C<parameters> and Hash::MultiValue instead.
+
+Unlike CGI.pm, it does I<not> allow setting or modifying query
+parameters.
 
     $value  = $req->param( 'foo' );
     @values = $req->param( 'foo' );
