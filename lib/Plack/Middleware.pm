@@ -100,11 +100,16 @@ is pointless, so you're recommended to use the C<response_cb> wrapper
 function in L<Plack::Util> when implementing a post processing
 middleware.
 
-  my $res = $app->($env);
-  Plack::Util::response_cb($res, sub {
-      my $res = shift;
-      # do something with $res;
-  });
+  sub call {
+      my($self, $env) = @_;
+      # pre-processing $env
+      my $res = $app->($env);
+
+      return Plack::Util::response_cb($res, sub {
+          my $res = shift;
+          # do something with $res;
+      });
+  }
 
 The callback function gets a response as an array reference, and you can
 update the reference to implement the post-processing. In the normal
@@ -119,7 +124,7 @@ described below.
   sub call {
       my($self, $env) = @_;
       my $res  = $self->app->($env);
-      Plack::Util::response_cb($res, sub {
+      return Plack::Util::response_cb($res, sub {
           my $res = shift;
           $res->[0] = 500;
           return;
