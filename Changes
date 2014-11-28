@@ -78,7 +78,7 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 1.0025  2013-06-12 13:08:58 PDT
     [INCOMPATIBLE CHANGES]
         - No XS! Eliminates dependency to LWP::UserAgent by making it completely optional for
-          testing. If you run Plack::Test with Server implemenetation or run Plack::Test::Suite
+          testing. If you run Plack::Test with Server implementation or run Plack::Test::Suite
           (for PSGI handlers) without LWP installed, the tests will automatically be skipped.
           This removes the eventual sub-dependency to HTML::Parser, which is the only XS dependency
           in Plack. #408
