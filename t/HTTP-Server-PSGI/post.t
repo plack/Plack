@@ -1,10 +1,17 @@
 use strict;
 use warnings;
 
+use Config;
 use Plack::Runner;
 use Test::More;
 use Test::TCP;
 use Test::Requires qw(LWP::UserAgent);
+
+plan skip_all => "fork not supported on this platform"
+  unless $Config::Config{d_fork} || $Config::Config{d_pseudofork} ||
+    (($^O eq 'MSWin32' || $^O eq 'NetWare') and
+     $Config::Config{useithreads} and
+     $Config::Config{ccflags} =~ /-DPERL_IMPLICIT_SYS/);
 
 test_tcp(
     server => sub {
