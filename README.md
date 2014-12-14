@@ -47,20 +47,24 @@ convention that you need a file named `app.psgi` or similar, which
 would be loaded (via perl's core function `do`) to return the PSGI
 application code reference.
 
-    # Hello.psgi
-    my $app = sub {
-        my $env = shift;
-        # ...
-        return [ $status, $headers, $body ];
-    };
+```perl
+# Hello.psgi
+my $app = sub {
+    my $env = shift;
+    # ...
+    return [ $status, $headers, $body ];
+};
+```
 
 If you use a web framework, chances are that they provide a helper
 utility to automatically generate these `.psgi` files for you, such
 as:
 
-    # MyApp.psgi
-    use MyApp;
-    my $app = sub { MyApp->run_psgi(@_) };
+```perl
+# MyApp.psgi
+use MyApp;
+my $app = sub { MyApp->run_psgi(@_) };
+```
 
 It's important that the return value of `.psgi` file is the code
 reference. See `eg/dot-psgi` directory for more examples of `.psgi`
