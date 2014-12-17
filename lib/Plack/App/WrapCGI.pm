@@ -56,16 +56,28 @@ sub prepare_app {
             syswrite($stdinw, do {
                 local $/;
                 my $fh = $env->{'psgi.input'};
-                <$fh>;
+                my $v = <$fh>;
+                $v = '' unless defined $v;
+                $v
             });
             # close STDIN so child will stop waiting
             close $stdinw;
 
             my $res = '';
             while (waitpid($pid, WNOHANG) <= 0) {
-                $res .= do { local $/; <$stdoutr> } || '';
+                $res .= do {
+                    local $/;
+                    my $v = <$stdoutr>;
+                    $v = '' unless defined $v;
+                    $v
+                };
             }
-            $res .= do { local $/; <$stdoutr> } || '';
+            $res .= do {
+                local $/;
+                my $v = <$stdoutr>;
+                $v = '' unless defined $v;
+                $v
+            };
 
             if (POSIX::WIFEXITED($?)) {
                 return CGI::Parse::PSGI::parse_cgi_output(\$res);
