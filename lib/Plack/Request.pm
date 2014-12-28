@@ -268,18 +268,20 @@ sub _parse_request_body {
         $buffer = Stream::Buffered->new($cl);
     }
 
-    my $spin = 0;
+    my $spin    = 0;
+    my $content = '';
     while ($cl) {
         $input->read(my $chunk, $cl < 8192 ? $cl : 8192);
         my $read = length $chunk;
         $cl -= $read;
-        $body->add($chunk);
+        $content .= $chunk;
         $buffer->print($chunk) if $buffer;
 
         if ($read == 0 && $spin++ > 2000) {
             Carp::croak "Bad Content-Length: maybe client disconnect? ($cl bytes remaining)";
         }
     }
+    $body->add($content);
 
     if ($buffer) {
         $self->env->{'psgix.input.buffered'} = 1;
