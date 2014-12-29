@@ -130,9 +130,15 @@ Plack::Middleware::StackTrace - Displays stack trace when your app dies
 
 =head1 DESCRIPTION
 
-This middleware catches exceptions (run-time errors) happening in your
-application and displays nice stack trace screen. The stack trace is
-also stored in the environment as a plaintext and HTML under the key
+This middleware uses C<$SIG{__DIE__}> to intercept I<all> exceptions
+(run-time errors) happening in your application, even those that are caught.
+For each exception it builds a detailed stack trace.
+
+If the applications aborts by throwing an exception it will be caught and matched
+against the saved stack traces. If a match is found it will be displayed as a nice
+stack trace screen, if not then the exception will be reported without a stack trace.
+
+The stack trace is also stored in the environment as a plaintext and HTML under the key
 C<plack.stacktrace.text> and C<plack.stacktrace.html> respectively, so
 that middleware further up the stack can reference it.
 
@@ -146,6 +152,19 @@ still get caught and rendered as a 500 error response, rather than
 crashing the web server.
 
 Catching errors in streaming response is not supported.
+
+=head2 Stack Trace Module
+
+The L<Devel::StackTrace::WithLexicals> module will be used to capture the stack trace
+if the installed version is 0.08 or later. Otherwise L<Devel::StackTrace> is used.
+
+=head2 Performance
+
+Gathering the information for a stack trace via L<Devel::StackTrace> is slow,
+and L<Devel::StackTrace::WithLexicals> is significantly slower still.
+This is not usually a concern in development and when exceptions are rare.
+However, your application may include code that's throwing and catching exceptions
+that you're not aware of. Such code will run I<significantly> slower with this module.
 
 =head1 CONFIGURATION
 
