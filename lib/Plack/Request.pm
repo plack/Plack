@@ -269,17 +269,19 @@ sub _parse_request_body {
     }
 
     my $spin = 0;
+    my $content;
     while ($cl) {
         $input->read(my $chunk, $cl < 8192 ? $cl : 8192);
         my $read = length $chunk;
         $cl -= $read;
-        $body->add($chunk);
-        $buffer->print($chunk) if $buffer;
+        $content .= $chunk;
 
         if ($read == 0 && $spin++ > 2000) {
             Carp::croak "Bad Content-Length: maybe client disconnect? ($cl bytes remaining)";
         }
     }
+    $body->add($content);
+    $buffer->print($content) if $buffer;
 
     if ($buffer) {
         $self->env->{'psgix.input.buffered'} = 1;
