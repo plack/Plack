@@ -10,7 +10,7 @@ __END__
 
 =head1 NAME
 
-plackup - Run PSGI application with Plack servers
+plackup - Run PSGI application with Plack handlers
 
 =head1 SYNOPSIS
 
