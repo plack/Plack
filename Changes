@@ -2,6 +2,14 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0034  2015-02-02 21:42:42 CET
+    [SECURITY]
+        - Fixed a possible directory traversal with Plack::App::File on Win32 (sri)
+
+    [IMPROVEMENTS]
+        - Documentation improvements (timbunce, oalders, autarch, frioux)
+        - Avoid warnings in Plack::App::WrapCGI (frioux)
+
 1.0033  2014-10-23 12:33:18 PDT
     [BUG FIXES]
         - Lint: Fix error messages (fgabolde) #473
