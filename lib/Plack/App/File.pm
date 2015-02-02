@@ -51,7 +51,7 @@ sub locate_file {
         @path = ('.');
     }
 
-    if (grep $_ eq '..', @path) {
+    if (grep /^\.{2,}$/, @path) {
         return $self->return_403;
     }
 
