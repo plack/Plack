@@ -110,7 +110,7 @@ sub run {
             'psgi.errors'       => 
                 ($self->{keep_stderr} ? \*STDERR : $self->{stderr}),
             'psgi.multithread'  => Plack::Util::FALSE,
-            'psgi.multiprocess' => Plack::Util::TRUE,
+            'psgi.multiprocess' => defined $proc_manager,
             'psgi.run_once'     => Plack::Util::FALSE,
             'psgi.streaming'    => Plack::Util::TRUE,
             'psgi.nonblocking'  => Plack::Util::FALSE,
@@ -275,6 +275,7 @@ Specify a filename for the pid file
 =item manager
 
 Specify either a FCGI::ProcManager subclass, or an actual FCGI::ProcManager-compatible object.
+If you do not want a FCGI::ProcManager but instead run in a single process, set this to undef.
 
   use FCGI::ProcManager::Dynamic;
   Plack::Handler::FCGI->new(
