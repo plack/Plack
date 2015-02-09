@@ -204,12 +204,12 @@ sub header_push {
 sub header_exists {
     my($headers, $key) = (shift, lc shift);
 
-    my $exists;
-    header_iter $headers, sub {
-        $exists = 1 if lc $_[0] eq $key;
-    };
+    my $check;
+    for (@$headers) {
+        return 1 if ($check = not $check) and $key eq lc;
+    }
 
-    return $exists;
+    return !1;
 }
 
 sub header_remove {
