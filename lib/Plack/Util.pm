@@ -174,12 +174,22 @@ sub header_iter {
 sub header_get {
     my($headers, $key) = (shift, lc shift);
 
-    my @val;
-    header_iter $headers, sub {
-        push @val, $_[1] if lc $_[0] eq $key;
-    };
+    return () if not @$headers;
 
-    return wantarray ? @val : $val[0];
+    my $i = 0;
+
+    if (wantarray) {
+        return map {
+            $key eq lc $headers->[$i++] ? $headers->[$i++] : ++$i && ();
+        } 1 .. @$headers/2;
+    }
+
+    while ($i < @$headers) {
+        return $headers->[$i+1] if $key eq lc $headers->[$i];
+        $i += 2;
+    }
+
+    ();
 }
 
 sub header_set {
