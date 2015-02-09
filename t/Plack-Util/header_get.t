@@ -1,6 +1,5 @@
 use strict;
 use Test::More;
-use Test::Differences;
 use Plack::Util;
 
 {
@@ -10,7 +9,7 @@ use Plack::Util;
 
 {
     my $headers = [];
-    eq_or_diff [ Plack::Util::header_get($headers, 'Foo') ], [], 'empty headers, list';
+    is_deeply [ Plack::Util::header_get($headers, 'Foo') ], [], 'empty headers, list';
 }
 
 {
@@ -20,7 +19,7 @@ use Plack::Util;
 
 {
     my $headers = [ Foo => 'bar' ];
-    eq_or_diff [ Plack::Util::header_get($headers, 'Foo') ], [ 'bar' ], 'header exists, list';
+    is_deeply [ Plack::Util::header_get($headers, 'Foo') ], [ 'bar' ], 'header exists, list';
 }
 
 {
