@@ -215,13 +215,15 @@ sub header_exists {
 sub header_remove {
     my($headers, $key) = (shift, lc shift);
 
-    my @new_headers;
-    header_iter $headers, sub {
-        push @new_headers, $_[0], $_[1]
-            unless lc $_[0] eq $key;
-    };
+    return if not @$headers;
 
-    @$headers = @new_headers;
+    my $keep;
+    my @keep = grep {
+        $_ & 1 ? $keep : ($keep = $key ne lc $headers->[$_]);
+    } 0 .. $#$headers;
+
+    @$headers = @$headers[@keep] if @keep < @$headers;
+    ();
 }
 
 sub status_with_no_entity_body {
