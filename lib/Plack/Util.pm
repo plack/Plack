@@ -9,6 +9,9 @@ use File::Spec ();
 sub TRUE()  { 1==1 }
 sub FALSE() { !TRUE }
 
+# there does not seem to be a relevant RT or perldelta entry for this
+use constant _SPLICE_SAME_ARRAY_SEGFAULT => $] < '5.008007';
+
 sub load_class {
     my($class, $prefix) = @_;
 
@@ -171,29 +174,62 @@ sub header_iter {
 sub header_get {
     my($headers, $key) = (shift, lc shift);
 
-    my @val;
-    header_iter $headers, sub {
-        push @val, $_[1] if lc $_[0] eq $key;
-    };
+    return () if not @$headers;
 
-    return wantarray ? @val : $val[0];
+    my $i = 0;
+
+    if (wantarray) {
+        return map {
+            $key eq lc $headers->[$i++] ? $headers->[$i++] : ++$i && ();
+        } 1 .. @$headers/2;
+    }
+
+    while ($i < @$headers) {
+        return $headers->[$i+1] if $key eq lc $headers->[$i];
+        $i += 2;
+    }
+
+    ();
 }
 
 sub header_set {
     my($headers, $key, $val) = @_;
 
-    my($set, @new_headers);
-    header_iter $headers, sub {
-        if (lc $key eq lc $_[0]) {
-            return if $set;
-            $_[1] = $val;
-            $set++;
-        }
-        push @new_headers, $_[0], $_[1];
-    };
+    @$headers = ($key, $val), return if not @$headers;
 
-    push @new_headers, $key, $val unless $set;
-    @$headers = @new_headers;
+    my ($i, $_key) = (0, lc $key);
+
+    # locate and change existing header
+    while ($i < @$headers) {
+        $headers->[$i+1] = $val, last if $_key eq lc $headers->[$i];
+        $i += 2;
+    }
+
+    if ($i > $#$headers) { # didn't find it?
+        push @$headers, $key, $val;
+        return;
+    }
+
+    $i += 2; # found and changed it; so, first, skip that pair
+
+    return if $i > $#$headers; # anything left?
+
+    # yes... so do the same thing as header_remove
+    # but for the tail of the array only, starting at $i
+
+    my $keep;
+    my @keep = grep {
+        $_ & 1 ? $keep : ($keep = $_key ne lc $headers->[$_]);
+    } $i .. $#$headers;
+
+    my $remainder = @$headers - $i;
+    return if @keep == $remainder; # if we're not changing anything...
+
+    splice @$headers, $i, $remainder, ( _SPLICE_SAME_ARRAY_SEGFAULT
+        ? @{[ @$headers[@keep] ]} # force different source array
+        :     @$headers[@keep]
+    );
+    ();
 }
 
 sub header_push {
@@ -204,24 +240,26 @@ sub header_push {
 sub header_exists {
     my($headers, $key) = (shift, lc shift);
 
-    my $exists;
-    header_iter $headers, sub {
-        $exists = 1 if lc $_[0] eq $key;
-    };
+    my $check;
+    for (@$headers) {
+        return 1 if ($check = not $check) and $key eq lc;
+    }
 
-    return $exists;
+    return !1;
 }
 
 sub header_remove {
     my($headers, $key) = (shift, lc shift);
 
-    my @new_headers;
-    header_iter $headers, sub {
-        push @new_headers, $_[0], $_[1]
-            unless lc $_[0] eq $key;
-    };
+    return if not @$headers;
 
-    @$headers = @new_headers;
+    my $keep;
+    my @keep = grep {
+        $_ & 1 ? $keep : ($keep = $key ne lc $headers->[$_]);
+    } 0 .. $#$headers;
+
+    @$headers = @$headers[@keep] if @keep < @$headers;
+    ();
 }
 
 sub status_with_no_entity_body {
