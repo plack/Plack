@@ -7,19 +7,47 @@ our $VERSION = '1.0034';
 use HTTP::Headers;
 use Carp ();
 use Hash::MultiValue;
-use HTTP::Body;
 
 use Plack::Request::Upload;
+use Plack::BodyParser;
+use Plack::BodyParser::UrlEncoded;
+use Plack::BodyParser::MultiPart;
 use Stream::Buffered;
 use URI;
 use URI::Escape ();
 
 sub new {
-    my($class, $env) = @_;
+    my($class, $env, %opts) = @_;
     Carp::croak(q{$env is required})
         unless defined $env && ref($env) eq 'HASH';
 
-    bless { env => $env }, $class;
+    bless {
+        env => $env,
+        ($opts{request_body_parser} ? (request_body_parser => $opts{request_body_parser}) : ()),
+    }, $class;
+}
+
+sub request_body_parser {
+    my $self = shift;
+    unless (exists $self->{request_body_parser}) {
+        $self->{request_body_parser} = $self->_build_request_body_parser();
+    }
+    return $self->{request_body_parser};
+}
+
+sub _build_request_body_parser {
+    my $self = shift;
+
+    my $parser = Plack::BodyParser->new();
+    $parser->register(
+        'application/x-www-form-urlencoded',
+        'Plack::BodyParser::UrlEncoded'
+    );
+    $parser->register(
+        'multipart/form-data',
+        'Plack::BodyParser::MultiPart'
+    );
+    $parser;
 }
 
 sub env { $_[0]->{env} }
@@ -238,74 +266,7 @@ sub new_response {
 
 sub _parse_request_body {
     my $self = shift;
-
-    my $ct = $self->env->{CONTENT_TYPE};
-    my $cl = $self->env->{CONTENT_LENGTH};
-    if (!$ct && !$cl) {
-        # No Content-Type nor Content-Length -> GET/HEAD
-        $self->env->{'plack.request.body'}   = Hash::MultiValue->new;
-        $self->env->{'plack.request.upload'} = Hash::MultiValue->new;
-        return;
-    }
-
-    my $body = HTTP::Body->new($ct, $cl);
-
-    # HTTP::Body will create temporary files in case there was an
-    # upload.  Those temporary files can be cleaned up by telling
-    # HTTP::Body to do so. It will run the cleanup when the request
-    # env is destroyed. That the object will not go out of scope by
-    # the end of this sub we will store a reference here.
-    $self->env->{'plack.request.http.body'} = $body;
-    $body->cleanup(1);
-
-    my $input = $self->input;
-
-    my $buffer;
-    if ($self->env->{'psgix.input.buffered'}) {
-        # Just in case if input is read by middleware/apps beforehand
-        $input->seek(0, 0);
-    } else {
-        $buffer = Stream::Buffered->new($cl);
-    }
-
-    my $spin = 0;
-    while ($cl) {
-        $input->read(my $chunk, $cl < 8192 ? $cl : 8192);
-        my $read = length $chunk;
-        $cl -= $read;
-        $body->add($chunk);
-        $buffer->print($chunk) if $buffer;
-
-        if ($read == 0 && $spin++ > 2000) {
-            Carp::croak "Bad Content-Length: maybe client disconnect? ($cl bytes remaining)";
-        }
-    }
-
-    if ($buffer) {
-        $self->env->{'psgix.input.buffered'} = 1;
-        $self->env->{'psgi.input'} = $buffer->rewind;
-    } else {
-        $input->seek(0, 0);
-    }
-
-    $self->env->{'plack.request.body'}   = Hash::MultiValue->from_mixed($body->param);
-
-    my @uploads = Hash::MultiValue->from_mixed($body->upload)->flatten;
-    my @obj;
-    while (my($k, $v) = splice @uploads, 0, 2) {
-        push @obj, $k, $self->_make_upload($v);
-    }
-
-    $self->env->{'plack.request.upload'} = Hash::MultiValue->new(@obj);
-
-    1;
-}
-
-sub _make_upload {
-    my($self, $upload) = @_;
-    my %copy = %$upload;
-    $copy{headers} = HTTP::Headers->new(%{$upload->{headers}});
-    Plack::Request::Upload->new(%copy);
+    return $self->request_body_parser->parse($self->env);
 }
 
 1;
