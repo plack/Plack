@@ -6,7 +6,7 @@ our $VERSION = '1.0034';
 use Plack::Util::Accessor qw(body status);
 use Carp ();
 use Scalar::Util ();
-use HTTP::Headers;
+use HTTP::Headers::Fast;
 use URI::Escape ();
 
 sub code    { shift->status(@_) }
@@ -30,13 +30,13 @@ sub headers {
         my $headers = shift;
         if (ref $headers eq 'ARRAY') {
             Carp::carp("Odd number of headers") if @$headers % 2 != 0;
-            $headers = HTTP::Headers->new(@$headers);
+            $headers = HTTP::Headers::Fast->new(@$headers);
         } elsif (ref $headers eq 'HASH') {
-            $headers = HTTP::Headers->new(%$headers);
+            $headers = HTTP::Headers::Fast->new(%$headers);
         }
         return $self->{headers} = $headers;
     } else {
-        return $self->{headers} ||= HTTP::Headers->new();
+        return $self->{headers} ||= HTTP::Headers::Fast->new();
     }
 }
 
@@ -216,10 +216,10 @@ Sets and gets HTTP status code. C<code> is an alias.
   $headers = $res->headers;
   $res->headers([ 'Content-Type' => 'text/html' ]);
   $res->headers({ 'Content-Type' => 'text/html' });
-  $res->headers( HTTP::Headers->new );
+  $res->headers( HTTP::Headers::Fast->new );
 
 Sets and gets HTTP headers of the response. Setter can take either an
-array ref, a hash ref or L<HTTP::Headers> object containing a list of
+array ref, a hash ref or L<HTTP::Headers::Fast> object containing a list of
 headers.
 
 =item body

@@ -4,7 +4,7 @@ use warnings;
 use 5.008_001;
 our $VERSION = '1.0034';
 
-use HTTP::Headers;
+use HTTP::Headers::Fast;
 use Carp ();
 use Hash::MultiValue;
 use HTTP::Body;
@@ -120,7 +120,7 @@ sub headers {
     my $self = shift;
     if (!defined $self->{headers}) {
         my $env = $self->env;
-        $self->{headers} = HTTP::Headers->new(
+        $self->{headers} = HTTP::Headers::Fast->new(
             map {
                 (my $field = $_) =~ s/^HTTPS?_//;
                 ( $field => $env->{$_} );
@@ -304,7 +304,7 @@ sub _parse_request_body {
 sub _make_upload {
     my($self, $upload) = @_;
     my %copy = %$upload;
-    $copy{headers} = HTTP::Headers->new(%{$upload->{headers}});
+    $copy{headers} = HTTP::Headers::Fast->new(%{$upload->{headers}});
     Plack::Request::Upload->new(%copy);
 }
 
@@ -502,7 +502,7 @@ Returns C<REMOTE_USER> if it's set.
 
 =item headers
 
-Returns an L<HTTP::Headers> object containing the headers for the current request.
+Returns an L<HTTP::Headers::Fast> object containing the headers for the current request.
 
 =item uploads
 
