@@ -12,9 +12,4 @@ before_install:
   - perlbrew install-cpanm -f
 install:
   - cpanm -nq --installdeps --with-recommends --with-suggests .
-  - cpanm -nq Devel::Cover::Report::Coveralls
-script:
-  - perl Makefile.PL && cover -test
-after_success:
-  - cover -report coveralls
 env: RELEASE_TESTING=1 AUTOMATED_TESTING=1
