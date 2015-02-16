@@ -88,7 +88,7 @@ sub _parse_query {
     if (defined $query_string) {
         @query =
             map { s/\+/ /g; URI::Escape::uri_unescape($_) }
-            map { /=/ ? split(/=/, $_, 2) : ($_ => '')}
+            map { '' eq $_ ? () : /=/ ? split(/=/, $_, 2) : ($_ => '') }
             split(/[&;]/, $query_string);
     }
 
