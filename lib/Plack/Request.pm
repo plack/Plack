@@ -86,10 +86,11 @@ sub _parse_query {
     my @query;
     my $query_string = $self->env->{QUERY_STRING};
     if (defined $query_string) {
+        $query_string =~ s/\A[&;]+//;
         @query =
             map { s/\+/ /g; URI::Escape::uri_unescape($_) }
-            map { '' eq $_ ? () : /=/ ? split(/=/, $_, 2) : ($_ => '') }
-            split(/[&;]/, $query_string);
+            map { /=/ ? split(/=/, $_, 2) : ($_ => '')}
+            split(/[&;]+/, $query_string);
     }
 
     Hash::MultiValue->new(@query);
