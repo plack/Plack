@@ -40,6 +40,19 @@ sub basename {
     $self->{basename};
 }
 
+sub raw_basename {
+    my $self = shift;
+    unless (defined $self->{raw_basename}) {
+        require File::Spec::Unix;
+        my $raw_basename = $self->{filename};
+        $raw_basename =~ s|\\|/|g;
+        $raw_basename = ( File::Spec::Unix->splitpath($raw_basename) )[2];
+        $self->{raw_basename} = $raw_basename;
+    }
+    $self->{raw_basename};
+}
+
+
 1;
 __END__
 
@@ -56,6 +69,7 @@ Plack::Request::Upload - handles file upload requests
   $upload->path;
   $upload->content_type;
   $upload->basename;
+  $upload->raw_basename;
 
 =head1 METHODS
 
@@ -79,7 +93,15 @@ Returns the original filename in the client.
 
 =item basename
 
-Returns basename for "filename".
+Returns basename for "filename". This filters the name through a regexp
+C<basename =~ s|[^\w\.-]+|_|g> to make it safe for filesystems that don't
+like advanced characters.  This will of course filter UTF8 characters.
+If you need the exact basename unfiltered use "raw_basename".
+
+=item raw_basename
+
+Just like "basename" but without filtering the filename for characters that
+don't always write to a filesystem.
 
 =back
 
