@@ -14,7 +14,7 @@ my @tests = (
             [ 200, [ 'Content-Type' => 'image/jpeg' ], $fh ];
         },
         env => { REQUEST_METHOD => 'GET' },
-        headers => [ 'Content-Type' => 'image/jpeg', 'Content-Length' => 79838 ],
+        headers => [ 'Content-Type' => 'image/jpeg', 'Content-Length' => 14750 ],
     },
     {
         app => sub {
