@@ -165,7 +165,7 @@ our @TEST = (
             is $res->code, 200;
             is $res->message, 'OK';
             is $res->header('content_type'), 'image/jpeg';
-            is length $res->content, 4745;
+            is length $res->content, 2898;
         },
         sub {
             my $env = shift;
@@ -185,8 +185,8 @@ our @TEST = (
             is $res->code, 200;
             is $res->message, 'OK';
             is $res->header('content_type'), 'image/jpeg';
-            is length $res->content, 79838;
-            is Digest::MD5::md5_hex($res->content), '983726ae0e4ce5081bef5fb2b7216950';
+            is length $res->content, 14750;
+            is Digest::MD5::md5_hex($res->content), '70546a79c7abb9c497ca91730a0686e4';
         },
         sub {
             my $env = shift;
@@ -519,7 +519,7 @@ our @TEST = (
             is $res->code, 200;
             is $res->message, 'OK';
             is $res->header('content_type'), 'image/jpeg';
-            is length $res->content, 4745;
+            is length $res->content, 2898;
         },
         sub {
             my $env = shift;
