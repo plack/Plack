@@ -15,6 +15,11 @@ sub preload_app {
     $self->{builder} = $builder;
 }
 
+sub set_restarter_callback {
+    my( $self, $callback) = @_;
+    $self->{callback} = $callback;
+}
+
 sub watch {
     my($self, @dir) = @_;
     push @{$self->{watch}}, @dir;
@@ -86,6 +91,12 @@ sub run {
 
         $self->_kill_child;
         warn "Successfully killed! Restarting the new server process.\n";
+
+        if ( defined $self->{callback} ) {
+          warn "Running restarter callback.\n";
+          $self->{callback}->()
+        }
+
         $self->_fork_and_start($server);
         return unless $self->{pid};
     }
@@ -110,6 +121,25 @@ C<-R> option for the L<plackup> script. It forks the server as a child
 process and the parent watches the directories for file updates, and
 whenever it receives the notification, kills the child server and
 restart.
+
+=head1 RUNNING CODE AS PART OF SERVER RESTART
+
+Some times it is desirable to be able to run an arbitrary code callback when
+the server restarts (e.g, the files you are watching for changes may need to
+be processed in some way before being served, like Markdown to HTML
+conversion.) C<Plack::Loader::Restarter> supports this via the
+C<set_restarter_callback> method, like so:
+
+    my $app = Plack::Runner->new();
+    # this sets $app to use Loader::Restarter watching given directories
+    $app->parse_options( '-R' => qw/ lib content / );
+    my $loader = $app->loader;
+    $loader->set_restarter_callback( sub { ... } );
+    $app->run();
+
+During the restart cycle, after the previous server process has been killed
+and before the new one is started, the provided subroutine reference will be
+called once, with an empty argument list.
 
 =head1 SEE ALSO
 
