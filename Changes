@@ -1,6 +1,8 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [IMPROVEMENTS]
+        - Use Cookie::Baker to bake cookies in Plack::Response (oalders)
 
 1.0034  2015-02-02 21:42:42 CET
     [SECURITY]
