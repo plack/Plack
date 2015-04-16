@@ -10,6 +10,7 @@ my $app = sub {
     $res->cookies->{t1} = { value => "bar", domain => '.example.com', path => '/cgi-bin' };
     $res->cookies->{t2} = { value => "xxx yyy", expires => time + 3600 };
     $res->cookies->{t3} = { value => "123123", "max-age" => 15 };
+    $res->cookies->{t4} = { value => "foo", expires => 0 };
     $res->finalize;
 };
 
@@ -21,6 +22,7 @@ test_psgi $app, sub {
     is $v[0], "t1=bar; domain=.example.com; path=/cgi-bin";
     like $v[1], qr/t2=xxx%20yyy; expires=\w+, \d+-\w+-\d+ \d\d:\d\d:\d\d GMT/;
     is $v[2], "t3=123123; max-age=15";
+    is $v[3], "t4=foo; expires=Thu, 01-Jan-1970 00:00:00 GMT";
 };
 
 done_testing;
