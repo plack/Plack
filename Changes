@@ -1,8 +1,18 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+
+1.0035  2015-04-16 10:08:21 CEST
+    [BUG FIXES]
+        - Fixed parsing of empty query string pairs (aristotle) #500
+
     [IMPROVEMENTS]
+        - Documentation updates for FCGI (otrosien) #494
+        - Use HTTP::Headers::Fast in Plack::Request
+        - Big performance optimizations on Plack::Util::header_* (aristotle) #498
+        - Added .webm to Plack::MIME (marlencrabapple) #503
         - Use Cookie::Baker to bake cookies in Plack::Response (oalders)
+        - reduced the size of distribution by making binary files smaller
 
 1.0034  2015-02-02 21:42:42 CET
     [SECURITY]
