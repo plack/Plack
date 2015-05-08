@@ -1,5 +1,4 @@
 #!/usr/bin/env perl
-use CGI;
 use File::Basename qw/dirname/;
 use Cwd;
 
@@ -10,5 +9,4 @@ if ($result ne "MATCH") {
     $result .= "\nCGI_DIR: $cgi_dir\nEXEC_DIR: $exec_dir\n";
 }
 
-my $q = CGI->new;
-print $q->header(-type => "text/plain"), $result;
+print "Content-Type: text/plain\n\n", $result;
