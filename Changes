@@ -2,6 +2,10 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0036  2015-06-03 12:01:53 PDT
+    [BUG FIXES]
+        - Fix CGIBin test to not use CGI.pm #509
+
 1.0035  2015-04-16 10:08:21 CEST
     [BUG FIXES]
         - Fixed parsing of empty query string pairs (aristotle) #500
