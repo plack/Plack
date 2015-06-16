@@ -57,7 +57,7 @@ sub validate_env {
     if ($env->{SERVER_PORT} eq '') {
         die('SERVER_PORT must not be empty string');
     }
-    if (defined($env->{SERVER_PROTOCOL}) and $env->{SERVER_PROTOCOL} !~ m{^HTTP/1.\d$}) {
+    if (defined($env->{SERVER_PROTOCOL}) and $env->{SERVER_PROTOCOL} !~ m{^HTTP/\d}) {
         die("Invalid SERVER_PROTOCOL: $env->{SERVER_PROTOCOL}");
     }
     for my $param (qw/version url_scheme input errors multithread multiprocess/) {

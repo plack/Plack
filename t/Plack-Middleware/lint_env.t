@@ -20,7 +20,7 @@ my @bad_env = (
     [ { REQUEST_METHOD => "foo" },, qr/Invalid env param: REQUEST_METHOD/ ],
     [ { PATH_INFO => 'foo' }, qr/PATH_INFO must begin with \// ],
     [ { SERVER_PORT => undef }, qr/Missing mandatory .*SERVER_PORT/ ],
-    [ { SERVER_PROTOCOL => 'HTTP/2.2' }, qr/Invalid SERVER_PROTOCOL/ ],
+    [ { SERVER_PROTOCOL => 'HTTP/x' }, qr/Invalid SERVER_PROTOCOL/ ],
     [ { "psgi.version" => 2 }, qr/psgi\.version should be ArrayRef/ ],
     [ { HTTP_CONTENT_TYPE => "text/plain" }, qr/HTTP_CONTENT_TYPE should not exist/ ],
 );
