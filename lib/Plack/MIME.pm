@@ -8,6 +8,7 @@ our $MIME_TYPES = {
     ".ai"      => "application/postscript",
     ".aif"     => "audio/x-aiff",
     ".aiff"    => "audio/x-aiff",
+    ".apk"     => "application/vnd.android.package-archive",
     ".asc"     => "application/pgp-signature",
     ".asf"     => "video/x-ms-asf",
     ".asm"     => "text/x-asm",
