@@ -14,6 +14,16 @@ my $test = sub {
         my $req = shift;
         my $app = builder {
             enable "Plack::Middleware::AccessLog",
+                char_handlers => {
+                    z => sub { shift->{HTTP_X_FORWARDED_FOR}, }
+                },
+                block_handlers => +{
+                    Z => sub {
+                        my ($block,$env) = @_;
+
+                        $env->{$block} || '-'
+                    }
+                },
                 logger => sub { $log = "@_" }, format => $format;
             sub { [ 200, [ 'Content-Type' => 'text/plain', 'Content-Length', 2 ], [ 'OK' ] ] };
         };
@@ -54,6 +64,24 @@ my $test = sub {
     chomp $log;
     my ($r, $rs) = split / == /, $log;
     is $r, $rs;
+}
+
+{
+    my $req = GET "http://example.com/foo?bar=baz",
+        x_forwarded_for => 'herp derp';
+    my $fmt = "%m %z";
+    $test->($fmt)->($req);
+    chomp $log;
+    is $log, 'GET herp derp';
+}
+
+{
+    my $req = GET "http://example.com/foo?bar=baz",
+        x_rand_r => 'station';
+    my $fmt = "%m %{HTTP_X_RAND_R}Z";
+    $test->($fmt)->($req);
+    chomp $log;
+    is $log, 'GET station';
 }
 
 {

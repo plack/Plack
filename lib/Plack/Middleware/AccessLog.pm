@@ -2,7 +2,7 @@ package Plack::Middleware::AccessLog;
 use strict;
 use warnings;
 use parent qw( Plack::Middleware );
-use Plack::Util::Accessor qw( logger format compiled_format);
+use Plack::Util::Accessor qw( logger format compiled_format char_handlers block_handlers );
 use Apache::LogFormat::Compiler;
 
 my %formats = (
@@ -14,7 +14,10 @@ sub prepare_app {
     my $self = shift;
     my $fmt = $self->format || "combined";
     $fmt = $formats{$fmt} if exists $formats{$fmt};
-    $self->compiled_format(Apache::LogFormat::Compiler->new($fmt));
+    $self->compiled_format(Apache::LogFormat::Compiler->new($fmt,
+            char_handlers => $self->char_handlers || {},
+            block_handlers => $self->block_handlers || {},
+        ));
 }
 
 sub call {
@@ -147,6 +150,42 @@ with one of the mandatory modifier flags C<i>, C<o> or C<t>:
 
 Sets a callback to print log message to. It prints to the C<psgi.errors>
 output stream by default.
+
+=item char_handlers
+
+  my $handlers = {
+      'z' => sub {
+          my ($env,$req) = @_;
+          return $env->{HTTP_X_FORWARDED_FOR};
+      }
+  };
+
+  enable "Plack::Middleware::AccessLog",
+      format => '%z %{HTTP_X_FORWARDED_FOR|REMOTE_ADDR}Z',
+      char_handlers => $handlers;
+
+Takes a hash reference and passes it to the underlying
+L<Apache::LogFormat::Compiler>'s C<char_handlers>.  For more details see
+L<Apache::LogFormat::Compiler/ADD CUSTOM FORMAT STRING>.
+
+=item block_handlers
+
+  my $handlers = {
+      'Z' => sub {
+          my ($block,$env,$req) = @_;
+          # block eq 'HTTP_X_FORWARDED_FOR|REMOTE_ADDR'
+          my ($main, $alt) = split('\|', $args);
+          return exists $env->{$main} ? $env->{$main} : $env->{$alt};
+      }
+  };
+
+  enable "Plack::Middleware::AccessLog",
+      format => '%z %{HTTP_X_FORWARDED_FOR|REMOTE_ADDR}Z',
+      block_handlers => $handlers;
+
+Takes a hash reference and passes it to the underlying
+L<Apache::LogFormat::Compiler>'s C<block_handlers>.  For more details see
+L<Apache::LogFormat::Compiler/ADD CUSTOM FORMAT STRING>.
 
 =back
 
