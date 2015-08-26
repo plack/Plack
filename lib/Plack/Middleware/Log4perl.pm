@@ -12,7 +12,7 @@ sub prepare_app {
         Log::Log4perl::init($self->conf);
     }
 
-    $self->logger( Log::Log4perl->get_logger($self->category || '') );
+    $self->logger( Log::Log4perl->get_logger($self->category || ()) );
 }
 
 sub call {
