@@ -35,14 +35,28 @@ __END__
 
 =head1 NAME
 
-Plack::Middleware::Log4perl - Uses Log::Log4perl to configure logger
+Plack::Middleware::Log4perl - Uses Log::Log4perl to configure psgix.logger
 
 =head1 SYNOPSIS
+  # How to use logger in your app
+  my $app = sub {
+      my $env =  shift;
 
+      $env->{'psgix.logger'}({ level => 'error', message => 'Hi' });
+
+      return [
+          '200',
+          [ 'Content-Type' => 'text/plain' ],
+          [ "Hello World" ],
+      ];
+  };
+
+
+  # Initialization. Case#1
   use Log::Log4perl;
-
   Log::Log4perl::init('/path/to/log4perl.conf');
 
+  # Here we point that $env->{'psgix.logger'} will log messages with 'plack' category
   builder {
       enable "Log4perl", category => "plack";
       $app;
@@ -54,13 +68,18 @@ Plack::Middleware::Log4perl - Uses Log::Log4perl to configure logger
   log4perl.appender.Logfile.filename = /path/to/logfile.log
   log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
 
-  # Or let middleware to configure log4perl
-  enable "Log4perl", category => "plack", conf => '/path/to/log.conf';
+
+  # Initialization. Case#2
+  # Let middleware to configure log4perl
+  builder {
+      enable "Log4perl", category => "plack", conf => '/path/to/log4perl.conf';
+      $app;
+  }
 
 =head1 DESCRIPTION
 
-Log4perl is a L<Plack::Middleware> component that allows you to use
-L<Log::Log4perl> to configure the logging object, C<psgix.logger>.
+Log4perl is a L<Plack::Middleware> component that initialize the logging object
+C<psgix.logger> by L<Log::Log4perl> logger with giving C<category>.
 
 =head1 CONFIGURATION
 
