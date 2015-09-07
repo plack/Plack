@@ -82,7 +82,6 @@ string) for L<Log::Log4perl> to automatically configure.
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
-Eugen Konkov
 
 =head1 SEE ALSO
 
