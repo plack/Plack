@@ -184,13 +184,6 @@ Plack::Middleware::Lint - Validate request and response
   # Or from plackup
   plackup -e 'enable "Lint"' myapp.psgi
 
-  # When 'use Plack::Builder
-  builder {
-    ...            # Other middlewares
-    enable 'Lint'; # Shold be as closer to your $app as possible
-    $app;
-  }
-
 =head1 DESCRIPTION
 
 Plack::Middleware::Lint is a middleware component to validate request
