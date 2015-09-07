@@ -12,7 +12,8 @@ sub prepare_app {
         Log::Log4perl::init($self->conf);
     }
 
-    $self->logger( Log::Log4perl->get_logger($self->category || '') );
+    # NOTICE: if category = '0' you must not change it by '' (root logger)
+    $self->logger( Log::Log4perl->get_logger( defined $self->category ? $self->category : '' ) );
 }
 
 sub call {
@@ -81,6 +82,7 @@ string) for L<Log::Log4perl> to automatically configure.
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
+Eugen Konkov
 
 =head1 SEE ALSO
 
