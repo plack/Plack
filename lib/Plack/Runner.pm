@@ -325,7 +325,8 @@ script, you can do this:
       require Plack::Runner;
       my $runner = Plack::Runner->new;
       $runner->parse_options(@ARGV);
-      return $runner->run($app);
+      $runner->run($app);
+      exit 0;
   }
 
   return $app;
