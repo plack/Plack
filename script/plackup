@@ -154,7 +154,7 @@ multiple paths by using this option multiple times.
 Loads the named modules before loading the app's code. You may load multiple
 modules by using this option multiple times.
 
-In combination with C<-r> or C<-R> may not have the desired restart affect
+In combination with C<-r> or C<-R> may not have the desired restart effect
 when the loaded module is changed in the development directory. To avoid
 this problem you need to load the module with the app code using C<-e>.
 
