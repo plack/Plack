@@ -154,6 +154,10 @@ multiple paths by using this option multiple times.
 Loads the named modules before loading the app's code. You may load multiple
 modules by using this option multiple times.
 
+In combination with C<-r> or C<-R> may not have the desired restart affect
+when the loaded module is changed in the development directory. To avoid
+this problem you need to load the module with the app code using C<-e>.
+
 =item -E, --env, the C<PLACK_ENV> environment variable.
 
 Specifies the environment option. Setting this value with C<-E> or C<--env>
@@ -186,6 +190,8 @@ detection (see C<-s> above) may not behave as you expect, if plackup needs to
 scan your application for the modules it uses. Avoid problems by specifying
 C<-s> explicitly when using C<-r> or C<-R>.
 
+To avoid problems with changes to preloaded modules see documentation for C<-M>.
+
 =item -R, --Reload
 
 Makes plackup restart the server whenever a file in any of the given
@@ -193,6 +199,8 @@ directories changes. C<-R> and C<--Reload> take a comma-separated list of
 paths:
 
   plackup -R /path/to/project/lib,/path/to/project/templates
+
+To avoid problems with changes to preloaded modules see documentation for C<-M>.
 
 =item -L, --loader
 
