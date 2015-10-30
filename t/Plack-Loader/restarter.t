@@ -54,7 +54,7 @@ test_tcp(
         my $port = shift;
 
         my $loader = Plack::Loader::Restarter->new;
-        my $server = $loader->auto(port => $port);
+        my $server = $loader->auto(port => $port, host => '127.0.0.1');
         $loader->preload_app($builder);
         $loader->watch('t');
         $loader->run($server);
