@@ -91,13 +91,15 @@ sub run {
 
             # detach *before* the ProcManager inits
             $self->daemon_detach if $self->{daemonize};
-
-            $proc_manager->pm_manage;
         }
         elsif ($self->{daemonize}) {
             $self->daemon_detach;
         }
+    } elsif (blessed $self->{manager}) {
+        $proc_manager = $self->{manager};
     }
+
+    $proc_manager && $proc_manager->pm_manage;
 
     while ($request->Accept >= 0) {
         $proc_manager && $proc_manager->pm_pre_dispatch;
