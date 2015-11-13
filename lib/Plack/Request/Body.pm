@@ -60,6 +60,7 @@ package Plack::Request::Body::MultiPart;
 our @ISA = qw( Plack::Request::Body );
 use Carp ();
 use File::Temp ();
+use File::Spec ();
 use HTTP::MultiPartParser ();
 use Plack::Request::Upload;
 
@@ -77,7 +78,8 @@ sub init {
         on_body   => sub { $self->on_body(@_); if ($_[1]) { $self->on_complete(@_) } },
     );
 
-    $self->{tempdir} = File::Temp->newdir;
+    my $template = File::Spec->catdir(File::Spec->tmpdir, "Plack-Request-Body-XXXXX");
+    $self->{tempdir} = File::Temp->newdir($template, CLEANUP => 1)
 }
 
 sub on_header {
