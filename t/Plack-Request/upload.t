@@ -56,7 +56,9 @@ test_psgi $app, sub {
 };
 
 # Check if the temp files got cleaned up properly
-ok !-f $_ for @temp_files;
+for (@temp_files) {
+    ok !-f $_, "file $_ is cleaned up";
+}
 
 done_testing;
 
