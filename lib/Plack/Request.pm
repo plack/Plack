@@ -7,12 +7,14 @@ our $VERSION = '1.0037';
 use HTTP::Headers::Fast;
 use Carp ();
 use Hash::MultiValue;
-use HTTP::Body;
 
 use Plack::Request::Upload;
 use Stream::Buffered;
 use URI;
 use URI::Escape ();
+
+use HTTP::Entity::Parser;
+use WWW::Form::UrlEncoded qw/parse_urlencoded_arrayref/;
 
 sub new {
     my($class, $env) = @_;
@@ -75,27 +77,6 @@ sub cookies {
     $self->env->{'plack.cookie.parsed'} = \%results;
 }
 
-sub query_parameters {
-    my $self = shift;
-    $self->env->{'plack.request.query'} ||= $self->_parse_query;
-}
-
-sub _parse_query {
-    my $self = shift;
-
-    my @query;
-    my $query_string = $self->env->{QUERY_STRING};
-    if (defined $query_string) {
-        $query_string =~ s/\A[&;]+//;
-        @query =
-            map { s/\+/ /g; URI::Escape::uri_unescape($_) }
-            map { /=/ ? split(/=/, $_, 2) : ($_ => '')}
-            split(/[&;]+/, $query_string);
-    }
-
-    Hash::MultiValue->new(@query);
-}
-
 sub content {
     my $self = shift;
 
@@ -137,14 +118,27 @@ sub header           { shift->headers->header(@_) }
 sub referer          { shift->headers->referer(@_) }
 sub user_agent       { shift->headers->user_agent(@_) }
 
-sub body_parameters {
+sub _body_parameters {
     my $self = shift;
-
-    unless ($self->env->{'plack.request.body'}) {
+    unless ($self->env->{'plack.request.body_parameters'}) {
         $self->_parse_request_body;
     }
+    return $self->env->{'plack.request.body_parameters'};
+}
 
-    return $self->env->{'plack.request.body'};
+sub _query_parameters {
+    my $self = shift;
+    $self->env->{'plack.request.query_parameters'} ||= parse_urlencoded_arrayref($self->env->{'QUERY_STRING'});
+}
+
+sub query_parameters {
+    my $self = shift;
+    $self->env->{'plack.request.query'} ||= Hash::MultiValue->new(@{$self->_query_parameters});
+}
+
+sub body_parameters {
+    my $self = shift;
+    $self->env->{'plack.request.body'} ||= Hash::MultiValue->new(@{$self->_body_parameters});
 }
 
 # contains body + query
@@ -152,9 +146,10 @@ sub parameters {
     my $self = shift;
 
     $self->env->{'plack.request.merged'} ||= do {
-        my $query = $self->query_parameters;
-        my $body  = $self->body_parameters;
-        Hash::MultiValue->new($query->flatten, $body->flatten);
+        Hash::MultiValue->new(
+            @{$self->_query_parameters},
+            @{$self->_body_parameters}
+        );
     };
 }
 
@@ -237,76 +232,34 @@ sub new_response {
     Plack::Response->new(@_);
 }
 
+my $default_parser = HTTP::Entity::Parser->new();
+$default_parser->register('application/x-www-form-urlencoded', 'HTTP::Entity::Parser::UrlEncoded');
+$default_parser->register('multipart/form-data', 'HTTP::Entity::Parser::MultiPart');
+
+sub request_body_parser {
+    my $self = shift;
+    $self->{request_body_parser} ||= $default_parser;
+}
+
 sub _parse_request_body {
     my $self = shift;
-
-    my $ct = $self->env->{CONTENT_TYPE};
-    my $cl = $self->env->{CONTENT_LENGTH};
-    if (!$ct && !$cl) {
-        # No Content-Type nor Content-Length -> GET/HEAD
-        $self->env->{'plack.request.body'}   = Hash::MultiValue->new;
-        $self->env->{'plack.request.upload'} = Hash::MultiValue->new;
+    if ( !$self->env->{CONTENT_TYPE} ) {
+        $self->env->{'plack.request.body_parameters'} = [];
+        $self->env->{'plack.request.upload'} = Hash::MultiValue->new();
         return;
     }
 
-    my $body = HTTP::Body->new($ct, $cl);
+    my ($params,$uploads) = $self->request_body_parser->parse($self->env);
+    $self->env->{'plack.request.body_parameters'} = $params;
 
-    # HTTP::Body will create temporary files in case there was an
-    # upload.  Those temporary files can be cleaned up by telling
-    # HTTP::Body to do so. It will run the cleanup when the request
-    # env is destroyed. That the object will not go out of scope by
-    # the end of this sub we will store a reference here.
-    $self->env->{'plack.request.http.body'} = $body;
-    $body->cleanup(1);
-
-    my $input = $self->input;
-
-    my $buffer;
-    if ($self->env->{'psgix.input.buffered'}) {
-        # Just in case if input is read by middleware/apps beforehand
-        $input->seek(0, 0);
-    } else {
-        $buffer = Stream::Buffered->new($cl);
+    my $upload_hash = Hash::MultiValue->new();
+    while ( my ($k,$v) = splice @$uploads, 0, 2 ) {
+        my %copy = %$v;
+        $copy{headers} = HTTP::Headers::Fast->new(@{$v->{headers}});
+        $upload_hash->add($k, Plack::Request::Upload->new(%copy));
     }
-
-    my $spin = 0;
-    while ($cl) {
-        $input->read(my $chunk, $cl < 8192 ? $cl : 8192);
-        my $read = length $chunk;
-        $cl -= $read;
-        $body->add($chunk);
-        $buffer->print($chunk) if $buffer;
-
-        if ($read == 0 && $spin++ > 2000) {
-            Carp::croak "Bad Content-Length: maybe client disconnect? ($cl bytes remaining)";
-        }
-    }
-
-    if ($buffer) {
-        $self->env->{'psgix.input.buffered'} = 1;
-        $self->env->{'psgi.input'} = $buffer->rewind;
-    } else {
-        $input->seek(0, 0);
-    }
-
-    $self->env->{'plack.request.body'}   = Hash::MultiValue->from_mixed($body->param);
-
-    my @uploads = Hash::MultiValue->from_mixed($body->upload)->flatten;
-    my @obj;
-    while (my($k, $v) = splice @uploads, 0, 2) {
-        push @obj, $k, $self->_make_upload($v);
-    }
-
-    $self->env->{'plack.request.upload'} = Hash::MultiValue->new(@obj);
-
+    $self->env->{'plack.request.upload'} = $upload_hash;
     1;
-}
-
-sub _make_upload {
-    my($self, $upload) = @_;
-    my %copy = %$upload;
-    $copy{headers} = HTTP::Headers::Fast->new(%{$upload->{headers}});
-    Plack::Request::Upload->new(%copy);
 }
 
 1;
