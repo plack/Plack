@@ -72,10 +72,12 @@ sub init {
     $self->{content_type} =~ /boundary=\"?([^\";]+)\"?/
       or Carp::croak("Invalid boundary in content_type: $self->{content_type}");
 
+    my $part;
+
     $self->{parser} = HTTP::MultiPartParser->new(
         boundary => $1,
-        on_header => sub { $self->on_header(@_) },
-        on_body   => sub { $self->on_body(@_); if ($_[1]) { $self->on_complete(@_) } },
+        on_header => sub { $part = {}; $self->on_header($part, @_) },
+        on_body   => sub { $self->on_body($part, @_); if ($_[1]) { $self->on_complete($part, @_) } },
     );
 
     my $template = File::Spec->catdir(File::Spec->tmpdir, "Plack-Request-Body-XXXXX");
@@ -83,46 +85,56 @@ sub init {
 }
 
 sub on_header {
-    my($self, $headers) = @_;
+    my($self, $part, $headers) = @_;
 
-    $self->{headers} = HTTP::Headers::Fast->new;
+    $part->{headers} = HTTP::Headers::Fast->new;
 
     for my $header (@$headers) {
         $header =~ s/^($HeaderToken):[\t ]*//;
-        $self->{headers}->push_header($1 => $header);
+        $part->{headers}->push_header($1 => $header);
     }
 
-    $self->{fh} = File::Temp->new(UNLINK => 0, DIR => $self->{tempdir});
-}
-
-sub on_body {
-    my($self, $chunk) = @_;
-    $self->{fh}->write($chunk);
-}
-
-sub on_complete {
-    my $self = shift;
-
-    $self->{fh}->seek(0, 0);
-
-    my $disposition = $self->{headers}->header('Content-Disposition');
+    my $disposition = $part->{headers}->header('Content-Disposition');
     my ($name)      = $disposition =~ / name="?([^\";]+)"?/;
     my ($filename)  = $disposition =~ / filename="?([^\"]*)"?/;
 
-    my $index = $#{$self->{upload_list}} + 1;
-    $name = "upload$index" unless defined $name;
+    $part->{name} = $name;
 
-    my $upload = Plack::Request::Upload->new(
-        filename => $filename,
-        headers => $self->{headers},
-        size => -s $self->{fh},
-        tempname => $self->{fh}->filename,
-    );
+    if ($filename) {
+        $part->{filename} = $filename;
+        $part->{fh} = File::Temp->new(UNLINK => 0, DIR => $self->{tempdir});
+    } else {
+        $part->{value} = '';
+    }
+}
 
-    push @{$self->{upload_list}}, $name => $upload;
-    
-    delete $self->{headers};
-    delete $self->{fh};
+sub on_body {
+    my($self, $part, $chunk) = @_;
+
+    if ($part->{fh}) {
+        $part->{fh}->write($chunk);
+    } else {
+        $part->{value} .= $chunk;
+    }
+}
+
+sub on_complete {
+    my($self, $part) = @_;
+
+    if ($part->{fh}) {
+        $part->{fh}->seek(0, 0);
+
+        my $upload = Plack::Request::Upload->new(
+            filename => $part->{filename},
+            headers => $part->{headers},
+            size => -s $part->{fh},
+            tempname => $part->{fh}->filename,
+        );
+
+        push @{$self->{upload_list}}, $part->{name} => $upload;
+    } else {
+        push @{$self->{param_list}}, $part->{name} => $part->{value};
+    }
 
     1;
 }
