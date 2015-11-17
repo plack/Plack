@@ -232,13 +232,15 @@ sub new_response {
     Plack::Response->new(@_);
 }
 
-my $default_parser = HTTP::Entity::Parser->new();
-$default_parser->register('application/x-www-form-urlencoded', 'HTTP::Entity::Parser::UrlEncoded');
-$default_parser->register('multipart/form-data', 'HTTP::Entity::Parser::MultiPart');
-
 sub request_body_parser {
     my $self = shift;
-    $self->{request_body_parser} ||= $default_parser;
+    if ( !$self->{request_body_parser} ) {
+        my $default_parser = HTTP::Entity::Parser->new(exists $ENV{PLACK_BUFFER_LENGTH} ? (buffer_length => $ENV{PLACK_BUFFER_LENGTH}) : ());
+        $default_parser->register('application/x-www-form-urlencoded', 'HTTP::Entity::Parser::UrlEncoded');
+        $default_parser->register('multipart/form-data', 'HTTP::Entity::Parser::MultiPart');
+        $self->{request_body_parser} = $default_parser;
+    }
+    $self->{request_body_parser};
 }
 
 sub _parse_request_body {
