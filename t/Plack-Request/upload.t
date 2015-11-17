@@ -28,6 +28,8 @@ my $app = sub {
         push @temp_files, $temp_file;
     }
 
+    is $req->parameters->{baz}, "quux";
+
     my $res = $req->new_response(200);
 
     undef $req; # Simulate when we instantiate Plack::Request multiple times
@@ -49,6 +51,7 @@ test_psgi $app, sub {
              foo => [ "t/Plack-Request/foo1.txt" ],
              foo => [ "t/Plack-Request/foo2.txt" ],
              bar => [ "t/Plack-Request/foo1.txt" ],
+             baz => "quux",
          ]);
 };
 
