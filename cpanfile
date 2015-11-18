@@ -16,7 +16,7 @@ requires 'URI', '1.59';
 requires 'parent';
 requires 'Apache::LogFormat::Compiler', '0.12';
 requires 'HTTP::Tiny', 0.034;
-requires 'HTTP::Entity::Parser', 0.15;
+requires 'HTTP::Entity::Parser', 0.16;
 requires 'WWW::Form::UrlEncoded', 0.22;
 
 on test => sub {
