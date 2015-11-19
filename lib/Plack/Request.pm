@@ -132,6 +132,15 @@ sub headers {
     $self->{headers};
 }
 
+sub header_parameters {
+    my $self = shift;
+
+    return Hash::MultiValue->from_mixed(
+        map { $_ => +[ split ', ' => $self->headers->header($_) ] }
+        $self->headers->header_field_names
+    );
+}
+
 sub content_encoding { shift->headers->content_encoding(@_) }
 sub header           { shift->headers->header(@_) }
 sub referer          { shift->headers->referer(@_) }
@@ -472,6 +481,12 @@ Returns a reference to a hash containing posted parameters in the
 request body (POST). As with C<query_parameters>, the hash
 reference is a L<Hash::MultiValue> object.
 
+=item header_parameters
+
+Returns a reference to a hash containing posted parameters in the
+request HEADERS. As with C<query_parameters>, the hash
+reference is a L<Hash::MultiValue> object.
+
 =item parameters
 
 Returns a L<Hash::MultiValue> hash reference containing (merged) GET
@@ -579,11 +594,11 @@ generation in middlewares.
 =head2 Hash::MultiValue parameters
 
 Parameters that can take one or multiple values (i.e. C<parameters>,
-C<query_parameters>, C<body_parameters> and C<uploads>) store the
-hash reference as a L<Hash::MultiValue> object. This means you can use
-the hash reference as a plain hash where values are B<always> scalars
-(B<NOT> array references), so you don't need to code ugly and unsafe
-C<< ref ... eq 'ARRAY' >> anymore.
+C<query_parameters>, C<body_parameters>, C<header_parameters> and
+C<uploads>) store the hash reference as a L<Hash::MultiValue> object.
+This means you can use the hash reference as a plain hash where values
+are B<always> scalars (B<NOT> array references), so you don't need to
+code ugly and unsafe C<< ref ... eq 'ARRAY' >> anymore.
 
 And if you explicitly want to get multiple values of the same key, you
 can call the C<get_all> method on it, such as:
@@ -651,10 +666,10 @@ most methods are made read-only. These methods were deleted in version
 1.0001.
 
 All parameter-related methods such as C<parameters>,
-C<body_parameters>, C<query_parameters> and C<uploads> now contains
-L<Hash::MultiValue> objects, rather than I<scalar or an array
-reference depending on the user input> which is insecure. See
-L<Hash::MultiValue> for more about this change.
+C<body_parameters>, C<query_parameters>, C<header_parameters> and
+C<uploads> now contains L<Hash::MultiValue> objects, rather than
+I<scalar or an array reference depending on the user input> which is
+insecure. See L<Hash::MultiValue> for more about this change.
 
 C<< $req->path >> method had a bug, where the code and the document
 was mismatching. The document was suggesting it returns the sub
