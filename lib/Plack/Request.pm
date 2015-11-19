@@ -136,7 +136,7 @@ sub header_parameters {
     my $self = shift;
 
     return Hash::MultiValue->from_mixed(
-        map { $_ => +[ split /,\ */ => $self->headers->header($_) ] }
+        map { $_ => +[ split /,\ */ => ($self->headers->header($_))[0] ] }
         $self->headers->header_field_names
     );
 }

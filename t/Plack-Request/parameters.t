@@ -8,9 +8,9 @@ use HTTP::Request::Common;
 my $app = sub {
     my $req = Plack::Request->new(shift);
     my $b = $req->body_parameters;
-    is $b->get('foo'), 'bar';
+    is $b->{foo}, 'bar';
     my $q = $req->query_parameters;
-    is $q->get('bar'), 'baz';
+    is $q->{bar}, 'baz';
     my $h = $req->header_parameters;
     is $h->get('QUX'), 'quux';
 
