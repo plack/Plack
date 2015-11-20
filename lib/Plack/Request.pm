@@ -134,11 +134,10 @@ sub headers {
 
 sub header_parameters {
     my $self = shift;
-    my %mixed;
-    for my $k ( $self->headers->header_field_names ) {
-        $mixed{$k} = +[ map {split /,\ */} $self->headers->header($k) ];
-    }
-    return Hash::MultiValue->from_mixed(%mixed);
+    return Hash::MultiValue->from_mixed(
+        map { $_ => +[ split /,\ */ => scalar $self->headers->header($_) ] }
+        $self->headers->header_field_names
+    );
 }
 
 sub content_encoding { shift->headers->content_encoding(@_) }
