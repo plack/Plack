@@ -134,10 +134,12 @@ sub headers {
 
 sub header_parameters {
     my $self = shift;
-    return Hash::MultiValue->from_mixed(
-        map { $_ => +[ split /,\ */ => scalar $self->headers->header($_) ] }
-        $self->headers->header_field_names
-    );
+
+    $self->env->{'plack.request.headers'} ||=
+        Hash::MultiValue->from_mixed(
+            map { $_ => +[ split /,\ */ => scalar $self->headers->header($_) ] }
+            $self->headers->header_field_names
+        );
 }
 
 sub content_encoding { shift->headers->content_encoding(@_) }
