@@ -1,6 +1,8 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [IMPROVEMENTS]
+        - Allow passing custom formatters to Plack::Middleware::AccessLog (frew)
 
 1.0037  2015-06-19 10:01:31 PDT
     [Improvements]
