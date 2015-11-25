@@ -1,8 +1,17 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+
+1.0038  2015-11-25 12:36:29 PST
     [IMPROVEMENTS]
-        - Allow passing custom formatters to Plack::Middleware::AccessLog (frew)
+        - Added MIME type for apk files #514 (allanwhiteford)
+        - Allow passing custom formatters to Plack::Middleware::AccessLog #515 (frew)
+        - Allow '0' be a valid category for log4perl middleware #523
+        - Doc fix for Plack::Runner #528 (polettix)
+        - Doc improvements for -R/-M command line #529 (mickeyn)
+        - Bind test server explicitly on 127.0.0.1, not 0.0.0.0
+        - Support single-process manager in FCGI #535 (ianburrell)
+        - Optimize Plack::Response header builder #540 (kazeburo)
 
 1.0037  2015-06-19 10:01:31 PDT
     [Improvements]
