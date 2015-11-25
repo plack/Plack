@@ -7,9 +7,7 @@ our $VERSION = '1.0038';
 use HTTP::Headers::Fast;
 use Carp ();
 use Hash::MultiValue;
-use HTTP::Body;
-
-use Plack::Request::Upload;
+use Plack::Request::Body;
 use Stream::Buffered;
 use URI;
 use URI::Escape ();
@@ -161,11 +159,10 @@ sub parameters {
 sub uploads {
     my $self = shift;
 
-    if ($self->env->{'plack.request.upload'}) {
-        return $self->env->{'plack.request.upload'};
+    unless ($self->env->{'plack.request.upload'}) {
+        $self->_parse_request_body;
     }
 
-    $self->_parse_request_body;
     return $self->env->{'plack.request.upload'};
 }
 
@@ -249,15 +246,12 @@ sub _parse_request_body {
         return;
     }
 
-    my $body = HTTP::Body->new($ct, $cl);
+    
 
-    # HTTP::Body will create temporary files in case there was an
-    # upload.  Those temporary files can be cleaned up by telling
-    # HTTP::Body to do so. It will run the cleanup when the request
-    # env is destroyed. That the object will not go out of scope by
-    # the end of this sub we will store a reference here.
+    my $body = Plack::Request::Body->new($ct, $cl);
+
+    # Save the reference here so that Body will cleanup temp files in the end of request
     $self->env->{'plack.request.http.body'} = $body;
-    $body->cleanup(1);
 
     my $input = $self->input;
 
@@ -274,13 +268,15 @@ sub _parse_request_body {
         $input->read(my $chunk, $cl < 8192 ? $cl : 8192);
         my $read = length $chunk;
         $cl -= $read;
-        $body->add($chunk);
+        $body->read($chunk);
         $buffer->print($chunk) if $buffer;
 
         if ($read == 0 && $spin++ > 2000) {
             Carp::croak "Bad Content-Length: maybe client disconnect? ($cl bytes remaining)";
         }
     }
+
+    $body->finish;
 
     if ($buffer) {
         $self->env->{'psgix.input.buffered'} = 1;
@@ -289,24 +285,10 @@ sub _parse_request_body {
         $input->seek(0, 0);
     }
 
-    $self->env->{'plack.request.body'}   = Hash::MultiValue->from_mixed($body->param);
-
-    my @uploads = Hash::MultiValue->from_mixed($body->upload)->flatten;
-    my @obj;
-    while (my($k, $v) = splice @uploads, 0, 2) {
-        push @obj, $k, $self->_make_upload($v);
-    }
-
-    $self->env->{'plack.request.upload'} = Hash::MultiValue->new(@obj);
+    $self->env->{'plack.request.body'}   = $body->parameters;
+    $self->env->{'plack.request.upload'} = $body->uploads;
 
     1;
-}
-
-sub _make_upload {
-    my($self, $upload) = @_;
-    my %copy = %$upload;
-    $copy{headers} = HTTP::Headers::Fast->new(%{$upload->{headers}});
-    Plack::Request::Upload->new(%copy);
 }
 
 1;

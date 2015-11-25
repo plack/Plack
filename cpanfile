@@ -5,7 +5,6 @@ requires 'Devel::StackTrace', '1.23';
 requires 'Devel::StackTrace::AsHTML', '0.11';
 requires 'File::ShareDir', '1.00';
 requires 'Filesys::Notify::Simple';
-requires 'HTTP::Body', '1.06';
 requires 'HTTP::Message', '5.814';
 requires 'HTTP::Headers::Fast', '0.20';
 requires 'Hash::MultiValue', '0.05';
@@ -16,7 +15,9 @@ requires 'Try::Tiny';
 requires 'URI', '1.59';
 requires 'parent';
 requires 'Apache::LogFormat::Compiler', '0.12';
-requires 'HTTP::Tiny', 0.034;
+requires 'HTTP::Tiny', '0.034';
+requires 'URL::Encode', '0.03';
+requires 'HTTP::MultiPartParser', '0.01';
 
 on test => sub {
     requires 'Test::More', '0.88';
@@ -41,5 +42,5 @@ on runtime => sub {
     suggests 'CGI::Compile';
     suggests 'IO::Handle::Util';
     suggests 'LWP::UserAgent', '5.814';
+    suggests 'URL::Encode::XS';
 };
-
