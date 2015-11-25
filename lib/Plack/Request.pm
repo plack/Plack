@@ -234,13 +234,31 @@ sub new_response {
 
 sub request_body_parser {
     my $self = shift;
-    if ( !$self->{request_body_parser} ) {
-        my $default_parser = HTTP::Entity::Parser->new(exists $ENV{PLACK_BUFFER_LENGTH} ? (buffer_length => $ENV{PLACK_BUFFER_LENGTH}) : ());
-        $default_parser->register('application/x-www-form-urlencoded', 'HTTP::Entity::Parser::UrlEncoded');
-        $default_parser->register('multipart/form-data', 'HTTP::Entity::Parser::MultiPart');
-        $self->{request_body_parser} = $default_parser;
+    $self->{request_body_parser} ||= $self->_build_body_parser;
+}
+
+sub _build_body_parser {
+    my $self = shift;
+
+    my $len = $self->_buffer_length_for($self->env);
+
+    my $parser = HTTP::Entity::Parser->new(buffer_length => $len);
+    $parser->register('application/x-www-form-urlencoded', 'HTTP::Entity::Parser::UrlEncoded');
+    $parser->register('multipart/form-data', 'HTTP::Entity::Parser::MultiPart');
+
+    $parser;
+}
+
+sub _buffer_length_for {
+    my($self, $env) = @_;
+
+    return $ENV{PLACK_BUFFER_LENGTH} if defined $ENV{PLACK_BUFFER_LENGTH};
+
+    if ($env->{'psgix.input.buffered'}) {
+        return 1024 * 1024; # 1MB for buffered
+    } else {
+        return 1024 * 64; # 64K for unbuffered
     }
-    $self->{request_body_parser};
 }
 
 sub _parse_request_body {
