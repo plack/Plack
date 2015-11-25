@@ -22,7 +22,7 @@ is_deeply [ $req->param('foo') ] , [ qw(bar baz) ];
 is_deeply [ sort $req->param ], [ 'bar', 'foo' ];
 
 $req = Plack::Request->new({ QUERY_STRING => "&&foo=bar&&baz=quux" });
-is_deeply $req->parameters, { foo => 'bar', baz => 'quux' };
+is_deeply $req->parameters, { "" => "", foo => 'bar', baz => 'quux' };
 
 done_testing;
 
