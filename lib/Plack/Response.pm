@@ -86,12 +86,20 @@ sub finalize {
     my $self = shift;
     Carp::croak "missing status" unless $self->status();
 
-    my $headers = $self->headers->flatten;
-    $self->_finalize_cookies($headers);
+    my $headers = $self->headers;
+    my @headers;
+    $headers->scan(sub{
+        my ($k,$v) = @_;
+        $v =~ s/\015\012[\040|\011]+/chr(32)/ge; # replace LWS with a single SP
+        $v =~ s/\015|\012//g; # remove CR and LF since the char is invalid here
+        push @headers, $k, $v;
+    });
+
+    $self->_finalize_cookies(\@headers);
 
     return [
         $self->status,
-        $headers,
+        \@headers,
         $self->_body,
     ];
 }
