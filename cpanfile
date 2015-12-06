@@ -32,6 +32,7 @@ on test => sub {
     suggests 'HTTP::Server::Simple::PSGI';
     suggests 'HTTP::Request::AsCGI';
     suggests 'LWP::UserAgent', '5.814';
+    suggests 'HTTP::Headers';
     suggests 'Module::Refresh';
 };
 
