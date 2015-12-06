@@ -2,6 +2,11 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0039  2015-12-06 03:27:59 PST
+    [BUG FIXES]
+        - Revert the change to use the faster header builder because it breaks the legit
+          Plack::Response constructor that sets HTTP::Header object directly (#541)
+
 1.0038  2015-11-25 12:36:29 PST
     [IMPROVEMENTS]
         - Added MIME type for apk files #514 (allanwhiteford)
