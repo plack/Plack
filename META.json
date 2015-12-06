@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 5.041, Dist::Milla version v1.0.15, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Dist::Zilla version 5.042, Dist::Milla version v1.0.15, CPAN::Meta::Converter version 2.150005",
    "license" : [
       "perl_5"
    ],
@@ -45,7 +45,7 @@
             "File::ShareDir" : "1.00",
             "Filesys::Notify::Simple" : "0",
             "HTTP::Body" : "1.06",
-            "HTTP::Headers::Fast" : "0.20",
+            "HTTP::Headers::Fast" : "0.18",
             "HTTP::Message" : "5.814",
             "HTTP::Tiny" : "0.034",
             "Hash::MultiValue" : "0.05",
@@ -98,7 +98,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0038",
+   "version" : "1.0039",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
