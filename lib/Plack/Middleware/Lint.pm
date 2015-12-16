@@ -3,13 +3,13 @@ use strict;
 no warnings;
 use Carp ();
 use parent qw(Plack::Middleware);
-use Scalar::Util qw(blessed);
+use Scalar::Util qw(blessed reftype);
 use Plack::Util;
 
 sub wrap {
     my($self, $app) = @_;
 
-    unless (ref $app eq 'CODE' or overload::Method($app, '&{}')) {
+    unless (reftype $app eq 'CODE' or overload::Method($app, '&{}')) {
         die("PSGI app should be a code reference: ", (defined $app ? $app : "undef"));
     }
 
