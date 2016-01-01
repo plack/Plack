@@ -321,9 +321,16 @@ certainly possible but not recommended: it's like doing so with
 mod_perl's Apache::Request: yet too low level.
 
 If you're writing a web application, not a framework, then you're
-encouraged to use one of the web application frameworks that support PSGI (L<http://plackperl.org/#frameworks>),
-or see modules like L<HTTP::Engine> to provide higher level
-Request and Response API on top of PSGI.
+encouraged to use one of the web application frameworks that support
+PSGI (L<http://plackperl.org/#frameworks>), or see modules like
+L<HTTP::Engine> to provide higher level Request and Response API on
+top of PSGI.
+
+If you're looking for an easy-to-use API to convert existing CGI
+applications to run on PSGI, consider using L<CGI::PSGI> or
+L<CGI::Emulate::PSGI> as well. L<CGI::Emulate::PSGI> documentation has
+a good summary of using them to convert existing CGI scripts to adapt
+to PSGI.
 
 =head1 METHODS
 
