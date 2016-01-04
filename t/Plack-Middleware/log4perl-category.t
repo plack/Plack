@@ -6,7 +6,7 @@ use Test::More;
 use Plack::Middleware::Log4perl;
 use HTTP::Request::Common;
 
-my $test_file = "t/Plack-Middleware/log4perl.log";
+my $test_file = "t/Plack-Middleware/log4perl-category.log";
 
 my $conf = <<CONF;
 log4perl.logger.0 = INFO, Logfile
