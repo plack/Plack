@@ -223,7 +223,7 @@ selection of MIME types is based on Rack's Rack::Mime module.
 
 =head1 SEE ALSO
 
-Rack::Mime L<MIME::Types>
+L<Rack::Mime|https://github.com/rack/rack/blob/master/lib/rack/mime.rb> L<MIME::Types>
 
 =cut
 
