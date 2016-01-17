@@ -52,7 +52,7 @@ Plack::Test - Test PSGI applications with various backends
   use HTTP::Request::Common;
 
   # Simple OO interface
-  my $app = sub { return [ 200, [], [ "Hello" ] ] };S
+  my $app = sub { return [ 200, [], [ "Hello" ] ] };
   my $test = Plack::Test->create($app);
 
   my $res = $test->request(GET "/");
