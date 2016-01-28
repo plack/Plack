@@ -10,7 +10,7 @@ sub call {
     my $self = shift;
     my($env) = @_;
 
-    my $time = Time::HiRes::gettimeofday;
+    my $time = [Time::HiRes::gettimeofday];
     my $length = 0;
     my $logger = $self->logger || sub { $env->{'psgi.errors'}->print(@_) };
 
@@ -29,8 +29,8 @@ sub call {
                 $length += length $line if defined $line;
 
                 unless( defined $line ) {
-                    my $now = Time::HiRes::gettimeofday;
-                    $logger->( $self->log_line($status, $header, $env, { time => $now - $time, content_length => $length }) );
+                    my $now = [Time::HiRes::gettimeofday];
+                    $logger->( $self->log_line($status, $header, $env, { time => scalar Time::HiRes::tv_interval($time, $now) * 1_000_000, content_length => $length }) );
                 }
 
                 return $line;
@@ -48,8 +48,8 @@ sub call {
             close => sub {
                 $body->close if ref $body ne 'ARRAY';
 
-                my $now = Time::HiRes::gettimeofday;
-                $logger->( $self->log_line($status, $header, $env, { time => $now - $time, content_length => $length }) );
+                my $now = [Time::HiRes::gettimeofday];
+                $logger->( $self->log_line($status, $header, $env, { time => scalar Time::HiRes::tv_interval($time, $now) * 1_000_000, content_length => $length }) );
             },
         );
 
