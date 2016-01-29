@@ -1,6 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [IMPROVEMENTS]
+        - Allow passing an already-open listen socket to HTTP::Server::PSGI
+          and do so in Plack::Test::Server.
 
 1.0039  2015-12-06 03:27:59 PST
     [BUG FIXES]
