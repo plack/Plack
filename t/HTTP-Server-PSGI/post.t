@@ -1,17 +1,17 @@
 use strict;
 use warnings;
 
-use Plack::Runner;
+use Plack::Loader;
 use Test::More;
 use Test::TCP;
 use Test::Requires qw(LWP::UserAgent);
 
 test_tcp(
+    listen => 1,
     server => sub {
-        my $port = shift;
-        my $runner = Plack::Runner->new;
-        $runner->parse_options("--host" => "127.0.0.1", "--port" => $port, "-E", "dev", "-s", "HTTP::Server::PSGI");
-        $runner->run(
+        my $socket = shift;
+        my $server = Plack::Loader->auto(listen_sock => $socket);
+        $server->run(
             sub {
                 my $env = shift;
                 my $buf = '';
