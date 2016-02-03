@@ -152,13 +152,13 @@ $test_req = sub {
 mock_time {
     $wait_sec = 3.5;
     $test_req->(GET "http://localhost/");
-    like $log, qr@^\d\.\d+ \d{7}@; # around '3.5 3500000'
+    like $log, qr@^\d \d{7}@; # around '3 3500000'
 } time();
 
 mock_time {
     $wait_sec = 0.3;
     $test_req->(GET "http://localhost/");
-    like $log, qr@^\d\.\d+ \d{6}@; # around '0.3 300000'
+    like $log, qr@^\d \d{6}@; # around '0 300000'
 } time();
 
 done_testing;
