@@ -155,6 +155,7 @@ mock_time {
     like $log, qr@^\d \d{7}@; # around '3 3500000'
 } time();
 
+$log = '';
 mock_time {
     $wait_sec = 0.3;
     $test_req->(GET "http://localhost/");
