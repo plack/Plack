@@ -20,6 +20,9 @@ plackup - Run PSGI application with Plack handlers
   # choose .psgi file from ARGV[0] (or with -a option)
   plackup hello.psgi
 
+  # use directory listing app
+  plackup /tmp
+
   # switch server implementation with --server (or -s)
   plackup --server HTTP::Server::Simple --port 9090 --host 127.0.0.1 test.psgi
 
@@ -59,6 +62,9 @@ application:
 The first non-option argument is used as a C<.psgi> file path. You can
 also set this path with C<-a> or C<--app>. If omitted, the
 default file path is C<app.psgi> in the current directory.
+
+If a directory is used instead of a .psgi file, an instance of
+C<Plack::App::Directory> will be setup with that directory as root.
 
 =back
 

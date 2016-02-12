@@ -160,6 +160,13 @@ sub locate_app {
         return sub { $psgi };
     }
 
+    if (-d $psgi) {
+        return sub {
+            require Plack::App::Directory;
+            Plack::App::Directory->new({ root => $psgi })->to_app;
+        };
+    }
+
     if ($self->{eval}) {
         $self->loader->watch("lib");
         return build {
