@@ -22,7 +22,7 @@ requires 'WWW::Form::UrlEncoded', 0.23;
 on test => sub {
     requires 'Test::More', '0.88';
     requires 'Test::Requires';
-    requires 'Test::MockTime::HiRes', '0.04';
+    requires 'Test::MockTime::HiRes', '0.05';
     suggests 'Authen::Simple::Passwd';
     suggests 'MIME::Types';
     suggests 'CGI::Emulate::PSGI';
