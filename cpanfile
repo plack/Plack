@@ -14,7 +14,7 @@ requires 'Test::TCP', '2.00';
 requires 'Try::Tiny';
 requires 'URI', '1.59';
 requires 'parent';
-requires 'Apache::LogFormat::Compiler', '0.12';
+requires 'Apache::LogFormat::Compiler', '0.33';
 requires 'HTTP::Tiny', 0.034;
 requires 'HTTP::Entity::Parser', 0.17;
 requires 'WWW::Form::UrlEncoded', 0.23;
@@ -22,6 +22,7 @@ requires 'WWW::Form::UrlEncoded', 0.23;
 on test => sub {
     requires 'Test::More', '0.88';
     requires 'Test::Requires';
+    requires 'Test::MockTime::HiRes', '0.06';
     suggests 'Authen::Simple::Passwd';
     suggests 'MIME::Types';
     suggests 'CGI::Emulate::PSGI';
