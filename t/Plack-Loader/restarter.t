@@ -50,11 +50,12 @@ test_tcp(
 
         is $cb->()->content, $return_bodies[2];
     },
+    listen => 1,
     server => sub {
-        my $port = shift;
+        my $socket = shift;
 
         my $loader = Plack::Loader::Restarter->new;
-        my $server = $loader->auto(port => $port, host => '127.0.0.1');
+        my $server = $loader->auto(listen_sock => $socket);
         $loader->preload_app($builder);
         $loader->watch('t');
         $loader->run($server);
