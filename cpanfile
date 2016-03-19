@@ -42,7 +42,5 @@ on runtime => sub {
     suggests 'FCGI::ProcManager';
     suggests 'CGI::Emulate::PSGI';
     suggests 'CGI::Compile';
-    suggests 'IO::Handle::Util';
     suggests 'LWP::UserAgent', '5.814';
 };
-
