@@ -35,6 +35,7 @@ on test => sub {
     suggests 'LWP::UserAgent', '5.814';
     suggests 'HTTP::Headers';
     suggests 'Module::Refresh';
+    suggests 'Log::Dispatch', '2.25';
 };
 
 on runtime => sub {
