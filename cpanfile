@@ -29,13 +29,11 @@ on test => sub {
     suggests 'CGI::Compile';
     suggests 'IO::Handle::Util';
     suggests 'LWP::Protocol::http10';
-    suggests 'Log::Log4perl';
     suggests 'HTTP::Server::Simple::PSGI';
     suggests 'HTTP::Request::AsCGI';
     suggests 'LWP::UserAgent', '5.814';
     suggests 'HTTP::Headers';
-    suggests 'Module::Refresh';
-    suggests 'Log::Dispatch', '2.25';
+    suggests 'Log::Dispatch::Array';
 };
 
 on runtime => sub {
@@ -44,4 +42,7 @@ on runtime => sub {
     suggests 'CGI::Emulate::PSGI';
     suggests 'CGI::Compile';
     suggests 'LWP::UserAgent', '5.814';
+    suggests 'Log::Log4perl';
+    suggests 'Log::Dispatch', '2.25';
+    suggests 'Module::Refresh';
 };
