@@ -14,3 +14,4 @@ before_install:
 install:
   - cpanm -nq --installdeps --with-recommends --with-suggests .
 env: RELEASE_TESTING=1 AUTOMATED_TESTING=1
+script: prove -lr -j9 t
