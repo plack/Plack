@@ -1,9 +1,27 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+
+1.0040  2016-04-01 09:57:06 PDT
+    [INCOMPATIBLE CHANGES]
+        - Fixes a mistake in the value of %D and %T in Accesslog::Timed middleware.
+          This is due to a bug in Apache::LogFormat::Compiler that sets a wrong value
+          for these fields. This bug has been fixed and now it emits what the documentation
+          has always said, in the same way as how Apache's log format works.
+
+          However, this is a BREAKING CHANGE if you are using '%D' or '%T' in your log
+          formats, and you'll likely need to swap them if you need the same values as
+          previously. Read https://github.com/plack/Plack/issues/549 for more details.
+          (astj) #549, #551
+
     [IMPROVEMENTS]
-        - Allow passing an already-open listen socket to HTTP::Server::PSGI
-          and do so in Plack::Test::Server.
+        - Remove the use of HTTP::Body in favor of HTTP::Entity::Parser (kazeburo) #538
+        - Increase the buffer size to 1MB for requests already buffered by the PSGI server
+        - Allow passing an already-open listen socket to HTTP::Server::PSGI (ilmari) #550
+
+    [BUG FIXES]
+        - Lint middleware now allows blessed code refs as a PSGI app (smcmurray) #542
+        - Fix log4perl tests to pass when running in parallel (rsimoes) #545
 
 1.0039  2015-12-06 03:27:59 PST
     [BUG FIXES]

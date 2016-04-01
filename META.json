@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 5.042, Dist::Milla version v1.0.15, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Dist::Zilla version 5.043, Dist::Milla version v1.0.15, CPAN::Meta::Converter version 2.150005",
    "license" : [
       "perl_5"
    ],
@@ -28,6 +28,9 @@
          "requires" : {
             "ExtUtils::MakeMaker" : "0",
             "File::ShareDir::Install" : "0.06"
+         },
+         "suggests" : {
+            "JSON::PP" : "2.27300"
          }
       },
       "develop" : {
@@ -38,22 +41,23 @@
       },
       "runtime" : {
          "requires" : {
-            "Apache::LogFormat::Compiler" : "0.12",
+            "Apache::LogFormat::Compiler" : "0.33",
             "Cookie::Baker" : "0.05",
             "Devel::StackTrace" : "1.23",
             "Devel::StackTrace::AsHTML" : "0.11",
             "File::ShareDir" : "1.00",
             "Filesys::Notify::Simple" : "0",
-            "HTTP::Body" : "1.06",
+            "HTTP::Entity::Parser" : "0.17",
             "HTTP::Headers::Fast" : "0.18",
             "HTTP::Message" : "5.814",
             "HTTP::Tiny" : "0.034",
             "Hash::MultiValue" : "0.05",
             "Pod::Usage" : "1.36",
             "Stream::Buffered" : "0.02",
-            "Test::TCP" : "2.00",
+            "Test::TCP" : "2.15",
             "Try::Tiny" : "0",
             "URI" : "1.59",
+            "WWW::Form::UrlEncoded" : "0.23",
             "parent" : "0",
             "perl" : "5.008001"
          },
@@ -62,12 +66,15 @@
             "CGI::Emulate::PSGI" : "0",
             "FCGI" : "0",
             "FCGI::ProcManager" : "0",
-            "IO::Handle::Util" : "0",
-            "LWP::UserAgent" : "5.814"
+            "LWP::UserAgent" : "5.814",
+            "Log::Dispatch" : "2.25",
+            "Log::Log4perl" : "0",
+            "Module::Refresh" : "0"
          }
       },
       "test" : {
          "requires" : {
+            "Test::MockTime::HiRes" : "0.06",
             "Test::More" : "0.88",
             "Test::Requires" : "0"
          },
@@ -75,18 +82,18 @@
             "Authen::Simple::Passwd" : "0",
             "CGI::Compile" : "0",
             "CGI::Emulate::PSGI" : "0",
+            "HTTP::Headers" : "0",
             "HTTP::Request::AsCGI" : "0",
             "HTTP::Server::Simple::PSGI" : "0",
             "IO::Handle::Util" : "0",
             "LWP::Protocol::http10" : "0",
             "LWP::UserAgent" : "5.814",
-            "Log::Log4perl" : "0",
-            "MIME::Types" : "0",
-            "Module::Refresh" : "0"
+            "Log::Dispatch::Array" : "0",
+            "MIME::Types" : "0"
          }
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/plack/Plack/issues"
@@ -98,7 +105,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0039",
+   "version" : "1.0040",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
@@ -110,8 +117,10 @@
       "Andy Wardley <abw@wardley.org>",
       "Aristotle Pagaltzis <pagaltzis@gmx.de>",
       "Arthur Axel 'fREW' Schmidt <frioux@gmail.com>",
+      "Asato Wakisaka <asato.wakisaka@gmail.com>",
       "Ashley Pond V <ashley.pond.v@gmail.com>",
       "Ask Bjørn Hansen <ask@develooper.com>",
+      "ben hengst <notbenh@cpan.org>",
       "Ben Morrow <ben@morrow.me.uk>",
       "Bernhard Graf <augensalat@gmail.com>",
       "Chad Granum <chad.granum@dreamhost.com>",
@@ -121,6 +130,7 @@
       "Christian Walde <walde.christian@googlemail.com>",
       "chromatic <chromatic@wgz.org>",
       "Cosimo Streppone <cosimo@cpan.org>",
+      "Dagfinn Ilmari Mannsåker <ilmari@ilmari.org>",
       "Daisuke Maki <lestrrat+github@gmail.com>",
       "Daisuke Murase <typester@cpan.org>",
       "Dave Marr <dave.marr@gmail.com>",
@@ -189,12 +199,14 @@
       "Rafael Kitover <rkitover@cpan.org>",
       "Randy Stauner <rwstauner@cpan.org>",
       "Ray Miller <rm7@sanger.ac.uk>",
+      "Richard Simões <rsimoes@gmail.com>",
       "Ricky Morse <remorse@partners.org>",
       "Rob Hoelz <rob@hoelz.ro>",
       "Ryo Miyake <ryo.studiom@gmail.com>",
       "Sawyer X <xsawyerx@cpan.org>",
       "Scott S. McCoy <smccoy@saymedia.com>",
       "Shawn M Moore <sartak@gmail.com>",
+      "smcmurray <smcmurray@localhost.localdomain>",
       "Stephen Clouse <stephenclouse@gmail.com>",
       "Stevan Little <stevan.little@iinteractive.com>",
       "Stuart A Johnston <saj_git@thecommune.net>",
