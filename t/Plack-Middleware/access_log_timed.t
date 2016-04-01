@@ -4,7 +4,17 @@ use Test::More;
 use HTTP::Request::Common;
 use Plack::Test;
 use Plack::Builder;
-use Test::MockTime::HiRes qw(mock_time);
+
+BEGIN {
+    eval "use Test::MockTime::HiRes; 1";
+    if ($@) {
+        *mock_time = sub(&$) {
+            my($code, $time) = @_;
+            $code->();
+        }
+    }
+}
+
 use Time::HiRes;
 
 my $log;
@@ -148,18 +158,17 @@ $test_req = sub {
     };
 };
 
-
 mock_time {
-    $wait_sec = 3.5;
+    $wait_sec = 1.2;
     $test_req->(GET "http://localhost/");
-    like $log, qr@^\d \d{7}@; # around '3 3500000'
+    like $log, qr@^\d \d{7}@; # around '1 1200000'
 } time();
 
 $log = '';
 mock_time {
     $wait_sec = 0.3;
     $test_req->(GET "http://localhost/");
-    like $log, qr@^\d \d{6}@; # around '0 300000'
+    like $log, qr@^\d \d{6}\b@; # around '0 300000'
 } time();
 
 done_testing;
