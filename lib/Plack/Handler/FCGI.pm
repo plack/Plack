@@ -298,7 +298,7 @@ Send psgi.errors to STDERR instead of to the FCGI error stream.
 
 =item backlog
 
-Maximum length of the queue of pending connections
+Maximum length of the queue of pending connections, defaults to 100.
 
 =back
 
