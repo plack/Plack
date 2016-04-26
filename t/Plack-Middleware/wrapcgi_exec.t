@@ -6,6 +6,7 @@ use HTTP::Request::Common;
 use Plack::App::WrapCGI;
 use IO::File;
 use File::Temp;
+use File::Spec;
 
 plan skip_all => $^O if $^O eq "MSWin32";
 
@@ -134,6 +135,36 @@ print \$q->header(-type => "text/plain"), \$result;
         my $res = $cb->(GET "http://localhost/?");
         is $res->code, 200;
         is $res->content, "MATCH";
+    };
+
+    undef $tmp;
+};
+
+# test that FindBin works if it was used before
+{
+    use FindBin;
+    my $tmp = File::Temp->new(CLEANUP => 1);
+    print $tmp <<"...";
+#!$^X
+use CGI;
+use FindBin;
+
+my \$result = "\$FindBin::RealBin\n";
+
+my \$q = CGI->new;
+print \$q->header(-type => "text/plain"), \$result;
+...
+    close $tmp;
+
+    chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
+
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
+    test_psgi app => $app_exec, client => sub {
+        my $cb = shift;
+
+        my $res = $cb->(GET "http://localhost/?");
+        is $res->code, 200;
+        is $res->content, File::Spec->tmpdir . "\n";
     };
 
     undef $tmp;
