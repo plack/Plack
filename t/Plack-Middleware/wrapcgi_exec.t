@@ -149,7 +149,7 @@ print \$q->header(-type => "text/plain"), \$result;
 use CGI;
 use FindBin;
 
-my \$result = "\$FindBin::RealBin\n";
+my \$result = "\$FindBin::RealBin\n" . __PACKAGE__ . "\n";
 
 my \$q = CGI->new;
 print \$q->header(-type => "text/plain"), \$result;
@@ -164,7 +164,7 @@ print \$q->header(-type => "text/plain"), \$result;
 
         my $res = $cb->(GET "http://localhost/?");
         is $res->code, 200;
-        is $res->content, File::Spec->tmpdir . "\n";
+        is $res->content, File::Spec->tmpdir . "\nmain\n";
     };
 
     undef $tmp;

@@ -61,7 +61,9 @@ sub prepare_app {
                     if (FindBin->can('again')) {
                         FindBin->again;
                     }
+                    package main;
                     do $0; # XXX error handling?
+                    warn $@ if $@;
                     exit(0);
                 } else {
                     exec($script) or Carp::croak("cannot exec: $!");
