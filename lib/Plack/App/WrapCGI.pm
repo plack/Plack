@@ -52,9 +52,21 @@ sub prepare_app {
                   or Carp::croak "Cannot dup STDIN: $!";
 
                 chdir(File::Basename::dirname($script));
-                exec($script) or Carp::croak("cannot exec: $!");
 
-                exit(2);
+                if ($self->execute eq 'noexec') {
+                    if (!-x $script) {
+                        Carp::croak "$script is not executable";
+                    }
+                    $0 = $script;
+                    if (FindBin->can('again')) {
+                        FindBin->again;
+                    }
+                    do $0; # XXX error handling?
+                    exit(0);
+                } else {
+                    exec($script) or Carp::croak("cannot exec: $!");
+                    exit(2);
+                }
             }
 
             close $stdoutw;
