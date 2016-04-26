@@ -170,6 +170,77 @@ print \$q->header(-type => "text/plain"), \$result;
     undef $tmp;
 };
 
+# test that eval { die } works
+{
+    use FindBin;
+    my $tmp = File::Temp->new(CLEANUP => 1);
+    print $tmp <<"...";
+#!$^X
+use CGI;
+use FindBin;
+
+eval { die "error message" };
+my \$result = \$\@;
+
+my \$q = CGI->new;
+print \$q->header(-type => "text/plain"), \$result;
+...
+    close $tmp;
+
+    chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
+
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
+    test_psgi app => $app_exec, client => sub {
+        my $cb = shift;
+
+        my $res = $cb->(GET "http://localhost/?");
+        is $res->code, 200;
+        like $res->content, qr{^error message };
+    };
+
+    undef $tmp;
+};
+
+# Depth of stack
+{
+    use FindBin;
+    my $tmp = File::Temp->new(CLEANUP => 1);
+    print $tmp <<"...";
+#!$^X
+use CGI;
+use FindBin;
+use Carp;
+
+eval { confess "error message" };
+my \$result = \$\@;
+
+my \$q = CGI->new;
+print \$q->header(-type => "text/plain"), \$result;
+...
+    close $tmp;
+
+    chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
+
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
+    test_psgi app => $app_exec, client => sub {
+        my $cb = shift;
+
+        my $res = $cb->(GET "http://localhost/?");
+        is $res->code, 200;
+	my @lines = split /\n/, $res->content;
+	{
+	    local $TODO;
+	    if ($execute eq 'noexec') {
+		$TODO = "Probably there should be a solution using \$Carp::CarpLevel or Sub::Uplevel";
+	    }
+	    is @lines, 2, 'short stack trace'
+		or diag "Stack trace too long: " . join("\n", @lines);
+	}
+    };
+
+    undef $tmp;
+};
+
 }
 
 done_testing;
