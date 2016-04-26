@@ -62,6 +62,7 @@ sub prepare_app {
                         FindBin->again;
                     }
                     package main;
+                    local $SIG{__DIE__};
                     do $0; # XXX error handling?
                     warn $@ if $@;
                     exit(0);
