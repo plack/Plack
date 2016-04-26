@@ -9,6 +9,9 @@ use File::Temp;
 
 plan skip_all => $^O if $^O eq "MSWin32";
 
+for my $execute (1, 'noexec') {
+    note 'Execution model: ' . ($execute eq '1' ? 'fork+exec' : 'fork+noexec');
+
 {
     my $tmp = File::Temp->new(CLEANUP => 1);
     print $tmp <<"...";
@@ -21,7 +24,7 @@ print \$q->header, "Hello ", scalar \$q->param('name'), " counter=", ++\$COUNTER
 
     chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
 
-    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
     test_psgi app => $app_exec, client => sub {
         my $cb = shift;
 
@@ -49,7 +52,7 @@ print \$q->header, "Hello " x 10000;
 
     chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
 
-    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
     test_psgi app => $app_exec, client => sub {
         my $cb = shift;
 
@@ -73,7 +76,7 @@ print <STDIN>;
 
     chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
 
-    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
     test_psgi app => $app_exec, client => sub {
         my $cb = shift;
 
@@ -124,7 +127,7 @@ print \$q->header(-type => "text/plain"), \$result;
 
     chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
 
-    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
     test_psgi app => $app_exec, client => sub {
         my $cb = shift;
 
@@ -135,6 +138,8 @@ print \$q->header(-type => "text/plain"), \$result;
 
     undef $tmp;
 };
+
+}
 
 done_testing;
 
