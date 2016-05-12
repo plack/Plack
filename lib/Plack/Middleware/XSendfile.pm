@@ -76,6 +76,8 @@ C<set_io_path> to add C<path> method to an IO object in the body.
 See L<http://github.com/rack/rack-contrib/blob/master/lib/rack/contrib/sendfile.rb>
 for the frontend configuration.
 
+Plack::Middleware::XSendfile does not set the content-type header.
+
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa
