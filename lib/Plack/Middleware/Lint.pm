@@ -130,16 +130,16 @@ sub validate_res {
             die('Response headers MUST NOT contain a key named Status');
         }
         if ($key =~ /[:\r\n]|[-_]$/) {
-            die("Response headers MUST NOT contain a key with : or newlines, or that end in - or _: $key");
+            die("Response headers MUST NOT contain a key with : or newlines, or that end in - or _. Header: $key");
         }
         unless ($key =~ /^[a-zA-Z][0-9a-zA-Z\-_]*$/) {
-            die("Response headers MUST consist only of letters, digits, _ or - and MUST start with a letter: $key");
+            die("Response headers MUST consist only of letters, digits, _ or - and MUST start with a letter. Header: $key");
         }
         if ($val =~ /[\000-\037]/) {
-            die("Response headers MUST NOT contain characters below octal \037: $val");
+            die("Response headers MUST NOT contain characters below octal \037. Header: $key. Value: $val");
         }
-        if (!defined $val) {
-            die("Response headers MUST be a defined string");
+        unless (defined $val) {
+            die("Response headers MUST be a defined string. Header: $key");
         }
     }
 
