@@ -1,3 +1,10 @@
+BEGIN {
+  if ( $ENV{NO_NETWORK_TESTING} ) {
+    print '1..0 # SKIP Network connections required for this test';
+    exit;
+  }
+}
+
 package MyComponent;
 use strict;
 use warnings;
