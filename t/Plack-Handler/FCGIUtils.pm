@@ -1,4 +1,4 @@
-package t::FCGIUtils;
+package FCGIUtils;
 use strict;
 use warnings;
 use File::Temp ();

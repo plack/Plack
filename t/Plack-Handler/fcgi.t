@@ -8,7 +8,8 @@ use Test::Requires qw(FCGI FCGI::ProcManager);
 use Plack;
 use Plack::Handler::FCGI;
 use Plack::Test::Suite;
-use t::FCGIUtils;
+use lib 't/Plack-Handler';
+use FCGIUtils;
 
 my $lighty_port;
 my $fcgi_port;
