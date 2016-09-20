@@ -68,7 +68,14 @@ sub cookies {
         # trim leading trailing whitespace
         $pair =~ s/^\s+//; $pair =~ s/\s+$//;
 
-        my ($key, $value) = map URI::Escape::uri_unescape($_), split( "=", $pair, 2 );
+        my ($key, $value) = split( "=", $pair, 2 );
+
+        $key = URI::Escape::uri_unescape($key);
+
+        # Values can be quoted
+        $value =~ s/\A"(.*)"\z/$1/;
+
+        $value = URI::Escape::uri_unescape($value);
 
         # Take the first one like CGI.pm or rack do
         $results{$key} = $value unless exists $results{$key};
