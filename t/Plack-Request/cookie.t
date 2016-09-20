@@ -18,6 +18,8 @@ my $app = sub {
     is $req->cookies->{BOTH}, '"internal quotes"';
     is $req->cookies->{EMPTYQUOTE}, '';
     is $req->cookies->{EMPTY}, '';
+    is $req->cookies->{BADSTART}, '"data';
+    is $req->cookies->{BADEND}, 'data"';
 
     $req->new_response(200)->finalize;
 };
@@ -35,7 +37,9 @@ test_psgi $app, sub {
       'ZZTOP=%22with%20quotes%22;',
       'BOTH="%22internal quotes%22";',
       'EMPTYQUOTE="";',
-      'EMPTY=;'
+      'EMPTY=;',
+      'BADSTART="data;',
+      'BADEND=data"',
     ));
     $cb->($req);
 };

@@ -73,8 +73,7 @@ sub cookies {
         $key = URI::Escape::uri_unescape($key);
 
         # Values can be quoted
-        $value =~ s/\A"//;
-        $value =~ s/"\z//;
+        $value =~ s/\A"(.*)"\z/$1/;
 
         $value = URI::Escape::uri_unescape($value);
 
