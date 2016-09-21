@@ -1,6 +1,6 @@
 requires 'perl', '5.008001';
 
-requires 'Cookie::Baker', '0.05';
+requires 'Cookie::Baker', '0.07';
 requires 'Devel::StackTrace', '1.23';
 requires 'Devel::StackTrace::AsHTML', '0.11';
 requires 'File::ShareDir', '1.00';
