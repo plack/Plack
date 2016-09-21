@@ -13,6 +13,13 @@ my $app = sub {
     is $req->cookies->{Bar}, 'Baz';
     is $req->cookies->{XXX}, 'Foo Bar';
     is $req->cookies->{YYY}, 0, "When we get multiple values we return the first one (which e.g. Apache does too)";
+    is $req->cookies->{ZZZ}, 'spaced out';
+    is $req->cookies->{ZZTOP}, '"with quotes"';
+    is $req->cookies->{BOTH}, '"internal quotes"';
+    is $req->cookies->{EMPTYQUOTE}, '';
+    is $req->cookies->{EMPTY}, '';
+    is $req->cookies->{BADSTART}, '"data';
+    is $req->cookies->{BADEND}, 'data"';
 
     $req->new_response(200)->finalize;
 };
@@ -20,7 +27,20 @@ my $app = sub {
 test_psgi $app, sub {
     my $cb = shift;
     my $req = HTTP::Request->new(GET => "/");
-    $req->header(Cookie => 'Foo=Bar; Bar=Baz; XXX=Foo%20Bar; YYY=0; YYY=3');
+    $req->header(Cookie => join(' ',
+      'Foo=Bar;',
+      'Bar=Baz;',
+      'XXX=Foo%20Bar;',
+      'YYY=0;',
+      'YYY=3;',
+      'ZZZ="spaced out";',
+      'ZZTOP=%22with%20quotes%22;',
+      'BOTH="%22internal quotes%22";',
+      'EMPTYQUOTE="";',
+      'EMPTY=;',
+      'BADSTART="data;',
+      'BADEND=data"',
+    ));
     $cb->($req);
 };
 
