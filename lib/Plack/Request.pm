@@ -12,6 +12,7 @@ use Plack::Request::Upload;
 use Stream::Buffered;
 use URI;
 use URI::Escape ();
+use Cookie::Baker ();
 
 use HTTP::Entity::Parser;
 use WWW::Form::UrlEncoded qw/parse_urlencoded_arrayref/;
@@ -61,20 +62,7 @@ sub cookies {
     }
 
     $self->env->{'plack.cookie.string'} = $self->env->{HTTP_COOKIE};
-
-    my %results;
-    my @pairs = grep m/=/, split "[;,] ?", $self->env->{'plack.cookie.string'};
-    for my $pair ( @pairs ) {
-        # trim leading trailing whitespace
-        $pair =~ s/^\s+//; $pair =~ s/\s+$//;
-
-        my ($key, $value) = map URI::Escape::uri_unescape($_), split( "=", $pair, 2 );
-
-        # Take the first one like CGI.pm or rack do
-        $results{$key} = $value unless exists $results{$key};
-    }
-
-    $self->env->{'plack.cookie.parsed'} = \%results;
+    $self->env->{'plack.cookie.parsed'} = Cookie::Baker::crush_cookie($self->env->{'plack.cookie.string'});
 }
 
 sub content {
