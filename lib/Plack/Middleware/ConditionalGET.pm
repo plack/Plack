@@ -14,7 +14,13 @@ sub call {
         my $res = shift;
 
         my $h = Plack::Util::headers($res->[1]);
-        if ( $self->etag_matches($h, $env) || $self->not_modified_since($h, $env) ) {
+
+        # check both ETag and If-Modified-Since, and at least one should exist
+        # and all present headers should match, not either.
+        my @checks = ( $self->etag_matches($h, $env), $self->not_modified_since($h, $env) )
+          or return;
+
+        unless (grep !$_, @checks) {
             $res->[0] = 304;
             $h->remove($_) for qw( Content-Type Content-Length Content-Disposition );
             if ($res->[2]) {
@@ -37,12 +43,14 @@ no warnings 'uninitialized';
 
 sub etag_matches {
     my($self, $h, $env) = @_;
-    $h->exists('ETag') && $h->get('ETag') eq _value($env->{HTTP_IF_NONE_MATCH});
+    return unless $h->exists('ETag');
+    $h->get('ETag') eq _value($env->{HTTP_IF_NONE_MATCH});
 }
 
 sub not_modified_since {
     my($self, $h, $env) = @_;
-    $h->exists('Last-Modified') && $h->get('Last-Modified') eq _value($env->{HTTP_IF_MODIFIED_SINCE});
+    return unless $h->exists('Last-Modified');
+    $h->get('Last-Modified') eq _value($env->{HTTP_IF_MODIFIED_SINCE});
 }
 
 sub _value {
