@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 5.043, Dist::Milla version v1.0.15, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Dist::Milla version v1.0.16, Dist::Zilla version 6.007, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -35,14 +35,14 @@
       },
       "develop" : {
          "requires" : {
-            "Dist::Milla" : "v1.0.15",
+            "Dist::Milla" : "v1.0.16",
             "Test::Pod" : "1.41"
          }
       },
       "runtime" : {
          "requires" : {
             "Apache::LogFormat::Compiler" : "0.33",
-            "Cookie::Baker" : "0.05",
+            "Cookie::Baker" : "0.07",
             "Devel::StackTrace" : "1.23",
             "Devel::StackTrace::AsHTML" : "0.11",
             "File::ShareDir" : "1.00",
@@ -74,7 +74,6 @@
       },
       "test" : {
          "requires" : {
-            "Test::MockTime::HiRes" : "0.06",
             "Test::More" : "0.88",
             "Test::Requires" : "0"
          },
@@ -89,11 +88,12 @@
             "LWP::Protocol::http10" : "0",
             "LWP::UserAgent" : "5.814",
             "Log::Dispatch::Array" : "0",
-            "MIME::Types" : "0"
+            "MIME::Types" : "0",
+            "Test::MockTime::HiRes" : "0.06"
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/plack/Plack/issues"
@@ -105,13 +105,14 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0040",
+   "version" : "1.0041",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
-      "Ævar Arnfjörð Bjarmason <avarab@gmail.com>",
+      "\u00c6var Arnfj\u00f6r\u00f0 Bjarmason <avarab@gmail.com>",
+      "Akzhan Abdulin <akzhan.abdulin@gmail.com>",
       "Alexandr Ciornii <alexchorny@gmail.com>",
-      "Alex J. G. Burzyński <ajgb@cpan.org>",
+      "Alex J. G. Burzy\u0144ski <ajgb@cpan.org>",
       "Allan Whiteford <github.allan@256kelvin.com>",
       "Andrew Rodland <andrew@cleverdomain.org>",
       "Andy Wardley <abw@wardley.org>",
@@ -119,7 +120,7 @@
       "Arthur Axel 'fREW' Schmidt <frioux@gmail.com>",
       "Asato Wakisaka <asato.wakisaka@gmail.com>",
       "Ashley Pond V <ashley.pond.v@gmail.com>",
-      "Ask Bjørn Hansen <ask@develooper.com>",
+      "Ask Bj\u00f8rn Hansen <ask@develooper.com>",
       "ben hengst <notbenh@cpan.org>",
       "Ben Morrow <ben@morrow.me.uk>",
       "Bernhard Graf <augensalat@gmail.com>",
@@ -130,17 +131,19 @@
       "Christian Walde <walde.christian@googlemail.com>",
       "chromatic <chromatic@wgz.org>",
       "Cosimo Streppone <cosimo@cpan.org>",
-      "Dagfinn Ilmari Mannsåker <ilmari@ilmari.org>",
+      "Dagfinn Ilmari Manns\u00e5ker <ilmari@ilmari.org>",
       "Daisuke Maki <lestrrat+github@gmail.com>",
       "Daisuke Murase <typester@cpan.org>",
       "Dave Marr <dave.marr@gmail.com>",
       "Dave Rolsky <autarch@urth.org>",
       "David E. Wheeler <david@justatheory.com>",
+      "David Schmidt <mail@davidschmidt.at>",
       "David Steinbrunner <dsteinbrunner@MountainBook-Pro.local>",
       "Eduardo Arino de la Rubia <earino@rent.com>",
       "Eric Johnson <eric.git@iijo.org>",
       "Eugen Konkov <kes-kes@yandex.ru>",
       "Fabrice Gabolde <fabrice.gabolde@gmail.com>",
+      "Fabrice Gabolde <fgabolde@weborama.com>",
       "fayland <fayland@gmail.com>",
       "Flavio Poletti <flavio@polettix.it>",
       "Florian Ragwitz <rafl@debian.org>",
@@ -164,7 +167,7 @@
       "John Beppu <john.beppu@gmail.com>",
       "John Napiorkowski <jjnapiork@cpan.org>",
       "Jonathan Swartz <swartz@pobox.com>",
-      "José Pinheiro Neta <jose.neta@gmail.com>",
+      "Jose\u0301 Pinheiro Neta <jose.neta@gmail.com>",
       "Justin Davis <jrcd83@gmail.com>",
       "kakuno <kakuno@livedoor.jp>",
       "Kang-min Liu <gugod@gugod.org>",
@@ -174,6 +177,7 @@
       "Lee Aylward <lee@laylward.com>",
       "Leo Lapworth <leo@cuckoo.org>",
       "mala <github@ma.la>",
+      "Marco Pessotto <melmothx@gmail.com>",
       "Marian Schubert <maio@netsafe.cz>",
       "Mark Fowler <mark@twoshortplanks.com>",
       "Mark Stosberg <mark@stosberg.com>",
@@ -187,7 +191,7 @@
       "Oliver Gorwits <oliver@cpan.org>",
       "Oliver Paukstadt <pstadt@sourcentral.org>",
       "Oliver Trosien <otrosien@epages.com>",
-      "Olivier Mengué <dolmen@cpan.org>",
+      "Olivier Mengu\u00e9 <dolmen@cpan.org>",
       "osfameron <hakim.cassimally@gmail.com>",
       "Panu Ervamaa <panu.ervamaa@frantic.com>",
       "Paul Driver <frodwith@gmail.com>",
@@ -199,7 +203,7 @@
       "Rafael Kitover <rkitover@cpan.org>",
       "Randy Stauner <rwstauner@cpan.org>",
       "Ray Miller <rm7@sanger.ac.uk>",
-      "Richard Simões <rsimoes@gmail.com>",
+      "Richard Sim\u00f5es <rsimoes@gmail.com>",
       "Ricky Morse <remorse@partners.org>",
       "Rob Hoelz <rob@hoelz.ro>",
       "Ryo Miyake <ryo.studiom@gmail.com>",
@@ -212,6 +216,7 @@
       "Stuart A Johnston <saj_git@thecommune.net>",
       "Takeshi OKURA <okura3@gmail.com>",
       "Tatsuhiko Miyagawa <miyagawa@bulknews.net>",
+      "Thomas Klausner <domm@plix.at>",
       "Tim Bunce <Tim.Bunce@pobox.com>",
       "Tokuhiro Matsuno <tokuhirom@gmail.com>",
       "Tomas Doran <bobtfish@bobtfish.net>",
@@ -223,7 +228,8 @@
       "yappo <yappo@shibuya.pl>",
       "Yury Zavarin <yury.zavarin@gmail.com>",
       "Yuval Kogman <nothingmuch@woobling.org>",
-      "唐鳳 <audreyt@audreyt.org>"
-   ]
+      "\u5510\u9cf3 <audreyt@audreyt.org>"
+   ],
+   "x_serialization_backend" : "Cpanel::JSON::XS version 3.0217"
 }
 

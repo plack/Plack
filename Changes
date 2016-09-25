@@ -2,6 +2,14 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0041  2016-09-25 14:24:07 PDT
+    [BUG FIXES]
+        - Fix ConditionalGET middleware in case both Last-Modified and ETag exist. #569
+        - Handle Cookie values with quotes correctly (alh, kazeburo) #564, #567
+
+    [IMPROVEMENTS]
+        - Several documentation fixes and error message improvements #556, #557, #558, #559
+
 1.0040  2016-04-01 09:57:06 PDT
     [INCOMPATIBLE CHANGES]
         - Fixes a mistake in the value of %D and %T in Accesslog::Timed middleware.
