@@ -2,6 +2,10 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0042  2016-09-28 22:37:33 PDT
+    [BUG FIXES]
+        - Revert: Allow passing an already-open listen socket to HTTP::Server::PSGI #550
+
 1.0041  2016-09-25 14:24:07 PDT
     [BUG FIXES]
         - Fix ConditionalGET middleware in case both Last-Modified and ETag exist. #569

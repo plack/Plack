@@ -54,7 +54,7 @@
             "Hash::MultiValue" : "0.05",
             "Pod::Usage" : "1.36",
             "Stream::Buffered" : "0.02",
-            "Test::TCP" : "2.15",
+            "Test::TCP" : "2.00",
             "Try::Tiny" : "0",
             "URI" : "1.59",
             "WWW::Form::UrlEncoded" : "0.23",
@@ -105,7 +105,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0041",
+   "version" : "1.0042",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
