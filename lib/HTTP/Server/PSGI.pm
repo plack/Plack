@@ -35,14 +35,8 @@ sub new {
     my($class, %args) = @_;
 
     my $self = bless {
-        ($args{listen_sock} ? (
-            listen_sock    => $args{listen_sock},
-            host           => $args{listen_sock}->sockhost,
-            port           => $args{listen_sock}->sockport,
-        ):(
-            host           => $args{host} || 0,
-            port           => $args{port} || 8080,
-        )),
+        host               => $args{host} || 0,
+        port               => $args{port} || 8080,
         timeout            => $args{timeout} || 300,
         server_software    => $args{server_software} || $class,
         server_ready       => $args{server_ready} || sub {},
@@ -88,19 +82,17 @@ sub prepare_socket_class {
 sub setup_listener {
     my $self = shift;
 
-    $self->{listen_sock} ||= do {
-        my %args = (
-            Listen    => SOMAXCONN,
-            LocalPort => $self->{port},
-            LocalAddr => $self->{host},
-            Proto     => 'tcp',
-            ReuseAddr => 1,
-        );
+    my %args = (
+        Listen    => SOMAXCONN,
+        LocalPort => $self->{port},
+        LocalAddr => $self->{host},
+        Proto     => 'tcp',
+        ReuseAddr => 1,
+    );
 
-        my $class = $self->prepare_socket_class(\%args);
-        $class->new(%args)
-            or die "failed to listen to port $self->{port}: $!";
-    };
+    my $class = $self->prepare_socket_class(\%args);
+    $self->{listen_sock} ||= $class->new(%args)
+        or die "failed to listen to port $self->{port}: $!";
 
     $self->{server_ready}->({ %$self, proto => $self->{ssl} ? 'https' : 'http' });
 }

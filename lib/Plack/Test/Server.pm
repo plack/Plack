@@ -12,11 +12,9 @@ sub new {
     my($class, $app, %args) = @_;
 
     my $server = Test::TCP->new(
-        listen => 1,
-        host => $args{host},
         code => sub {
-            my $socket = shift;
-            my $server = Plack::Loader->auto(listen_sock => $socket);
+            my $port = shift;
+            my $server = Plack::Loader->auto(port => $port, host => ($args{host} || '127.0.0.1'));
             $server->run($app);
             exit;
         },

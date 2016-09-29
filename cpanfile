@@ -10,7 +10,7 @@ requires 'HTTP::Headers::Fast', '0.18';
 requires 'Hash::MultiValue', '0.05';
 requires 'Pod::Usage', '1.36';
 requires 'Stream::Buffered', '0.02';
-requires 'Test::TCP', '2.15';
+requires 'Test::TCP', '2.00';
 requires 'Try::Tiny';
 requires 'URI', '1.59';
 requires 'parent';
