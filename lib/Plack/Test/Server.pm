@@ -11,10 +11,20 @@ use Plack::LWPish;
 sub new {
     my($class, $app, %args) = @_;
 
+    my $host = $args{host} || '127.0.0.1';
     my $server = Test::TCP->new(
+        listen => $args{listen},
+        host => $host,
         code => sub {
-            my $port = shift;
-            my $server = Plack::Loader->auto(port => $port, host => ($args{host} || '127.0.0.1'));
+            my $sock_or_port = shift;
+            my $server = Plack::Loader->auto(
+                ($args{listen} ? (
+                    listen_sock => $sock_or_port,
+                ):(
+                    port => $sock_or_port,
+                    host => $host,
+                ))
+            );
             $server->run($app);
             exit;
         },
