@@ -17,6 +17,11 @@ use Cookie::Baker ();
 use HTTP::Entity::Parser;
 use WWW::Form::UrlEncoded qw/parse_urlencoded_arrayref/;
 
+our %MIME_TYPES = (
+    'application/x-www-form-urlencoded', 'HTTP::Entity::Parser::UrlEncoded',
+    'multipart/form-data', 'HTTP::Entity::Parser::MultiPart'
+);
+
 sub new {
     my($class, $env) = @_;
     Carp::croak(q{$env is required})
@@ -231,8 +236,9 @@ sub _build_body_parser {
     my $len = $self->_buffer_length_for($self->env);
 
     my $parser = HTTP::Entity::Parser->new(buffer_length => $len);
-    $parser->register('application/x-www-form-urlencoded', 'HTTP::Entity::Parser::UrlEncoded');
-    $parser->register('multipart/form-data', 'HTTP::Entity::Parser::MultiPart');
+    for my $mime_type (keys %MIME_TYPES) {
+        $parser->register($mime_type, $MIME_TYPES{$mime_type});
+    }
 
     $parser;
 }
