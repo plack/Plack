@@ -41,7 +41,7 @@ Plack::Middleware::Chunked - Applies chunked encoding to the response body
 
 =head1 SYNOPSIS
 
-  # Mostly from server implemenations
+  # Mostly from server implementations
   $app = Plack::Middeware::Chunked->wrap($app);
 
 =head1 DESCRIPTION
