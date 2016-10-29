@@ -105,8 +105,10 @@ sub accept_loop {
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $self->{listen_sock}->accept) {
-            $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-                or die "setsockopt(TCP_NODELAY) failed:$!";
+            if (eval { TCP_NODELAY }) {
+                $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
+                    or die "setsockopt(TCP_NODELAY) failed:$!";
+            }
             my $env = {
                 SERVER_PORT => $self->{port},
                 SERVER_NAME => $self->{host},
