@@ -13,10 +13,12 @@ use Plack::Util;
 use Stream::Buffered;
 use Plack::Middleware::ContentLength;
 use POSIX qw(EINTR);
-use Socket qw(IPPROTO_TCP TCP_NODELAY);
+use Socket qw(IPPROTO_TCP);
 
 use Try::Tiny;
 use Time::HiRes qw(time);
+
+use constant TCP_NODELAY => try { Socket::TCP_NODELAY };
 
 my $alarm_interval;
 BEGIN {
@@ -105,7 +107,7 @@ sub accept_loop {
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
         if (my $conn = $self->{listen_sock}->accept) {
-            if (eval { TCP_NODELAY }) {
+            if (defined TCP_NODELAY) {
                 $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                     or die "setsockopt(TCP_NODELAY) failed:$!";
             }
