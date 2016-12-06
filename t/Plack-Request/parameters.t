@@ -14,6 +14,21 @@ my $app = sub {
 
     is_deeply $req->parameters, { foo => 'bar', 'bar' => 'baz' };
 
+    $b->{foo} = 'body-updated';
+    $q->{bar} = 'query-updated';
+
+    is_deeply $req->parameters,
+        { foo => 'bar', 'bar' => 'baz' },
+        "changes to values in the body and query hashes are not reflected in later parameters() calls";
+
+    my $merged = $req->parameters;
+    $merged->{foo} = 'body-updated';
+    $merged->{bar} = 'query-updated';
+
+    is_deeply $req->parameters,
+        { foo => 'body-updated', 'bar' => 'query-updated' },
+        "changes to values in the parameters hash *are* reflected in later parameters() calls";
+
     $req->new_response(200)->finalize;
 };
 
