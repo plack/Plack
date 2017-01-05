@@ -419,7 +419,7 @@ Apache2 with mod_fastcgi:
 
 mod_fcgid:
 
-  FcgiPassHeader Authorization
+  FcgidPassHeader Authorization
 
 =head2 Server::Starter
 
