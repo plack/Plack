@@ -11,6 +11,8 @@ my $app = sub {
     is $b->{foo}, 'bar';
     my $q = $req->query_parameters;
     is $q->{bar}, 'baz';
+    my $h = $req->header_parameters;
+    is $h->get('QUX'), 'quux';
 
     is_deeply $req->parameters, { foo => 'bar', 'bar' => 'baz' };
 
@@ -19,7 +21,7 @@ my $app = sub {
 
 test_psgi $app, sub {
     my $cb = shift;
-    $cb->(POST "/?bar=baz", { foo => "bar" });
+    $cb->(POST "/?bar=baz", QUX => 'quux', Content => [ foo => "bar" ]);
 };
 
 done_testing;
