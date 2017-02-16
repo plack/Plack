@@ -93,7 +93,7 @@ sub headers {
         $self->{headers} = HTTP::Headers::Fast->new(
             map {
                 (my $field = $_) =~ s/^HTTPS?_//;
-                ( $field => $env->{$_} );
+                ( lc($field) => $env->{$_} );
             }
                 grep { /^(?:HTTP|CONTENT)/i } keys %$env
             );
