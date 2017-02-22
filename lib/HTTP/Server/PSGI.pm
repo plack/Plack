@@ -88,6 +88,7 @@ sub setup_listener {
         LocalAddr => $self->{host},
         Proto     => 'tcp',
         ReuseAddr => 1,
+        Timeout   => $^O eq 'MSWin32' ? 1 : 0,
     );
 
     my $class = $self->prepare_socket_class(\%args);
@@ -104,6 +105,7 @@ sub accept_loop {
 
     while (1) {
         local $SIG{PIPE} = 'IGNORE';
+        local $SIG{TERM} = sub { exit(0) } if $^O eq 'MSWin32';
         if (my $conn = $self->{listen_sock}->accept) {
             $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                 or die "setsockopt(TCP_NODELAY) failed:$!";
