@@ -2,6 +2,12 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0043  2017-02-21 19:00:31 PST
+    [IMPROVEMENTS]
+        - Fixed typo in docs #578 #584
+        - Remove test that expects cookie to be delimited by comma #573
+        - Stop upper-casing all header keys in Plack::Request->headers #585
+        
 1.0042  2016-09-28 22:37:33 PDT
     [BUG FIXES]
         - Revert: Allow passing an already-open listen socket to HTTP::Server::PSGI #550

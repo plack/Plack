@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.16, Dist::Zilla version 6.007, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Dist::Milla version v1.0.17, Dist::Zilla version 6.008, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -35,7 +35,7 @@
       },
       "develop" : {
          "requires" : {
-            "Dist::Milla" : "v1.0.16",
+            "Dist::Milla" : "v1.0.17",
             "Test::Pod" : "1.41"
          }
       },
@@ -105,7 +105,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0042",
+   "version" : "1.0043",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
@@ -139,6 +139,7 @@
       "David E. Wheeler <david@justatheory.com>",
       "David Schmidt <mail@davidschmidt.at>",
       "David Steinbrunner <dsteinbrunner@MountainBook-Pro.local>",
+      "dmaestro <dmaestro@users.noreply.github.com>",
       "Eduardo Arino de la Rubia <earino@rent.com>",
       "Eric Johnson <eric.git@iijo.org>",
       "Eugen Konkov <kes-kes@yandex.ru>",
@@ -230,6 +231,6 @@
       "Yuval Kogman <nothingmuch@woobling.org>",
       "\u5510\u9cf3 <audreyt@audreyt.org>"
    ],
-   "x_serialization_backend" : "Cpanel::JSON::XS version 3.0217"
+   "x_serialization_backend" : "Cpanel::JSON::XS version 3.0227"
 }
 
