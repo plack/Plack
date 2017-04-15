@@ -70,4 +70,40 @@ test_psgi $app, sub {
     like $psgi_errors, qr/ugly stack trace here/;
 };
 
+SKIP: {
+    eval { require Test::Deep; 1 }
+        or skip 'Test::Deep required for remaining tests', 1;
+
+    my $log_stash;
+
+    my $app2 = sub {
+        my $env = shift;
+        $env->{'psgi.errors'} = undef;  # will die if we attempt to use
+        $env->{'psgix.logger'} = sub { push @$log_stash, shift };
+        die 'ugly stack trace here';
+    };
+    $app2 = Plack::Middleware::HTTPExceptions->wrap(
+        $app2,
+        use_logger => 1,
+    );
+
+    test_psgi $app2, sub {
+        my $cb = shift;
+
+        # falls through to returning HTTP 500
+        my $res = $cb->(GET "/uncaught");
+
+        Test::Deep::cmp_deeply(
+            $log_stash,
+            [
+                {
+                    level => 'fatal',
+                    message => Test::Deep::re(qr/^ugly stack trace here/)
+                }
+            ],
+            'psgix.logger is used, rather than psgi.errors',
+        );
+    };
+}
+
 done_testing;
