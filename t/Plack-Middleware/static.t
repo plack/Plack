@@ -18,7 +18,7 @@ my $handler = builder {
         path => sub { s!^/share/!!}, root => "share";
     enable "Plack::Middleware::Static",
         path => sub { s!^/more_share/!! if $_[1]->{PATH_INFO} =~ m!^/more_share/!  },
-        root => "share";
+        root => "share", conditional_get => 1;
     enable "Plack::Middleware::Static",
         path => sub { s!^/share-pass/!!}, root => "share", pass_through => 1;
     enable "Plack::Middleware::Static",
@@ -69,6 +69,12 @@ my %test = (
         {
             my $res = $cb->(GET "http://localhost/more_share/face.jpg");
             is $res->content_type, 'image/jpeg';
+            my $last_modified = $res->headers->header('Last-Modified');
+            $res = $cb->(
+                GET "http://localhost/more_share/face.jpg",
+                'If-Modified-Since' => $last_modified
+            );
+            is $res->code, 304;
         }
 
         {
