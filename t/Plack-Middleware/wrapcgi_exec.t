@@ -6,8 +6,13 @@ use HTTP::Request::Common;
 use Plack::App::WrapCGI;
 use IO::File;
 use File::Temp;
+use File::Spec;
+use Cwd 'abs_path';
 
 plan skip_all => $^O if $^O eq "MSWin32";
+
+for my $execute (1, 'noexec') {
+    note 'Execution model: ' . ($execute eq '1' ? 'fork+exec' : 'fork+noexec');
 
 {
     my $tmp = File::Temp->new(CLEANUP => 1);
@@ -21,7 +26,7 @@ print \$q->header, "Hello ", scalar \$q->param('name'), " counter=", ++\$COUNTER
 
     chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
 
-    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
     test_psgi app => $app_exec, client => sub {
         my $cb = shift;
 
@@ -49,7 +54,7 @@ print \$q->header, "Hello " x 10000;
 
     chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
 
-    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
     test_psgi app => $app_exec, client => sub {
         my $cb = shift;
 
@@ -73,7 +78,7 @@ print <STDIN>;
 
     chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
 
-    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
     test_psgi app => $app_exec, client => sub {
         my $cb = shift;
 
@@ -124,7 +129,7 @@ print \$q->header(-type => "text/plain"), \$result;
 
     chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
 
-    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
     test_psgi app => $app_exec, client => sub {
         my $cb = shift;
 
@@ -135,6 +140,109 @@ print \$q->header(-type => "text/plain"), \$result;
 
     undef $tmp;
 };
+
+# test that FindBin works if it was used before
+{
+    use FindBin;
+    my $tmp = File::Temp->new(CLEANUP => 1);
+    print $tmp <<"...";
+#!$^X
+use CGI;
+use FindBin;
+
+my \$result = "\$FindBin::RealBin\n" . __PACKAGE__ . "\n";
+
+my \$q = CGI->new;
+print \$q->header(-type => "text/plain"), \$result;
+...
+    close $tmp;
+
+    chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
+
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
+    test_psgi app => $app_exec, client => sub {
+        my $cb = shift;
+
+        my $res = $cb->(GET "http://localhost/?");
+        is $res->code, 200;
+        is $res->content, abs_path(File::Spec->tmpdir) . "\nmain\n";
+    };
+
+    undef $tmp;
+};
+
+# test that eval { die } works
+{
+    use FindBin;
+    my $tmp = File::Temp->new(CLEANUP => 1);
+    print $tmp <<"...";
+#!$^X
+use CGI;
+use FindBin;
+
+eval { die "error message" };
+my \$result = \$\@;
+
+my \$q = CGI->new;
+print \$q->header(-type => "text/plain"), \$result;
+...
+    close $tmp;
+
+    chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
+
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
+    test_psgi app => $app_exec, client => sub {
+        my $cb = shift;
+
+        my $res = $cb->(GET "http://localhost/?");
+        is $res->code, 200;
+        like $res->content, qr{^error message };
+    };
+
+    undef $tmp;
+};
+
+# Depth of stack
+{
+    use FindBin;
+    my $tmp = File::Temp->new(CLEANUP => 1);
+    print $tmp <<"...";
+#!$^X
+use CGI;
+use FindBin;
+use Carp;
+
+eval { confess "error message" };
+my \$result = \$\@;
+
+my \$q = CGI->new;
+print \$q->header(-type => "text/plain"), \$result;
+...
+    close $tmp;
+
+    chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
+
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => $execute)->to_app;
+    test_psgi app => $app_exec, client => sub {
+        my $cb = shift;
+
+        my $res = $cb->(GET "http://localhost/?");
+        is $res->code, 200;
+	my @lines = split /\n/, $res->content;
+	{
+	    local $TODO;
+	    if ($execute eq 'noexec') {
+		$TODO = "Probably there should be a solution using \$Carp::CarpLevel or Sub::Uplevel";
+	    }
+	    is @lines, 2, 'short stack trace'
+		or diag "Stack trace too long: " . join("\n", @lines);
+	}
+    };
+
+    undef $tmp;
+};
+
+}
 
 done_testing;
 
