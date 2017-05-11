@@ -150,9 +150,16 @@ The path to a CGI-style program. This is a required parameter.
 
 =item execute
 
-An optional parameter. When set to a true value, this app will run the script
+An optional parameter. When set to a true value (but not C<noexec>, see below), this app will run the script
 with a CGI-style C<fork>/C<exec> model. Note that you may run programs written
 in other languages with this approach.
+
+If set to C<noexec>, then still a C<fork> is done, but the existing
+perl interpreter context is re-used. This has the advantage that
+global changes in the process are not affecting other requests. On the
+other hand, unlike in the non-C<execute> model, it's still possible to
+have positive effects on response times, especially if modules are
+preloaded in the C<.psgi>.
 
 =back
 
