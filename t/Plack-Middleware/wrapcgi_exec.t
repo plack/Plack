@@ -7,6 +7,7 @@ use Plack::App::WrapCGI;
 use IO::File;
 use File::Temp;
 use File::Spec;
+use Cwd 'abs_path';
 
 plan skip_all => $^O if $^O eq "MSWin32";
 
@@ -164,7 +165,7 @@ print \$q->header(-type => "text/plain"), \$result;
 
         my $res = $cb->(GET "http://localhost/?");
         is $res->code, 200;
-        is $res->content, File::Spec->tmpdir . "\nmain\n";
+        is $res->content, abs_path(File::Spec->tmpdir) . "\nmain\n";
     };
 
     undef $tmp;
