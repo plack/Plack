@@ -99,7 +99,12 @@ sub serve_path {
 
     my @stat = stat $file;
 
-    Plack::Util::set_io_path($fh, Cwd::realpath($file));
+    if ( $env->{'REQUEST_METHOD'} eq 'HEAD' ) {
+        $fh = [];
+    }
+    else {
+        Plack::Util::set_io_path($fh, Cwd::realpath($file));
+    }
 
     return [
         200,

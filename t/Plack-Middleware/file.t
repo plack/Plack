@@ -14,6 +14,9 @@ test_psgi $app, sub {
     is $res->code, 200;
     like $res->content, qr/Plack/;
 
+    $res = $cb->(HEAD "/");
+    is length $res->content, 0;
+
     $res = $cb->(GET "/whatever");
     is $res->content_type, 'text/plain';
     is $res->code, 200;
@@ -31,6 +34,9 @@ test_psgi $app_content_type, sub {
     is $res->code, 200;
     like $res->content, qr/Plack/;
 
+    $res = $cb->(HEAD "/");
+    is length $res->content, 0;
+
     $res = $cb->(GET "/whatever");
     is $res->content_type, 'text/x-changes';
     is $res->code, 200;
@@ -44,6 +50,9 @@ test_psgi $app_secure, sub {
     my $res = $cb->(GET "/file.t");
     is $res->code, 200;
     like $res->content, qr/We will find for this literal string/;
+
+    $res = $cb->(HEAD "/file.t");
+    is length $res->content, 0;
 
     my $res = $cb->(GET "/../Plack-Middleware/file.t");
     is $res->code, 403;
