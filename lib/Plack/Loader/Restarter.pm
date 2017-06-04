@@ -40,8 +40,20 @@ sub _kill_child {
 
     my $pid = $self->{pid} or return;
     warn "Killing the existing server (pid:$pid)\n";
-    kill 'TERM' => $pid;
-    waitpid($pid, 0);
+    if ($^O eq 'MSWin32') {
+      Win32::Sleep(0);
+      kill 'KILL' => $pid;
+      Win32::Sleep(0);
+      my $kid;
+      LOOP: while (1) {
+          my $kid = waitpid( $pid, 0 );
+          last LOOP if $kid == 0 || $kid == -1;
+      }
+      Win32::Sleep(0);
+    } else {
+      kill 'TERM' => $pid;
+      waitpid($pid, 0);
+    }
 }
 
 sub valid_file {
