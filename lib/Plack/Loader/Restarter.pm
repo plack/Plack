@@ -4,6 +4,7 @@ use warnings;
 use parent qw(Plack::Loader);
 use Plack::Util;
 use Try::Tiny;
+use POSIX ":sys_wait_h";
 
 sub new {
     my($class, $runner) = @_;
@@ -41,7 +42,10 @@ sub _kill_child {
     my $pid = $self->{pid} or return;
     warn "Killing the existing server (pid:$pid)\n";
     kill 'TERM' => $pid;
-    waitpid($pid, 0);
+    # NOTE: win32: don't use waitpid($pid, 0). need loop to die for widnows.
+    do {
+        $pid = waitpid(-1, WNOHANG);
+    } while defined($pid) && $pid > 0;
 }
 
 sub valid_file {
