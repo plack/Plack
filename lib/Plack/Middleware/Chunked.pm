@@ -42,11 +42,11 @@ Plack::Middleware::Chunked - Applies chunked encoding to the response body
 =head1 SYNOPSIS
 
   # Mostly from server implementations
-  $app = Plack::Middeware::Chunked->wrap($app);
+  $app = Plack::Middleware::Chunked->wrap($app);
 
 =head1 DESCRIPTION
 
-Plack::Middeware::Chunked is a middleware, or rather a library for
+Plack::Middleware::Chunked is a middleware, or rather a library for
 PSGI server to automatically add chunked encoding to the response body
 when Content-Length is not set in the response header.
 
