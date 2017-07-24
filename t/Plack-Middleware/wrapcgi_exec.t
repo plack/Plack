@@ -136,5 +136,31 @@ print \$q->header(-type => "text/plain"), \$result;
     undef $tmp;
 };
 
+# test that SIGCHLD handlers don't interfere
+{
+    my $tmp = File::Temp->new(CLEANUP => 1);
+    print $tmp <<"...";
+#!$^X
+use CGI;
+my \$q = CGI->new;
+print \$q->header, "Hello";
+...
+    close $tmp;
+
+    chmod(oct("0700"), $tmp->filename) or die "Cannot chmod";
+
+    local $SIG{CHLD} = 'IGNORE';
+    my $app_exec = Plack::App::WrapCGI->new(script => "$tmp", execute => 1)->to_app;
+    test_psgi app => $app_exec, client => sub {
+        my $cb = shift;
+
+        my $res = $cb->(GET "http://localhost/");
+        is $res->code, 200;
+        is $res->content, "Hello";
+    };
+
+    undef $tmp;
+};
+
 done_testing;
 

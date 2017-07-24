@@ -30,6 +30,7 @@ sub prepare_app {
             pipe( my $stdoutr, my $stdoutw );
             pipe( my $stdinr,  my $stdinw );
 
+            local $SIG{CHLD} = 'DEFAULT';
 
             my $pid = fork();
             Carp::croak("fork failed: $!") unless defined $pid;
@@ -64,13 +65,17 @@ sub prepare_app {
             # close STDIN so child will stop waiting
             close $stdinw;
 
-            my $res = '';
-            while (waitpid($pid, WNOHANG) <= 0) {
+            my $res = ''; my $waited_pid;
+            while (($waited_pid = waitpid($pid, WNOHANG)) == 0) {
                 $res .= slurp_fh($stdoutr);
             }
             $res .= slurp_fh($stdoutr);
 
-            if (POSIX::WIFEXITED($?)) {
+            # -1 means that the child went away, and something else
+            # (probably some global SIGCHLD handler) took care of it;
+            # yes, we just reset $SIG{CHLD} above, but you can never
+            # be too sure
+            if (POSIX::WIFEXITED($?) || $waited_pid == -1) {
                 return CGI::Parse::PSGI::parse_cgi_output(\$res);
             } else {
                 Carp::croak("Error at run_on_shell CGI: $!");
