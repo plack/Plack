@@ -13,6 +13,9 @@ my %test = (
     client => sub {
         my $cb  = shift;
 
+        open my $fh, ">", "share/#foo" or die $!;
+        close $fh;
+
         # URI-escape
         my $res = $cb->(GET "http://localhost/");
         my($ct, $charset) = $res->content_type;
@@ -29,6 +32,8 @@ my %test = (
 
         $res = $cb->(GET "/");
         like $res->content, qr/Index of \//;
+
+        unlink "share/#foo";
 
     SKIP: {
             skip "Filenames can't end with . on windows", 2 if $^O eq "MSWin32";
