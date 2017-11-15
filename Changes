@@ -1,6 +1,9 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [IMPROVEMENTS]
+        - Set Content-Length to 0 in XSendfile middleware #602
+        - Document options for XSendfile middleware
 
 1.0044  2017-04-26 22:30:27 PDT
     [IMPROVEMENTS]
