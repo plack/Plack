@@ -144,7 +144,9 @@ sub run_app($$) {
 
     return eval { $app->($env) } || do {
         my $body = "Internal Server Error";
-        $env->{'psgi.errors'}->print($@);
+        my $e = $@;
+        $e = Carp::longmess($e) if $ENV{PLACK_ENV} eq 'development';
+        $env->{'psgi.errors'}->print($e);
         [ 500, [ 'Content-Type' => 'text/plain', 'Content-Length' => length($body) ], [ $body ] ];
     };
 }
