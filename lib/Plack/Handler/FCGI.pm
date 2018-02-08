@@ -117,6 +117,8 @@ sub run {
             'psgi.streaming'    => Plack::Util::TRUE,
             'psgi.nonblocking'  => Plack::Util::FALSE,
             'psgix.harakiri'    => defined $proc_manager,
+            'psgix.cleanup'     => 1,
+            'psgix.cleanup.handlers' => [],
         };
 
         delete $env->{HTTP_CONTENT_TYPE};
@@ -161,6 +163,15 @@ sub run {
         $request->Finish;
 
         $proc_manager && $proc_manager->pm_post_dispatch();
+
+        {
+            local $SIG{TERM} = sub {
+                push @{ $env->{'psgix.cleanup.handlers'} }, sub { exit }
+                    unless $proc_manager;
+                $env->{'psgix.harakiri.commit'} = 1;
+            };
+            $_->($env) for @{ $env->{'psgix.cleanup.handlers'} || [] };
+        }
 
         if ($proc_manager && $env->{'psgix.harakiri.commit'}) {
             $proc_manager->pm_exit("safe exit with harakiri");
@@ -299,6 +310,34 @@ Send psgi.errors to STDERR instead of to the FCGI error stream.
 =item backlog
 
 Maximum length of the queue of pending connections, defaults to 100.
+
+=back
+
+=head2 EXTENSIONS
+
+Supported L<PSGI::Extensions>.
+
+=over 4
+
+=item psgix.cleanup
+
+    push @{ $env->{'psgix.cleanup.handlers'} }, sub { warn "Did this later" }
+        if $env->{'psgix.cleanup'};
+
+Supports the C<psgix.cleanup> extension,
+in order to use it, just push a callback onto
+C<< $env->{'psgix.cleanup.handlers' >>.
+These callbacks are run after the C<pm_post_dispatch> hook.
+
+=item psgix.harakiri
+
+    $env->{'psgix.harakiri.commit'} = 1
+        if $env->{'psgix.harakiri'};
+
+If there is a L</manager>, then C<psgix.harakiri> will be enabled
+and setting C<< $env->{'psgix.harakiri.commit'} >> to a true value
+will cause C<< $manager->pm_exit >> to be called after the
+request is finished.
 
 =back
 
