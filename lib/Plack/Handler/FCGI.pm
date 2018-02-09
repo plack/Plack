@@ -164,17 +164,24 @@ sub run {
 
         $proc_manager && $proc_manager->pm_post_dispatch();
 
-        {
-            local $SIG{TERM} = sub {
-                push @{ $env->{'psgix.cleanup.handlers'} }, sub { exit }
-                    unless $proc_manager;
-                $env->{'psgix.harakiri.commit'} = 1;
-            };
-            $_->($env) for @{ $env->{'psgix.cleanup.handlers'} || [] };
+        # When the fcgi-manager exits it sends a TERM signal to the workers.
+        # However, if we're busy processing the cleanup handlers, testing
+        # shows that the worker doesn't actually exit in that case.
+        # Trapping the TERM signal and finshing up fixes that.
+        my $exit_due_to_signal = 0;
+        if ( @{ $env->{'psgix.cleanup.handlers'} || [] } ) {
+            local $SIG{TERM} = sub { $exit_due_to_signal = 1 };
+            for my $handler ( @{ $env->{'psgix.cleanup.handlers'} } ) {
+                $handler->($env);
+            }
         }
 
         if ($proc_manager && $env->{'psgix.harakiri.commit'}) {
             $proc_manager->pm_exit("safe exit with harakiri");
+        }
+        elsif ($exit_due_to_signal) {
+            $proc_manager && $proc_manager->pm_exit("safe exit due to signal");
+            exit;    # want to exit, even without a $proc_manager
         }
     }
 }
