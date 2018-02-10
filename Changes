@@ -2,6 +2,13 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0046  2018-02-09 23:51:10 PST
+    [NEW FEATURES]
+        - Support psgix.cleanup and psgix.harakiri in FCGI handler (afresh1) #610
+
+    [IMPROVEMENTS]
+        - Do not set TCP_NODELAY when it's unavailable in embedded systems (dex4er) #579
+
 1.0045  2017-12-31 12:40:52 PST
     [BUG FIXES]
         - Protect WrapCGI against SIGCHLD handlers #596
