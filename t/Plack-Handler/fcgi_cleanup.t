@@ -2,6 +2,8 @@ use strict;
 use warnings;
 use Test::More;
 
+plan skip_all => "release test only" unless $ENV{RELEASE_TESTING};
+
 use Test::Requires qw(FCGI FCGI::ProcManager LWP::UserAgent);
 use Plack;
 use Plack::Util;
