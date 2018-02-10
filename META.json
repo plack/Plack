@@ -105,7 +105,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0046",
+   "version" : "1.0047",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",

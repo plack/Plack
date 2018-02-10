@@ -2,6 +2,10 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0047  2018-02-10 01:23:37 PST
+    [BUG FIXES]
+        - Disable FCGI/lighttpd test that was supposed to be releng only #611
+
 1.0046  2018-02-09 23:51:10 PST
     [NEW FEATURES]
         - Support psgix.cleanup and psgix.harakiri in FCGI handler (afresh1) #610
