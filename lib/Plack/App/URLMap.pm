@@ -2,7 +2,7 @@ package Plack::App::URLMap;
 use strict;
 use warnings;
 use parent qw(Plack::Component);
-use constant DEBUG => $ENV{PLACK_URLMAP_DEBUG};
+use constant DEBUG => $ENV{PLACK_URLMAP_DEBUG} ? 1 : 0;
 
 use Carp ();
 
