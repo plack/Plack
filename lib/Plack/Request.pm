@@ -485,11 +485,20 @@ Shortcut to $req->headers->content_encoding.
 
 =item content_length
 
-Shortcut to $req->headers->content_length.
+Returns the raw value of the Content-Length header.
+
+Before version 0.9925, this method was a shortcut for
+C<< $req->headers->content_length >>.
 
 =item content_type
 
-Shortcut to $req->headers->content_type.
+Returns the raw value of the Content-Type header.
+
+If you want just the MIME type, without any attributes like charset, use
+C<< $req->headers->content_type >>.  See also L<HTTP::Headers/content_type>.
+
+Before version 0.9925, this method was a shortcut for
+C<< $req->headers->content_type >>.
 
 =item header
 
