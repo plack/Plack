@@ -179,7 +179,7 @@ my $fallback = sub { };
 
 sub mime_type {
     my($class, $file) = @_;
-    $file =~ /(\.[a-zA-Z0-9]+)$/ or return;
+    $file =~ /(\.[a-zA-Z0-9\-]+)$/ or return;
     $MIME_TYPES->{lc $1} || $fallback->(lc $1);
 }
 
@@ -226,5 +226,3 @@ selection of MIME types is based on Rack's Rack::Mime module.
 L<Rack::Mime|https://github.com/rack/rack/blob/master/lib/rack/mime.rb> L<MIME::Types>
 
 =cut
-
-
