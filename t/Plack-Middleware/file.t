@@ -45,7 +45,7 @@ test_psgi $app_secure, sub {
     is $res->code, 200;
     like $res->content, qr/We will find for this literal string/;
 
-    my $res = $cb->(GET "/../Plack-Middleware/file.t");
+    $res = $cb->(GET "/../Plack-Middleware/file.t");
     is $res->code, 403;
     is $res->content, 'forbidden';
 
