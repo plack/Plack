@@ -4,6 +4,7 @@ requires 'Cookie::Baker', '0.07';
 requires 'Devel::StackTrace', '1.23';
 requires 'Devel::StackTrace::AsHTML', '0.11';
 requires 'File::ShareDir', '1.00';
+requires 'File::ShareDir::Install', '0.13';
 requires 'Filesys::Notify::Simple';
 requires 'HTTP::Message', '5.814';
 requires 'HTTP::Headers::Fast', '0.18';
