@@ -54,7 +54,7 @@ sub valid_file {
     }
     $file->{path} !~ m!\.(?:git|svn)[/\\]             # VCS repositories
                       |\.(?:bak|swp|swpx|swx)$        # tmp/backup extensions
-                      |~$                             # ditto, not an extension
+                      |[~#]$                          # ditto, not an extension
                       |_flymake\.p[lm]$
                       |\.#
                       !x;
