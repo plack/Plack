@@ -52,7 +52,12 @@ sub valid_file {
     if ( $file->{path} =~ m{(\d+)$} && $1 >= 4913 && $1 <= 5036) {
         return 0;
     }
-    $file->{path} !~ m!\.(?:git|svn)[/\\]|\.(?:bak|swp|swpx|swx)$|~$|_flymake\.p[lm]$|\.#!;
+    $file->{path} !~ m!\.(?:git|svn)[/\\]             # VCS repositories
+                      |\.(?:bak|swp|swpx|swx)$        # tmp/backup extensions
+                      |~$                             # ditto, not an extension
+                      |_flymake\.p[lm]$
+                      |\.#
+                      !x;
 }
 
 sub run {
