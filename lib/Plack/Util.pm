@@ -556,7 +556,7 @@ object for input or errors.
 
 =item encode_html
 
-  my $encoded_string = Plack::Util::encode( $string );
+  my $encoded_string = Plack::Util::encode_html( $string );
 
 Entity encodes C<<>, C<< > >>, C<&>, C<"> and C<'> in the input string
 and returns it.
