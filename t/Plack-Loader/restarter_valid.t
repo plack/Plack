@@ -6,7 +6,7 @@ my $r = Plack::Loader::Restarter->new;
 
 my @match  = qw(
     Foo.pm foo.t lib/Bar.pm view/index.tt _myapp/foo.psgi .www/bar.pl _sass.css /Users/joe/foo/bar.pm
-    /path/to/4912 /path/to/5037
+    /path/to/4912 /path/to/5037 myapp.git/some-file
 );
 my @ignore = qw(
     .git/123 .svn/abc Foo.pm~ _flymake.pl /Users/joe/foo.pl~ /foo/bar/x.txt.bak
