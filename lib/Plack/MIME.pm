@@ -168,6 +168,7 @@ our $MIME_TYPES = {
     ".xbm"     => "image/x-xbitmap",
     ".xhtml"   => "application/xhtml+xml",
     ".xls"     => "application/vnd.ms-excel",
+    ".xlsx"    => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     ".xml"     => "application/xml",
     ".xpm"     => "image/x-xpixmap",
     ".xsl"     => "application/xml",
