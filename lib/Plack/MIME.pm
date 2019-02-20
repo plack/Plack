@@ -157,6 +157,7 @@ our $MIME_TYPES = {
     ".war"     => "application/java-archive",
     ".wav"     => "audio/x-wav",
     ".webm"    => "video/webm",
+    ".webp"    => "image/webp",
     ".wma"     => "audio/x-ms-wma",
     ".wmv"     => "video/x-ms-wmv",
     ".wmx"     => "video/x-ms-wmx",
