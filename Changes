@@ -6,6 +6,8 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
     [BUG FIXES]
          - Plackup reloader allows restarting the server when the path contains .git or .svn, just not at the beginning of the path #632
 
+        - Added MIME types for .webp, .ttf and .xlsx files (rrwo)
+
 1.0047  2018-02-10 01:23:37 PST
     [BUG FIXES]
         - Disable FCGI/lighttpd test that was supposed to be releng only #611
