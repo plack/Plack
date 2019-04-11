@@ -50,6 +50,7 @@ Plack::Test - Test PSGI applications with various backends
 
   use Plack::Test;
   use HTTP::Request::Common;
+  use Test::More;
 
   # Simple OO interface
   my $app = sub { return [ 200, [], [ "Hello" ] ] };
