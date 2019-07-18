@@ -7,8 +7,8 @@ use Plack::Test;
 use HTTP::Request::Common;
 use Plack::App::CGIBin;
 
-unless (-e "/usr/bin/python3" && -x _) {
-    plan skip_all => "You don't have /usr/bin/python3";
+unless (-e "/usr/bin/python" && -x _) {
+    plan skip_all => "You don't have /usr/bin/python";
 }
 
 my $app = Plack::App::CGIBin->new(root => "t/Plack-Middleware/cgi-bin")->to_app;
