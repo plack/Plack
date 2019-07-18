@@ -11,10 +11,6 @@ unless (-e "/usr/bin/python" && -x _) {
     plan skip_all => "You don't have /usr/bin/python";
 }
 
-if (`/usr/bin/python --version 2>&1` =~ /^Python 3/) {
-    plan skip_all => "This test doesn't support python 3 yet";
-}
-
 my $app = Plack::App::CGIBin->new(root => "t/Plack-Middleware/cgi-bin")->to_app;
 
 test_psgi app => $app, client => sub {
