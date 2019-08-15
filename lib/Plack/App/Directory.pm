@@ -63,7 +63,7 @@ sub serve_path {
         return $self->SUPER::serve_path($env, $dir, $fullpath);
     }
 
-    my $dir_url = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
+    my $dir_url = ( $env->{SCRIPT_NAME} . $env->{PATH_INFO} or '/' );
 
     if ($dir_url !~ m{/$}) {
         return $self->return_dir_redirect($env);
