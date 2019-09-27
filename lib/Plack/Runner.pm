@@ -32,7 +32,7 @@ sub parse_options {
     # From 'prove': Allow cuddling the paths with -I, -M and -e
     @ARGV = map { /^(-[IMe])(.+)/ ? ($1,$2) : $_ } @ARGV;
 
-    my($host, $port, $socket, @listen);
+    my($host, $port, $socket, $listen_sock, @listen);
 
     require Getopt::Long;
     my $parser = Getopt::Long::Parser->new(
@@ -63,7 +63,13 @@ sub parse_options {
 
     my(@options, @argv);
     while (defined(my $arg = shift @ARGV)) {
-        if ($arg =~ s/^--?//) {
+        if ($arg eq '--listen-sock') {
+            $listen_sock = shift @ARGV;
+            unless (ref($listen_sock) && $listen_sock->can('accept')) {
+                die("--listen-sock expects a reference to a socket");
+            }
+        }
+        elsif ($arg =~ s/^--?//) {
             my @v = split '=', $arg, 2;
             $v[0] =~ tr/-/_/;
             if (@v == 2) {
@@ -78,7 +84,7 @@ sub parse_options {
         }
     }
 
-    push @options, $self->mangle_host_port_socket($host, $port, $socket, @listen);
+    push @options, $self->mangle_host_port_socket($host, $port, $socket, $listen_sock, @listen);
     push @options, daemonize => 1 if $self->{daemonize};
 
     $self->{options} = \@options;
@@ -91,27 +97,29 @@ sub set_options {
 }
 
 sub mangle_host_port_socket {
-    my($self, $host, $port, $socket, @listen) = @_;
+    my($self, $host, $port, $socket, $listen_sock, @listen) = @_;
 
-    for my $listen (reverse @listen) {
-        if ($listen =~ /:\d+$/) {
-            ($host, $port) = split /:/, $listen, 2;
-            $host = undef if $host eq '';
-        } else {
-            $socket ||= $listen;
+    unless ($listen_sock) {
+        for my $listen (reverse @listen) {
+            if ($listen =~ /:\d+$/) {
+                ($host, $port) = split /:/, $listen, 2;
+                $host = undef if $host eq '';
+            } else {
+                $socket ||= $listen;
+            }
+        }
+
+        unless (@listen) {
+            if ($socket) {
+                @listen = ($socket);
+            } else {
+                $port ||= 5000;
+                @listen = ($host ? "$host:$port" : ":$port");
+            }
         }
     }
 
-    unless (@listen) {
-        if ($socket) {
-            @listen = ($socket);
-        } else {
-            $port ||= 5000;
-            @listen = ($host ? "$host:$port" : ":$port");
-        }
-    }
-
-    return host => $host, port => $port, listen => \@listen, socket => $socket;
+    return host => $host, port => $port, listen => \@listen, socket => $socket, listen_sock => $listen_sock;
 }
 
 sub version_cb {
