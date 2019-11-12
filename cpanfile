@@ -19,6 +19,8 @@ requires 'HTTP::Tiny', 0.034;
 requires 'HTTP::Entity::Parser', 0.17;
 requires 'WWW::Form::UrlEncoded', 0.23;
 
+configure_requires 'File::ShareDir::Install', '0.06';
+
 on test => sub {
     requires 'Test::More', '0.88';
     requires 'Test::Requires';
