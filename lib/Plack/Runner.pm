@@ -161,7 +161,7 @@ sub locate_app {
     }
 
     if ($self->{eval}) {
-        $self->loader->watch("lib");
+        $self->loader->watch("lib") if -e "lib";
         return build {
             no strict;
             no warnings;
@@ -175,7 +175,9 @@ sub locate_app {
     $psgi ||= "app.psgi";
 
     require File::Basename;
-    $self->loader->watch( File::Basename::dirname($psgi) . "/lib", $psgi );
+    my $lib = File::Basename::dirname($psgi) . "/lib";
+    $self->loader->watch($lib) if -e $lib;
+    $self->loader->watch($psgi);
     build { Plack::Util::load_psgi $psgi };
 }
 
