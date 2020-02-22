@@ -103,7 +103,7 @@ middleware.
   sub call {
       my($self, $env) = @_;
       # pre-processing $env
-      my $res = $app->($env);
+      my $res = $self->app->($env);
 
       return Plack::Util::response_cb($res, sub {
           my $res = shift;
