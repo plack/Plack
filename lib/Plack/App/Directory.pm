@@ -57,10 +57,10 @@ sub return_dir_redirect {
 }
 
 sub serve_path {
-    my($self, $env, $dir, $fullpath) = @_;
+    my($self, $env, $dir) = @_;
 
     if (-f $dir) {
-        return $self->SUPER::serve_path($env, $dir, $fullpath);
+        return $self->SUPER::serve_path($env, $dir);
     }
 
     my $dir_url = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
