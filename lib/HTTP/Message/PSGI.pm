@@ -137,8 +137,9 @@ sub _res_from_psgi {
     };
 
     if (!defined $body) {
+        $body = [];
         my $o = Plack::Util::inline_object
-            write => sub { push @{ $body ||= [] }, @_ },
+            write => sub { push @$body, @_ },
             close => $convert_resp;
 
         return $o;
