@@ -251,11 +251,6 @@ sub _buffer_length_for {
 
 sub _parse_request_body {
     my $self = shift;
-    if ( !$self->env->{CONTENT_TYPE} ) {
-        $self->env->{'plack.request.body_parameters'} = [];
-        $self->env->{'plack.request.upload'} = Hash::MultiValue->new();
-        return;
-    }
 
     my ($params,$uploads) = $self->request_body_parser->parse($self->env);
     $self->env->{'plack.request.body_parameters'} = $params;
