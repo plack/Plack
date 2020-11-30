@@ -39,13 +39,13 @@ test_tcp(
         is $cb->()->content, $return_bodies[0];
 
         touch($restartertestfiles[0]);
-        sleep 2;
+        sleep 3;
         wait_port($port);
 
         is $cb->()->content, $return_bodies[1];
 
         touch($restartertestfiles[1]);
-        sleep 2;
+        sleep 3;
         wait_port($port);
 
         is $cb->()->content, $return_bodies[2];
