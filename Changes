@@ -2,11 +2,14 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
     [IMPROVEMENTS]
+        - Updated documentation for cotent_length and content_type #625
         - Allow hyphens in file extensions for custom MIME types #614
+        - Updated some python test script to work with Python 3 #639
     [BUG FIXES]
+         - Fix HTTP::Message::PSGI to work with delayed writer without content #653
          - Plackup reloader allows restarting the server when the path contains .git or .svn, just not at the beginning of the path #632
-
-        - Added MIME types for .webp, .ttf and .xlsx files (rrwo)
+         - Added MIME types for .webp, .ttf and .xlsx files (rrwo)
+         - Fix Plack::Request content to not error when Content-Type is empty #655
 
 1.0047  2018-02-10 01:23:37 PST
     [BUG FIXES]
