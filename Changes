@@ -1,6 +1,8 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+
+1.0048  2020-11-29 16:20:00 PST
     [IMPROVEMENTS]
         - Updated documentation for cotent_length and content_type #625
         - Allow hyphens in file extensions for custom MIME types #614

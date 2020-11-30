@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.18, Dist::Zilla version 6.009, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Dist::Milla version v1.0.20, Dist::Zilla version 6.012, CPAN::Meta::Converter version 2.143240",
    "license" : [
       "perl_5"
    ],
@@ -35,7 +35,7 @@
       },
       "develop" : {
          "requires" : {
-            "Dist::Milla" : "v1.0.18",
+            "Dist::Milla" : "v1.0.20",
             "Test::Pod" : "1.41"
          }
       },
@@ -47,7 +47,7 @@
             "Devel::StackTrace::AsHTML" : "0.11",
             "File::ShareDir" : "1.00",
             "Filesys::Notify::Simple" : "0",
-            "HTTP::Entity::Parser" : "0.17",
+            "HTTP::Entity::Parser" : "0.25",
             "HTTP::Headers::Fast" : "0.18",
             "HTTP::Message" : "5.814",
             "HTTP::Tiny" : "0.034",
@@ -105,7 +105,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0047",
+   "version" : "1.0048",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
@@ -142,6 +142,7 @@
       "David Steinbrunner <dsteinbrunner@MountainBook-Pro.local>",
       "dmaestro <dmaestro@users.noreply.github.com>",
       "Eduardo Arino de la Rubia <earino@rent.com>",
+      "Emmanuel Seyman <emmanuel@seyman.fr>",
       "Eric Johnson <eric.git@iijo.org>",
       "Eugen Konkov <kes-kes@yandex.ru>",
       "Fabrice Gabolde <fabrice.gabolde@gmail.com>",
@@ -187,7 +188,10 @@
       "Masahiro Chiba <chiba@everqueue.com>",
       "Masahiro Nagano <kazeburo@gmail.com>",
       "Michael G. Schwern <schwern@pobox.com>",
+      "Michal Josef \u0160pa\u010dek <michal.josef.spacek@gmail.com>",
       "mickey <mickey75@gmail.com>",
+      "Narsimham Chelluri <nchelluri@maxmind.com>",
+      "Narsimham Chelluri <nchelluri@users.noreply.github.com>",
       "Nick Wellnhofer <wellnhofer@aevum.de>",
       "Nobuo Danjou <nobuo.danjou@gmail.com>",
       "Olaf Alders <olaf@wundersolutions.com>",
@@ -199,6 +203,7 @@
       "Panu Ervamaa <panu.ervamaa@frantic.com>",
       "Paul Driver <frodwith@gmail.com>",
       "Pedro Melo <melo@simplicidade.org>",
+      "Perlover <perlover@perlover.com>",
       "Peter Flanigan <github@roxsoft.co.uk>",
       "Peter Makholm <peter@makholm.net>",
       "Piotr Roszatycki <piotr.roszatycki@gmail.com>",
@@ -210,6 +215,7 @@
       "Ricky Morse <remorse@partners.org>",
       "Robert Rothenberg <rrwo@cpan.org>",
       "Rob Hoelz <rob@hoelz.ro>",
+      "runarb <rb@searchdaimon.com>",
       "Ryo Miyake <ryo.studiom@gmail.com>",
       "Sawyer X <xsawyerx@cpan.org>",
       "Scott S. McCoy <smccoy@saymedia.com>",
@@ -221,7 +227,9 @@
       "Stuart A Johnston <saj_git@thecommune.net>",
       "Takeshi OKURA <okura3@gmail.com>",
       "Tatsuhiko Miyagawa <miyagawa@bulknews.net>",
+      "The Dumb Terminal <thedumbterminal@users.noreply.github.com>",
       "Thomas Klausner <domm@plix.at>",
+      "Thomas Sibley <tsibley@cpan.org>",
       "Tim Bunce <Tim.Bunce@pobox.com>",
       "Tokuhiro Matsuno <tokuhirom@gmail.com>",
       "Tomas Doran <bobtfish@bobtfish.net>",
@@ -235,6 +243,8 @@
       "Yuval Kogman <nothingmuch@woobling.org>",
       "\u5510\u9cf3 <audreyt@audreyt.org>"
    ],
-   "x_serialization_backend" : "Cpanel::JSON::XS version 3.0233"
+   "x_generated_by_perl" : "v5.20.1",
+   "x_serialization_backend" : "Cpanel::JSON::XS version 4.09",
+   "x_static_install" : 1
 }
 
