@@ -274,7 +274,7 @@ Note that the C<builder> DSL returns a whole new PSGI application, which means
 
 =item *
 
-C<builder { ... }> should normally the last statement of a C<.psgi>
+C<builder { ... }> should normally be the last statement of a C<.psgi>
 file, because the return value of C<builder> is the application that
 is actually executed.
 
