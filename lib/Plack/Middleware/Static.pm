@@ -4,7 +4,7 @@ use warnings;
 use parent qw/Plack::Middleware/;
 use Plack::App::File;
 
-use Plack::Util::Accessor qw( path root encoding pass_through content_type );
+use Plack::Util::Accessor qw( path root encoding pass_through content_type methods);
 
 sub call {
     my $self = shift;
@@ -29,7 +29,7 @@ sub _handle_static {
         return unless $matched;
     }
 
-    $self->{file} ||= Plack::App::File->new({ root => $self->root || '.', encoding => $self->encoding, content_type => $self->content_type });
+    $self->{file} ||= Plack::App::File->new({ root => $self->root || '.', encoding => $self->encoding, content_type => $self->content_type, methods => $self->methods });
     local $env->{PATH_INFO} = $path; # rewrite PATH
     return $self->{file}->call($env);
 }
@@ -47,7 +47,9 @@ Plack::Middleware::Static - serve static files with Plack
 
   builder {
       enable "Plack::Middleware::Static",
-          path => qr{^/(images|js|css)/}, root => './htdocs/';
+          path => qr{^/(images|js|css)/},
+          root => './htdocs/',
+          methods => [qw/ GET HEAD /];
       $app;
   };
 
@@ -117,12 +119,21 @@ the request on to the application it is wrapping.
 
 =item content_type
 
-The C<content_type> option can be used to provide access to a different MIME 
+The C<content_type> option can be used to provide access to a different MIME
 database than L<Plack::MIME>.
-L<Plack::MIME> works fast and good for a list of well known file endings, 
+L<Plack::MIME> works fast and good for a list of well known file endings,
 but if you need a more accurate content based checking you can use modules
 like L<File::MimeInfo> or L<File::MMagic> for example.
 The callback should work on $_[0] which is the filename of the file.
+
+=item methods
+
+This is an array reference of allowed request methods.  Methods not in
+the list will be rejected with an HTTP 405 response.
+
+If unset, any request method is allowed.
+
+This is unset by default, for backwards compatability.
 
 =back
 
