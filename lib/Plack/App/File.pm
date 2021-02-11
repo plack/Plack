@@ -8,7 +8,7 @@ use Plack::Util;
 use Plack::MIME;
 use HTTP::Date;
 
-use Plack::Util::Accessor qw( root file content_type encoding );
+use Plack::Util::Accessor qw( root file content_type encoding methods );
 
 sub should_handle {
     my($self, $file) = @_;
@@ -101,6 +101,12 @@ sub serve_path {
 
     Plack::Util::set_io_path($fh, Cwd::realpath($file));
 
+    my $method = $env->{REQUEST_METHOD};
+    if (my $allow = $self->methods) {
+        my ($match) = grep { $_ eq $method } @$allow
+            or return $self->return_405;
+    }
+
     return [
         200,
         [
@@ -126,6 +132,11 @@ sub return_400 {
 sub return_404 {
     my $self = shift;
     return [404, ['Content-Type' => 'text/plain', 'Content-Length' => 9], ['not found']];
+}
+
+sub return_405 {
+    my $self = shift;
+    return [405, ['Content-Type' => 'text/plain', 'Content-Length' => 18], ['Method Not Allowed']];
 }
 
 1;
@@ -180,6 +191,15 @@ Set the file content type. If not set L<Plack::MIME> will try to detect it
 based on the file extension or fall back to C<text/plain>.
 Can be set to a callback which should work on $_[0] to check full path file 
 name.
+
+=item methods
+
+This is an array reference of allowed request methods.  Methods not in
+the list will be rejected with an HTTP 405 response.
+
+If unset, any request method is allowed.
+
+This is unset by default, for backwards compatability.
 
 =back
 
