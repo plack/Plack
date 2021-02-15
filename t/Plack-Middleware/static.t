@@ -88,6 +88,12 @@ my %test = (
             my $res = $cb->(GET "http://localhost/t/Plack-Middleware/static.foo");
             is $res->content_type, 'text/x-foo';
         }
+
+        {
+            my $res = $cb->(POST "http://localhost/more_share/face.jpg");
+            is $res->code, 405, 'not allowed';
+            is $res->content, 'Method Not Allowed';
+        }
 },
     app => $handler,
 );

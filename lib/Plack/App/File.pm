@@ -19,6 +19,9 @@ sub call {
     my $self = shift;
     my $env  = shift;
 
+    my $method = $env->{REQUEST_METHOD};
+    return $self->return_405 unless $method eq 'GET' || $method eq 'HEAD';
+
     my($file, $path_info) = $self->file || $self->locate_file($env);
     return $file if ref $file eq 'ARRAY';
 
@@ -110,6 +113,11 @@ sub serve_path {
         ],
         $fh,
     ];
+}
+
+sub return_405 {
+    my $self = shift;
+    return [405, ['Content-Type' => 'text/plain', 'Content-Length' => 18], ['Method Not Allowed']];
 }
 
 sub return_403 {
