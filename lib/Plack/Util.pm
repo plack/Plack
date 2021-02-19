@@ -108,11 +108,40 @@ sub class_to_file {
     $class . ".pm";
 }
 
+{
+    my $counter = 0;
+    my $file_to_generated_package = {};
+    sub _generate_sandbox_package {
+        my $abs_path = shift;
+        return $file_to_generated_package->{$abs_path}
+            if $file_to_generated_package->{$abs_path};
+
+        my $_package = $abs_path;
+        $_package =~ s/([^A-Za-z0-9_])/sprintf("_%2x", unpack("C", $1))/eg;
+
+        # Make sure our generated package won't pass Perl's identifier
+        # limit:
+        substr($_package, 0, 30, '') while length($_package) > 200;
+
+        # And to make up for the possibly less-unique path, add a unique
+        # prefix per file, so that two files with different early
+        # paths but similar later paths
+        # (think /foo/bar/baz/app.psgi vs /something/bar/baz/app.psgi)
+        # do not share namespaces:
+        $counter++;
+        my $prefix = "Guard$counter";
+        my $generated_package = $prefix . '::' . $_package;
+
+        # and in the rare case that this function gets called
+        # twice for the same file, make sure we return the same
+        # generated namespace for both invocations:
+        return $file_to_generated_package->{$abs_path} = $generated_package;
+    }
+}
 sub _load_sandbox {
     my $_file = shift;
 
-    my $_package = $_file;
-    $_package =~ s/([^A-Za-z0-9_])/sprintf("_%2x", unpack("C", $1))/eg;
+    my $_package = _generate_sandbox_package($_file);
 
     local $0 = $_file; # so FindBin etc. works
     local @ARGV = ();  # Some frameworks might try to parse @ARGV
