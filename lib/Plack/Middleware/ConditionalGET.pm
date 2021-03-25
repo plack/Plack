@@ -12,7 +12,7 @@ sub call {
 
     $self->response_cb($res, sub {
         my $res = shift;
-
+        return unless $res->[0] == 200;
         my $h = Plack::Util::headers($res->[1]);
 
         # check both ETag and If-Modified-Since, and at least one should exist
