@@ -2,13 +2,14 @@ package HTTP::Message::PSGI;
 use strict;
 use warnings;
 use parent qw(Exporter);
-our @EXPORT = qw( req_to_psgi res_from_psgi );
+our @EXPORT = qw( req_to_psgi res_from_psgi res_to_psgi req_from_psgi );
 
 use Carp ();
 use HTTP::Status qw(status_message);
 use URI::Escape ();
 use Plack::Util;
 use Try::Tiny;
+use Plack::Request;
 
 my $TRUE  = (1 == 1);
 my $FALSE = !$TRUE;
@@ -91,6 +92,22 @@ sub req_to_psgi {
     return $env;
 }
 
+sub req_from_psgi {
+    my $env = shift;
+
+    unless (ref $env eq 'HASH') {
+        Carp::croak("env is not HashRef: $env");
+    }
+
+    my $req = Plack::Request->new($env);
+    return HTTP::Request->new(
+        $req->method,
+        $req->uri,
+        $req->headers,
+        $req->content,
+    );
+}
+
 sub res_from_psgi {
     my ($psgi_res) = @_;
 
@@ -148,13 +165,40 @@ sub _res_from_psgi {
     $convert_resp->();
 }
 
+sub res_to_psgi {
+    my ($res) = @_;
+
+    my $headers = $res->headers;
+    [
+        $res->code,
+        [
+            map {
+                my $k = $_;
+                map {
+                    ( $k => $_ )
+                } $headers->header($_);
+            } $headers->header_field_names
+        ],
+        [$res->content]
+    ];
+}
+
 sub HTTP::Request::to_psgi {
     req_to_psgi(@_);
+}
+
+sub HTTP::Request::from_psgi {
+    my $class = shift;
+    req_from_psgi(@_);
 }
 
 sub HTTP::Response::from_psgi {
     my $class = shift;
     res_from_psgi(@_);
+}
+
+sub HTTP::Response::to_psgi {
+    res_to_psgi(@_);
 }
 
 package
@@ -244,6 +288,18 @@ Converts a L<HTTP::Request> object into a PSGI env hash reference.
 
 Same as C<req_to_psgi> but an instance method in L<HTTP::Request>.
 
+=item req_from_psgi
+
+  my $req = req_from_psgi($env);
+
+Converts a PSGI env hash reference into a L<HTTP::Request>.
+
+=item HTTP::Request::from_psgi
+
+  my $req = HTTP::Request->from_psgi($env);
+
+Same as C<req_from_psgi> but a class method in L<HTTP::Request>.
+
 =item res_from_psgi
 
   my $res = res_from_psgi([ $status, $headers, $body ]);
@@ -255,6 +311,18 @@ Creates a L<HTTP::Response> object from a PSGI response array ref.
   my $res = HTTP::Response->from_psgi([ $status, $headers, $body ]);
 
 Same as C<res_from_psgi>, but is a class method in L<HTTP::Response>.
+
+=item res_to_psgi
+
+    my $res = res_to_psgi(HTTP::Response->new(200, 'OK'));
+
+Creates a PSGI response array ref from a L<HTTP::Response> response object.
+
+=item HTTP::Response->to_psgi
+
+  my $psgi_res = $res->to_psgi();
+
+Same as C<res_to_psgi>, but is a instance method in L<HTTP::Response>.
 
 =back
 
