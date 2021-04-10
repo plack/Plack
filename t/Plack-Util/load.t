@@ -46,6 +46,13 @@ use Test::More;
 }
 
 {
+    eval { Plack::Util::load_psgi("t/Plack-Util/") };
+    # Perl 5.20+ gives "Did you try to load a directory",
+    #   <=5.18 "No such file or directory"
+    like $@, qr/Error while loading/;
+}
+
+{
     my $app = Plack::Util::load_psgi("t/Plack-Util/bin/findbin.psgi");
     test_psgi $app, sub {
         like $_[0]->(GET "/")->content, qr!t[/\\]Plack-Util[/\\]bin$!;
