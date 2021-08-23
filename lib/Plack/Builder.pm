@@ -110,12 +110,12 @@ sub builder(&) {
     };
     local $_add = sub {
         defined wantarray
-            or Carp::carp("WARNING: You used enable() on non-void context");
+            and Carp::carp("WARNING: You used enable() in non-void context");
         $self->add_middleware(@_);
     };
     local $_add_if = sub {
         defined wantarray
-            or Carp::carp("WARNING: You used enable_if() on non-void context");
+            and Carp::carp("WARNING: You used enable_if() in non-void context");
         $self->add_middleware_if(@_);
     };
 
