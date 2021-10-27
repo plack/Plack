@@ -80,7 +80,7 @@ sub guess {
 sub env { \%ENV }
 
 sub run {
-    my($self, $server, $builder) = @_;
+    my($self, $server) = @_;
     $server->run($self->{app});
 }
 
