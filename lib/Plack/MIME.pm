@@ -157,6 +157,7 @@ our $MIME_TYPES = {
     ".tiff"    => "image/tiff",
     ".torrent" => "application/x-bittorrent",
     ".tr"      => "text/troff",
+    ".tsv"     => "text/tab-separated-values",
     ".ttf"     => "font/ttf",
     ".txt"     => "text/plain",
     ".vcf"     => "text/x-vcard",
