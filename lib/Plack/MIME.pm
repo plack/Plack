@@ -81,6 +81,7 @@ our $MIME_TYPES = {
     ".mathml"  => "application/mathml+xml",
     ".mbox"    => "application/mbox",
     ".mdoc"    => "text/troff",
+    ".md"      => "text/markdown",
     ".me"      => "text/troff",
     ".mid"     => "audio/midi",
     ".midi"    => "audio/midi",
