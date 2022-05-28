@@ -387,7 +387,7 @@ If you want to host your application in a non-root path, then you
 should mangle this configuration to set the path to C<SCRIPT_NAME> and
 the rest of the path in C<PATH_INFO>.
 
-See L<http://wiki.nginx.org/NginxFcgiExample> for more details.
+See L<https://www.nginx.com/resources/wiki/start/topics/examples/fastcgiexample/> for more details.
 
 =head3 Apache mod_fastcgi
 
