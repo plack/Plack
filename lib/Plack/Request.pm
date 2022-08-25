@@ -233,6 +233,7 @@ sub _build_body_parser {
     my $parser = HTTP::Entity::Parser->new(buffer_length => $len);
     $parser->register('application/x-www-form-urlencoded', 'HTTP::Entity::Parser::UrlEncoded');
     $parser->register('multipart/form-data', 'HTTP::Entity::Parser::MultiPart');
+    $parser->register('application/json','HTTP::Entity::Parser::JSON');
 
     $parser;
 }
