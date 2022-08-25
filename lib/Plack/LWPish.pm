@@ -8,7 +8,7 @@ use Hash::MultiValue;
 sub new {
     my $class = shift;
     my $self  = bless {}, $class;
-    $self->{http} = @_ == 1 ? $_[0] : HTTP::Tiny->new(@_);
+    $self->{http} = @_ == 1 ? $_[0] : HTTP::Tiny->new(verify_SSL => 1, @_);
     $self;
 }
 
