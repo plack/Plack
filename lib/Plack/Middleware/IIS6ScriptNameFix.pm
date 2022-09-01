@@ -66,6 +66,8 @@ Use this option if the environment is broken similar to IIS, or if the IIS is
 updated and the regular expression in this module doesn't match any more
 e.g. you're running IIS 10.
 
+=back
+
 =head1 AUTHORS
 
 Florian Ragwitz
