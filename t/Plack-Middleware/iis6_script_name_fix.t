@@ -48,21 +48,32 @@ my %env = (
 );
 
 sub test_fix {
-    my ($input_env) = @_;
+    my ($input_env, %options) = @_;
 
     my $mangled_env;
     Plack::Middleware::IIS6ScriptNameFix->wrap(sub {
         my ($env) = @_;
         $mangled_env = $env;
         return [ 200, ['Content-Type' => 'text/plain'], [''] ];
-    })->($input_env);
+    }, %options)->($input_env);
 
     return $mangled_env;
 }
 
-my $fixed_env = test_fix({ %env });
+{
+    my $fixed_env = test_fix({ %env });
 
-is($fixed_env->{PATH_INFO}, '//blurb', 'check PATH_INFO');
-is($fixed_env->{SCRIPT_NAME}, '/koo', 'check SCRIPT_NAME');
+    is($fixed_env->{PATH_INFO}, '//blurb', 'check PATH_INFO');
+    is($fixed_env->{SCRIPT_NAME}, '/koo', 'check SCRIPT_NAME');
+}
+
+{
+    local $env{SERVER_SOFTWARE} = "Microsoft-IIS/10";
+    my $fixed_env = test_fix({ %env }, force => 1);
+
+    is($fixed_env->{PATH_INFO}, '//blurb', 'check PATH_INFO');
+    is($fixed_env->{SCRIPT_NAME}, '/koo', 'check SCRIPT_NAME');
+}
+
 
 done_testing;
