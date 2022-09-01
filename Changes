@@ -2,6 +2,16 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0049  2022-09-01 10:43:42 PDT
+    [IMPROVEMENTS]
+        - Fix typos in docs #659
+        - Test improvements, including moving from Travis CI to GitHub
+        - Restrict non-GET/HEAD requests to App::File #662
+        - Improved nginx FastCGI example #675
+        - Added documentation about port 5000 for MacOS Montery
+        - Added verify_SSL in Plack::LWPish #677
+        - Added 'force' option to IIS6ScriptNameFix #679
+
 1.0048  2020-11-29 16:20:00 PST
     [IMPROVEMENTS]
         - Updated documentation for cotent_length and content_type #625
