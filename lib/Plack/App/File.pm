@@ -157,7 +157,7 @@ Plack::App::File - Serve static files from root directory
 =head1 DESCRIPTION
 
 This is a static file server PSGI application, and internally used by
-L<Plack::Middleware::Static>. This application serves file from
+L<Plack::Middleware::Static>. This application serves files from the
 document root if the path matches with the local file. Use
 L<Plack::App::Directory> if you want to list files in the directory
 as well.
