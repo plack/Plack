@@ -186,7 +186,7 @@ Set the file encoding for text files. Defaults to C<utf-8>.
 
 Set the file content type. If not set L<Plack::MIME> will try to detect it
 based on the file extension or fall back to C<text/plain>.
-Can be set to a callback which should work on $_[0] to check full path file 
+Can be set to a callback which should work on $_[0] to check full path file
 name.
 
 =back
@@ -200,5 +200,3 @@ Tatsuhiko Miyagawa
 L<Plack::Middleware::Static> L<Plack::App::Directory>
 
 =cut
-
-
