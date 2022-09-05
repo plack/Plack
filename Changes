@@ -2,6 +2,10 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0050  2022-09-05 08:46:44 PDT
+    [BUG FIXES]
+        - Revert #660 where POST requests failed when Middleware::Static was used with a code in `path` (#683)
+
 1.0049  2022-09-01 10:43:42 PDT
     [IMPROVEMENTS]
         - Fix typos in docs #659
