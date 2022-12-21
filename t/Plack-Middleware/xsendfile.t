@@ -28,6 +28,11 @@ test_psgi app => $handler, client => sub {
         is $res->content, '';
         is $res->header('Content-Length'), 0, 'Content-Length 0';
     }
+
+    {
+        my $res = $cb->(HEAD "http://localhost/t/test.txt", 'X-Sendfile-Type' => 'X-Sendfile');
+        ok !$res->header('X-Sendfile'), 'no pass through app header for HEAD requests';
+    }
 };
 
 test_psgi(
