@@ -162,8 +162,6 @@ sub run {
         # the request is done
         $request->Finish;
 
-        $proc_manager && $proc_manager->pm_post_dispatch();
-
         # When the fcgi-manager exits it sends a TERM signal to the workers.
         # However, if we're busy processing the cleanup handlers, testing
         # shows that the worker doesn't actually exit in that case.
@@ -175,6 +173,8 @@ sub run {
                 $handler->($env);
             }
         }
+
+        $proc_manager && $proc_manager->pm_post_dispatch();
 
         if ($proc_manager && $env->{'psgix.harakiri.commit'}) {
             $proc_manager->pm_exit("safe exit with harakiri");
