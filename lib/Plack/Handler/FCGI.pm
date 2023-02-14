@@ -334,7 +334,7 @@ Supported L<PSGI::Extensions>.
 Supports the C<psgix.cleanup> extension,
 in order to use it, just push a callback onto
 C<< $env->{'psgix.cleanup.handlers' >>.
-These callbacks are run after the C<pm_post_dispatch> hook.
+These callbacks are run before the C<pm_post_dispatch> hook.
 
 =item psgix.harakiri
 
