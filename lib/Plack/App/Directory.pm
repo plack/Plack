@@ -3,6 +3,7 @@ use parent qw(Plack::App::File);
 use strict;
 use warnings;
 use Plack::Util;
+use Plack::Util::Accessor 'render_cb';
 use HTTP::Date;
 use Plack::MIME;
 use DirHandle;
@@ -37,6 +38,19 @@ table { width:100%%; }
 <hr />
 </body></html>
 PAGE
+
+sub render_index {
+  my $self = shift;
+  my ($path, @files) = @_;
+
+  $path     = Plack::Util::encode_html($path);
+  my $files = join "\n", map {
+      my $f = $_;
+      sprintf $dir_file, map Plack::Util::encode_html($_), @$f;
+  } @files;
+
+  return sprintf $dir_page, $path, $path, $files;
+}
 
 sub should_handle {
     my($self, $file) = @_;
@@ -96,12 +110,11 @@ sub serve_path {
         push @files, [ $url, $basename, $stat[7], $mime_type, HTTP::Date::time2str($stat[9]) ];
     }
 
-    my $path  = Plack::Util::encode_html("Index of $env->{PATH_INFO}");
-    my $files = join "\n", map {
-        my $f = $_;
-        sprintf $dir_file, map Plack::Util::encode_html($_), @$f;
-    } @files;
-    my $page  = sprintf $dir_page, $path, $path, $files;
+    my $path = "Index of $env->{PATH_INFO}";
+
+    my $page = $self->render_cb ?
+               $self->render_cb->($path, @files) :
+               $self->render_index($path, @files);
 
     return [ 200, ['Content-Type' => 'text/html; charset=utf-8'], [ $page ] ];
 }
