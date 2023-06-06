@@ -10,33 +10,54 @@ use URI::Escape;
 use Plack::Request;
 
 # Stolen from rack/directory.rb
-my $dir_file = "<tr><td class='name'><a href='%s'>%s</a></td><td class='size'>%s</td><td class='type'>%s</td><td class='mtime'>%s</td></tr>";
-my $dir_page = <<PAGE;
-<html><head>
-  <title>%s</title>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <style type='text/css'>
-table { width:100%%; }
+sub file_html {
+  return <<FILE;
+<tr>
+  <td class='name'><a href='%s'>%s</a></td>
+  <td class='size'>%s</td>
+  <td class='type'>%s</td>
+  <td class='mtime'>%s</td>
+</tr>
+FILE
+}
+
+sub dir_html {
+  return <<PAGE;
+<html>
+  <head>
+    <title>%s</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <style type='text/css'>
+%s
+    </style>
+  </head>
+  <body>
+  <h1>%s</h1>
+  <hr />
+  <table>
+    <tr>
+      <th class='name'>Name</th>
+      <th class='size'>Size</th>
+      <th class='type'>Type</th>
+      <th class='mtime'>Last Modified</th>
+    </tr>
+%s
+  </table>
+  <hr />
+  </body>
+</html>
+PAGE
+}
+
+sub css {
+ return <<CSS;
+table { width:100%; }
 .name { text-align:left; }
 .size, .mtime { text-align:right; }
 .type { width:11em; }
 .mtime { width:15em; }
-  </style>
-</head><body>
-<h1>%s</h1>
-<hr />
-<table>
-  <tr>
-    <th class='name'>Name</th>
-    <th class='size'>Size</th>
-    <th class='type'>Type</th>
-    <th class='mtime'>Last Modified</th>
-  </tr>
-%s
-</table>
-<hr />
-</body></html>
-PAGE
+CSS
+}
 
 sub should_handle {
     my($self, $file) = @_;
@@ -99,9 +120,9 @@ sub serve_path {
     my $path  = Plack::Util::encode_html("Index of $env->{PATH_INFO}");
     my $files = join "\n", map {
         my $f = $_;
-        sprintf $dir_file, map Plack::Util::encode_html($_), @$f;
+        sprintf $self->file_html, map Plack::Util::encode_html($_), @$f;
     } @files;
-    my $page  = sprintf $dir_page, $path, $path, $files;
+    my $page  = sprintf $self->dir_html, $path, $self->css, $path, $files;
 
     return [ 200, ['Content-Type' => 'text/html; charset=utf-8'], [ $page ] ];
 }
