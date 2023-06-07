@@ -131,6 +131,21 @@ Plack::App::Directory - Serve static files from document root with directory ind
   use Plack::App::Directory;
   my $app = Plack::App::Directory->new({ root => "/path/to/htdocs" })->to_app;
 
+Or
+
+  my $app = Plack::App::Directory->new({
+    root      => "/path/to/htdocs",
+    render_cb => \&render,
+  })->to_app;
+
+  sub render {
+    my ($path, @files) = @_;
+
+    # Code to render an HTML page
+
+    return $html;
+  }
+
 =head1 DESCRIPTION
 
 This is a static file server PSGI application with directory index a la Apache's mod_autoindex.
@@ -142,6 +157,44 @@ This is a static file server PSGI application with directory index a la Apache's
 =item root
 
 Document root directory. Defaults to the current directory.
+
+=item render_cb
+
+A reference to a subroutine that takes information about a directory and
+returns the HTML to display that directory - this is used to override the
+default display of the directory.
+
+The first argument passed to this subroutine is the name of the path that
+is being displayed. All other arguments contain information about the
+files in the directory. Each of these arguments is a reference to an
+array with five elements. These elements are:
+
+=over 4
+
+=item *
+
+The URL of the file
+
+=item *
+
+The name of the file
+
+=item *
+
+The size of the file in bytes
+
+=item *
+
+The MIME type of the file
+
+=item *
+
+The last modified date of the file
+
+=back
+
+This subroutine is expected to return a string of HTML which will be
+returned to the browser.
 
 =back
 
