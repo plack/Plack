@@ -43,13 +43,13 @@ sub render_index {
   my $self = shift;
   my ($path, @files) = @_;
 
-  $path     = Plack::Util::encode_html($path);
+  my $title = Plack::Util::encode_html("Index of $path");
   my $files = join "\n", map {
       my $f = $_;
       sprintf $dir_file, map Plack::Util::encode_html($_), @$f;
   } @files;
 
-  return sprintf $dir_page, $path, $path, $files;
+  return sprintf $dir_page, $title, $title, $files;
 }
 
 sub should_handle {
@@ -110,11 +110,9 @@ sub serve_path {
         push @files, [ $url, $basename, $stat[7], $mime_type, HTTP::Date::time2str($stat[9]) ];
     }
 
-    my $path = "Index of $env->{PATH_INFO}";
-
     my $page = $self->render_cb ?
-               $self->render_cb->($path, @files) :
-               $self->render_index($path, @files);
+               $self->render_cb->($env->{PATH_INFO}, @files) :
+               $self->render_index($env->{PATH_INFO}, @files);
 
     return [ 200, ['Content-Type' => 'text/html; charset=utf-8'], [ $page ] ];
 }
