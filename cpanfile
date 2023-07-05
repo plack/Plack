@@ -1,4 +1,4 @@
-requires 'perl', '5.008001';
+requires 'perl', '5.012000';
 
 requires 'Cookie::Baker', '0.07';
 requires 'Devel::StackTrace', '1.23';
