@@ -1,6 +1,8 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [IMPROVEMENTS]
+        - Performance improvements on StackTrace middleware by avoiding overloaded methods #697
 
 1.0050  2022-09-05 08:46:44 PDT
     [BUG FIXES]
