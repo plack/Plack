@@ -55,7 +55,7 @@ sub call {
         $trace = $caught_trace if $caught_trace;
     }
 
-    # Use ref $trace to avoid calling as_string twice when it's not necessary
+    # Use ref $trace to avoid overloaded as_string() for bool evaluation
     if (ref $trace && ($caught || ($self->force && ref $res eq 'ARRAY' && $res->[0] == 500)) ) {
         my $text = $trace->as_string;
         my $html = $trace->as_html;
