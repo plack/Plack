@@ -8,5 +8,6 @@ is x "foo.png", "image/png";
 is x "foo.GIF", "image/gif";
 is x "foo.bar", undef;
 is x "foo.mp3", "audio/mpeg";
+is x "my.wasm", "application/wasm";
 
 done_testing;

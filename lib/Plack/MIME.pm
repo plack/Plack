@@ -156,6 +156,7 @@ our $MIME_TYPES = {
     ".vcs"     => "text/x-vcalendar",
     ".vrml"    => "model/vrml",
     ".war"     => "application/java-archive",
+    ".wasm"    => "application/wasm",
     ".wav"     => "audio/x-wav",
     ".webm"    => "video/webm",
     ".webp"    => "image/webp",
