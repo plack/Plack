@@ -22,6 +22,12 @@ is_deeply p('-l', '10.0.0.1:80', '-l', 'unix.sock'),
     { host => '10.0.0.1', port => 80, listen => [ '10.0.0.1:80', 'unix.sock' ], socket => 'unix.sock' };
 is_deeply p('-l', ':80', '--disable-foo', '--enable-bar'),
     { host => undef, port => 80, listen => [ ':80' ], socket => undef, foo => '', bar => 1 };
+is_deeply p('-l', '10.0.0.1:80', '-l', '10.0.0.1:8080'),
+    { host => '10.0.0.1', port => 80, listen => [ '10.0.0.1:80', '10.0.0.1:8080' ], socket => undef },
+    'host/port set from first --listen option';
+is_deeply p('-l', 'foo.sock', '-l', 'unix.sock'),
+    { host => undef, port => undef, listen => [ 'foo.sock', 'unix.sock' ], socket => 'unix.sock' },
+    'socket set from last --listen option';
 
 {
     my $r = Plack::Runner->new;
