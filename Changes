@@ -1,8 +1,12 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [BUG FIXES]
+        - Fix a bug where $req->headers can pick up non-PSGI header values from environment #703
+
     [IMPROVEMENTS]
         - Performance improvements on StackTrace middleware by avoiding overloaded methods #697
+        - Added tests for Plack::Runner::mangle_host_port_socket #700
 
 1.0050  2022-09-05 08:46:44 PDT
     [BUG FIXES]
