@@ -1,6 +1,8 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+
+1.0051  2024-01-05 15:09:37 PST
     [BUG FIXES]
         - Fix a bug where $req->headers can pick up non-PSGI header values from environment #703
 

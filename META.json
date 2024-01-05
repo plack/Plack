@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.21, Dist::Zilla version 6.025, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Dist::Milla version v1.0.22, Dist::Zilla version 6.025, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -28,14 +28,11 @@
          "requires" : {
             "ExtUtils::MakeMaker" : "0",
             "File::ShareDir::Install" : "0.06"
-         },
-         "suggests" : {
-            "JSON::PP" : "2.27300"
          }
       },
       "develop" : {
          "requires" : {
-            "Dist::Milla" : "v1.0.21",
+            "Dist::Milla" : "v1.0.22",
             "Test::Pod" : "1.41"
          }
       },
@@ -59,7 +56,7 @@
             "URI" : "1.59",
             "WWW::Form::UrlEncoded" : "0.23",
             "parent" : "0",
-            "perl" : "5.008001"
+            "perl" : "5.012000"
          },
          "suggests" : {
             "CGI::Compile" : "0",
@@ -105,7 +102,7 @@
          "web" : "https://github.com/plack/Plack"
       }
    },
-   "version" : "1.0050",
+   "version" : "1.0051",
    "x_authority" : "cpan:MIYAGAWA",
    "x_contributors" : [
       "Aaron Trevena <aaron.trevena@gmail.com>",
@@ -223,6 +220,7 @@
       "Scott S. McCoy <smccoy@saymedia.com>",
       "Shawn M Moore <sartak@gmail.com>",
       "Shoichi Kaji <skaji@cpan.org>",
+      "Slaven Rezic <slaven.rezic@idealo.de>",
       "smcmurray <smcmurray@localhost.localdomain>",
       "Stephen Clouse <stephenclouse@gmail.com>",
       "Stevan Little <stevan.little@iinteractive.com>",
@@ -230,6 +228,7 @@
       "Stuart A Johnston <saj_git@thecommune.net>",
       "Takeshi OKURA <okura3@gmail.com>",
       "Tatsuhiko Miyagawa <miyagawa@bulknews.net>",
+      "Tatsuhiko Miyagawa <tmiyagawa@fastly.com>",
       "The Dumb Terminal <thedumbterminal@users.noreply.github.com>",
       "Thomas Klausner <domm@plix.at>",
       "Thomas Sibley <tsibley@cpan.org>",

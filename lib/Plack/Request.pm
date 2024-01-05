@@ -2,7 +2,7 @@ package Plack::Request;
 use strict;
 use warnings;
 use 5.008_001;
-our $VERSION = '1.0050';
+our $VERSION = '1.0051';
 
 use HTTP::Headers::Fast;
 use Carp ();
