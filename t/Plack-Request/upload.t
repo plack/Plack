@@ -20,6 +20,8 @@ my $app = sub {
     is $files[1]->filename, 'foo2.txt';
     ok -e $files[0]->tempname;
 
+    unlike $req->headers->as_string, qr/Multipart\.Tempdir/;
+
     is join(', ', sort { $a cmp $b } $req->upload()), 'bar, foo';
 
     for (qw(foo bar)) {

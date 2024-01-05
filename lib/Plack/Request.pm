@@ -95,7 +95,7 @@ sub headers {
                 (my $field = $_) =~ s/^HTTPS?_//;
                 ( lc($field) => $env->{$_} );
             }
-                grep { /^(?:HTTP|CONTENT)/i } keys %$env
+                grep { /^(?:HTTP|CONTENT)_/ } keys %$env
             );
     }
     $self->{headers};
