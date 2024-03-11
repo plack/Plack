@@ -11,16 +11,16 @@ sub throw {
 }
 
 package HTTP::Error::InternalServerError;
-use base qw(HTTP::Error);
+use parent -norequire => qw(HTTP::Error);
 sub code { 500 }
 
 package HTTP::Error::Forbidden;
-use base qw(HTTP::Error);
+use parent -norequire => qw(HTTP::Error);
 sub code { 403 }
 sub as_string { "blah blah blah" }
 
 package HTTP::Error::Redirect;
-use base qw(HTTP::Error);
+use parent -norequire => qw(HTTP::Error);
 sub code { 302 }
 sub location { "http://somewhere/else" }
 
