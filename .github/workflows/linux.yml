@@ -29,8 +29,8 @@ jobs:
       - uses: actions/checkout@v1
       - name: Install Dependencies
         run: |
+          cpanm -v HTML::Tagset
           curl -sL https://cpanmin.us/ | perl - -nq --with-develop --with-recommends --with-suggests --installdeps .
-          cpanm -v Plack
       - name: Run Tests
         run: prove -lr t
         env:
