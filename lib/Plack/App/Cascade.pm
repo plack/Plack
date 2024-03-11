@@ -1,6 +1,6 @@
 package Plack::App::Cascade;
 use strict;
-use base qw(Plack::Component);
+use parent qw(Plack::Component);
 
 use Plack::Util;
 use Plack::Util::Accessor qw(apps catch codes);
