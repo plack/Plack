@@ -24,7 +24,7 @@ my $handler = builder {
     enable "Plack::Middleware::Static",
         path => qr{\.(t|PL|txt)$}i, root => '.';
     enable "Plack::Middleware::Static",
-        path => qr{\.foo$}i, root => '.', 
+        path => qr{\.foo$}i, root => '.',
         content_type => sub { substr Plack::MIME->mime_type($_[0]),0,-1  } ;
     sub {
         [200, ['Content-Type' => 'text/plain', 'Content-Length' => 2], ['ok']]
@@ -74,6 +74,12 @@ my %test = (
         {
             my $res = $cb->(GET "http://localhost/share-pass/faceX.jpg");
             is $res->code, 200, 'pass through';
+            is $res->content, 'ok';
+        }
+
+        {
+            my $res = $cb->(POST "http://localhost/share-pass/faceX.jpg");
+            is $res->code, 200, 'pass through (POST)';
             is $res->content, 'ok';
         }
 
