@@ -3,6 +3,7 @@ use parent qw(Plack::App::File);
 use strict;
 use warnings;
 use Plack::Util;
+use Plack::Util::Accessor 'dir_index';
 use HTTP::Date;
 use Plack::MIME;
 use DirHandle;
@@ -67,6 +68,10 @@ sub serve_path {
 
     if ($dir_url !~ m{/$}) {
         return $self->return_dir_redirect($env);
+    }
+
+    if ($self->dir_index and -f $dir . $self->dir_index) {
+        return $self->SUPER::serve_path($env, $dir . $self->dir_index);
     }
 
     my @files = ([ "../", "Parent Directory", '', '', '' ]);
