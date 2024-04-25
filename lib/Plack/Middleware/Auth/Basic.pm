@@ -85,11 +85,20 @@ A callback function that takes username, password and PSGI environment
 supplied and returns whether the authentication succeeds. Required.
 
 Authenticator can also be an object that responds to C<authenticate>
-method that takes username and password and returns boolean, so
-backends for L<Authen::Simple> is perfect to use:
+method that takes username and password and returns boolean, so any
+backends for L<Authen::Simple> are perfect to use:
 
   use Authen::Simple::LDAP;
   enable "Auth::Basic", authenticator => Authen::Simple::LDAP->new(...);
+
+For authentication based on C<htpasswd> files:
+
+  use Authen::Simple::Passwd;
+  enable "Auth::Basic",
+    realm => "Password protected area",
+    authenticator => Authen::Simple::Passwd->new(
+      path => "/path/to/.htpasswd",
+    );
 
 =item realm
 
