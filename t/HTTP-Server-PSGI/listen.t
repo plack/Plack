@@ -29,6 +29,7 @@ test_tcp(
     client => sub {
         my $port = shift;
         my $ua = LWP::UserAgent->new;
+		$ua->timeout($ua_timeout);
         my $res = $ua->get("http://127.0.0.1:$port/");
         ok $res->is_success;
         is $res->code, 200;
