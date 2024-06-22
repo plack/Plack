@@ -16,8 +16,9 @@ my $FALSE = !$TRUE;
 sub req_to_psgi {
     my $req = shift;
 
-    Carp::croak("Request is not HTTP::Request: $req")
-        unless Scalar::Util::blessed $req && $req->isa('HTTP::Request');
+    unless (Scalar::Util::blessed($req) && $req->isa('HTTP::Request')) {
+        Carp::croak("Request is not HTTP::Request: $req");
+    }
 
     # from HTTP::Request::AsCGI
     my $host = $req->header('Host');
