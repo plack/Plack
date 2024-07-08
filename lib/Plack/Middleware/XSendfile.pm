@@ -16,6 +16,7 @@ sub call {
         my $res = shift;
         my($status, $headers, $body) = @$res;
         return unless defined $body;
+        return if $env->{REQUEST_METHOD} eq 'HEAD';
 
         if (Scalar::Util::blessed($body) && $body->can('path')) {
             my $type = $self->_variation($env) || '';
