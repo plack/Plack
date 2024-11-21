@@ -1,3 +1,10 @@
+BEGIN {
+  if ( $ENV{NO_NETWORK_TESTING} ) {
+    print '1..0 # SKIP Network connections required for this test';
+    exit;
+  }
+}
+
 use Plack::Test;
 use Test::More;
 use HTTP::Request::Common;
