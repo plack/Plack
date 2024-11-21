@@ -124,10 +124,12 @@ sub run {
         delete $env->{HTTP_CONTENT_TYPE};
         delete $env->{HTTP_CONTENT_LENGTH};
 
-        # lighttpd munges multiple slashes in PATH_INFO into one. Try recovering it
-        my $uri = URI->new("http://localhost" .  $env->{REQUEST_URI});
-        $env->{PATH_INFO} = uri_unescape($uri->path);
-        $env->{PATH_INFO} =~ s/^\Q$env->{SCRIPT_NAME}\E//;
+        if ($env->{SERVER_SOFTWARE} && $env->{SERVER_SOFTWARE} =~ m!lighttpd!) {
+            # lighttpd munges multiple slashes in PATH_INFO into one. Try recovering it
+            my $uri = URI->new("http://localhost" .  $env->{REQUEST_URI});
+            $env->{PATH_INFO} = uri_unescape($uri->path);
+            $env->{PATH_INFO} =~ s/^\Q$env->{SCRIPT_NAME}\E//;
+        }
 
         # root access for mod_fastcgi
         if (!exists $env->{PATH_INFO}) {
