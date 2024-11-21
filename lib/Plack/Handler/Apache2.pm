@@ -122,7 +122,7 @@ sub call_app {
 sub handler {
     my $class = __PACKAGE__;
     my $r     = shift;
-    my $psgi  = $r->dir_config('psgi_app');
+    my $psgi  = $r->dir_config('psgi_app') || $r->filename();
     $class->call_app($r, $class->load_app($psgi));
 }
 
@@ -144,6 +144,8 @@ sub fixup_path {
         $env->{SCRIPT_NAME} = '';
     } elsif ($path_info =~ s{^($location)/?}{/}) {
         $env->{SCRIPT_NAME} = $1 || '';
+    } elsif ( $r->filename() =~ /$location/) {
+        $env->{SCRIPT_NAME} = $r->filename();
     } else {
         # Apache's <Location> is matched but here is not.
         # This is something wrong. We can only respect original.
