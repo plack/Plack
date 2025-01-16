@@ -43,7 +43,7 @@ sub validate_env {
         die('Missing mandatory env param: PATH_INFO');
     }
     if ($env->{PATH_INFO} ne '' && $env->{PATH_INFO} !~ m!^/!) {
-        die('PATH_INFO must begin with / ($env->{PATH_INFO})');
+        die("PATH_INFO must begin with / ($env->{PATH_INFO})");
     }
     unless (defined($env->{SERVER_NAME})) {
         die('Missing mandatory env param: SERVER_NAME');
