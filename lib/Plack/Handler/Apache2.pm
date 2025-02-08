@@ -50,18 +50,19 @@ sub call_app {
 
     my $env = {
         %ENV,
-        'psgi.version'           => [ 1, 1 ],
-        'psgi.url_scheme'        => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
-        'psgi.input'             => $r,
-        'psgi.errors'            => *STDERR,
-        'psgi.multithread'       => Plack::Util::FALSE,
-        'psgi.multiprocess'      => Plack::Util::TRUE,
-        'psgi.run_once'          => Plack::Util::FALSE,
-        'psgi.streaming'         => Plack::Util::TRUE,
-        'psgi.nonblocking'       => Plack::Util::FALSE,
-        'psgix.harakiri'         => Plack::Util::TRUE,
-        'psgix.cleanup'          => Plack::Util::TRUE,
-        'psgix.cleanup.handlers' => [],
+        'plack.handler.apache.request.object' => $r,
+        'psgi.version'                        => [ 1, 1 ],
+        'psgi.url_scheme'                     => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
+        'psgi.input'                          => $r,
+        'psgi.errors'                         => *STDERR,
+        'psgi.multithread'                    => Plack::Util::FALSE,
+        'psgi.multiprocess'                   => Plack::Util::TRUE,
+        'psgi.run_once'                       => Plack::Util::FALSE,
+        'psgi.streaming'                      => Plack::Util::TRUE,
+        'psgi.nonblocking'                    => Plack::Util::FALSE,
+        'psgix.harakiri'                      => Plack::Util::TRUE,
+        'psgix.cleanup'                       => Plack::Util::TRUE,
+        'psgix.cleanup.handlers'              => [],
     };
 
     if (defined(my $HTTP_AUTHORIZATION = $r->headers_in->{Authorization})) {
@@ -99,14 +100,37 @@ sub call_app {
     }
 
     if (@{ $env->{'psgix.cleanup.handlers'} }) {
+        my %ENV_copy_for_PerlCleanupHandler = %ENV;
+        # This is referred to in the comment below
         $r->push_handlers(
             PerlCleanupHandler => sub {
-                for my $cleanup_handler (@{ $env->{'psgix.cleanup.handlers'} }) {
-                    $cleanup_handler->($env);
-                }
+                my $do_cleanup_handlers = sub {
+                    for my $cleanup_handler (@{ $env->{'psgix.cleanup.handlers'} }) {
+                        $cleanup_handler->($env);
+                    }
 
-                if ($env->{'psgix.harakiri.commit'}) {
-                    $r->child_terminate;
+                    if ($env->{'psgix.harakiri.commit'}) {
+                        $r->child_terminate;
+                    }
+
+                    return;
+                };
+
+                if (keys %ENV) {
+                    $do_cleanup_handlers->();
+                } else {
+                    # Sometimes Apache will seemingly empty out %ENV,
+                    # i.e. if we were to dump out %ENV when we assign to
+                    # %ENV_copy_for_PerlCleanupHandler above we'd get a
+                    # populated %ENV, but it'll be empty by the time we
+                    # get here.
+                    #
+                    # I haven't tracked down *why* this happens, so this
+                    # might be cargo-culting around something, but this
+                    # workaround works for me and isn't too expensive.
+                    local %ENV = %ENV_copy_for_PerlCleanupHandler;
+
+                    $do_cleanup_handlers->();
                 }
             },
         );
