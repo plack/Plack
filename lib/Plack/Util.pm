@@ -71,6 +71,8 @@ sub set_io_path {
 sub content_length {
     my $body = shift;
 
+    no warnings 'uninitialized';
+
     return unless defined $body;
 
     if (ref $body eq 'ARRAY') {
@@ -79,7 +81,7 @@ sub content_length {
             $cl += length $chunk;
         }
         return $cl;
-    } elsif ( is_real_fh($body) ) {
+    } elsif ( -s $body ) {
         return (-s $body) - tell($body);
     }
 
