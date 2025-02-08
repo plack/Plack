@@ -89,8 +89,15 @@ sub setup_env {
     binmode STDIN;
     binmode STDERR;
 
+    my %env = %ENV;
+    for (qw(REMOTE_HOST HTTP_AUTHORIZATION IFS CDPATH PATH LD_PRELOAD
+            LD_TRACE_LOADED_OBJECTS LD_WARN LD_DEBUG LD_AUDIT LD_VERBOSE))
+    {
+        delete $env{$_};
+    }
+
     my $env = {
-        %ENV,
+        %env,
         'psgi.version'    => [ 1, 1 ],
         'psgi.url_scheme' => ($ENV{HTTPS}||'off') =~ /^(?:on|1)$/i ? 'https' : 'http',
         'psgi.input'      => *STDIN,

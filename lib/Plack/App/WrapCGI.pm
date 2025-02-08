@@ -45,7 +45,13 @@ sub prepare_app {
                 close $stdoutr;
                 close $stdinw;
 
-                local %ENV = (%ENV, CGI::Emulate::PSGI->emulate_environment($env));
+                my %env = %ENV;
+                for (qw(REMOTE_HOST HTTP_AUTHORIZATION IFS CDPATH PATH LD_PRELOAD
+                        LD_TRACE_LOADED_OBJECTS LD_WARN LD_DEBUG LD_AUDIT LD_VERBOSE))
+                {
+                    delete $env{$_};
+                }
+                local %ENV = (%env, CGI::Emulate::PSGI->emulate_environment($env));
 
                 open( STDOUT, ">&=" . fileno($stdoutw) )
                   or Carp::croak "Cannot dup STDOUT: $!";
