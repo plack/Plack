@@ -97,7 +97,7 @@ sub serve_path {
     open my $fh, "<:raw", $file
         or return $self->return_403;
 
-    my @stat = stat $file;
+    my @stat = stat $fh;
 
     Plack::Util::set_io_path($fh, Cwd::realpath($file));
 
