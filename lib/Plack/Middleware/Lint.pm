@@ -141,6 +141,11 @@ sub validate_res {
         unless (defined $val) {
             die("Response headers MUST be a defined string. Header: $key");
         }
+        if ($key =~ /^Content-Length$/i) {
+            if (Plack::Util::status_with_no_entity_body($res->[0])) {
+                die("Response headers MUST NOT include Content-Length for Status $res->[0]");
+            }
+        }
     }
 
     # @$res == 2 is only right in psgi.streaming, and it's already checked.
@@ -154,6 +159,13 @@ sub validate_res {
 
     if (ref $res->[2] eq 'ARRAY' && grep _has_wide_char($_), @{$res->[2]}) {
         die("Body must be bytes and should not contain wide characters (UTF-8 strings)");
+    }
+
+    if (@$res == 3
+        && Plack::Util::status_with_no_entity_body($res->[0])
+        && Plack::Util::content_length($res->[2])
+    ) {
+        die("Body must be empty for Status $res->[0]");
     }
 
     return $res;
