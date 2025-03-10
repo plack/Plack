@@ -121,7 +121,9 @@ sub _load_sandbox {
 package Plack::Sandbox::%s;
 {
     my $app = do $_file;
-    if ( !$app && ( my $error = $@ || $! )) { die $error; }
+    if ( !$app && ( my $error = $@ || $! || "returned invalid value.\n")) {
+        die $error;
+    }
     $app;
 }
 END_EVAL
