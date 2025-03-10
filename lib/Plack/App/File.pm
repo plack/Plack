@@ -22,6 +22,9 @@ sub call {
     my($file, $path_info) = $self->file || $self->locate_file($env);
     return $file if ref $file eq 'ARRAY';
 
+    my $method = $env->{REQUEST_METHOD};
+    return $self->return_405 unless $method eq 'GET' || $method eq 'HEAD';
+
     if ($path_info) {
         $env->{'plack.file.SCRIPT_NAME'} = $env->{SCRIPT_NAME} . $env->{PATH_INFO};
         $env->{'plack.file.SCRIPT_NAME'} =~ s/\Q$path_info\E$//;
