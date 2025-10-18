@@ -100,7 +100,7 @@ to be a valid PSGI application code reference.
 
 =item request
 
-  $res = $test->request($request);
+  $res = $test->request($request, %options);
 
 takes an HTTP::Request object, runs it through the PSGI application to
 test and returns an HTTP::Response object.
@@ -164,6 +164,9 @@ The available values for the backend are:
 
 (Default) Creates a PSGI env hash out of HTTP::Request object, runs
 the PSGI application in-process and returns HTTP::Response.
+
+Custom PSGI environment variables can be passed using %options of the request()
+method.
 
 =item Server
 
