@@ -36,6 +36,7 @@ my %WriteMakefileArgs = (
     "HTTP::Entity::Parser" => "0.25",
     "HTTP::Headers::Fast" => "0.18",
     "HTTP::Message" => "5.814",
+    "HTTP::Status" => 0,
     "HTTP::Tiny" => "0.034",
     "Hash::MultiValue" => "0.05",
     "Pod::Usage" => "1.36",

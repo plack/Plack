@@ -15,6 +15,7 @@ requires 'Try::Tiny';
 requires 'URI', '1.59';
 requires 'parent';
 requires 'Apache::LogFormat::Compiler', '0.33';
+requires 'HTTP::Status';
 requires 'HTTP::Tiny', 0.034;
 requires 'HTTP::Entity::Parser', 0.25;
 requires 'WWW::Form::UrlEncoded', 0.23;
