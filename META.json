@@ -4,7 +4,7 @@
       "Tatsuhiko Miyagawa"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.22, Dist::Zilla version 6.025, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Dist::Milla version v1.0.22, Dist::Zilla version 6.025, CPAN::Meta::Converter version 2.150013",
    "license" : [
       "perl_5"
    ],
@@ -119,6 +119,7 @@
       "Asato Wakisaka <asato.wakisaka@gmail.com>",
       "Ashley Pond V <ashley.pond.v@gmail.com>",
       "Ask Bj\u00f8rn Hansen <ask@develooper.com>",
+      "bbrtj <bbrtj.pro@gmail.com>",
       "ben hengst <notbenh@cpan.org>",
       "Ben Morrow <ben@morrow.me.uk>",
       "Bernhard Graf <augensalat@gmail.com>",
@@ -185,6 +186,7 @@
       "Mark Stosberg <mark@stosberg.com>",
       "Masahiro Chiba <chiba@everqueue.com>",
       "Masahiro Nagano <kazeburo@gmail.com>",
+      "Maurice Aubrey <maurice@redweek.com>",
       "Michael G. Schwern <schwern@pobox.com>",
       "Michael R. Davis <mrdvt92@users.noreply.github.com>",
       "Michal Josef \u0160pa\u010dek <michal.josef.spacek@gmail.com>",
@@ -192,6 +194,7 @@
       "Narsimham Chelluri <nchelluri@maxmind.com>",
       "Narsimham Chelluri <nchelluri@users.noreply.github.com>",
       "Nick Wellnhofer <wellnhofer@aevum.de>",
+      "Nitesh Yadav <31530949+yadu4ever@users.noreply.github.com>",
       "Nobuo Danjou <nobuo.danjou@gmail.com>",
       "Olaf Alders <olaf@wundersolutions.com>",
       "Oliver Gorwits <oliver@cpan.org>",
@@ -209,6 +212,7 @@
       "punytan <punytan@gmail.com>",
       "Rafael Kitover <rkitover@cpan.org>",
       "Randy Stauner <rwstauner@cpan.org>",
+      "Rawley <rawleyfowler@proton.me>",
       "Ray Miller <rm7@sanger.ac.uk>",
       "Richard Sim\u00f5es <rsimoes@gmail.com>",
       "Ricky Morse <remorse@partners.org>",
@@ -241,6 +245,7 @@
       "xaicron <xaicron@gmail.com>",
       "Yann Kerherve <yann@cyberion.net>",
       "yappo <yappo@shibuya.pl>",
+      "Yoshikazu Sawa <883514+yoshikazusawa@users.noreply.github.com>",
       "Yury Zavarin <yury.zavarin@gmail.com>",
       "Yuval Kogman <nothingmuch@woobling.org>",
       "\u5510\u9cf3 <audreyt@audreyt.org>"

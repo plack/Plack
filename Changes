@@ -1,6 +1,14 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+    [BUG FIXES]
+        - stat already open filehandle rather than filename in Plack::App::File #716
+
+    [IMPROVEMENTS]
+        - Updated MIME type list in Plack::MIME sourced from rack/rack #706
+        - Avoid try block just for checking $object->isa in HTTP::Message::PSGI #712
+        - Remove the last remaining uses of base.pm #707
+        - Document security trust model and frontend configuration for XSendfile middleware
 
 1.0051  2024-01-05 15:09:37 PST
     [BUG FIXES]
