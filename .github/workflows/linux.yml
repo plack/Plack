@@ -25,7 +25,7 @@ jobs:
     container:
       image: perldocker/perl-tester:${{ matrix.perl-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Dependencies
         run: cpanm -nq --with-develop --with-recommends --with-suggests --installdeps .
       - name: Run Tests
