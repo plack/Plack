@@ -84,10 +84,60 @@ Content-Length will be untouched.
 You should use L<IO::File::WithPath> or L<Plack::Util>'s
 C<set_io_path> to add C<path> method to an IO object in the body.
 
-See L<http://github.com/rack/rack-contrib/blob/master/lib/rack/contrib/sendfile.rb>
-for the frontend configuration.
+See L<https://www.nginx.com/resources/wiki/start/topics/examples/xsendfile>
+for frontend configuration examples.
 
 Plack::Middleware::XSendfile does not set the Content-Type header.
+
+=head1 FRONTEND CONFIGURATION
+
+=head2 Nginx
+
+Nginx supports C<X-Accel-Redirect>. Configure an internal location and
+pass the C<X-Accel-Mapping> header to the backend so the middleware can
+rewrite filesystem paths into internal URLs:
+
+  location ~ /files/(.*) {
+      internal;
+      alias /var/www/$1;
+  }
+
+  location / {
+      proxy_pass         http://127.0.0.1:5000/;
+      proxy_set_header   X-Sendfile-Type     X-Accel-Redirect;
+      proxy_set_header   X-Accel-Mapping     /var/www/=/files/;
+  }
+
+C<X-Accel-Mapping> tells the middleware which filesystem prefix to replace
+and what internal URL prefix to use instead.
+
+=head2 Apache
+
+Enable mod_xsendfile (L<https://tn123.org/mod_xsendfile/>) and set the
+request header so the middleware activates:
+
+  RequestHeader Set X-Sendfile-Type X-Sendfile
+  XSendFile on
+
+=head2 lighttpd
+
+  proxy-core.allow-x-sendfile = "enable"
+  proxy-core.rewrite-request = (
+      "X-Sendfile-Type" => (".*" => "X-Sendfile")
+  )
+
+=head1 SECURITY
+
+This middleware reads the C<X-Accel-Mapping> and C<X-Sendfile-Type> values
+from request headers, which are expected to be injected by a trusted frontend
+proxy. B<The Plack backend must not be directly reachable by untrusted
+clients.> If a client can send these headers directly, they can influence which
+files the frontend server serves.
+
+To defend in depth with nginx, use C<proxy_ignore_headers> to prevent any
+client-supplied values from passing through, and rely solely on
+C<proxy_set_header> directives in your nginx configuration to supply the
+correct values.
 
 =head1 CONFIGURATION
 
