@@ -1,4 +1,5 @@
 use Test::More;
+BEGIN { plan skip_all => "MIME::Types requires Perl 5.16+" if $] < 5.016 }
 use Test::Requires qw(MIME::Types);
 use Plack::MIME;
 use MIME::Types 'by_suffix';
