@@ -1,6 +1,8 @@
 Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
+
+1.0052  2026-04-27 12:59:19 PDT
     [BUG FIXES]
         - stat already open filehandle rather than filename in Plack::App::File #716
 
