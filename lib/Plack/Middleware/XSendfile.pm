@@ -3,9 +3,16 @@ use strict;
 use warnings;
 use parent qw(Plack::Middleware);
 
+use Carp ();
 use Plack::Util;
 use Scalar::Util;
 use Plack::Util::Accessor qw( variation );
+
+sub new {
+    my $class = shift;
+    Carp::carp("Plack::Middleware::XSendfile is deprecated and will be removed in a future release");
+    $class->SUPER::new(@_);
+}
 
 sub call {
     my $self = shift;
@@ -69,6 +76,49 @@ Plack::Middleware::XSendfile - Sets X-Sendfile (or a like) header for frontends
 =head1 SYNOPSIS
 
   enable "Plack::Middleware::XSendfile";
+
+=head1 DEPRECATION NOTICE
+
+This middleware is deprecated and will be removed in a future release, due to
+poor security design caused by the way configuration is passed via HTTP request
+headers. See L</SECURITY>.
+
+The simplest replacement is to set the appropriate header directly in your
+application when serving a file. For example, in a Mojolicious controller:
+
+  sub download {
+      my $c = shift;
+      $c->res->headers->header('X-Accel-Redirect' => '/path/to/document.pdf');
+      $c->render(data => '', status => 200);
+  }
+
+If you need to handle this at the middleware layer instead to make it more
+transparent, you can replicate the behavior inline using L<Plack::Builder>:
+
+  use Plack::Builder;
+  use Plack::Util;
+  use Scalar::Util qw(blessed);
+
+  builder {
+      enable sub {
+          my $app = shift;
+          sub {
+              my $env = shift;
+              my $res = $app->($env);
+              Plack::Util::response_cb($res, sub {
+                  my $res = shift;
+                  my $body = $res->[2];
+                  if (blessed($body) && $body->can('path')) {
+                      my $h = Plack::Util::headers($res->[1]);
+                      $h->set('X-Sendfile' => $body->path);
+                      $h->set('Content-Length', 0);
+                      $res->[2] = [];
+                  }
+              });
+          };
+      };
+      $app;
+  };
 
 =head1 DESCRIPTION
 
@@ -162,7 +212,7 @@ Supported values are:
 
 =back
 
-An unsupport value will log an error.
+An unsupported value will log an error.
 
 =back
 
