@@ -181,7 +181,7 @@ request header so the middleware activates:
 This middleware reads C<X-Sendfile-Type> and C<X-Accel-Mapping> from incoming
 request headers to determine how to serve files. It is therefore critical that
 these headers are set by the frontend proxy and cannot be supplied by untrusted
-clients — otherwise a client could influence which files the frontend serves.
+clients; otherwise a client could influence which files the frontend serves.
 
 B<The Plack backend must not be directly reachable by untrusted clients.>
 
