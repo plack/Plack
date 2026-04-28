@@ -128,16 +128,17 @@ request header so the middleware activates:
 
 =head1 SECURITY
 
-This middleware reads the C<X-Accel-Mapping> and C<X-Sendfile-Type> values
-from request headers, which are expected to be injected by a trusted frontend
-proxy. B<The Plack backend must not be directly reachable by untrusted
-clients.> If a client can send these headers directly, they can influence which
-files the frontend server serves.
+This middleware reads C<X-Sendfile-Type> and C<X-Accel-Mapping> from incoming
+request headers to determine how to serve files. It is therefore critical that
+these headers are set by the frontend proxy and cannot be supplied by untrusted
+clients — otherwise a client could influence which files the frontend serves.
 
-To defend in depth with nginx, use C<proxy_ignore_headers> to prevent any
-client-supplied values from passing through, and rely solely on
-C<proxy_set_header> directives in your nginx configuration to supply the
-correct values.
+B<The Plack backend must not be directly reachable by untrusted clients.>
+
+For each frontend, make sure B<both> headers are explicitly set in the proxy
+configuration. C<proxy_set_header> (nginx), C<RequestHeader Set> (Apache), and
+C<proxy-core.rewrite-request> (lighttpd) all overwrite any client-supplied
+values, which is why the examples above use those directives.
 
 =head1 CONFIGURATION
 
