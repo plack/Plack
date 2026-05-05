@@ -2,6 +2,10 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0054  2026-05-04 23:38:13 PDT
+    [BUG FIXES]
+        - Revert Plack::App::File REQUEST_METHOD check after locating file due to regression #725
+
 1.0053  2026-04-28 15:59:58 PDT
     [DEPRECATIONS]
         - Plack::Middleware::XSendfile is deprecated due to security design issues; see POD for migration examples
