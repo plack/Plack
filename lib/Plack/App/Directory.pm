@@ -10,8 +10,11 @@ use URI::Escape;
 use Plack::Request;
 
 # Stolen from rack/directory.rb
-my $dir_file = "<tr><td class='name'><a href='%s'>%s</a></td><td class='size'>%s</td><td class='type'>%s</td><td class='mtime'>%s</td></tr>";
-my $dir_page = <<PAGE;
+sub dir_file {
+    return "<tr><td class='name'><a href='%s'>%s</a></td><td class='size'>%s</td><td class='type'>%s</td><td class='mtime'>%s</td></tr>";
+}
+sub dir_page {
+    return <<'PAGE';
 <html><head>
   <title>%s</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -37,6 +40,16 @@ table { width:100%%; }
 <hr />
 </body></html>
 PAGE
+}
+
+sub render_file {
+    my ($self, @f) = @_;
+    return sprintf $self->dir_file, map { Plack::Util::encode_html($_) } @f;
+}
+sub render_dir {
+    my ($self, $path, $files) = @_;
+    return sprintf $self->dir_page, $path, $path, $files;
+}
 
 sub should_handle {
     my($self, $file) = @_;
@@ -99,9 +112,9 @@ sub serve_path {
     my $path  = Plack::Util::encode_html("Index of $env->{PATH_INFO}");
     my $files = join "\n", map {
         my $f = $_;
-        sprintf $dir_file, map Plack::Util::encode_html($_), @$f;
+        $self->render_file( @$f );
     } @files;
-    my $page  = sprintf $dir_page, $path, $path, $files;
+    my $page  = $self->render_dir( $path, $files );
 
     return [ 200, ['Content-Type' => 'text/html; charset=utf-8'], [ $page ] ];
 }
