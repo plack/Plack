@@ -8,6 +8,7 @@ use Apache::LogFormat::Compiler;
 my %formats = (
     common => '%h %l %u %t "%r" %>s %b',
     combined => '%h %l %u %t "%r" %>s %b "%{Referer}i" "%{User-agent}i"',
+    ltsv => join "\t", qw/host:%h user:%u time:%t req:%r status:%>s size:%b referer:%{Referer}i ua:%{User-agent}i/,
 );
 
 sub prepare_app {
@@ -88,7 +89,7 @@ Plack::Middleware::AccessLog - Logs requests like Apache's log format
 Plack::Middleware::AccessLog forwards the request to the given app and
 logs request and response details to the logger callback. The format
 can be specified using Apache-like format strings (or C<combined> or
-C<common> for the default formats). If none is specified C<combined> is
+C<common> or C<ltsv> for the default formats). If none is specified C<combined> is
 used.
 
 This middleware uses calculable Content-Length by checking body type,
