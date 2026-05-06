@@ -29,7 +29,7 @@ sub run {
 sub test_handler {
     my ( $handler, $mangler, $mangle_file ) = @_;
 
-    system( "$^X $mangler Plack::Handler::$handler > $mangle_file" );
+    system( "\"$^X\" $mangler Plack::Handler::$handler > $mangle_file" );
     like read_file( $mangle_file ), qr/test\ntest/, '\n is not converted';
     unlink $mangle_file;
 
