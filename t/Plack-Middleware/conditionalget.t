@@ -21,6 +21,12 @@ my @tests = (
         headers => [ ETag => $tag ],
     },
     {
+        app => sub { [ 404, [ 'ETag' => $tag, 'Content-Type' => 'text/plain' ], [ 'Not Found' ] ] },
+        env => { REQUEST_METHOD => "GET", HTTP_IF_NONE_MATCH => $tag },
+        status => 404,
+        headers => [ ETag => $tag, 'Content-Type' => 'text/plain' ],
+    },
+    {
         app => sub { [ 200, [ 'Last-Modified' => $date, 'Content-Type' => 'text/plain' ], [ 'OK' ] ] },
         env => { REQUEST_METHOD => "GET", HTTP_IF_MODIFIED_SINCE => $date },
         status => 304,
@@ -80,8 +86,3 @@ for my $block (@tests) {
     is $res->[0], $block->{status};
     is_deeply $res->[1], $block->{headers};
 }
-
-
-
-
-
