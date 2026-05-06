@@ -20,6 +20,7 @@ requires 'HTTP::Entity::Parser', 0.25;
 requires 'WWW::Form::UrlEncoded', 0.23;
 
 on test => sub {
+    requires 'Test::Exit';
     requires 'Test::More', '0.88';
     requires 'Test::Requires';
     suggests 'Test::MockTime::HiRes', '0.06';
