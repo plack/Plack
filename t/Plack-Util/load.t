@@ -67,4 +67,12 @@ use Test::More;
     chdir $cwd;
 }
 
+{
+    local $@;
+    # must be at least 250 characters long
+    my $very_long_path = join '/', map 1..300, 'very_long.psgi';
+    eval { Plack::Util::load_psgi($very_long_path) };
+    unlike($@, qr/Identifier too long/);
+}
+
 done_testing;
