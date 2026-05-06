@@ -26,19 +26,20 @@ sub preload {
 }
 
 sub load_app {
-    my($class, $app) = @_;
+    my($class, $app, $share) = @_;
     return $apps{$app} ||= do {
-        # Trick Catalyst, CGI.pm, CGI::Cookie and others that check
-        # for $ENV{MOD_PERL}.
-        #
-        # Note that we delete it instead of just localizing
-        # $ENV{MOD_PERL} because some users may check if the key
-        # exists, and we do it this way because "delete local" is new
-        # in 5.12:
-        # http://perldoc.perl.org/5.12.0/perldelta.html#delete-local
-        local $ENV{MOD_PERL};
-        delete $ENV{MOD_PERL};
-
+        unless ($share || $ENV{SHARE_MOD_PERL}) {
+                # Trick Catalyst, CGI.pm, CGI::Cookie and others that check
+                # for $ENV{MOD_PERL}.
+                #
+                # Note that we delete it instead of just localizing
+                # $ENV{MOD_PERL} because some users may check if the key
+                # exists, and we do it this way because "delete local" is new
+                # in 5.12:
+                # http://perldoc.perl.org/5.12.0/perldelta.html#delete-local
+                local $ENV{MOD_PERL};
+                delete $ENV{MOD_PERL};
+        }
         Plack::Util::load_psgi $app;
     };
 }
@@ -123,7 +124,7 @@ sub handler {
     my $class = __PACKAGE__;
     my $r     = shift;
     my $psgi  = $r->dir_config('psgi_app');
-    $class->call_app($r, $class->load_app($psgi));
+    $class->call_app($r, $class->load_app($psgi, $r->dir_config('share_mod_perl')));
 }
 
 # The method for PH::Apache2::Registry to override.
