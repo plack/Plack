@@ -56,4 +56,26 @@ my %test = (
 
 test_psgi %test;
 
+$handler = Plack::App::Directory->new({ root => 'share', dir_index => 'index.html' });
+
+%test = (
+    client => sub {
+        my $cb  = shift;
+
+        open my $fh, ">", "share/index.html" or die $!;
+        print $fh "<html>\n</html>";
+        close $fh;
+
+        my $res = $cb->(GET "/");
+        is $res->code, 200;
+        is $res->content, "<html>\n</html>";
+
+        unlink "share/index.html";
+
+    },
+    app => $handler,
+);
+
+test_psgi %test;
+
 done_testing;
