@@ -24,21 +24,29 @@ sub call {
 
     return $res if ref $res eq 'ARRAY';
 
-    return sub {
-        my $respond = shift;
-
+    my $unroll_coderef_responses;
+    $unroll_coderef_responses = sub {
+        my ($responder, $response)  = @_;
         my $writer;
         try {
-            $res->(sub { return $writer = $respond->(@_) });
+            $response->(sub { return $writer = $responder->(@_) });
         } catch {
-            if ($writer) {
-                Carp::cluck $_;
-                $writer->close;
-            } else {
-                my $res = $self->transform_error($_, $env);
-                $respond->($res);
-            }
+          if($writer) {
+              # In the case where the exception happens part way through a write
+              # We just die since we can't at this point change the response
+              Carp::cluck $_;
+              $writer->close;
+          } else {
+            my $error_psgi_response = $self->transform_error($_, $env);
+            return $responder->($error_psgi_response) if ref $error_psgi_response eq 'ARRAY';
+            return $unroll_coderef_responses->($responder, $error_psgi_response);
+          }
         };
+    };
+
+    return sub {
+        my $responder = shift;
+        return $unroll_coderef_responses->($responder, $res);
     };
 }
 
@@ -47,7 +55,7 @@ sub transform_error {
 
     my($code, $message);
     if (blessed $e && $e->can('as_psgi')) {
-        return $e->as_psgi;
+        return $e->as_psgi($env);
     }
     if (blessed $e && $e->can('code')) {
         $code = $e->code;
@@ -123,7 +131,8 @@ the status message of the error code, such as I<Service Unavailable> for
 C<503>.
 
 Finally, the exception object may implement C<as_psgi>, and the result
-of this will be returned directly as the PSGI response.
+of this will be returned directly as the PSGI response.  When calling
+the C<as_psgi> method, the PSGI C<$env> will be passed.
 
 If the code is in the 3xx range and the exception implements the 'location'
 method (HTTP::Exception::3xx does), the Location header will be set in the
@@ -142,6 +151,29 @@ for this middleware, and the exception will instead be rethrown. This is
 enabled by default when C<PLACK_ENV> is set to C<development>, so that
 the L<StackTrace|Plack::Middleware::StackTrace> middleware can catch it
 instead.
+
+=head1 NOTES
+
+In the case where an exception rises during the middle of a streaming
+response (such as the following):
+
+    my $psgi_app = sub {
+    my $env = shift;
+        return sub {
+        my $responder = shift;
+        my $writer = $responder->([200, ['content-type'=>'text/html']]);
+        $writer->write('ok');
+
+        # Stuff...
+
+        die MyApp::Exception::ServerError->new($env);
+    };
+
+We can't meaningfully set the response from this exception, since at this
+point HTTP Headers and a partial body have been returned.  If you need to
+verify such a case you'll need to rely on alternative means, such as setting
+expected content-length or providing a checksum, that the client can use to
+valid the returned content.
 
 =head1 AUTHOR
 
