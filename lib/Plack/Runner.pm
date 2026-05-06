@@ -160,6 +160,10 @@ sub locate_app {
         return sub { $psgi };
     }
 
+    if (Scalar::Util::blessed($psgi) and $psgi->can('to_app')){
+        return sub { $psgi->to_app };
+    }
+
     if ($self->{eval}) {
         $self->loader->watch("lib") if -e "lib";
         return build {
@@ -296,6 +300,20 @@ Plack::Runner - plackup core
   my $runner = Plack::Runner->new;
   $runner->parse_options(@ARGV);
   $runner->run($app);
+
+  # use app builder instead of app
+  use Plack::Runner;
+  my $app_builder => sub {
+          # do some thing here will run every time server loaded
+
+          return sub  {
+                # the real app code here
+          }
+  };
+
+  my $runner = Plack::Runner->new;
+  $runner->parse_options(@ARGV);
+  $runner->run(\$app_builder); # use code ref ref
 
 =head1 DESCRIPTION
 
