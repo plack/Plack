@@ -13,11 +13,15 @@ $app = Plack::Middleware::Lint->wrap($app);
 
 my @good_env = (
     { PATH_INFO => '' },
+    { REQUEST_METHOD => 'get' },
+    { REQUEST_METHOD => 'GeT' },
+    { REQUEST_METHOD => 'my-custom-method' },
 );
 
 my @bad_env = (
     [ { REQUEST_METHOD => undef }, qr/Missing env param: REQUEST_METHOD/ ],
-    [ { REQUEST_METHOD => "foo" },, qr/Invalid env param: REQUEST_METHOD/ ],
+    [ { REQUEST_METHOD => "foo bar" }, qr/Invalid env param: REQUEST_METHOD/ ],
+    [ { REQUEST_METHOD => "" }, qr/Missing env param: REQUEST_METHOD/ ],
     [ { PATH_INFO => 'foo' }, qr/PATH_INFO must begin with \// ],
     [ { SERVER_PORT => undef }, qr/Missing mandatory .*SERVER_PORT/ ],
     [ { SERVER_PROTOCOL => 'HTTP/x' }, qr/Invalid SERVER_PROTOCOL/ ],

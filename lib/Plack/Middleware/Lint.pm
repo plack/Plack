@@ -30,7 +30,7 @@ sub validate_env {
     unless ($env->{REQUEST_METHOD}) {
         die('Missing env param: REQUEST_METHOD');
     }
-    unless ($env->{REQUEST_METHOD} =~ /^[A-Z]+$/) {
+    unless ($env->{REQUEST_METHOD} =~ /^[A-Za-z0-9!#\$%&'*+\-.^_`|~]+$/) {
         die("Invalid env param: REQUEST_METHOD($env->{REQUEST_METHOD})");
     }
     unless (defined($env->{SCRIPT_NAME})) { # allows empty string
