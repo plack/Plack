@@ -45,7 +45,7 @@ sub call {
     my($http_host, $server_name) = @{$env}{qw( HTTP_HOST SERVER_NAME )};
 
     if ($http_host and my $port = $env->{SERVER_PORT}) {
-        $http_host =~ s/:$port$//;
+        $http_host =~ s/:\Q$port\E$//;
     }
 
     for my $map (@{ $self->{_sorted_mapping} }) {
