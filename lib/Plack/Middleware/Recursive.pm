@@ -46,11 +46,12 @@ sub recurse_callback {
 
     my $old_path_info = $env->{PATH_INFO};
 
+    # the include callback is stored in $env, so don't let it keep $env alive
+    Scalar::Util::weaken($env);
+
     return sub {
         my $new_path_info = shift;
         my($path, $query) = split /\?/, $new_path_info, 2;
-
-        Scalar::Util::weaken($env);
 
         $env->{PATH_INFO}      = $path;
         $env->{QUERY_STRING}   = $query;
