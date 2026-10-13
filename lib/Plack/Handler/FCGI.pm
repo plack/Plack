@@ -389,6 +389,22 @@ the rest of the path in C<PATH_INFO>.
 
 See L<https://www.nginx.com/resources/wiki/start/topics/examples/fastcgiexample/> for more details.
 
+=head2 PATH_INFO AND ACCESS CONTROL
+
+Some web servers squeeze multiple slashes in C<PATH_INFO>, so this
+handler ignores the C<PATH_INFO> passed by the web server and rebuilds
+it from C<REQUEST_URI>, percent-decoded and with C<SCRIPT_NAME>
+stripped. Dot segments such as C</../> are B<not> removed.
+
+The web server, on the other hand, usually matches its C<location> or
+C<< <Location> >> blocks against the normalized path. A request to
+C</admin/../public/x> is matched by the web server as C</public/x>,
+but your application sees C<PATH_INFO> C</admin/../public/x>. Do not
+rely on path-based access control in the front web server to protect
+parts of your application: enforce it in the application (or in
+middleware) instead, or make sure the web server rejects request
+URIs containing dot segments.
+
 =head3 Apache mod_fastcgi
 
 After installing C<mod_fastcgi>, you should add the C<FastCgiExternalServer>

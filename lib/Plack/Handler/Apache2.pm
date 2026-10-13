@@ -225,6 +225,17 @@ mod_perl, see L<Plack::Handler::FCGI> to run with FastCGI, or use
 standalone HTTP servers such as L<Starman> or L<Starlet> proxied with
 mod_proxy.
 
+=head1 PATH_INFO AND ACCESS CONTROL
+
+Because mod_perl squeezes multiple slashes in C<PATH_INFO>, this
+handler rebuilds C<PATH_INFO> from the unparsed request URI,
+percent-decoded. Dot segments such as C</../> are B<not> removed, so
+a request to C</admin/../public/x> is matched by Apache's
+C<< <Location> >> blocks as C</public/x> while your application sees
+C</admin/../public/x>. Do not rely on Apache's path-based access
+control to protect parts of your application: enforce it in the
+application (or in middleware) instead.
+
 =head1 CREATING CUSTOM HANDLER
 
 If you want to create a custom handler that loads or creates PSGI
