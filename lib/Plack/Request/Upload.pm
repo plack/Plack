@@ -35,6 +35,8 @@ sub basename {
         $basename =~ s|\\|/|g;
         $basename = ( File::Spec::Unix->splitpath($basename) )[2];
         $basename =~ s|[^\w\.-]+|_|g;
+        # never return an empty name or a directory reference
+        $basename = '_' if $basename =~ /^\.{0,2}\z/;
         $self->{basename} = $basename;
     }
     $self->{basename};
@@ -79,7 +81,13 @@ Returns the original filename in the client.
 
 =item basename
 
-Returns basename for "filename".
+Returns basename for "filename". Characters other than word
+characters, C<.> and C<-> are replaced with C<_>, and a name that
+would be empty, C<.> or C<..> is returned as C<_>.
+
+Note that the returned value is still client-supplied: you should
+make sure it doesn't overwrite existing files before using it as a
+file name.
 
 =back
 
