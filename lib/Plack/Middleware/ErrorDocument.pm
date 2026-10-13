@@ -28,6 +28,11 @@ sub call {
                 }
             }
 
+            # the env is shared with outer middleware (e.g. AccessLog),
+            # so restore the original request after the subrequest
+            my @keys = qw(REQUEST_METHOD REQUEST_URI PATH_INFO QUERY_STRING CONTENT_LENGTH);
+            my %orig = map { exists $env->{$_} ? ($_ => $env->{$_}) : () } @keys;
+
             # TODO: What if SCRIPT_NAME is not empty?
             $env->{REQUEST_METHOD} = 'GET';
             $env->{REQUEST_URI}    = $path;
@@ -35,7 +40,13 @@ sub call {
             $env->{QUERY_STRING}   = '';
             delete $env->{CONTENT_LENGTH};
 
-            my $sub_r = $self->app->($env);
+            my $sub_r = eval { $self->app->($env) };
+            my $err = $@;
+
+            for my $key (@keys) {
+                exists $orig{$key} ? ($env->{$key} = $orig{$key}) : delete $env->{$key};
+            }
+            die $err if $err;
             if ($sub_r->[0] == 200) {
                 $r->[1] = $sub_r->[1];
                 if (@$r == 3) {
