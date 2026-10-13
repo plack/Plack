@@ -2,6 +2,18 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0055  2026-10-13 15:00:27 PDT
+    [SECURITY]
+        - Fix memory leak of every request env in Plack::Middleware::Recursive (CVE-2026-110333)
+        - Plack::Request::Upload->basename never returns '', '.' or '..' (CVE-2026-110332)
+        - Plack::App::URLMap matches SERVER_PORT literally when stripping it from Host (CVE-2026-110335)
+    [BUG FIXES]
+        - Plack::Middleware::ErrorDocument restores the env after a subrequest, so outer
+          middleware such as AccessLog sees the original request (CVE-2026-110334)
+    [DOCUMENTATION]
+        - Document that Plack::Handler::FCGI and Apache2 keep dot segments in PATH_INFO and
+          warn against relying on front-server path-based access control (CVE-2026-110336)
+
 1.0054  2026-05-04 23:38:13 PDT
     [BUG FIXES]
         - Revert Plack::App::File REQUEST_METHOD check after locating file due to regression #725
