@@ -184,7 +184,7 @@ sub handle_connection {
                 }
                 $env->{'psgi.input'} = $buffer->rewind;
             } else {
-                open my $input, "<", \$buf;
+                open my $input, "<", \"";
                 $env->{'psgi.input'} = $input;
             }
 

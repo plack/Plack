@@ -68,6 +68,14 @@ for my $cl ('-5', '+5', '5abc', '0x5', '5, 9', '5, 5') {
     is $status, 400, 'duplicate Content-Length headers are rejected';
 }
 
+for my $cl ('', "Content-Length: 0\r\n") {
+    my($status, $body) = run_request(
+        "GET / HTTP/1.0\r\n$cl\r\ntrailing junk"
+    );
+    is $status, 200;
+    is $body, '', 'no body without Content-Length' . ($cl ? ' (0)' : '');
+}
+
 for my $te ('chunked', 'gzip, chunked', 'identity') {
     for my $cl ('', "Content-Length: 3\r\n") {
         my($status, $body) = run_request(
