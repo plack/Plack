@@ -165,8 +165,7 @@ sub handle_connection {
                 while ($cl > 0) {
                     my $chunk;
                     if (length $buf) {
-                        $chunk = $buf;
-                        $buf = '';
+                        $chunk = substr $buf, 0, $cl, '';
                     } else {
                         $self->read_timeout($conn, \$chunk, $cl < CHUNKSIZE ? $cl : CHUNKSIZE, 0, $self->{timeout})
                             or return;
