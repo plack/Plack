@@ -75,7 +75,8 @@ sub run_request {
 SKIP: {
     skip 'needs fork', 2 if $^O eq 'MSWin32';
     # Content-Length beyond UV_MAX used to make substr() take all but the
-    # last byte of the buffer and then spin forever on the rest
+    # last byte of the buffer and then spin forever on the rest. Such values
+    # are now rejected as too long before the body is read.
     for my $cl ('18446744073709551616', '9' x 400) {
         my $pid = fork;
         die "fork: $!" unless defined $pid;
@@ -96,7 +97,7 @@ SKIP: {
     }
 }
 
-for my $cl ('-5', '+5', '5abc', '0x5', '5, 9', '5, 5') {
+for my $cl ('-5', '+5', '5abc', '0x5', '5, 9', '5, 5', '9' x 19, '0' x 18 . '5') {
     my($status, $body) = run_request(
         "POST / HTTP/1.0\r\nContent-Length: $cl\r\n\r\nabcdefghi"
     );
@@ -129,7 +130,7 @@ for my $te ('chunked', 'gzip, chunked', 'identity') {
     }
 }
 
-for my $cl ('0', '5', '005') {
+for my $cl ('0', '5', '005', '0' x 17 . '5') {
     my($status, $body) = run_request(
         "POST / HTTP/1.0\r\nContent-Length: $cl\r\n\r\nabcde"
     );

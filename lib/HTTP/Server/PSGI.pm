@@ -165,8 +165,8 @@ sub handle_connection {
                 $res = [ 501, [ 'Content-Type' => 'text/plain' ], [ 'Not Implemented' ] ];
                 last;
             }
-            if (defined $env->{CONTENT_LENGTH} && $env->{CONTENT_LENGTH} !~ /\A[0-9]+\z/) {
-                # malformed or duplicate Content-Length
+            if (defined $env->{CONTENT_LENGTH} && $env->{CONTENT_LENGTH} !~ /\A[0-9]{1,18}\z/) {
+                # malformed, duplicate or too long (more than 18 digits) Content-Length
                 last;
             }
             if (my $cl = $env->{CONTENT_LENGTH}) {
