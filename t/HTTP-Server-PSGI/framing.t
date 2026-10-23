@@ -53,4 +53,26 @@ sub run_request {
     is $body, 'abc', 'body stops at Content-Length';
 }
 
+for my $cl ('-5', '+5', '5abc', '0x5', '5, 9', '5, 5') {
+    my($status, $body) = run_request(
+        "POST / HTTP/1.0\r\nContent-Length: $cl\r\n\r\nabcdefghi"
+    );
+    is $status, 400, "invalid Content-Length '$cl' is rejected";
+    is $body, undef, 'app is not called';
+}
+
+{
+    my($status, $body) = run_request(
+        "POST / HTTP/1.0\r\nContent-Length: 5\r\nContent-Length: 9\r\n\r\nabcdefghi"
+    );
+    is $status, 400, 'duplicate Content-Length headers are rejected';
+}
+
+for my $cl ('0', '5', '005') {
+    my($status, $body) = run_request(
+        "POST / HTTP/1.0\r\nContent-Length: $cl\r\n\r\nabcde"
+    );
+    is $status, 200, "valid Content-Length '$cl' is accepted";
+}
+
 done_testing;

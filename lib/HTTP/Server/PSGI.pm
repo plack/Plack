@@ -160,6 +160,10 @@ sub handle_connection {
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
             $buf = substr $buf, $reqlen;
+            if (defined $env->{CONTENT_LENGTH} && $env->{CONTENT_LENGTH} !~ /\A[0-9]+\z/) {
+                # malformed or duplicate Content-Length
+                last;
+            }
             if (my $cl = $env->{CONTENT_LENGTH}) {
                 my $buffer = Stream::Buffered->new($cl);
                 while ($cl > 0) {
