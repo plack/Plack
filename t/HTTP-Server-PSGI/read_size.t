@@ -7,16 +7,19 @@ use Test::More;
 {
     package FakeSocket;
 
+    # returns each segment in its own read, at most $len bytes at a time
     sub new {
-        my($class, $data) = @_;
-        bless { data => $data, reads => [], out => '' }, $class;
+        my($class, @segments) = @_;
+        bless { segments => [ @segments ], reads => [], out => '' }, $class;
     }
 
     sub sysread {
         my $self = shift;
         my(undef, $len, $off) = @_;
         push @{$self->{reads}}, $len;
-        my $chunk = substr $self->{data}, 0, 1024, '';
+        my $seg = \$self->{segments}[0];
+        my $chunk = defined $$seg ? substr $$seg, 0, $len, '' : '';
+        shift @{$self->{segments}} if defined $$seg && !length $$seg;
         $_[0] = '' unless defined $_[0];
         substr($_[0], $off || 0) = $chunk;
         return length $chunk;
@@ -34,12 +37,15 @@ my $app = sub { [ 200, [ 'Content-Type' => 'text/plain' ], [ 'OK' ] ] };
 
 {
     my $sock = FakeSocket->new(
-        "POST / HTTP/1.0\r\nContent-Length: 100000000000\r\n\r\nhello"
+        "POST / HTTP/1.0\r\nContent-Length: 100000000000\r\n\r\n",
+        'x' x (200 * 1024),
     );
     $server->handle_connection({}, $sock, $app);
 
-    my($max) = sort { $b <=> $a } @{$sock->{reads}};
-    cmp_ok $max, '<=', HTTP::Server::PSGI::MAX_REQUEST_SIZE,
+    my(undef, @body_reads) = @{$sock->{reads}};
+    cmp_ok scalar(@body_reads), '>', 1, 'body is read in several reads';
+    my($max) = sort { $b <=> $a } @body_reads;
+    cmp_ok $max, '<=', HTTP::Server::PSGI::CHUNKSIZE,
         'huge Content-Length does not make a huge sysread';
 }
 

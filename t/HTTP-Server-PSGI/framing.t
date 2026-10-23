@@ -8,15 +8,18 @@ use Test::More;
 {
     package FakeSocket;
 
+    # returns each segment in its own read, at most $len bytes at a time
     sub new {
-        my($class, $data) = @_;
-        bless { data => $data, out => '' }, $class;
+        my($class, @segments) = @_;
+        bless { segments => [ @segments ], out => '' }, $class;
     }
 
     sub sysread {
         my $self = shift;
         my(undef, $len, $off) = @_;
-        my $chunk = substr $self->{data}, 0, $len, '';
+        my $seg = \$self->{segments}[0];
+        my $chunk = defined $$seg ? substr $$seg, 0, $len, '' : '';
+        shift @{$self->{segments}} if defined $$seg && !length $$seg;
         $_[0] = '' unless defined $_[0];
         substr($_[0], $off || 0) = $chunk;
         return length $chunk;
@@ -32,8 +35,7 @@ use Test::More;
 my $server = HTTP::Server::PSGI->new(timeout => 5);
 
 sub run_request {
-    my $req = shift;
-    my $sock = FakeSocket->new($req);
+    my $sock = FakeSocket->new(@_);
     my $body;
     $server->handle_connection({}, $sock, sub {
         my $env = shift;
@@ -52,6 +54,22 @@ sub run_request {
     );
     is $status, 200;
     is $body, 'abc', 'body stops at Content-Length';
+}
+
+{
+    my($status, $body) = run_request(
+        "POST / HTTP/1.0\r\nContent-Length: 5\r\n\r\nab", "c", "de", "GET / HTTP/1.0\r\n\r\n",
+    );
+    is $status, 200;
+    is $body, 'abcde', 'body arriving in short reads is read up to Content-Length';
+}
+
+{
+    my($status, $body) = run_request(
+        "POST / HTTP/1.0\r\nContent-Length: 10\r\n\r\nab", "c",
+    );
+    is $status, undef, 'no response when the connection closes mid-body';
+    is $body, undef, 'app is not called';
 }
 
 SKIP: {
