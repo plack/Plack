@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use HTTP::Server::PSGI;
+use POSIX ();
 use Test::More;
 
 {
@@ -51,6 +52,30 @@ sub run_request {
     );
     is $status, 200;
     is $body, 'abc', 'body stops at Content-Length';
+}
+
+SKIP: {
+    skip 'needs fork', 2 if $^O eq 'MSWin32';
+    # Content-Length beyond UV_MAX used to make substr() take all but the
+    # last byte of the buffer and then spin forever on the rest
+    for my $cl ('18446744073709551616', '9' x 400) {
+        my $pid = fork;
+        die "fork: $!" unless defined $pid;
+        if ($pid == 0) {
+            run_request("POST / HTTP/1.0\r\nContent-Length: $cl\r\n\r\nhello");
+            POSIX::_exit(0);
+        }
+        my $done;
+        for (1..50) {
+            last if $done = waitpid($pid, POSIX::WNOHANG()) == $pid;
+            select undef, undef, undef, 0.1;
+        }
+        unless ($done) {
+            kill 'KILL', $pid;
+            waitpid $pid, 0;
+        }
+        ok $done, 'huge Content-Length (' . length($cl) . ' digits) does not loop';
+    }
 }
 
 for my $cl ('-5', '+5', '5abc', '0x5', '5, 9', '5, 5') {
