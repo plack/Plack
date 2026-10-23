@@ -68,6 +68,16 @@ for my $cl ('-5', '+5', '5abc', '0x5', '5, 9', '5, 5') {
     is $status, 400, 'duplicate Content-Length headers are rejected';
 }
 
+for my $te ('chunked', 'gzip, chunked', 'identity') {
+    for my $cl ('', "Content-Length: 3\r\n") {
+        my($status, $body) = run_request(
+            "POST / HTTP/1.1\r\nTransfer-Encoding: $te\r\n$cl\r\n3\r\nabc\r\n0\r\n\r\n"
+        );
+        is $status, 501, "Transfer-Encoding '$te' is rejected" . ($cl ? ' with Content-Length' : '');
+        is $body, undef, 'app is not called';
+    }
+}
+
 for my $cl ('0', '5', '005') {
     my($status, $body) = run_request(
         "POST / HTTP/1.0\r\nContent-Length: $cl\r\n\r\nabcde"

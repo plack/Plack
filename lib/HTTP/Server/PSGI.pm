@@ -160,6 +160,11 @@ sub handle_connection {
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
             $buf = substr $buf, $reqlen;
+            if (defined $env->{HTTP_TRANSFER_ENCODING}) {
+                # request bodies with Transfer-Encoding are not supported
+                $res = [ 501, [ 'Content-Type' => 'text/plain' ], [ 'Not Implemented' ] ];
+                last;
+            }
             if (defined $env->{CONTENT_LENGTH} && $env->{CONTENT_LENGTH} !~ /\A[0-9]+\z/) {
                 # malformed or duplicate Content-Length
                 last;
@@ -344,7 +349,8 @@ not be suitable for a production use.
 
 Some features in HTTP/1.1, notably chunked requests, responses and
 pipeline requests are B<NOT> supported, and it also does not support
-HTTP/0.9.
+HTTP/0.9. Requests with a C<Transfer-Encoding> header are rejected with
+501 Not Implemented.
 
 See L<Starman> or uWSGI server if you want HTTP/1.1 and other features
 ready for a production use.
