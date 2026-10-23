@@ -31,6 +31,7 @@ BEGIN {
 }
 
 use constant MAX_REQUEST_SIZE => 131072;
+use constant CHUNKSIZE        => 64 * 1024;
 use constant MSWin32          => $^O eq 'MSWin32';
 
 sub new {
@@ -167,7 +168,7 @@ sub handle_connection {
                         $chunk = $buf;
                         $buf = '';
                     } else {
-                        $self->read_timeout($conn, \$chunk, $cl, 0, $self->{timeout})
+                        $self->read_timeout($conn, \$chunk, $cl < CHUNKSIZE ? $cl : CHUNKSIZE, 0, $self->{timeout})
                             or return;
                     }
                     $buffer->print($chunk);
