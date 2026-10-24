@@ -2,6 +2,19 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0056  2026-10-24 01:55:22 PDT
+    [SECURITY]
+        - Fix HTTP::Server::PSGI allocating a buffer as large as the declared Content-Length,
+          which let a single request crash the server with "Out of memory!" (CVE-2026-115825)
+    [BUG FIXES]
+        - Fix HTTP::Server::PSGI passing bytes after the Content-Length body to the app in psgi.input
+        - Fix HTTP::Server::PSGI accepting malformed, negative, duplicate or too long (more than
+          18 digits) Content-Length. Such requests now get 400 Bad Request
+        - Fix HTTP::Server::PSGI ignoring Transfer-Encoding and passing the raw chunked body to the app.
+          Such requests now get 501 Not Implemented
+        - Fix HTTP::Server::PSGI passing stray bytes after the headers as psgi.input when the request
+          has no Content-Length or a Content-Length of 0
+
 1.0055  2026-10-13 15:00:27 PDT
     [SECURITY]
         - Fix memory leak of every request env in Plack::Middleware::Recursive (CVE-2026-110333)
