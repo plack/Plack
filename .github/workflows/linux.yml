@@ -27,7 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install Dependencies
-        run: cpanm -nq --with-develop --with-recommends --with-suggests --installdeps .
+        run: |
+          # Crypt::PasswdMD5 needs newer ExtUtils::MakeMaker and Encode than
+          # perl <= 5.36 ships, and cpanm can fail to upgrade them in one go
+          cpanm -nq ExtUtils::MakeMaker Encode
+          cpanm -nq --with-develop --with-recommends --with-suggests --installdeps .
       - name: Run Tests
         run: prove -lr t
         env:
