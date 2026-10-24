@@ -2,6 +2,12 @@ Go to http://github.com/plack/Plack/issues for the roadmap and known issues.
 
 {{$NEXT}}
 
+1.0057  2026-10-24 02:01:28 PDT
+    [BUG FIXES]
+        - Fix Plack, Plack::Request and Plack::Response in 1.0056 still declaring $VERSION 1.0055,
+          which kept PAUSE from indexing 1.0056. This release contains the same fixes as 1.0056,
+          including CVE-2026-115825
+
 1.0056  2026-10-24 01:55:22 PDT
     [SECURITY]
         - Fix HTTP::Server::PSGI allocating a buffer as large as the declared Content-Length,
